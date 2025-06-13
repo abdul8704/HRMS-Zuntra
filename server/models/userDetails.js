@@ -1,0 +1,50 @@
+const mongoose = require("mongoose");
+
+const userDetailsSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        required: true,
+    },
+    userid: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    passwordHash: {
+        type: String,
+        required: true,
+    },
+    profilePicture: {
+        type: String,
+        default: "default-profile-pic.png",
+    },
+    role: {
+        type: String,
+        enum: ["user", "admin", "tl"],
+        default: "user",
+    },
+    designation: {
+        type: String,
+        default: "Software Engineer",
+    },
+    currentCourses: {
+        type: [String],
+        default: [],
+    },
+    assignedCourses:{
+        type: [String],
+        default: [],
+    },
+    phoneNumber: {
+        type: String,
+        required: true
+    },
+
+});
+
+module.exports = mongoose.model("UserDetails", userDetailsSchema);
