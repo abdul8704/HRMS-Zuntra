@@ -11,6 +11,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="*" element={<NotFound />} />
+        <Route path="/coursecard" element={<CourseCard/>}></Route>
       </Routes>
     </BrowserRouter>
     </>
