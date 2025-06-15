@@ -1,0 +1,165 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.website-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    font-family: Arial, sans-serif;
+}
+
+.website-sidebar {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background-color: #BBD3CC;
+    transition: width 0.4s ease;
+    overflow: visible;
+    min-height: 100vh;
+    z-index: 10;
+    width: 5%;
+}
+
+.website-sidebar-expanded {
+    width: 20%;
+}
+
+.website-sidebar-top-right-icon {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 20;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.website-sidebar-top-right-icon:hover {
+    transform: scale(1.1);
+}
+
+.website-sidebar-logo {
+    height: 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.website-sidebar-pages-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.website-sidebar-icon {
+    display: flex;
+    align-items: center;
+    height: 3.2rem;
+    color: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    position: relative;
+}
+
+
+.website-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 100%;
+    padding: 0 0.5rem;
+    flex-shrink: 0;
+}
+
+.website-label-wrapper {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    padding-left: 0.5rem;
+    transition: opacity 0.3s ease;
+}
+
+.website-label-wrapper.hide {
+    opacity: 0;
+    width: 0;
+    padding: 0;
+}
+
+.website-label-wrapper.show {
+    opacity: 1;
+}
+
+.website-sidebar-collapsed .website-label-wrapper {
+    display: none;
+}
+
+.website-sidebar-icon:hover {
+    background-color: rgba(217, 217, 217, 0.3);
+}
+
+.website-sidebar-icon-active {
+    color: rgba(0, 0, 0, 1);
+    background-color: rgba(217, 217, 217, 0.7);
+}
+
+.website-logout-icon {
+    margin-top: auto;
+    margin-bottom: 1rem;
+}
+
+.website-sidebar-expand-arrow {
+    position: absolute;
+    top: 5.25rem;
+    right: -1rem;
+    width: 2rem;
+    height: 2rem;
+    background-color: #ffffff;
+    border: 0.15rem solid #BBD3CC;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.15);
+}
+
+.website-sidebar-expand-arrow:hover {
+    background-color: #f0f0f0;
+    transform: scale(1.1);
+}
+
+.website-module {
+    flex: 1;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.website-module div {
+    text-align: center;
+}
+
+.website-module button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #BBD3CC;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.website-module button:hover {
+    background-color: #a8c4bc;
+}
