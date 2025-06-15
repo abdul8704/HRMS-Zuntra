@@ -91,7 +91,8 @@ export const Sidebar= ()=> {
   const handleItemClick = (index) => setActive(index);
 
   return (
-    <div className="website-container">
+    // <div className="website-container">
+    <>
       {/* Sidebar */}
       <div
         className={`website-sidebar ${sideBarStatus === 0 ? 'website-sidebar-collapsed' : ''} ${sideBarStatus === 2 || sideBarStatus === 3 ? 'website-sidebar-expanded' : ''}`}
@@ -155,18 +156,18 @@ export const Sidebar= ()=> {
           </div>
         )}
       </div>
-
-      {/* Main Content */}
-      <div className="website-module">
-        <div>
-          <h2>Module Content</h2>
-          <p>Current sidebar state: {["Collapsed", "Hovered (Arrow Visible)", "Expanded"][sideBarStatus]}</p>
-          <p>Current role: {role}</p>
-          <button onClick={() => setRole(role === "HR" ? "EMP" : "HR")}>
-            Switch to {role === "HR" ? "Employee" : "HR"} view
-          </button>
-        </div>
-      </div>
-    </div>
+      </>
+      // {/* Main Content */}
+      // <div className="website-module">
+      //   <div>
+      //     <h2>Module Content</h2>
+      //     <p>Current sidebar state: {["Collapsed", "Hovered (Arrow Visible)", "Expanded"][sideBarStatus]}</p>
+      //     <p>Current role: {role}</p>
+      //     <button onClick={() => setRole(role === "HR" ? "EMP" : "HR")}>
+      //       Switch to {role === "HR" ? "Employee" : "HR"} view
+      //     </button>
+      //   </div>
+      // </div>
+    // </div>
   );
 }
