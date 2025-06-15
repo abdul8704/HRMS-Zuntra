@@ -2,6 +2,7 @@ html,
 body {
     margin: 0;
     padding: 0;
+    font-size: 1vw; /* Base font-size scales with viewport */
 }
 
 .website-container {
@@ -11,94 +12,136 @@ body {
     font-family: Arial, sans-serif;
 }
 
+/* Sidebar container */
 .website-sidebar {
     position: relative;
     display: flex;
     flex-direction: column;
     background-color: #BBD3CC;
-    transition: width 0.4s ease;
-    overflow: visible;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: visible; /* Changed from visible to hidden for smooth transitions */
     min-height: 100vh;
     z-index: 10;
-    width: 5%;
+    width: 4.5rem; /* Default collapsed width */
 }
 
+/* Collapsed sidebar state */
+.website-sidebar-collapsed {
+    width: 4.5rem;
+}
+
+/* Hovered sidebar state (intermediate) */
+.website-sidebar:not(.website-sidebar-collapsed):not(.website-sidebar-expanded) {
+    width: 4.5rem;
+}
+
+/* Expanded sidebar state */
 .website-sidebar-expanded {
-    width: 20%;
+    width: 20rem;
 }
 
+/* Top right icon (e.g., close or menu) */
 .website-sidebar-top-right-icon {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 1.5vh;
+    right: 1.5vw;
     z-index: 20;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, opacity 0.3s ease;
+    font-size: 2vw;
+    opacity: 0;
+}
+
+/* Show top right icon only when expanded */
+.website-sidebar-expanded .website-sidebar-top-right-icon {
+    opacity: 1;
 }
 
 .website-sidebar-top-right-icon:hover {
     transform: scale(1.1);
 }
 
+/* Sidebar logo area */
 .website-sidebar-logo {
-    height: 4rem;
+    height: 8vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 1.5rem;
-    margin-bottom: 3rem;
+    margin-top: 2vh;
+    margin-bottom: 4vh;
+    font-size: 2vw;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Logo image transitions */
+.website-sidebar-logo img {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Sidebar pages container */
 .website-sidebar-pages-container {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 3vh;
 }
 
+/* Individual sidebar icon block */
 .website-sidebar-icon {
     display: flex;
     align-items: center;
-    height: 3.2rem;
+    height: 8vh;
     color: rgba(0, 0, 0, 0.3);
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;
     position: relative;
+    font-size: 1.2vw;
+    overflow: hidden;
 }
 
-
+/* Icon wrapper (actual icon inside sidebar) */
 .website-icon-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
+    width: 4.5rem; /* Fixed width to match collapsed sidebar */
     height: 100%;
-    padding: 0 0.5rem;
     flex-shrink: 0;
+    font-size: 1.5vw;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Label wrapper for icons */
 .website-label-wrapper {
     flex: 1;
     white-space: nowrap;
     overflow: hidden;
     padding-left: 0.5rem;
-    transition: opacity 0.3s ease;
-}
-
-.website-label-wrapper.hide {
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 1.1vw;
     opacity: 0;
+    transform: translateX(-10px);
     width: 0;
-    padding: 0;
 }
 
-.website-label-wrapper.show {
+/* Show labels when expanded */
+.website-sidebar-expanded .website-label-wrapper {
     opacity: 1;
+    transform: translateX(0);
+    width: auto;
 }
 
+/* Hide labels when collapsed */
 .website-sidebar-collapsed .website-label-wrapper {
-    display: none;
+    opacity: 0;
+    transform: translateX(-10px);
+    width: 0;
+    padding-left: 0;
 }
 
+/* Hover and active states */
 .website-sidebar-icon:hover {
     background-color: rgba(217, 217, 217, 0.3);
 }
@@ -108,17 +151,21 @@ body {
     background-color: rgba(217, 217, 217, 0.7);
 }
 
+/* Logout button spacing */
 .website-logout-icon {
     margin-top: auto;
-    margin-bottom: 1rem;
+    margin-bottom: 2vh;
 }
 
+/* Expand/collapse arrow */
 .website-sidebar-expand-arrow {
     position: absolute;
-    top: 5.25rem;
+    top: 10vh;
     right: -1rem;
-    width: 2rem;
-    height: 2rem;
+    width: 2.5vw;
+    height: 2.5vw;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
     background-color: #ffffff;
     border: 0.15rem solid #BBD3CC;
     border-radius: 50%;
@@ -126,9 +173,18 @@ body {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1000;
     box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.15);
+    font-size: 1.2vw;
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+/* Show arrow only on hover state */
+.website-sidebar:not(.website-sidebar-collapsed):not(.website-sidebar-expanded) .website-sidebar-expand-arrow {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .website-sidebar-expand-arrow:hover {
@@ -136,30 +192,59 @@ body {
     transform: scale(1.1);
 }
 
+/* Main module area */
 .website-module {
     flex: 1;
     background-color: #f5f5f5;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 4vh 4vw;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .website-module div {
     text-align: center;
+    font-size: 1.5vw;
 }
 
+/* Button styles */
 .website-module button {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
+    margin-top: 2vh;
+    padding: 0.8vh 2vw;
     background-color: #BBD3CC;
     border: none;
     border-radius: 0.25rem;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1.2vw;
     transition: background-color 0.2s ease;
 }
 
 .website-module button:hover {
     background-color: #a8c4bc;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .website-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        z-index: 1000;
+    }
+    
+    .website-sidebar-collapsed {
+        transform: translateX(-100%);
+        width: 20rem;
+    }
+    
+    .website-sidebar-expanded {
+        transform: translateX(0);
+    }
+    
+    .website-module {
+        margin-left: 0;
+        width: 100%;
+    }
 }
