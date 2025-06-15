@@ -1,20 +1,31 @@
-// HOW TO USE Sidebar COMPONENT
-// import { Sidebar } from "<---Enter the path properly here--->"
+// HOW TO USE SIDEBAR
 // <div className="website-container">
-//   <Navbar />
+//   <Sidebar/>
 //   <div className="website-module">
-//      <--Enter your div/code here-->
+//     <--PUT YOUR CONTENT HERE--->
 //   </div>
 // </div>
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import zuntraSquareLogo from "../assets/zuntra_square_no_text.png"
 import zuntraLogo from "../assets/zuntra.png"
 
-export const Sidebar= ()=> {
-  const [sideBarStatus, setSidebar] = useState(0); //0 collapsed 1 hovered 2 expanded 
+export const Sidebar = () => {
+  const [sideBarStatus, setSidebar] = useState(0); //0 collapsed 1 hovered 2 expanded 3 pinned
   const [role, setRole] = useState("HR");
   const [active, setActive] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const sidebarItems = [
     {
@@ -83,17 +94,51 @@ export const Sidebar= ()=> {
         </svg>
       ),
     },
+    {
+      role: "EMP",
+      label: "Logout",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" viewBox="0 0 54 54">
+          <path fill="#000" d="M20.25 45.902a1.35 1.35 0 0 1 0-2.7H37.8a5.4 5.4 0 0 0 5.4-5.4v-21.6a5.4 5.4 0 0 0-5.4-5.4H20.25a1.35 1.35 0 0 1 0-2.7H37.8a8.1 8.1 0 0 1 8.1 8.1v21.6a8.1 8.1 0 0 1-8.1 8.1H20.25Zm-3.094-29.306a1.35 1.35 0 0 0-1.912 0l-9.45 9.45a1.349 1.349 0 0 0 0 1.911l9.45 9.45a1.353 1.353 0 0 0 1.912-1.911l-7.147-7.144h23.74a1.35 1.35 0 0 0 0-2.7H10.01l7.147-7.145a1.35 1.35 0 0 0 0-1.911Z" />
+        </svg>
+      ),
+    },
   ]
-  const handleMouseEnter = () => sideBarStatus === 0 && setSidebar(1);
-  const handleMouseLeave = () => (sideBarStatus === 1 || sideBarStatus === 2) && setSidebar(0);
-  const handleArrowClick = () => setSidebar(2);
-  const handlePinClick = () => (sideBarStatus === 2 ? setSidebar(3) : setSidebar(0));
-  const handleItemClick = (index) => setActive(index);
 
+  const handleMouseEnter = () => {
+    if (!isMobile && sideBarStatus === 0) setSidebar(1);
+  };
+
+  const handleMouseLeave = () => {
+    if (!isMobile && (sideBarStatus === 1 || sideBarStatus === 2)) setSidebar(0);
+  };
+
+  const handleArrowClick = () => {
+    if (isMobile) {
+      setSidebar(2);
+    } else {
+      setSidebar(2);
+    }
+  };
+
+  const handlePinClick = () => {
+    if (isMobile) {
+      setSidebar(0);
+    } else {
+      sideBarStatus === 2 ? setSidebar(3) : setSidebar(0);
+    }
+  };
+
+  const handleItemClick = (index) => {
+    setActive(index);
+    if (isMobile) {
+      setSidebar(0);
+    }
+  };
+
+  {/*<div className="website-container">*/}
+    {/* Sidebar */}
   return (
-    // <div className="website-container">
-    <>
-      {/* Sidebar */}
       <div
         className={`website-sidebar ${sideBarStatus === 0 ? 'website-sidebar-collapsed' : ''} ${sideBarStatus === 2 || sideBarStatus === 3 ? 'website-sidebar-expanded' : ''}`}
         onMouseEnter={handleMouseEnter}
@@ -104,19 +149,19 @@ export const Sidebar= ()=> {
             <img style={{ width: '3rem', height: '3rem' }} src={zuntraSquareLogo} alt="ZUNTRA" /> : <img style={{ width: '10rem', height: '3rem' }} src={zuntraLogo} alt="ZUNTRA" />
           }
         </div>
-        {sideBarStatus === 2 && (
-          <div className="website-sidebar-top-right-icon" onClick={handlePinClick}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
-              <path stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m1 19 4.63-4.631m.006-.005-2.78-2.78c-.954-.953.006-2.996 1.31-3.078 1.178-.075 3.905.352 4.812-.555l2.49-2.49c.617-.618.225-2 .185-2.762-.058-1.016 1.558-2.271 2.415-1.414l4.647 4.648c.86.858-.4 2.469-1.413 2.415-.762-.04-2.145-.432-2.763.185l-2.49 2.49c-.906.907-.48 3.633-.554 4.81-.082 1.306-2.125 2.266-3.08 1.31l-2.78-2.78Z" />
-            </svg>
-          </div>
-        )}
-        {sideBarStatus === 3 && (
-          <div className="website-sidebar-top-right-icon" onClick={handlePinClick}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="24" fill="none" viewBox="0 0 14 24">
-              <path fill="#000" d="M1.885 1.912c.15-.738.692-1.7 1.828-1.7h6.572c1.139-.001 1.68.962 1.829 1.7.08.4.077.813-.01 1.211-.085.387-.27.8-.608 1.104a8.992 8.992 0 0 1-.516.415l-.055.041a8.77 8.77 0 0 0-.551.449c-.374.338-.451.536-.453.622v3.522c0 .113.056.31.244.605a6.2 6.2 0 0 0 .759.919c.3.31.623.612.936.902l.034.033c.31.288.626.583.85.838.684.774.653 1.879.342 2.686-.311.806-1.046 1.664-2.154 1.664H7.75v5.805a.75.75 0 1 1-1.5 0v-5.805H3.068c-1.108 0-1.844-.857-2.154-1.664-.311-.806-.342-1.912.34-2.686.226-.255.542-.55.852-.838l.034-.033c.312-.29.636-.592.936-.902.313-.324.577-.634.76-.919.187-.295.242-.493.242-.606V5.754c0-.086-.078-.284-.453-.622a9 9 0 0 0-.551-.449l-.055-.041a8.999 8.999 0 0 1-.515-.415c-.34-.305-.524-.717-.61-1.103a2.953 2.953 0 0 1-.01-1.212Z" />
-            </svg>
 
+        {(sideBarStatus === 2 || sideBarStatus === 3) && (
+          <div className="website-sidebar-top-right-icon" onClick={handlePinClick}>
+            {isMobile ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+                <path stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m1 19 4.63-4.631m.006-.005-2.78-2.78c-.954-.953.006-2.996 1.31-3.078 1.178-.075 3.905.352 4.812-.555l2.49-2.49c.617-.618.225-2 .185-2.762-.058-1.016 1.558-2.271 2.415-1.414l4.647 4.648c.86.858-.4 2.469-1.413 2.415-.762-.04-2.145-.432-2.763.185l-2.49 2.49c-.906.907-.48 3.633-.554 4.81-.082 1.306-2.125 2.266-3.08 1.31l-2.78-2.78Z" />
+              </svg>
+            )}
           </div>
         )}
 
@@ -137,15 +182,8 @@ export const Sidebar= ()=> {
             ))}
         </div>
 
-        <div className="website-sidebar-icon website-logout-icon">
-          <div className="website-icon-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 960 960" fill="currentColor">
-              <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z" />
-            </svg>
-          </div>
-        </div>
-
-        {sideBarStatus === 1 && (
+        {/* Arrow button - always visible on mobile, only on hover for desktop */}
+        {(sideBarStatus === 1 || isMobile) && sideBarStatus !== 2 && sideBarStatus !== 3 && (
           <div
             className="website-sidebar-expand-arrow"
             onClick={handleArrowClick}
@@ -156,18 +194,18 @@ export const Sidebar= ()=> {
           </div>
         )}
       </div>
-      </>
-      // {/* Main Content */}
-      // <div className="website-module">
-      //   <div>
-      //     <h2>Module Content</h2>
-      //     <p>Current sidebar state: {["Collapsed", "Hovered (Arrow Visible)", "Expanded"][sideBarStatus]}</p>
-      //     <p>Current role: {role}</p>
-      //     <button onClick={() => setRole(role === "HR" ? "EMP" : "HR")}>
-      //       Switch to {role === "HR" ? "Employee" : "HR"} view
-      //     </button>
-      //   </div>
-      // </div>
-    // </div>
   );
 }
+{/* Main Content */}
+{/*<div className="website-module">
+  <div>
+    <h2>Module Content</h2>
+    <p>Current sidebar state: {["Collapsed", "Hovered (Arrow Visible)", "Expanded", "Pinned"][sideBarStatus]}</p>
+    <p>Current role: {role}</p>
+    <p>Device: {isMobile ? "Mobile/Tablet" : "Desktop"}</p>
+    <button onClick={() => setRole(role === "HR" ? "EMP" : "HR")}>
+      Switch to {role === "HR" ? "Employee" : "HR"} view
+    </button>
+  </div>
+</div>
+</div>*/}

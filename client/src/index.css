@@ -19,7 +19,7 @@ body {
     flex-direction: column;
     background-color: #BBD3CC;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: visible; /* Changed from visible to hidden for smooth transitions */
+    overflow: visible; /* Changed from hidden to visible for arrow visibility */
     min-height: 100vh;
     z-index: 10;
     width: 4.5rem; /* Default collapsed width */
@@ -76,6 +76,9 @@ body {
 /* Logo image transitions */
 .website-sidebar-logo img {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
 }
 
 /* Sidebar pages container */
@@ -166,6 +169,8 @@ body {
     height: 2.5vw;
     min-width: 1.5rem;
     min-height: 1.5rem;
+    max-width: 2.5rem;
+    max-height: 2.5rem;
     background-color: #ffffff;
     border: 0.15rem solid #BBD3CC;
     border-radius: 50%;
@@ -190,6 +195,14 @@ body {
 .website-sidebar-expand-arrow:hover {
     background-color: #f0f0f0;
     transform: scale(1.1);
+}
+
+/* Arrow icon color - make it green */
+.website-sidebar-expand-arrow svg {
+    color: #BBD3CC;
+    stroke: #BBD3CC;
+    width: 60%;
+    height: 60%;
 }
 
 /* Main module area */
@@ -224,27 +237,274 @@ body {
     background-color: #a8c4bc;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
+/* Mobile and Tablet Portrait Responsive adjustments */
+/* This now applies to screens smaller than 768px OR tablets in portrait mode */
+@media (max-width: 768px), (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+    html,
+    body {
+        font-size: 16px; /* Fixed font size for mobile */
+    }
+    
+    .website-container {
+        position: relative;
+    }
+    
     .website-sidebar {
         position: fixed;
         left: 0;
         top: 0;
         height: 100vh;
         z-index: 1000;
+        width: 0.5rem;
+        background-color: transparent;
+        overflow: visible; /* Keep overflow visible on mobile too */
     }
     
     .website-sidebar-collapsed {
-        transform: translateX(-100%);
-        width: 20rem;
+        width: 0.5rem;
+        background-color: transparent;
     }
     
     .website-sidebar-expanded {
-        transform: translateX(0);
+        width: 100vw;
+        background-color: #BBD3CC;
     }
     
+    /* Hide all content except arrow in collapsed mobile state */
+    .website-sidebar-collapsed .website-sidebar-logo,
+    .website-sidebar-collapsed .website-sidebar-pages-container,
+    .website-sidebar-collapsed .website-logout-icon,
+    .website-sidebar-collapsed .website-sidebar-top-right-icon {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+    
+    /* Show content when expanded */
+    .website-sidebar-expanded .website-sidebar-logo,
+    .website-sidebar-expanded .website-sidebar-pages-container,
+    .website-sidebar-expanded .website-logout-icon,
+    .website-sidebar-expanded .website-sidebar-top-right-icon {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition: opacity 0.3s ease 0.1s, visibility 0.3s ease 0.1s;
+    }
+    
+    /* Mobile arrow button - always visible */
+    .website-sidebar-expand-arrow {
+        opacity: 1;
+        transform: scale(1);
+        right: -1.5rem;
+        background-color: #BBD3CC;
+        border: 2px solid #ffffff;
+        width: 3rem;
+        height: 3rem;
+        min-width: 3rem;
+        min-height: 3rem;
+        max-width: 3rem;
+        max-height: 3rem;
+        top: 2vh;
+        font-size: 1rem;
+    }
+
+    /* Arrow icon color for mobile - make it white since background is green */
+    .website-sidebar-expand-arrow svg {
+        color: #ffffff;
+        stroke: #ffffff;
+        width: 50%;
+        height: 50%;
+    }
+    
+    /* Hide arrow when sidebar is expanded (show X instead) */
+    .website-sidebar-expanded .website-sidebar-expand-arrow {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+    
+    /* Top right X icon positioning for mobile */
+    .website-sidebar-expanded .website-sidebar-top-right-icon {
+        top: 2vh;
+        right: 2vw;
+        opacity: 1;
+        visibility: visible;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+    
+    /* Module adjustments */
+    .website-module {
+        margin-left: 0.5rem;
+        width: calc(100vw - 0.5rem);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* When sidebar is expanded, hide module */
+    .website-sidebar-expanded ~ .website-module {
+        width: 0;
+        opacity: 0;
+        overflow: hidden;
+        pointer-events: none;
+    }
+    
+    /* Adjust logo for mobile */
+    .website-sidebar-logo {
+        margin-top: 8vh;
+        margin-bottom: 6vh;
+        height: 10vh;
+        font-size: 1.5rem;
+    }
+    
+    .website-sidebar-logo img {
+        max-width: 80%;
+        max-height: 80%;
+    }
+    
+    /* Adjust icon and text sizes for mobile */
+    .website-sidebar-icon {
+        height: 10vh;
+        font-size: 1rem;
+    }
+    
+    .website-icon-wrapper {
+        width: 15vw;
+        font-size: 1.5rem;
+    }
+    
+    .website-label-wrapper {
+        font-size: 1.1rem;
+    }
+    
+    .website-module div {
+        font-size: 1.2rem;
+    }
+    
+    .website-module button {
+        font-size: 1rem;
+        padding: 1rem 2rem;
+    }
+}
+
+/* Tablet Landscape - Desktop behavior */
+/* This applies to tablets in landscape mode (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+    /* Use desktop-like behavior but with slightly adjusted sizes */
+    html,
+    body {
+        font-size: 1.2vw; /* Slightly larger base font for tablet */
+    }
+    
+    /* Sidebar behaves like desktop */
+    .website-sidebar {
+        position: relative; /* Not fixed like mobile */
+        width: 4.5rem;
+        background-color: #BBD3CC;
+    }
+    
+    .website-sidebar-collapsed {
+        width: 4.5rem;
+        background-color: #BBD3CC; /* Keep background color */
+    }
+    
+    .website-sidebar-expanded {
+        width: 20rem;
+        background-color: #BBD3CC;
+    }
+    
+    /* Show content normally (not hidden like mobile) */
+    .website-sidebar-collapsed .website-sidebar-logo,
+    .website-sidebar-collapsed .website-sidebar-pages-container,
+    .website-sidebar-collapsed .website-logout-icon {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+    
+    /* Arrow behavior like desktop - only show on hover */
+    .website-sidebar-expand-arrow {
+        width: 2.2rem;
+        height: 2.2rem;
+        min-width: 2.2rem;
+        min-height: 2.2rem;
+        max-width: 2.2rem;
+        max-height: 2.2rem;
+        background-color: #ffffff;
+        border: 0.15rem solid #BBD3CC;
+        font-size: 1rem;
+        opacity: 0;
+        transform: scale(0.8);
+        top: 10vh;
+        right: -1rem;
+    }
+    
+    /* Show arrow only on hover (desktop behavior) */
+    .website-sidebar:not(.website-sidebar-collapsed):not(.website-sidebar-expanded) .website-sidebar-expand-arrow {
+        opacity: 1;
+        transform: scale(1);
+    }
+    
+    .website-sidebar-expand-arrow svg {
+        color: #BBD3CC;
+        stroke: #BBD3CC;
+        width: 60%;
+        height: 60%;
+    }
+    
+    /* Module behaves like desktop */
     .website-module {
         margin-left: 0;
-        width: 100%;
+        width: auto;
+        flex: 1;
+        opacity: 1;
+        pointer-events: auto;
+    }
+    
+    /* Top right icon behavior like desktop */
+    .website-sidebar-expanded .website-sidebar-top-right-icon {
+        top: 1.5vh;
+        right: 1.5vw;
+        width: auto;
+        height: auto;
+        background-color: transparent;
+        border-radius: 0;
+        font-size: 1.8vw;
+    }
+    
+    /* Adjust sizes for tablet landscape */
+    .website-sidebar-logo {
+        margin-top: 2vh;
+        margin-bottom: 4vh;
+        height: 8vh;
+        font-size: 1.8vw;
+    }
+    
+    .website-sidebar-icon {
+        height: 8vh;
+        font-size: 1.1vw;
+    }
+    
+    .website-icon-wrapper {
+        width: 4.5rem;
+        font-size: 1.4vw;
+    }
+    
+    .website-label-wrapper {
+        font-size: 1vw;
+    }
+    
+    .website-module div {
+        font-size: 1.3vw;
+    }
+    
+    .website-module button {
+        font-size: 1vw;
+        padding: 0.8vh 2vw;
     }
 }
