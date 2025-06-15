@@ -136,8 +136,8 @@ export const Sidebar = () => {
     }
   };
 
-  {/*<div className="website-container">*/}
-    {/* Sidebar */}
+  // <div className="website-container">
+  {/* Sidebar */}
   return (
       <div
         className={`website-sidebar ${sideBarStatus === 0 ? 'website-sidebar-collapsed' : ''} ${sideBarStatus === 2 || sideBarStatus === 3 ? 'website-sidebar-expanded' : ''}`}
@@ -150,7 +150,7 @@ export const Sidebar = () => {
           }
         </div>
 
-        {(sideBarStatus === 2 || sideBarStatus === 3) && (
+        {(sideBarStatus === 2) && (
           <div className="website-sidebar-top-right-icon" onClick={handlePinClick}>
             {isMobile ? (
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -158,8 +158,22 @@ export const Sidebar = () => {
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 20 20">
                 <path stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m1 19 4.63-4.631m.006-.005-2.78-2.78c-.954-.953.006-2.996 1.31-3.078 1.178-.075 3.905.352 4.812-.555l2.49-2.49c.617-.618.225-2 .185-2.762-.058-1.016 1.558-2.271 2.415-1.414l4.647 4.648c.86.858-.4 2.469-1.413 2.415-.762-.04-2.145-.432-2.763.185l-2.49 2.49c-.906.907-.48 3.633-.554 4.81-.082 1.306-2.125 2.266-3.08 1.31l-2.78-2.78Z" />
+              </svg>
+            )}
+          </div>
+        )}
+        {(sideBarStatus === 3) && (
+          <div className="website-sidebar-top-right-icon" onClick={handlePinClick}>
+            {isMobile ? (
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            ) : (
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 34 34">
+                <path fill="#000" d="M11.885 8.912c.15-.738.692-1.7 1.828-1.7h6.572c1.139-.001 1.68.962 1.829 1.7.08.4.078.813-.01 1.211-.085.387-.27.8-.608 1.104a8.967 8.967 0 0 1-.516.415l-.055.041a9.04 9.04 0 0 0-.551.449c-.374.338-.451.536-.453.622v3.522c0 .113.056.31.244.605a6.2 6.2 0 0 0 .759.919c.3.31.623.612.936.902l.034.033c.31.288.626.583.85.838.684.774.653 1.879.342 2.686-.311.806-1.046 1.664-2.154 1.664H17.75v5.805a.75.75 0 1 1-1.5 0v-5.805h-3.182c-1.108 0-1.844-.857-2.154-1.664-.311-.806-.341-1.912.34-2.686.226-.255.543-.55.852-.838l.034-.033c.312-.29.636-.592.936-.902.313-.324.577-.634.76-.919.187-.295.242-.493.242-.606v-3.521c0-.086-.078-.284-.453-.622a9.012 9.012 0 0 0-.552-.449l-.054-.041a8.967 8.967 0 0 1-.515-.415c-.34-.305-.524-.717-.61-1.103a2.953 2.953 0 0 1-.01-1.212Z" />
               </svg>
             )}
           </div>
@@ -197,7 +211,7 @@ export const Sidebar = () => {
   );
 }
 {/* Main Content */}
-{/*<div className="website-module">
+{/* <div className="website-module">
   <div>
     <h2>Module Content</h2>
     <p>Current sidebar state: {["Collapsed", "Hovered (Arrow Visible)", "Expanded", "Pinned"][sideBarStatus]}</p>
@@ -208,4 +222,4 @@ export const Sidebar = () => {
     </button>
   </div>
 </div>
-</div>*/}
+</div> */}

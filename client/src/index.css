@@ -2,7 +2,8 @@ html,
 body {
     margin: 0;
     padding: 0;
-    font-size: 1vw; /* Base font-size scales with viewport */
+    font-size: 1vw;
+    font-family: 'Poppins', sans-serif;
 }
 
 .website-container {
@@ -12,35 +13,30 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* Sidebar container */
 .website-sidebar {
     position: relative;
     display: flex;
     flex-direction: column;
     background-color: #BBD3CC;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: visible; /* Changed from hidden to visible for arrow visibility */
+    overflow: visible;
     min-height: 100vh;
     z-index: 10;
-    width: 4.5rem; /* Default collapsed width */
+    width: 4.5rem;
 }
 
-/* Collapsed sidebar state */
 .website-sidebar-collapsed {
     width: 4.5rem;
 }
 
-/* Hovered sidebar state (intermediate) */
 .website-sidebar:not(.website-sidebar-collapsed):not(.website-sidebar-expanded) {
     width: 4.5rem;
 }
 
-/* Expanded sidebar state */
 .website-sidebar-expanded {
-    width: 20rem;
+    width: 21rem;
 }
 
-/* Top right icon (e.g., close or menu) */
 .website-sidebar-top-right-icon {
     position: absolute;
     top: 1.5vh;
@@ -52,7 +48,6 @@ body {
     opacity: 0;
 }
 
-/* Show top right icon only when expanded */
 .website-sidebar-expanded .website-sidebar-top-right-icon {
     opacity: 1;
 }
@@ -61,7 +56,6 @@ body {
     transform: scale(1.1);
 }
 
-/* Sidebar logo area */
 .website-sidebar-logo {
     height: 8vh;
     display: flex;
@@ -73,7 +67,6 @@ body {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Logo image transitions */
 .website-sidebar-logo img {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     max-width: 100%;
@@ -81,7 +74,6 @@ body {
     object-fit: contain;
 }
 
-/* Sidebar pages container */
 .website-sidebar-pages-container {
     flex: 1;
     display: flex;
@@ -89,54 +81,51 @@ body {
     gap: 3vh;
 }
 
-/* Individual sidebar icon block */
 .website-sidebar-icon {
     display: flex;
     align-items: center;
     height: 8vh;
-    color: rgba(0, 0, 0, 0.3);
+    color: rgba(0, 0, 0, 0.5);
     cursor: pointer;
     transition: background-color 0.2s ease, color 0.2s ease;
     position: relative;
-    font-size: 1.2vw;
+    font-size: 1.2vh;
     overflow: hidden;
 }
 
-/* Icon wrapper (actual icon inside sidebar) */
 .website-icon-wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 4.5rem; /* Fixed width to match collapsed sidebar */
+    width: 4.5rem;
     height: 100%;
     flex-shrink: 0;
     font-size: 1.5vw;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Label wrapper for icons */
 .website-label-wrapper {
     flex: 1;
     white-space: nowrap;
     overflow: hidden;
     padding-left: 0.5rem;
-    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                 transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
                 width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 1.1vw;
+    font-size: 1.2vw;
+    font-weight: 500;
     opacity: 0;
     transform: translateX(-10px);
     width: 0;
 }
 
-/* Show labels when expanded */
 .website-sidebar-expanded .website-label-wrapper {
     opacity: 1;
     transform: translateX(0);
     width: auto;
+
 }
 
-/* Hide labels when collapsed */
 .website-sidebar-collapsed .website-label-wrapper {
     opacity: 0;
     transform: translateX(-10px);
@@ -144,7 +133,6 @@ body {
     padding-left: 0;
 }
 
-/* Hover and active states */
 .website-sidebar-icon:hover {
     background-color: rgba(217, 217, 217, 0.3);
 }
@@ -154,17 +142,15 @@ body {
     background-color: rgba(217, 217, 217, 0.7);
 }
 
-/* Logout button spacing */
 .website-logout-icon {
     margin-top: auto;
     margin-bottom: 2vh;
 }
 
-/* Expand/collapse arrow */
 .website-sidebar-expand-arrow {
     position: absolute;
     top: 10vh;
-    right: -1rem;
+    right: -1.5rem;
     width: 2.5vw;
     height: 2.5vw;
     min-width: 1.5rem;
@@ -186,7 +172,6 @@ body {
     transform: scale(0.8);
 }
 
-/* Show arrow only on hover state */
 .website-sidebar:not(.website-sidebar-collapsed):not(.website-sidebar-expanded) .website-sidebar-expand-arrow {
     opacity: 1;
     transform: scale(1);
@@ -197,7 +182,6 @@ body {
     transform: scale(1.1);
 }
 
-/* Arrow icon color - make it green */
 .website-sidebar-expand-arrow svg {
     color: #BBD3CC;
     stroke: #BBD3CC;
@@ -205,7 +189,6 @@ body {
     height: 60%;
 }
 
-/* Main module area */
 .website-module {
     flex: 1;
     background-color: #f5f5f5;
@@ -221,7 +204,6 @@ body {
     font-size: 1.5vw;
 }
 
-/* Button styles */
 .website-module button {
     margin-top: 2vh;
     padding: 0.8vh 2vw;
@@ -237,18 +219,16 @@ body {
     background-color: #a8c4bc;
 }
 
-/* Mobile and Tablet Portrait Responsive adjustments */
-/* This now applies to screens smaller than 768px OR tablets in portrait mode */
 @media (max-width: 768px), (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
     html,
     body {
-        font-size: 16px; /* Fixed font size for mobile */
+        font-size: 16px;
     }
-    
+
     .website-container {
         position: relative;
     }
-    
+
     .website-sidebar {
         position: fixed;
         left: 0;
@@ -257,20 +237,19 @@ body {
         z-index: 1000;
         width: 0.5rem;
         background-color: transparent;
-        overflow: visible; /* Keep overflow visible on mobile too */
+        overflow: visible;
     }
-    
+
     .website-sidebar-collapsed {
         width: 0.5rem;
         background-color: transparent;
     }
-    
+
     .website-sidebar-expanded {
         width: 100vw;
         background-color: #BBD3CC;
     }
-    
-    /* Hide all content except arrow in collapsed mobile state */
+
     .website-sidebar-collapsed .website-sidebar-logo,
     .website-sidebar-collapsed .website-sidebar-pages-container,
     .website-sidebar-collapsed .website-logout-icon,
@@ -279,8 +258,7 @@ body {
         visibility: hidden;
         pointer-events: none;
     }
-    
-    /* Show content when expanded */
+
     .website-sidebar-expanded .website-sidebar-logo,
     .website-sidebar-expanded .website-sidebar-pages-container,
     .website-sidebar-expanded .website-logout-icon,
@@ -290,8 +268,7 @@ body {
         pointer-events: auto;
         transition: opacity 0.3s ease 0.1s, visibility 0.3s ease 0.1s;
     }
-    
-    /* Mobile arrow button - always visible */
+
     .website-sidebar-expand-arrow {
         opacity: 1;
         transform: scale(1);
@@ -308,22 +285,19 @@ body {
         font-size: 1rem;
     }
 
-    /* Arrow icon color for mobile - make it white since background is green */
     .website-sidebar-expand-arrow svg {
         color: #ffffff;
         stroke: #ffffff;
         width: 50%;
         height: 50%;
     }
-    
-    /* Hide arrow when sidebar is expanded (show X instead) */
+
     .website-sidebar-expanded .website-sidebar-expand-arrow {
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
     }
-    
-    /* Top right X icon positioning for mobile */
+
     .website-sidebar-expanded .website-sidebar-top-right-icon {
         top: 2vh;
         right: 2vw;
@@ -338,87 +312,79 @@ body {
         justify-content: center;
         font-size: 1.2rem;
     }
-    
-    /* Module adjustments */
+
     .website-module {
         margin-left: 0.5rem;
         width: calc(100vw - 0.5rem);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
-    /* When sidebar is expanded, hide module */
+
     .website-sidebar-expanded ~ .website-module {
         width: 0;
         opacity: 0;
         overflow: hidden;
         pointer-events: none;
     }
-    
-    /* Adjust logo for mobile */
+
     .website-sidebar-logo {
-        margin-top: 8vh;
-        margin-bottom: 6vh;
-        height: 10vh;
+        margin-top: 4vh;
+        margin-bottom: 3vh;
+        height: 8vh;
         font-size: 1.5rem;
     }
-    
+
     .website-sidebar-logo img {
         max-width: 80%;
         max-height: 80%;
     }
-    
-    /* Adjust icon and text sizes for mobile */
+
     .website-sidebar-icon {
-        height: 10vh;
+        height: 7vh;
         font-size: 1rem;
+        margin-bottom: 1vh;
     }
-    
+
     .website-icon-wrapper {
         width: 15vw;
         font-size: 1.5rem;
     }
-    
+
     .website-label-wrapper {
         font-size: 1.1rem;
     }
-    
+
     .website-module div {
         font-size: 1.2rem;
     }
-    
+
     .website-module button {
         font-size: 1rem;
         padding: 1rem 2rem;
     }
 }
 
-/* Tablet Landscape - Desktop behavior */
-/* This applies to tablets in landscape mode (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
-    /* Use desktop-like behavior but with slightly adjusted sizes */
     html,
     body {
-        font-size: 1.2vw; /* Slightly larger base font for tablet */
+        font-size: 1.2vw;
     }
-    
-    /* Sidebar behaves like desktop */
+
     .website-sidebar {
-        position: relative; /* Not fixed like mobile */
+        position: relative;
         width: 4.5rem;
         background-color: #BBD3CC;
     }
-    
+
     .website-sidebar-collapsed {
         width: 4.5rem;
-        background-color: #BBD3CC; /* Keep background color */
+        background-color: #BBD3CC;
     }
-    
+
     .website-sidebar-expanded {
         width: 20rem;
         background-color: #BBD3CC;
     }
-    
-    /* Show content normally (not hidden like mobile) */
+
     .website-sidebar-collapsed .website-sidebar-logo,
     .website-sidebar-collapsed .website-sidebar-pages-container,
     .website-sidebar-collapsed .website-logout-icon {
@@ -426,8 +392,7 @@ body {
         visibility: visible;
         pointer-events: auto;
     }
-    
-    /* Arrow behavior like desktop - only show on hover */
+
     .website-sidebar-expand-arrow {
         width: 2.2rem;
         height: 2.2rem;
@@ -443,21 +408,19 @@ body {
         top: 10vh;
         right: -1rem;
     }
-    
-    /* Show arrow only on hover (desktop behavior) */
+
     .website-sidebar:not(.website-sidebar-collapsed):not(.website-sidebar-expanded) .website-sidebar-expand-arrow {
         opacity: 1;
         transform: scale(1);
     }
-    
+
     .website-sidebar-expand-arrow svg {
         color: #BBD3CC;
         stroke: #BBD3CC;
         width: 60%;
         height: 60%;
     }
-    
-    /* Module behaves like desktop */
+
     .website-module {
         margin-left: 0;
         width: auto;
@@ -465,8 +428,7 @@ body {
         opacity: 1;
         pointer-events: auto;
     }
-    
-    /* Top right icon behavior like desktop */
+
     .website-sidebar-expanded .website-sidebar-top-right-icon {
         top: 1.5vh;
         right: 1.5vw;
@@ -476,33 +438,32 @@ body {
         border-radius: 0;
         font-size: 1.8vw;
     }
-    
-    /* Adjust sizes for tablet landscape */
+
     .website-sidebar-logo {
         margin-top: 2vh;
         margin-bottom: 4vh;
         height: 8vh;
         font-size: 1.8vw;
     }
-    
+
     .website-sidebar-icon {
         height: 8vh;
         font-size: 1.1vw;
     }
-    
+
     .website-icon-wrapper {
         width: 4.5rem;
         font-size: 1.4vw;
     }
-    
+
     .website-label-wrapper {
         font-size: 1vw;
     }
-    
+
     .website-module div {
         font-size: 1.3vw;
     }
-    
+
     .website-module button {
         font-size: 1vw;
         padding: 0.8vh 2vw;
