@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Sidebar } from "./components/Sidebar"
-import { CourseCard } from "./components/courseManagement/CourseCard"
 import { NotFound } from './pages/NotFound';
 import { HrProjectManagement } from './pages/HrProjectManagement';
 import './App.css'

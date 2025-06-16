@@ -1,7 +1,8 @@
 import React from 'react'
 import { Sidebar } from "../components/Sidebar"
-import { EmpCard } from '../components/employeeManagement/EmpCard'
+
 import { EmpNavbar } from '../components/employeeManagement/EmpNavbar'
+import { EmpCard } from '../components/employeeManagement/EmpCard'
 export const HrEmployeeManagement = () => {
   return (
     <div className="website-container">
@@ -9,7 +10,7 @@ export const HrEmployeeManagement = () => {
       <div className="website-module">
         <EmpNavbar />
         <div className="project-cards-container">
-          <EmpCard />
+          <EmpCard/>
         </div>
         <style jsx>{`
         .project-cards-container{
