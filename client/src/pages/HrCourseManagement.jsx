@@ -8,7 +8,7 @@ export const HrCourseManagement = () => {
       <div className="website-module">
         <CourseNavbar />
         <div className="project-cards-container">
-          <ProjectCard />
+          <CourseCard />
         </div>
         <style jsx>{`
         .project-cards-container{
