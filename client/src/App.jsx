@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Sidebar } from "./components/Sidebar"
+import { Login } from "./pages/Login";
 import { NotFound } from './pages/NotFound';
 import { HrProjectManagement } from './pages/HrProjectManagement';
-import './App.css'
 import { HrCourseManagement } from './pages/HrCourseManagement';
 import { HrEmployeeManagement } from './pages/HrEmployeeManagement';
+import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -15,7 +15,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="*" element={<NotFound />} />
-        <Route path="/" element={<Sidebar/>}></Route>
+        <Route path="/" element={<Login/>}></Route>
         <Route path="/project" element={<HrProjectManagement/>}></Route>
         <Route path="/course" element={<HrCourseManagement/>}></Route>
         <Route path="/employee" element={<HrEmployeeManagement/>}></Route>
