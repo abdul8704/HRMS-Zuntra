@@ -1,7 +1,18 @@
-const getAllCourseDetails = async () => {};
+const courseDetails = require("../models/courseDetails")
 
-const addNewCourse = async (courseData) => {};
+const getAllCourseDetails = async () => { };
 
-const getCourseIntroById = async (courseid) => {};
+const addNewCourse = async (courseData) => {
+  try {
+    const newCourse = await CourseDetails.create(courseData);
+    return { success: true, data: newCourse };
+  } catch (error) {
+    return { success: false, error };
+  }
+};
 
-const getCourseContentById = async (courseid) => {};
+const getCourseIntroById = async (courseid) => { };
+
+const getCourseContentById = async (courseid) => { };
+
+module.exports = {addNewCourse};
