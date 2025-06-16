@@ -5,6 +5,8 @@ import { CourseCard } from "./components/courseManagement/CourseCard"
 import { NotFound } from './pages/NotFound';
 import { HrProjectManagement } from './pages/HrProjectManagement';
 import './App.css'
+import { HrCourseManagement } from './pages/HrCourseManagement';
+import { HrEmployeeManagement } from './pages/HrEmployeeManagement';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -16,7 +18,8 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Sidebar/>}></Route>
         <Route path="/project" element={<HrProjectManagement/>}></Route>
-        <Route path="/coursecard" element={<CourseCard/>}></Route>
+        <Route path="/course" element={<HrCourseManagement/>}></Route>
+        <Route path="/employee" element={<HrEmployeeManagement/>}></Route>
       </Routes>
     </BrowserRouter>
     </>
