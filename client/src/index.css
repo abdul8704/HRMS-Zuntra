@@ -195,7 +195,7 @@ body {
     align-items: center;
     justify-content: center;
     background-color: #f5f5f5;
-    width: 100%;
+    flex:1;
     padding: 4vh 4vw;
     transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
