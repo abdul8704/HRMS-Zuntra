@@ -13,7 +13,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="*" element={<NotFound />} />
-        <Route path="/" element={<Sidebar/>}></Route>
+        {/* <Route path="/" element={<Sidebar/>}></Route> */}
         <Route path="/coursecard" element={<CourseCard/>}></Route>
       </Routes>
     </BrowserRouter>
