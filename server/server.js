@@ -4,10 +4,20 @@ const app = express();
 require('dotenv').config();
 
 const hrRoutes = require('./routes/hr');
+const courseRouter = require('./routes/courseRoutes')
+const authRouter = require('./routes/authRoutes')
+const meetingRouter = require('./routes/meetingRoutes')
+const taskRouter = require('./routes/taskRoutes')
+const projectRouter = require('./routes/projectRoutes')
 
 app.use(express.json());
 
-app.use('/hr', hrRoutes);
+app.use("/auth", authRouter)
+app.use("/course", courseRouter)
+app.use("/meeting", meetingRouter)
+app.use("/task", taskRouter)
+app.use("/project", projectRouter)
+
 
 const start = async () => {
     await connectDB(process.env.MONGO_URI);
