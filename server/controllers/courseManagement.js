@@ -1,9 +1,10 @@
-const addNewCourse = require("../services/addNewCourse"); // adjust path as needed
+const asyncHandler=require('express-async-handler')
+const courseService = require("../services/courseService"); // adjust path as needed
 
-const createCourseController = async (req, res) => {
+const createCourseController = asyncHandler(async (req, res) => {
   const courseData = req.body;
 
-  const result = await addNewCourse(courseData);
+  const result = await courseService.addNewCourse(courseData);
 
   if (result.success) {
     res.status(201).json({
@@ -14,6 +15,6 @@ const createCourseController = async (req, res) => {
     res.status(404);
     throw new Error("Failed to create course")
     }
-};
+});
 
 module.exports = createCourseController;

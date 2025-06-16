@@ -1,4 +1,4 @@
-const User = requre("../models/userDetails.js")
+const User = require("../models/userDetails.js")
 const bcrypt = require('bcrypt')
 require('dotenv').config()
 
