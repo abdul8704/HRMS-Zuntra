@@ -8,7 +8,7 @@ const handleLogin = async (req, res) => {
             return res.status(400).json({ success: false, message: "invalid input" })
     
     const verifyLogin = await authService.verifyLogin(email, password)
-
+    console.log(verifyLogin)
     if(verifyLogin.success === true){
         // TODO: generate and send token
 
@@ -20,6 +20,13 @@ const handleLogin = async (req, res) => {
 
 }
 
-module.exports = {
-    handleLogin
+const signUpHandler = async (req, res) => {
+    const { email, password, name, phoneNum } = req.body;
+    await authService.addNewUser(req.body);
+    return res.status(201).json({ success: true, mesage: "DONEE" })
 }
+
+module.exports = {
+    handleLogin,
+    signUpHandler,
+};
