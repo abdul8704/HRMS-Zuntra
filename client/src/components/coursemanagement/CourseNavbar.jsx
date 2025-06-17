@@ -13,8 +13,7 @@ const Navbar = () => {
 
       {/* Right-side Search bar */}
       <div style={styles.searchContainer}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
+        <svg xmlns="http://www.w3.org/2000/svg"
           height="20px"
           viewBox="0 0 24 24"
           width="20px"
@@ -44,9 +43,10 @@ export const CourseNavbar = () => {
   const [active, setActive] = useState(0);
 
   const navItems = [
-    { label: 'Courses', icon: '📘' },
-    { label: 'Create Course', icon: '➕' },
-    { label: 'Add Course', icon: '📝' },
+    { label: 'Courses' },
+    { label: 'Create Course'},
+    { label: 'Add Course' },
+    { label: ''}
   ];
 
   return (
