@@ -6,6 +6,7 @@ import { HrProjectManagement } from './pages/HrProjectManagement';
 import { HrCourseManagement } from './pages/HrCourseManagement';
 import { HrEmployeeManagement } from './pages/HrEmployeeManagement';
 import './App.css'
+import './index.css'
 
 function App() {
   const [count, setCount] = useState(0)
