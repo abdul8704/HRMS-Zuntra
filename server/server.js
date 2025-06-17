@@ -12,6 +12,7 @@ const projectRouter = require('./routes/projectRoutes')
 const employeeRouter = require('./routes/employeeRoutes')
 
 const errorHandler=require('./middlewares/errorHandler')
+
 app.use(express.json());
 app.use(errorHandler);
 app.use("/auth", authRouter)
