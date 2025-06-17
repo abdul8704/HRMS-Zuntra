@@ -9,7 +9,6 @@ const sessionSchema = new mongoose.Schema({
     },
     logoutTime: {
         type: Date,
-        required: true,
     },
 });
 
