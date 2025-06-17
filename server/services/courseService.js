@@ -15,4 +15,5 @@ const getCourseIntroById = async (courseid) => { };
 
 const getCourseContentById = async (courseid) => { };
 
-module.exports = {addNewCourse};
+
+module.exports = {addNewCourse, getAllCourseDetails, getCourseIntroById, getCourseContentById};
