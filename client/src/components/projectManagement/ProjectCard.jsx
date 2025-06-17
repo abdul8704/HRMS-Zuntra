@@ -1,5 +1,5 @@
 import React from "react";
-// import { FaPen, FaTrash, FaCrown } from "react-icons/fa";
+import { FaPen, FaTrash, FaCrown } from "react-icons/fa";
 
 export const ProjectCard = () => {
   const styles = {

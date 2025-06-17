@@ -118,4 +118,30 @@ const getCourseDetails = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = {createCourseIntroController,createCourseContentController,getCourseDetails};
+const getCourseContentId = asyncHandler(async(req,res)=>{
+  const result = await courseService.getCourseContentById(req.params.id);
+    if (result.success) {
+    res.status(200).json({
+      message: "Course content fetched successfully",
+      courses: result.data,
+    });
+  } else {
+    res.status(500);
+    throw new Error("Failed to fetch course details");
+  }
+});
+
+const getCourseIntroId = asyncHandler(async(req,res)=>{
+  const result = await courseService.getCourseIntroById(req.params.id);
+    if (result.success) {
+    res.status(200).json({
+      message: "Course content fetched successfully",
+      courses: result.data,
+    });
+  } else {
+    res.status(500);
+    throw new Error("Failed to fetch course details");
+  }
+});
+
+module.exports = {createCourseIntroController,createCourseContentController,getCourseDetails,getCourseContentId,getCourseIntroId};
