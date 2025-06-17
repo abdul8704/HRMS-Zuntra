@@ -2,12 +2,12 @@ const courseDetails = require("../models/courseDetails")
 const courseContent = require("../models/courseContent")
 
 const getAllCourseDetails = async () => {
-  try{
+  try {
     const courseData = await courseDetails.find();
-    return {success:true,data:courseData}
+    return { success: true, data: courseData }
   }
-  catch(error){
-    return {success:false,error}
+  catch (error) {
+    return { success: false, error }
   }
 };
 
@@ -20,12 +20,28 @@ const addNewCourse = async (courseData) => {
   }
 };
 
-const getCourseIntroById = async (courseid) => { };
+const getCourseIntroById = async (courseid) => {
+  try {
+    const courseIntro = await courseDetails.find({courseId:courseid});
+    return { success: true, data: courseIntro }
+  }
+  catch (error) {
+    return { success: false, error }
+  }
+};
 
-const getCourseContentById = async (courseid) => { };
+const getCourseContentById = async (courseid) => {
+  try {
+    const content = await courseContent.find({courseId:courseid});
+    return { success: true, data: content }
+  }
+  catch (error) {
+    return { success: false, error }
+  }
+};
 
-const addCourseContent  = async (courseContents)=>{
-    try {
+const addCourseContent = async (courseContents) => {
+  try {
     const newCourseContent = await courseContent.create(courseContents);
     return { success: true, data: newCourseContent };
   } catch (error) {
@@ -33,4 +49,4 @@ const addCourseContent  = async (courseContents)=>{
   }
 };
 
-module.exports = {addNewCourse, getAllCourseDetails, getCourseIntroById, getCourseContentById, addCourseContent};
+module.exports = { addNewCourse, getAllCourseDetails, getCourseIntroById, getCourseContentById, addCourseContent };

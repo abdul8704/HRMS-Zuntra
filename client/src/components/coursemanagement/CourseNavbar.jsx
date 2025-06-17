@@ -1,14 +1,32 @@
-import React, { useState } from 'react';
+import React from 'react';
+
 const Navbar = () => {
   return (
-    <div style={styles.navItems}>
-      <button style={styles.navButton}>Courses</button>
-      <button style={styles.navButton}>Create Course</button>
-      <button style={styles.navButton}>Add Course</button>
+    <div style={styles.navBar}>
+      {/* Navigation Buttons */}
+      <div style={styles.navLeft}>
+        <button style={styles.navButton}>Courses</button>
+        <button style={styles.navButton}>Create Course</button>
+        <button style={styles.navButton}>Add Course</button>
+      </div>
 
+      {/* Search Bar */}
       <div style={styles.searchContainer}>
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
-        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          height="20px"
+          viewBox="0 0 24 24"
+          width="20px"
+          fill="#888"
+          style={styles.searchIcon}
+        >
+          <path d="M0 0h24v24H0V0z" fill="none" />
+          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 
+                   6.5 6.5 0 109.5 16c1.61 0 3.09-.59 
+                   4.23-1.57l.27.28v.79l5 5L20.49 
+                   19l-5-5zm-6 0C8.01 14 6 11.99 
+                   6 9.5S8.01 5 10.5 5 15 7.01 15 
+                   9.5 12.99 14 10.5 14z" />
         </svg>
         <input
           type="text"
@@ -20,64 +38,52 @@ const Navbar = () => {
   );
 };
 
-export const CourseNavbar= () => {
-  const [active, setActive] = useState('Course');
-
-  return (
-    <>
-      <div className='course-navbar'>
-        <ul>
-          {navItems.map((item, index) => (
-            <li
-              key={index}
-              className={active === index ? 'active' : ''}
-              onClick={() => setActive(index)}
-            >
-              <span className='course-icon'>{item.icon}</span>
-              {item.label}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <style jsx>{`
-        .course-navbar {
-          background-color: #BBD3CC;
-          border-radius: 0.75rem;
-          width: 100%;
-        }
-
-        .course-navbar ul {
-          list-style: none;
-          display: flex;
-          width: 100%;
-          margin: 0;
-          padding: 0;
-        }
-
-        .course-navbar li {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          font-weight: 500;
-          padding: 1rem 0;
-          border-radius: 0.5rem;
-          transition: background 0.2s ease-in-out;
-          user-select: none;
-        }
-
-        .cr-navbar li:hover {
-          background-color: #e0e0e0;
-        }
-
-        .course-navbar li.active {
-          background-color: #d0d0d0;
-        }
-      `}</style>
-    </>
-  );
+const styles = {
+  navBar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '15px 30px',
+    backgroundColor: '#f5f5f5',
+    borderRadius: '12px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+    flexWrap: 'wrap',
+    gap: '10px',
+  },
+  navLeft: {
+    display: 'flex',
+    gap: '15px',
+    flexWrap: 'wrap',
+  },
+  navButton: {
+    padding: '10px 16px',
+    border: 'none',
+    backgroundColor: '#1abc9c',
+    color: '#fff',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'background-color 0.2s',
+  },
+  searchContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: '#e0e0e0',
+    borderRadius: '20px',
+    padding: '6px 12px',
+    minWidth: '220px',
+  },
+  searchIcon: {
+    marginRight: '8px',
+  },
+  searchInput: {
+    border: 'none',
+    outline: 'none',
+    backgroundColor: 'transparent',
+    fontSize: '14px',
+    width: '100%',
+  },
 };
 
+export default Navbar;
 
