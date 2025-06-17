@@ -1,7 +1,7 @@
 import React from "react";
-import { FaPen, FaTrash, FaCrown } from "react-icons/fa";
+// import { FaPen, FaTrash, FaCrown } from "react-icons/fa";
 
-const ProjectCard = () => {
+export const ProjectCard = () => {
   const styles = {
     "ProjectCard-card": {
       backgroundColor: "#f4b6b6",
@@ -125,4 +125,3 @@ const ProjectCard = () => {
   );
 };
 
-export default ProjectCard;
