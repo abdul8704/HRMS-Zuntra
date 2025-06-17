@@ -9,14 +9,18 @@ const authRouter = require('./routes/authRoutes')
 const meetingRouter = require('./routes/meetingRoutes')
 const taskRouter = require('./routes/taskRoutes')
 const projectRouter = require('./routes/projectRoutes')
+const employeeRouter = require('./routes/employeeRoutes')
+
+const errorHandler=require('./middlewares/errorHandler')
 
 app.use(express.json());
-
+app.use(errorHandler);
 app.use("/auth", authRouter)
 app.use("/course", courseRouter)
 app.use("/meeting", meetingRouter)
 app.use("/task", taskRouter)
 app.use("/project", projectRouter)
+app.use("/employee", employeeRouter)
 
 
 const start = async () => {

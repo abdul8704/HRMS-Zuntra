@@ -3,12 +3,13 @@ import { Sidebar } from "../components/Sidebar"
 import { ProjectCard } from '../components/projectManagement/ProjectCard'
 import { ProjectNavbar } from '../components/projectManagement/ProjectNavbar'
 import { TaskCard } from '../components/projectManagement/TaskCard'
+import { TaskNavbar } from '../components/projectManagement/TaskNavbar'
 export const HrProjectManagement = () => {
   return (
     <div className="website-container">
       <Sidebar />
       <div className="website-module">
-        <ProjectNavbar />
+        <TaskNavbar/>
         <div className="project-cards-container">
           <ProjectCard />
           <TaskCard />
