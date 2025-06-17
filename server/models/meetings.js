@@ -1,6 +1,12 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const meetingSchema = new mongoose.Schema({
+    projectId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "project",
+        required: true,
+    },
+    
     meetingTitle: {
         type: String,
         required: true,
@@ -27,28 +33,30 @@ const meetingSchema = new mongoose.Schema({
         required: true,
         trim: true,
         validate: {
-          validator: function (v) {
-            return /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/i.test(v);
-          },
-          message: props => `${props.value} is not a valid 12-hour time format (HH:MM AM/PM)!`
-        }
-      },
-      meetEndTime: {
+            validator: function (v) {
+                return /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/i.test(v);
+            },
+            message: (props) =>
+                `${props.value} is not a valid 12-hour time format (HH:MM AM/PM)!`,
+        },
+    },
+    meetEndTime: {
         type: String,
         required: true,
         trim: true,
         validate: {
-          validator: function (v) {
-            return /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/i.test(v);
-          },
-          message: props => `${props.value} is not a valid 12-hour time format (HH:MM AM/PM)!`
-        }
-      },
-      
+            validator: function (v) {
+                return /^(0[1-9]|1[0-2]):[0-5][0-9] (AM|PM)$/i.test(v);
+            },
+            message: (props) =>
+                `${props.value} is not a valid 12-hour time format (HH:MM AM/PM)!`,
+        },
+    },
+
     meetVenue: {
         type: String,
         required: true,
     },
 });
 
-module.exports = mongoose.model("meetings", meetingSchema)
+module.exports = mongoose.model("meetingDetails", meetingSchema);

@@ -1,0 +1,48 @@
+// models/Attendance.js
+
+const mongoose = require("mongoose");
+
+const sessionSchema = new mongoose.Schema({
+    loginTime: {
+        type: Date,
+        required: true,
+    },
+    logoutTime: {
+        type: Date,
+    },
+});
+
+const attendanceSchema = new mongoose.Schema({
+    userid: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
+
+    date: {
+        type: Date,
+        required: true,
+    },
+
+    sessions: [sessionSchema], // multiple login/logout pairs
+
+    workingHours: {
+        type: Number, // in hours (decimal), e.g. 7.5
+        default: 0,
+    },
+
+    breakHours: {
+        type: Number, // in hours (decimal)
+        default: 0,
+    },
+
+    status: {
+        type: String,
+        enum: ["present", "remote", "absent"],
+        default: "present",
+    },
+});
+
+attendanceSchema.index({ userid: 1, date: 1 }, { unique: true }); // one doc per user per day
+
+module.exports = mongoose.model("Attendance", attendanceSchema);

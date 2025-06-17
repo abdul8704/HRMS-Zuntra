@@ -15,4 +15,4 @@ const rolesDetail = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model('RolesDetails', rolesDetail)
+module.exports = mongoose.model('rolesDetails', rolesDetail)
