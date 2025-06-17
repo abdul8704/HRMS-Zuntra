@@ -5,7 +5,7 @@ const errorHandler = (err, req, res, next) => {
             res.json({
                 title: "Validation Error",
                 message: err.message,
-                // stackTrace:err.stack
+                stackTrace:err.stack
             });
             break;
         case 404:
