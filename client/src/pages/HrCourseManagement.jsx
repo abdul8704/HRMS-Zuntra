@@ -1,6 +1,6 @@
 import { Sidebar } from "../components/Sidebar"
-import { CourseCard } from '../components/courseManagement/CourseCard'
-import { CourseNavbar } from '../components/courseManagement/CourseNavbar'
+import { CourseCard } from '../components/coursemanagement/CourseCard'
+import { CourseNavbar } from '../components/coursemanagement/CourseNavbar'
 export const HrCourseManagement = () => {
   return (
     <div className="website-container">
