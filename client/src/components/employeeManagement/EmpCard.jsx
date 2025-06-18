@@ -26,7 +26,7 @@ export const EmpCard = () => {
   ];
 
   return (
-    <div className="page-wrapper">
+    <div className="main-content">
       <div className="empcard-grid">
         {employees.map((emp, index) => {
           const col = index % 3;
@@ -54,24 +54,24 @@ export const EmpCard = () => {
       </div>
 
       <style jsx>{`
-        .page-wrapper {
-          background: #f1f5f9;
-          min-height: 100vh;
-          padding: 20px;
+        .main-content {
+          flex: 1;
           display: flex;
           justify-content: center;
+          align-items: flex-start;
+          padding: 32px 24px;
+          min-height: 100vh;
+          box-sizing: border-box;
+          background-color: #f8fafc;
         }
 
         .empcard-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 16px;
-          padding: 16px;
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+          gap: 24px;
           width: 100%;
-          max-width: 1200px;
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+          max-width: 1280px;
+          padding: 24px;
         }
 
         .emp-card {
@@ -81,6 +81,11 @@ export const EmpCard = () => {
           padding: 16px;
           border-radius: 12px;
           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+          transition: transform 0.2s;
+        }
+
+        .emp-card:hover {
+          transform: scale(1.01);
         }
 
         .emp-info {
@@ -145,6 +150,13 @@ export const EmpCard = () => {
 
         .bg3 {
           background-color: #ccfbf1;
+        }
+
+        @media (max-width: 768px) {
+          .empcard-grid {
+            grid-template-columns: 1fr;
+            padding: 16px;
+          }
         }
       `}</style>
     </div>
