@@ -11,65 +11,65 @@ export const HrCourseManagement = () => {
            <CourseCard
             image="https://img.icons8.com/fluency/96/graduation-cap.png"
             title="React Basics"
-            instructor="Jane Doe"
-            duration="In 3 Weeks"
+            instructor="Helen Coasta"
+            duration="at your own pace"
             rating={4.5}
           />
            <CourseCard
             image="https://img.icons8.com/fluency/96/graduation-cap.png"
-            title="React Basics"
-            instructor="Jane Doe"
+            title="Generative AI"
+            instructor="Georgia"
             duration="In 3 Weeks"
-            rating={4.5}
+            rating={3.5}
           />
            
            <CourseCard
             image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="Full stack developer"
+            instructor="Millie Brown"
+            duration="In 2 Months"
+            rating={3}
+          />
+          <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
             title="React Basics"
-            instructor="Jane Doe"
+            instructor="Angelin Berry"
+            duration="at your own pace"
+            rating={3.5}
+          />
+          <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="Telecommunication"
+            instructor="Thara Stelin"
             duration="In 3 Weeks"
+            rating={3}
+          />
+          <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="Data Science"
+            instructor="Regina George"
+            duration="at your own pace"
+            rating={4}
+          />
+          <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="Cloud basics"
+            instructor="Marcus Franklin"
+            duration="In 4 Months"
             rating={4.5}
           />
           <CourseCard
             image="https://img.icons8.com/fluency/96/graduation-cap.png"
             title="React Basics"
-            instructor="Jane Doe"
+            instructor="Steve Harrington"
             duration="In 3 Weeks"
-            rating={4.5}
+            rating={3.5}
           />
           <CourseCard
             image="https://img.icons8.com/fluency/96/graduation-cap.png"
-            title="React Basics"
-            instructor="Jane Doe"
-            duration="In 3 Weeks"
-            rating={4.5}
-          />
-          <CourseCard
-            image="https://img.icons8.com/fluency/96/graduation-cap.png"
-            title="React Basics"
-            instructor="Jane Doe"
-            duration="In 3 Weeks"
-            rating={4.5}
-          />
-          <CourseCard
-            image="https://img.icons8.com/fluency/96/graduation-cap.png"
-            title="React Basics"
-            instructor="Jane Doe"
-            duration="In 3 Weeks"
-            rating={4.5}
-          />
-          <CourseCard
-            image="https://img.icons8.com/fluency/96/graduation-cap.png"
-            title="React Basics"
-            instructor="Jane Doe"
-            duration="In 3 Weeks"
-            rating={4.5}
-          />
-          <CourseCard
-            image="https://img.icons8.com/fluency/96/graduation-cap.png"
-            title="React Basics"
-            instructor="Jane Doe"
-            duration="In 3 Weeks"
+            title="Data science"
+            instructor="Joslelin Friesta"
+            duration="at your own pace"
             rating={4.5}
           />
         </div>
@@ -78,7 +78,6 @@ export const HrCourseManagement = () => {
           display: grid;
           grid-template-columns: repeat(3, 1fr); 
           margin-top: 35px;
-          margin-left: 40px;
           column-gap: 2rem;
           row-gap: 2rem;   
           max-height:100%;
