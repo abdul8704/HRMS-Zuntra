@@ -1,61 +1,83 @@
 import React from 'react'
-import { FaMapMarkerAlt, FaFilter } from 'react-icons/fa'
+import { FaMapMarkerAlt } from 'react-icons/fa'
+import { HiAdjustmentsVertical } from 'react-icons/hi2'
 
 export const EmpNavbar = () => {
   return (
     <div className="emp-navbar">
-      <div className="left-buttons">
-        <button className="active-btn">New User</button>
-        <button className="inactive">Employee</button>
-        <button className="inactive">Role</button>
-      </div>
-      <div className="right-buttons">
-        <button className="Map"><FaMapMarkerAlt /></button>
-        <button className="Filter"><FaFilter /></button>
+      <div className="nav-buttons">
+        <button className="btn active">New User</button>
+        <button className="btn inactive">Employee</button>
+        <button className="btn inactive">Role</button>
+        <button className="btn icon-btn"><FaMapMarkerAlt /></button>
+        <button className="btn icon-btn"><HiAdjustmentsVertical size={20} /></button>
       </div>
 
       <style jsx>{`
         .emp-navbar {
           width: 100%;
-          height:20%;
-          display: flex;
-          justify-content: space-between; /* push left and right sections */
-          align-items: center;
+          height: 70px;
           background: #BBD3CC;
-          padding: 16px 32px;
+          padding: 0 32px;
           border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-          flex-wrap: wrap;
-        }
-
-        .left-buttons, .right-buttons {
-          margin-bottom:10px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
           display: flex;
-          gap: 200px; 
+          align-items: center;
+          justify-content: center;
+          margin-top: -10px;
         }
 
-        .left-buttons button,
-        .right-buttons button {
+        .nav-buttons {
+          display: flex;
+          width: 100%;
+          max-width: 900px;
+          justify-content: space-evenly;
+          align-items: center;
+          margin-top: -10px;
+        }
+
+        .btn {
           padding: 8px 16px;
           border: none;
           border-radius: 9999px;
-          background-color: #BBD3CC;
-          font-size: 19px;
+          font-size: 16px;
           font-weight: 500;
           cursor: pointer;
+          background-color: transparent;
+          transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .left-buttons .active-btn {
-          background-color: #d4d4d4;
+        .active {
+          background-color: #d4d4d4 !important;
         }
 
-        .left-buttons .inactive:hover {
-          background-color: white;
-          opacity: 0.5;
+        .inactive.btn:hover {
+          background-color: #ffffff;
+          opacity:0.5;
         }
 
-        .Map:hover, .Filter:hover {
+        .icon-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .icon-btn:hover {
+          background-color: #A9C9BB;
           color: white;
+        }
+
+        @media (max-width: 768px) {
+          .nav-buttons {
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+          }
+
+          .btn {
+            padding: 8px 12px;
+            font-size: 14px;
+          }
         }
       `}</style>
     </div>

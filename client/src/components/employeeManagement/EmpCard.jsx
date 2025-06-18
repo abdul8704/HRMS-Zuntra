@@ -19,51 +19,59 @@ export const EmpCard = () => {
     { name: "Avinash T", email: "avinash.t@zuntra.com", phone: "+91 7890654321", date: "19-06-2025", image: "https://randomuser.me/api/portraits/men/15.jpg" },
   ];
 
-  const bgClasses = ['bg1', 'bg2', 'bg3'];
+  const bgOrder = [
+    ['bg1', 'bg2', 'bg3'],
+    ['bg2', 'bg3', 'bg1'],
+    ['bg3', 'bg1', 'bg2'],
+  ];
 
   return (
-    <div className="page-wrapper">
+    <div className="main-content">
       <div className="empcard-grid">
-        {employees.map((emp, index) => (
-          <div key={index} className={`emp-card ${bgClasses[index % 3]}`}>
-            <div className="emp-info">
-              <img src={emp.image} alt="profile" />
-              <div>
-                <h3>{emp.name}</h3>
-                <p>{emp.email}</p>
-                <p>{emp.phone}</p>
-                <p className="small">{emp.date}</p>
+        {employees.map((emp, index) => {
+          const col = index % 3;
+          const row = Math.floor(index / 3);
+          const bgClass = bgOrder[row % bgOrder.length][col];
+
+          return (
+            <div key={index} className={`emp-card ${bgClass}`}>
+              <div className="emp-info">
+                <img src={emp.image} alt="profile" />
+                <div>
+                  <h3>{emp.name}</h3>
+                  <p>{emp.email}</p>
+                  <p>{emp.phone}</p>
+                  <p className="small">{emp.date}</p>
+                </div>
+              </div>
+              <div className="emp-actions">
+                <button className="approve">✓</button>
+                <button className="reject">✕</button>
               </div>
             </div>
-            <div className="emp-actions">
-              <button className="approve">✓</button>
-              <button className="reject">✕</button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <style jsx>{`
-        .page-wrapper {
-          background: #f1f5f9;
-          min-height: 100vh;
-          padding: 20px;
+        .main-content {
+          flex: 1;
           display: flex;
           justify-content: center;
+          align-items: flex-start;
+          padding: 32px 24px;
+          min-height: 100vh;
+          box-sizing: border-box;
+          background-color: #f8fafc;
         }
 
         .empcard-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 16px;
-          overflow-y: auto;
-          padding: 16px;
-          max-height: 90vh;
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+          gap: 24px;
           width: 100%;
-          max-width: 1200px;
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+          max-width: 1280px;
+          padding: 24px;
         }
 
         .emp-card {
@@ -72,7 +80,12 @@ export const EmpCard = () => {
           align-items: center;
           padding: 16px;
           border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+          transition: transform 0.2s;
+        }
+
+        .emp-card:hover {
+          transform: scale(1.01);
         }
 
         .emp-info {
@@ -137,6 +150,13 @@ export const EmpCard = () => {
 
         .bg3 {
           background-color: #ccfbf1;
+        }
+
+        @media (max-width: 768px) {
+          .empcard-grid {
+            grid-template-columns: 1fr;
+            padding: 16px;
+          }
         }
       `}</style>
     </div>
