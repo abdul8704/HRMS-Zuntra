@@ -66,10 +66,10 @@ export const CourseNavbar = () => {
         </ul>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .course-navbar {
           background-color: #BBD3CC;
-          border-radius: 0.75rem;
+          border-radius: 5rem;
           width: 100%;
         }
 
@@ -88,7 +88,7 @@ export const CourseNavbar = () => {
           cursor: pointer;
           font-weight: 500;
           padding: 1rem 0;
-          border-radius: 0.5rem;
+          border-radius: 5rem;
           transition: background 0.2s ease-in-out;
           user-select: none;
         }
@@ -104,51 +104,3 @@ export const CourseNavbar = () => {
     </>
   );
 };
-
-// Inline Styles
-const styles = {
-  navItems: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '12px 24px',
-    backgroundColor: '#f5f5f5',
-    borderRadius: '10px',
-    flexWrap: 'wrap',
-    gap: '12px',
-  },
-  leftButtons: {
-    display: 'flex',
-    gap: '12px',
-    flexWrap: 'wrap',
-  },
-  navButton: {
-    padding: '10px 18px',
-    border: 'none',
-    backgroundColor: '#1abc9c',
-    color: '#fff',
-    borderRadius: '6px',
-    fontWeight: '500',
-    cursor: 'pointer',
-  },
-  searchContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: '#e0e0e0',
-    padding: '6px 12px',
-    borderRadius: '20px',
-    minWidth: '220px',
-  },
-  searchIcon: {
-    marginRight: '8px',
-  },
-  searchInput: {
-    border: 'none',
-    outline: 'none',
-    backgroundColor: 'transparent',
-    fontSize: '14px',
-    width: '100%',
-  },
-};
-
-export default Navbar;
