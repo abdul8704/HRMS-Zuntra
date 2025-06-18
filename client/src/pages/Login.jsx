@@ -1,56 +1,100 @@
-import React from 'react';
+import React, { useState } from 'react';
 import zuntraLogo from "../assets/zuntra.png";
 
 export const Login = () => {
+    const [view, setView] = useState(0); // 0: login, 1: reset password, 2: signup
+    const [otpSent, setOtpSent] = useState(false);
+
+    const handleSendOtp = (e) => {
+        e.preventDefault();
+        setOtpSent(true);
+    };
+
+    const toggleSwitch = () => {
+        setView(view === 2 ? 0 : 2);
+    };
+
     return (
         <div>
             <img className="login-logo-container" src={zuntraLogo} alt="ZUNTRA" />
             <div className="login-container">
-                <div className="login-card">
-                    <h1 className="login-card-title">LOGIN</h1>
-                    <form>
-                        <input className="login-card-input" type="email" placeholder="Email" />
-                        <input className="login-card-input" type="password" placeholder="Password" />
-                        <p className="login-card-forgot">Forgot Password?</p>
-                        <button type="submit" className="login-card-button">Clock In</button>
-                    </form>
-
-                    <hr className="login-divider" />
-
-                    <div className="login-switch">
-                        <span className="switch-label login-label active">Login</span>
-                        <div className="switch-toggle">
-                            <div className="switch-knob"></div>
+                {/* LOGIN CARD */}
+                {view === 0 && (
+                    <div className="login-card">
+                        <h1 className="login-title">Login</h1>
+                        <form className="login-form">
+                            <input className="login-input" type="email" placeholder="Email" />
+                            <input className="login-input" type="password" placeholder="Password" />
+                            <p className="login-forgot" onClick={() => setView(1)}>Forgot Password?</p>
+                            <button type="submit" className="login-button">Clock In</button>
+                        </form>
+                        <div className="login-divider">
+                            <span>or</span>
                         </div>
-                        <span className="switch-label signup-label">Sign up</span>
+                        <button type="button" className="login-google-button">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="login-google-icon" />
+                            Sign up with Google
+                        </button>
+                        <div className="login-switch" onClick={toggleSwitch}>
+                            <span className={`login-switch-label ${view === 0 ? "login-switch-label-active" : ""}`}>Login</span>
+                            <div className={`login-toggle ${view === 2 ? "login-toggle-active" : ""}`}>
+                                <div className={`login-knob ${view === 2 ? "login-knob-active" : ""}`}></div>
+                            </div>
+                            <span className={`login-switch-label ${view === 2 ? "login-switch-label-active" : ""}`}>Sign up</span>
+                        </div>
                     </div>
-                {/*<div className="login-signup-card">
-                    <h1 className="login-card-title">SIGN UP</h1>
-                    <form>
-                        <input className="login-card-input" type="text" placeholder="Name" />
-                        <input className="login-card-input" type="email" placeholder="Email" />
-                        <input className="login-card-input" type="tel" placeholder="Phone Number" />
-                        <input className="login-card-input" type="password" placeholder="Password" />
-                        <input className="login-card-input" type="password" placeholder="Confirm Password" />
-                        <button type="submit" className="login-card-button">Sign Up</button>
-                    </form>
+                )}
 
-                    <hr className="login-divider" />
-
-                    <div className="login-switch">
-                        <span className="login-label">Login</span>
-                        <div className="login-toggle active">
-                            <div className="login-knob active"></div>
+                {/* SIGN UP CARD */}
+                {view === 2 && (
+                    <div className="login-card">
+                        <h1 className="login-title">Sign up</h1>
+                        <form className="login-form">
+                            <input className="login-input" type="text" placeholder="Name" />
+                            <input className="login-input" type="email" placeholder="Email" />
+                            <input className="login-input" type="tel" placeholder="Phone Number" />
+                            <input className="login-input" type="password" placeholder="Password" />
+                            <input className="login-input" type="password" placeholder="Confirm Password" />
+                            <button type="submit" className="login-button">Sign Up</button>
+                        </form>
+                        <div className="login-divider">
+                            <span>or</span>
                         </div>
-                        <span className="login-label signup-label active">Sign up</span>
-                    </div>*/}
-                </div>
+                        <button type="button" className="login-google-button">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="login-google-icon" />
+                            Sign up with Google
+                        </button>
+                        <div className="login-switch" onClick={toggleSwitch}>
+                            <span className={`login-switch-label ${view === 0 ? "login-switch-label-active" : ""}`}>Login</span>
+                            <div className={`login-toggle ${view === 2 ? "login-toggle-active" : ""}`}>
+                                <div className={`login-knob ${view === 2 ? "login-knob-active" : ""}`}></div>
+                            </div>
+                            <span className={`login-switch-label ${view === 2 ? "login-switch-label-active" : ""}`}>Sign up</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* RESET PASSWORD CARD */}
+                {view === 1 && (
+                    <div className="login-card">
+                        <h1 className="login-title">Reset Password</h1>
+                        <form className="login-form">
+                            <input className="login-input" type="email" placeholder="Email" />
+                            <input className="login-input" type="text" placeholder="Enter OTP" />
+                            <button className="login-button" onClick={handleSendOtp}>
+                                {otpSent ? "Resend OTP" : "Send OTP"}
+                            </button>
+                            <input className="login-input" type="password" placeholder="New Password" />
+                            <input className="login-input" type="password" placeholder="Confirm Password" />
+                            <button type="submit" className="login-button">Confirm</button>
+                        </form>
+                    </div>
+                )}
             </div>
 
             <style jsx>{`
                 .login-container {
                     display: flex;
-                    flex-direction: column;
                     justify-content: center;
                     align-items: center;
                     height: 100vh;
@@ -59,81 +103,116 @@ export const Login = () => {
 
                 .login-logo-container {
                     position: absolute;
-                    width: 15vw;
-                    margin: 1rem;
+                    width: 10rem;
+                    top: 1rem;
+                    left: 1rem;
                 }
 
-                .login-card,
-                .login-signup-card {
+                .login-card {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     border-radius: 1rem;
-                    box-shadow: 0 0 26px 0px rgba(0, 0, 0, 0.25);
-                    padding: 2rem 1rem;
+                    box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.25);
+                    padding: 1.5rem 1rem;
                     background-color: #fff;
+                    width: 22rem;
+                    max-height: 95vh;
+                    overflow-y: auto;
                 }
 
-                .login-card {
-                    width: 24vw;
-                }
-
-                .login-signup-card {
-                    width: 28vw;
-                }
-
-                .login-card-title {
-                    font-size: 2rem;
-                    margin-bottom: 1.5rem;
+                .login-title {
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    margin-bottom: 1rem;
                     text-align: center;
                 }
 
-                .login-card form,
-                .login-signup-card form {
+                .login-form {
+                    width: 100%;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    width: 100%;
                 }
 
-                .login-card-input {
-                    width: 80%;
+                .login-input {
+                    width: 85%;
                     font-size: 1rem;
-                    padding: 0.9rem;
-                    margin-top: 1rem;
+                    padding: 0.4rem 0.8rem;
+                    margin-top: 0.6rem;
                     border-radius: 0.5rem;
-                    border: 2px solid #000;
+                    border: 0.1rem solid #000;
                 }
 
-                .login-card-forgot {
-                    width: 80%;
+                .login-forgot {
+                    width: 85%;
                     text-align: right;
-                    font-size: 0.9rem;
-                    margin-top: 0.3rem;
+                    font-size: 0.85rem;
+                    margin-top: 0.2rem;
                     color: #0000ff;
                     cursor: pointer;
                 }
 
-                .login-card-button {
-                    margin-top: 2rem;
-                    padding: 0.8rem 2rem;
+                .login-button {
+                    margin-top: 1rem;
+                    padding: 0.5rem 1.2rem;
                     font-size: 1rem;
                     background-color: #08BDB1;
                     color: #ffffff;
                     border: none;
-                    border-radius: 0.5rem;
+                    border-radius: 5rem;
                     cursor: pointer;
                 }
 
-                .login-card-button:hover {
+                .login-button:hover {
                     background-color: #069e96;
                 }
 
                 .login-divider {
-                    width: 80%;
-                    margin: 2rem auto 1rem;
-                    border: none;
-                    border-top: 1px solid #ccc;
+                    width: 85%;
+                    display: flex;
+                    align-items: center;
+                    text-align: center;
+                    margin: 1rem 0 0.6rem;
+                }
+
+                .login-divider::before,
+                .login-divider::after {
+                    content: "";
+                    flex: 1;
+                    border-top: 0.1rem solid #ccc;
+                }
+
+                .login-divider span {
+                    margin: 0 0.5rem;
+                    font-size: 0.9rem;
+                    color: #999;
+                }
+
+                .login-google-button {
+                    width: 85%;
+                    font-size: 0.95rem;
+                    padding: 0.4rem 0.8rem;
+                    background-color: #fff;
+                    color: #000;
+                    border: 0.125rem solid #000;
+                    border-radius: 5rem;
+                    cursor: pointer;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 0.5rem;
+                    margin-top: 0.6rem;
+                    transition: background-color 0.3s;
+                }
+
+                .login-google-button:hover {
+                    background-color: #f5f5f5;
+                }
+
+                .login-google-icon {
+                    width: 1.25rem;
+                    height: 1.25rem;
                 }
 
                 .login-switch {
@@ -141,49 +220,46 @@ export const Login = () => {
                     align-items: center;
                     justify-content: center;
                     gap: 1rem;
-                    margin-bottom: 1rem;
+                    margin-top: 1.2rem;
+                    cursor: pointer;
                 }
 
-                .login-label {
+                .login-switch-label {
                     font-size: 1rem;
-                    cursor: pointer;
                     color: #333;
                     font-weight: 500;
                 }
 
-                .login-label.active,
-                .signup-label.active {
+                .login-switch-label-active {
                     text-decoration: underline;
                 }
 
                 .login-toggle {
-                    width: 50px;
-                    height: 24px;
+                    width: 3rem;
+                    height: 1.25rem;
                     background-color: #ccc;
-                    border-radius: 12px;
+                    border-radius: 1rem;
                     position: relative;
-                    cursor: pointer;
                     transition: background-color 0.3s;
                 }
 
-                .login-knob {
-                    width: 20px;
-                    height: 20px;
-                    background-color: #fff;
-                    border-radius: 50%;
-                    position: absolute;
-                    top: 2px;
-                    left: 2px;
-                    transition: left 0.3s;
-                }
-
-                /* Switch Active State */
-                .login-toggle.active {
+                .login-toggle-active {
                     background-color: #08BDB1;
                 }
 
-                .login-toggle.active .login-knob {
-                    left: 28px;
+                .login-knob {
+                    width: 1rem;
+                    height: 1rem;
+                    background-color: #fff;
+                    border-radius: 50%;
+                    position: absolute;
+                    top: 0.125rem;
+                    left: 0.125rem;
+                    transition: left 0.3s;
+                }
+
+                .login-knob-active {
+                    left: 1.625rem;
                 }
             `}</style>
         </div>

@@ -10,6 +10,7 @@ const meetingRouter = require('./routes/meetingRoutes')
 const taskRouter = require('./routes/taskRoutes')
 const projectRouter = require('./routes/projectRoutes')
 const employeeRouter = require('./routes/employeeRoutes')
+const rolesRouter = require('./routes/rolesRoutes')
 
 const errorHandler=require('./middlewares/errorHandler')
 
@@ -21,7 +22,7 @@ app.use("/meeting", meetingRouter)
 app.use("/task", taskRouter)
 app.use("/project", projectRouter)
 app.use("/employee", employeeRouter)
-
+app.use("/roles", rolesRouter)
 
 const start = async () => {
     await connectDB(process.env.MONGO_URI);
