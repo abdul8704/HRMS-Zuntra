@@ -8,15 +8,84 @@ export const HrCourseManagement = () => {
       <div className="website-module">
         <CourseNavbar />
         <div className="project-cards-container">
-          <CourseCard />
+           <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="React Basics"
+            instructor="Jane Doe"
+            duration="In 3 Weeks"
+            rating={4.5}
+          />
+           <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="React Basics"
+            instructor="Jane Doe"
+            duration="In 3 Weeks"
+            rating={4.5}
+          />
+           
+           <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="React Basics"
+            instructor="Jane Doe"
+            duration="In 3 Weeks"
+            rating={4.5}
+          />
+          <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="React Basics"
+            instructor="Jane Doe"
+            duration="In 3 Weeks"
+            rating={4.5}
+          />
+          <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="React Basics"
+            instructor="Jane Doe"
+            duration="In 3 Weeks"
+            rating={4.5}
+          />
+          <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="React Basics"
+            instructor="Jane Doe"
+            duration="In 3 Weeks"
+            rating={4.5}
+          />
+          <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="React Basics"
+            instructor="Jane Doe"
+            duration="In 3 Weeks"
+            rating={4.5}
+          />
+          <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="React Basics"
+            instructor="Jane Doe"
+            duration="In 3 Weeks"
+            rating={4.5}
+          />
+          <CourseCard
+            image="https://img.icons8.com/fluency/96/graduation-cap.png"
+            title="React Basics"
+            instructor="Jane Doe"
+            duration="In 3 Weeks"
+            rating={4.5}
+          />
         </div>
-        <style jsx>{`
+        <style>{`
         .project-cards-container{
-          display: flex;
-          flex-wrap: wrap;
-          max-height: 100%;
-          overflow-y: auto;
-          overflow-x: hidden;
+          display: grid;
+          grid-template-columns: repeat(3, 1fr); 
+          margin-top: 35px;
+          margin-left: 40px;
+          column-gap: 2rem;
+          row-gap: 2rem;   
+          max-height:100%;
+          max-width:100%;
+          overflow-y:auto;
+          overflow-x:hidden;
+          padding:1rem;
         }
       `}</style>
       </div>
