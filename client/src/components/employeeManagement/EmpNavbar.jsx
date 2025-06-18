@@ -5,7 +5,7 @@ export const EmpNavbar = () => {
     <div className="emp-navbar">
       <div className="left-buttons">
         <button className="active-btn">New User</button>
-        <button>Employee</button>
+        <button>Employee</button>+
         <button>Role</button>
       </div>
       <div className="right-buttons">
