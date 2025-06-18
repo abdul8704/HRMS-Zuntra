@@ -68,9 +68,16 @@ export const CourseNavbar = () => {
 
       <style jsx>{`
         .course-navbar {
-          background-color: #BBD3CC;
-          border-radius: 6rem;
           width: 100%;
+          height:20%;
+          display: flex;
+          justify-content: space-between; /* push left and right sections */
+          align-items: center;
+          background: #BBD3CC;
+          padding: 16px 32px;
+          border-radius: 12px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          flex-wrap: wrap;
         }
 
         .course-navbar ul {
@@ -104,51 +111,3 @@ export const CourseNavbar = () => {
     </>
   );
 };
-
-// Inline Styles
-const styles = {
-  navItems: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '12px 24px',
-    backgroundColor: '#f5f5f5',
-    borderRadius: '10px',
-    flexWrap: 'wrap',
-    gap: '12px',
-  },
-  leftButtons: {
-    display: 'flex',
-    gap: '12px',
-    flexWrap: 'wrap',
-  },
-  navButton: {
-    padding: '10px 18px',
-    border: 'none',
-    backgroundColor: '#1abc9c',
-    color: '#fff',
-    borderRadius: '6px',
-    fontWeight: '500',
-    cursor: 'pointer',
-  },
-  searchContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: '#e0e0e0',
-    padding: '6px 12px',
-    borderRadius: '20px',
-    minWidth: '220px',
-  },
-  searchIcon: {
-    marginRight: '8px',
-  },
-  searchInput: {
-    border: 'none',
-    outline: 'none',
-    backgroundColor: 'transparent',
-    fontSize: '14px',
-    width: '100%',
-  },
-};
-
-export default Navbar;
