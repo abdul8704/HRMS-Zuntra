@@ -136,12 +136,12 @@ export const Login = () => {
                 }
 
                 .login-input {
-                    width: 85%;
+                    width: 92%;
                     font-size: 1rem;
                     padding: 0.4rem 0.8rem;
                     margin-top: 0.6rem;
                     border-radius: 0.5rem;
-                    border: 0.1rem solid #000;
+                    border: 0.11rem solid #000;
                 }
 
                 .login-forgot {
@@ -261,6 +261,70 @@ export const Login = () => {
                 .login-knob-active {
                     left: 1.625rem;
                 }
+                    @media (max-width: 768px) {
+    .login-card {
+        width: 90vw;
+        padding: 1.2rem 1rem;
+    }
+
+    .login-title {
+        font-size: 1.25rem;
+    }
+
+    .login-input {
+        width: 95%;
+        font-size: 0.95rem;
+    }
+
+    .login-button,
+    .login-google-button {
+        width: 95%;
+        font-size: 0.95rem;
+        padding: 0.5rem;
+    }
+
+    .login-divider {
+        width: 95%;
+    }
+
+    .login-forgot {
+        width: 95%;
+        font-size: 0.8rem;
+    }
+
+    .login-switch-label {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-title {
+        font-size: 1.1rem;
+    }
+
+    .login-input {
+        font-size: 0.9rem;
+        padding: 0.35rem 0.7rem;
+    }
+
+    .login-button,
+    .login-google-button {
+        font-size: 0.9rem;
+        padding: 0.45rem;
+    }
+
+    .login-google-icon {
+        width: 1rem;
+        height: 1rem;
+    }
+
+    .login-logo-container {
+        width: 8rem;
+        top: 0.5rem;
+        left: 0.5rem;
+    }
+}
+
             `}</style>
         </div>
     );

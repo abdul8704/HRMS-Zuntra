@@ -19,28 +19,38 @@ export const EmpCard = () => {
     { name: "Avinash T", email: "avinash.t@zuntra.com", phone: "+91 7890654321", date: "19-06-2025", image: "https://randomuser.me/api/portraits/men/15.jpg" },
   ];
 
-  const bgClasses = ['bg1', 'bg2', 'bg3'];
+  const bgOrder = [
+    ['bg1', 'bg2', 'bg3'],
+    ['bg2', 'bg3', 'bg1'],
+    ['bg3', 'bg1', 'bg2'],
+  ];
 
   return (
     <div className="page-wrapper">
       <div className="empcard-grid">
-        {employees.map((emp, index) => (
-          <div key={index} className={`emp-card ${bgClasses[index % 3]}`}>
-            <div className="emp-info">
-              <img src={emp.image} alt="profile" />
-              <div>
-                <h3>{emp.name}</h3>
-                <p>{emp.email}</p>
-                <p>{emp.phone}</p>
-                <p className="small">{emp.date}</p>
+        {employees.map((emp, index) => {
+          const col = index % 3;
+          const row = Math.floor(index / 3);
+          const bgClass = bgOrder[row % bgOrder.length][col];
+
+          return (
+            <div key={index} className={`emp-card ${bgClass}`}>
+              <div className="emp-info">
+                <img src={emp.image} alt="profile" />
+                <div>
+                  <h3>{emp.name}</h3>
+                  <p>{emp.email}</p>
+                  <p>{emp.phone}</p>
+                  <p className="small">{emp.date}</p>
+                </div>
+              </div>
+              <div className="emp-actions">
+                <button className="approve">✓</button>
+                <button className="reject">✕</button>
               </div>
             </div>
-            <div className="emp-actions">
-              <button className="approve">✓</button>
-              <button className="reject">✕</button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <style jsx>{`
@@ -56,9 +66,7 @@ export const EmpCard = () => {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
           gap: 16px;
-          overflow-y: auto;
           padding: 16px;
-          max-height: 90vh;
           width: 100%;
           max-width: 1200px;
           background: white;
@@ -72,7 +80,7 @@ export const EmpCard = () => {
           align-items: center;
           padding: 16px;
           border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .emp-info {

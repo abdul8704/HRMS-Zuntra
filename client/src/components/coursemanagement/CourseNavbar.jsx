@@ -66,18 +66,11 @@ export const CourseNavbar = () => {
         </ul>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .course-navbar {
+          background-color: #BBD3CC;
+          border-radius: 6rem;
           width: 100%;
-          height:20%;
-          display: flex;
-          justify-content: space-between; /* push left and right sections */
-          align-items: center;
-          background: #BBD3CC;
-          padding: 16px 32px;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-          flex-wrap: wrap;
         }
 
         .course-navbar ul {
@@ -111,3 +104,4 @@ export const CourseNavbar = () => {
     </>
   );
 };
+
