@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-const App = () => {
+ export const CourseCard = () => {
 
   const courses = [
     {
@@ -87,7 +87,7 @@ const App = () => {
 // 💅 Inline styling
 const styles = {
   container: {
-    padding: '30px',
+    padding: '20px',
     fontFamily: 'Arial, sans-serif',
     backgroundColor: '#f7f9fc',
     minHeight: '100vh',
@@ -106,7 +106,7 @@ const styles = {
     width: '200px',
     backgroundColor: '#fff',
     padding: '15px',
-    borderRadius: '10px',
+    borderRadius: '1rem',
     boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
     textAlign: 'center',
   },
@@ -138,9 +138,4 @@ const styles = {
   },
 };
 
-export const CourseCard = () => {
-  return (
-    <div> CourseCard</div>
-  )
-}
 
