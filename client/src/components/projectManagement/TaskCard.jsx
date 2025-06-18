@@ -1,6 +1,11 @@
 import React from 'react'
 
-export const TaskCard = () => {
+export const TaskCard = ({
+  TaskTitle = "Dummy Task Title",
+  Taskdescription = "This is a placeholder task description for testing.",
+  footer1 = "Assigned: John Doe",
+  footer2 = "Due: 2025-07-01"
+}) => {
   return (
     <div className="task-container">
       <div className="task-header">
