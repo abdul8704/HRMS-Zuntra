@@ -9,7 +9,7 @@ const getAllCurrentProjects =asyncHandler(async(req,res) =>{
     const projectsList = await courseService.getAllCurrentProjects();
     if(projectsList.length===0){
         res.status(404);
-        throw new Error("No Projects Available");
+        throw new Error("No Projects Available")
     }
     console.log(projectsList)
     res.status(200).json({message: "All Projects"});
