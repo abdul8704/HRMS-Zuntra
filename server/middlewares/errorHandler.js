@@ -3,7 +3,7 @@ const errorHandler = (err, req, res, next) => {
     switch (statusCode) {
         case 400:
             res.json({ 
-                status: false, 
+                success: false, 
                 data: {
                     title: "Validation Error",
                     message: err.message,
@@ -13,7 +13,7 @@ const errorHandler = (err, req, res, next) => {
             break;
         case 404:
             res.json({
-                status: false,
+                success: false,
                 data: {
                     title: "Not Found",
                     message: err.message,
@@ -23,7 +23,7 @@ const errorHandler = (err, req, res, next) => {
             break;
         case 401:
             res.json({
-                status: false,
+                success: false,
                 data: {
                     title: "Unauthorized",
                     message: err.message,
@@ -33,7 +33,7 @@ const errorHandler = (err, req, res, next) => {
             break;
         case 403:
             res.json({
-                status: false,
+                success: false,
                 data: {
                     title: "Forbidden",
                     message: err.message,
@@ -43,7 +43,7 @@ const errorHandler = (err, req, res, next) => {
             break;
         case 500:
             res.json({
-                status: false,
+                success: false,
                 data: {
                     title: "Internal Server Error",
                     message: err.message,
