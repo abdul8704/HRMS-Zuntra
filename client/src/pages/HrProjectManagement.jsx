@@ -13,6 +13,8 @@ export const HrProjectManagement = () => {
         <div className="project-cards-container">
           <ProjectCard />
           <TaskCard />
+          <TaskCard />
+          <TaskCard />
         </div>
         <style jsx>{`
         .project-cards-container{

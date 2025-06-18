@@ -69,7 +69,7 @@ export const CourseNavbar = () => {
       <style>{`
         .course-navbar {
           background-color: #BBD3CC;
-          border-radius: 5rem;
+          border-radius: 6rem;
           width: 100%;
         }
 
@@ -88,7 +88,7 @@ export const CourseNavbar = () => {
           cursor: pointer;
           font-weight: 500;
           padding: 1rem 0;
-          border-radius: 5rem;
+          border-radius: 6rem;
           transition: background 0.2s ease-in-out;
           user-select: none;
         }
@@ -104,3 +104,4 @@ export const CourseNavbar = () => {
     </>
   );
 };
+
