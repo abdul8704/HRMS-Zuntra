@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 
-// Navbar Component with Buttons + Search Bar
 const Navbar = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    console.log("Searching:", e.target.value); // Hook this to your search logic
-  };
   return (
     <div style={styles.navItems}>
       {/* Left-side buttons */}
@@ -62,13 +55,14 @@ export const CourseNavbar = () => {
       <style>{`
         .course-navbar {
           background-color: #BBD3CC;
-          border-radius: 6rem;
-          width: 100%;
+          border-radius: 1rem;
+          width: 95%;
         }
 
         .course-navbar ul {
           list-style: none;
           display: flex;
+          gap: 20px;
           margin: 0;
           padding: 0;
         }
@@ -79,9 +73,10 @@ export const CourseNavbar = () => {
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          font-weight: 500;
+          font-weight: 400;
+          font-size: 20px;
           padding: 1rem 0;
-          border-radius: 6rem;
+          border-radius: 1rem;
           transition: background 0.2s ease-in-out;
           user-select: none;
         }
@@ -92,24 +87,6 @@ export const CourseNavbar = () => {
 
         .course-navbar li.active {
           background-color: #d0d0d0;
-        }
-        .searchContainer: {
-          display: 'flex',
-          alignItems: 'center',
-          backgroundColor: '#e9e9e9',
-          padding: '6px 12px',
-          borderRadius: '24px',
-        },
-        .searchInput: {
-          border: 'none',
-          background: 'transparent',
-          marginLeft: '8px',
-          outline: 'none',
-          fontSize: '14px',
-          width: '180px',
-        },
-        .searchIcon: {
-          pointerEvents: 'none',
         }
       `}</style>
     </>

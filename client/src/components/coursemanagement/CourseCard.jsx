@@ -1,20 +1,23 @@
 import React from 'react';
 
 export const CourseCard = ({ image, title, instructor, duration, rating }) => {
+  // Determine style based on duration content
+  const isSelfPaced = duration.toLowerCase().includes('at your own pace');
+  const durationStyle = isSelfPaced ? styles.durationGreen : styles.durationOrange;
+
   return (
     <div style={styles.card}>
       <img src={image} alt={title} style={styles.image} />
       <h3>{title}</h3>
       <p>by {instructor}</p>
       <div style={styles.footer}>
-        <span style={styles.duration}>{duration}</span>
+        <span style={durationStyle}>{duration}</span>
         <span style={styles.rating}>{rating} ⭐</span>
       </div>
     </div>
   );
 };
 
-// ✅ Inline styling
 const styles = {
   card: {
     width: '300px',
@@ -40,9 +43,21 @@ const styles = {
     marginTop: '10px',
     fontSize: '14px'
   },
-  duration: {
-    color: '#888'
-    
+  durationOrange: {
+    backgroundColor: '#ffe0b2',
+    color: '#d35400',
+    padding: '4px 8px',
+    borderRadius: '12px',
+    fontSize: '12px',
+    fontWeight: 'bold'
+  },
+  durationGreen: {
+    backgroundColor: '#d0f5d0',
+    color: '#2e7d32',
+    padding: '4px 8px',
+    borderRadius: '12px',
+    fontSize: '12px',
+    fontWeight: 'bold'
   },
   rating: {
     fontWeight: 'bold',
@@ -51,4 +66,3 @@ const styles = {
 };
 
 export default CourseCard;
-
