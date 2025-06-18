@@ -15,7 +15,6 @@ const rolesRouter = require('./routes/rolesRoutes')
 const errorHandler=require('./middlewares/errorHandler')
 
 app.use(express.json());
-app.use(errorHandler);
 app.use("/auth", authRouter)
 app.use("/course", courseRouter)
 app.use("/meeting", meetingRouter)
@@ -23,6 +22,7 @@ app.use("/task", taskRouter)
 app.use("/project", projectRouter)
 app.use("/employee", employeeRouter)
 app.use("/roles", rolesRouter)
+app.use(errorHandler);
 
 const start = async () => {
     await connectDB(process.env.MONGO_URI);
