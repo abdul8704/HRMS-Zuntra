@@ -31,7 +31,12 @@ const projectSchema = new mongoose.Schema({
     teamLeader: {
         type: String,
         trim: true
-    }
+    },
+    status: {
+        type: String,
+        required: true,
+        trime: true,
+    },
 });
 
 module.exports = mongoose.model("projectDetails", projectSchema);
