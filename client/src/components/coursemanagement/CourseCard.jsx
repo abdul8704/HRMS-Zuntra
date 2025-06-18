@@ -17,8 +17,8 @@ export const CourseCard = ({ image, title, instructor, duration, rating }) => {
 // ✅ Inline styling
 const styles = {
   card: {
-    width: '288px',
-    height: '333px',
+    width: '300px',
+    height: '280px',
     backgroundColor: '#fff',
     borderRadius: '12px',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
@@ -42,6 +42,7 @@ const styles = {
   },
   duration: {
     color: '#888'
+    
   },
   rating: {
     fontWeight: 'bold',

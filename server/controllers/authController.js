@@ -1,7 +1,8 @@
+const asyncHandler=require('express-async-handler')
 const authService = require("../services/authService")
 const employeeService = require("../services/employeeService")
 
-const handleLogin = async (req, res) => {
+const handleLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     if(!email || !password)
@@ -15,10 +16,8 @@ const handleLogin = async (req, res) => {
         const userid = verifyLogin.userid;
         await employeeService.markAttendanceOnLogin(userid)
     }
-
     return res.status(200).json( {success: true, message: "clocked in and attendance marked."})
-
-}
+});
 
 const signUpHandler = async (req, res) => {
     const { email, password, name, phoneNum } = req.body;

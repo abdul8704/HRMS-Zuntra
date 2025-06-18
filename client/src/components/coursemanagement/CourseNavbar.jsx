@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 
 // Navbar Component with Buttons + Search Bar
 const Navbar = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    console.log("Searching:", e.target.value); // Hook this to your search logic
+  };
   return (
     <div style={styles.navItems}>
       {/* Left-side buttons */}
@@ -13,27 +19,14 @@ const Navbar = () => {
 
       {/* Right-side Search bar */}
       <div style={styles.searchContainer}>
-        <svg xmlns="http://www.w3.org/2000/svg"
-          height="20px"
-          viewBox="0 0 24 24"
-          width="20px"
-          fill="#666"
-          style={styles.searchIcon}
-        >
-          <path d="M0 0h24v24H0V0z" fill="none" />
-          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 
-                   0016 9.5 6.5 6.5 0 109.5 16c1.61 
-                   0 3.09-.59 4.23-1.57l.27.28v.79l5 
-                   5L20.49 19l-5-5zm-6 0C8.01 14 
-                   6 11.99 6 9.5S8.01 5 10.5 
-                   5 15 7.01 15 9.5 12.99 14 10.5 14z" />
-        </svg>
         <input
           type="text"
           placeholder="Search here..."
+          value={searchTerm}
+          onChange={handleSearchChange}
           style={styles.searchInput}
         />
-      </div>
+      </div>+
     </div>
   );
 };
@@ -99,6 +92,24 @@ export const CourseNavbar = () => {
 
         .course-navbar li.active {
           background-color: #d0d0d0;
+        }
+        .searchContainer: {
+          display: 'flex',
+          alignItems: 'center',
+          backgroundColor: '#e9e9e9',
+          padding: '6px 12px',
+          borderRadius: '24px',
+        },
+        .searchInput: {
+          border: 'none',
+          background: 'transparent',
+          marginLeft: '8px',
+          outline: 'none',
+          fontSize: '14px',
+          width: '180px',
+        },
+        .searchIcon: {
+          pointerEvents: 'none',
         }
       `}</style>
     </>
