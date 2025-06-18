@@ -92,6 +92,10 @@ export const TaskCard = ({
           font-size: 14px;
           text-align: left;
         }
+        .task-description p {
+          text-align: left;
+          margin: 0;
+  }
       `}</style>
     </div>
   );
