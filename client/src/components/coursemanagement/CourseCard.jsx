@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CourseCard = ({ image, title, instructor, duration, rating }) => {
+export const CourseCard = ({ image, title, instructor, duration, rating }) => {
   return (
     <div style={styles.card}>
       <img src={image} alt={title} style={styles.image} />
