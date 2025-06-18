@@ -2,8 +2,8 @@ import React from 'react'
 
 export const TaskCard = ({
   TaskTitle = "Dummy Task Title",
-  Taskdescription = "This is a placeholder task description for testing.",
-  footer1 = "Assigned: John Doe",
+  Taskdescription = "This is a placeholder task description for testing.This place provides space for the task description to be worked on by the employee ie the task they should complete in the stipulated time.",
+  footer1 = "John Doe",
   footer2 = "Due: 2025-07-01"
 }) => {
   return (
@@ -28,9 +28,7 @@ export const TaskCard = ({
       </div>
       
       <div className="footer">
-        const footer1 = "footer-1";
         <div>{footer1}</div>
-        const footer2 = "footer-2";
         <div>{footer2}</div>
       </div>
              
@@ -44,7 +42,7 @@ export const TaskCard = ({
           border: 1px solid #e3e3e3;
           border-radius: 8px;
           margin: 16px;
-          text-align: left;
+          
         }
                  
         .task-header {
@@ -75,9 +73,10 @@ export const TaskCard = ({
         .footer {
           display: flex;
           justify-content: space-between;
-          flex direction: row;
+          flex-direction: row;
           margin-top: 12px;
           padding-top: 12px;
+          font-size:16px;
           border-top: 1px solid #e3e3e3;
         }
                  
