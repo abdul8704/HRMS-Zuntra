@@ -4,23 +4,22 @@ import { FaPen, FaTrash, FaCrown } from "react-icons/fa";
 const UserProfile = () => {
   const styles = {
     profileContainer: {
+      backgroundColor: "#f7caca",
+      borderRadius: "999px",
+      padding: "6px 12px 6px 6px", // more padding on left for avatar
       display: "flex",
       alignItems: "center",
     },
     avatar: {
-      width: "44px",
-      height: "44px",
+      width: "40px",
+      height: "40px",
       borderRadius: "50%",
       marginRight: "10px",
     },
     userDetails: {
-      backgroundColor: "#f7caca",
-      borderRadius: "20px",
-      padding: "6px 12px",
-      fontSize: "12px",
       display: "flex",
       flexDirection: "column",
-      alignItems: "flex-start",
+      justifyContent: "center",
     },
     nameRow: {
       display: "flex",
@@ -104,10 +103,11 @@ export const ProjectCard = () => {
     },
     badge: {
       backgroundColor: "#f7caca",
-      padding: "6px 12px",
-      borderRadius: "20px",
+      padding: "6px 16px",
+      borderRadius: "999px",
       fontWeight: 600,
       fontSize: "14px",
+      color: "#5b5b5b",
     },
   };
 
