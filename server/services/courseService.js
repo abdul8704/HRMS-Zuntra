@@ -1,5 +1,6 @@
 const courseDetails = require("../models/courseDetails")
 const courseContent = require("../models/courseContent")
+const asyncHandler=require('express-async-handler')
 
 const getAllCourseDetails = asyncHandler(async () => {
     const courseData = await courseDetails.find();
