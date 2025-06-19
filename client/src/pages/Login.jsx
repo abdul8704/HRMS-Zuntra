@@ -21,20 +21,47 @@ export const Login = () => {
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
+    if (!loginData.email || !loginData.password) {
+      alert("Please enter both email and password.");
+      return;
+    }
     console.log('Login Data:', loginData);
   };
 
   const handleSignupSubmit = (e) => {
     e.preventDefault();
+    const { name, email, phone, password, confirmPassword } = signupData;
+    if (!name || !email || !phone || !password || !confirmPassword) {
+      alert("All fields are required.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
     console.log('Signup Data:', signupData);
   };
 
   const handleResetSubmit = (e) => {
     e.preventDefault();
+    const { email, otp, password, confirmPassword } = resetData;
+
     if (!otpSent) {
+      if (!email) {
+        alert("Please enter your email to receive OTP.");
+        return;
+      }
       setOtpSent(true);
-      console.log('OTP sent to:', resetData.email);
+      console.log('OTP sent to:', email);
     } else {
+      if (!otp || !password || !confirmPassword) {
+        alert("Please fill all fields.");
+        return;
+      }
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
       console.log('Reset Data:', resetData);
     }
   };
@@ -112,7 +139,7 @@ export const Login = () => {
       </div>
 
       <style jsx>{`
-        .login-page {
+      .login-page {
           width: 100vw;
           height: 100vh;
           display: flex;
@@ -293,6 +320,85 @@ export const Login = () => {
           width: 1.25rem;
           height: 1.25rem;
         }
+        /* Already present styles remain unchanged */
+
+@media (max-width: 768px) {
+  .login-card {
+    width: 90%;
+    padding: 1rem 0.8rem;
+  }
+
+  .login-input {
+    font-size: 0.9rem;
+    padding: 0.35rem 0.7rem;
+  }
+
+  .login-button {
+    font-size: 0.9rem;
+    padding: 0.45rem 1rem;
+  }
+
+  .login-title {
+    font-size: 1.25rem;
+  }
+
+  .login-google-button {
+    font-size: 0.7rem;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .login-logo-container {
+    width: 8rem;
+    top: 0.5rem;
+    left: 0.5rem;
+  }
+
+  .login-switch {
+    margin-top: 1rem;
+    gap: 0.8rem;
+  }
+
+  .login-switch-label {
+    font-size: 0.9rem;
+  }
+
+  .login-toggle {
+    width: 2.5rem;
+    height: 1.1rem;
+  }
+
+  .login-knob {
+    width: 0.9rem;
+    height: 0.9rem;
+    top: 0.1rem;
+    left: 0.1rem;
+  }
+
+  .login-knob-active {
+    left: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-title {
+    font-size: 1.15rem;
+  }
+
+  .login-input {
+    width: 95%;
+    font-size: 0.85rem;
+  }
+
+  .login-google-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .login-divider span {
+    font-size: 0.8rem;
+  }
+}
+
       `}</style>
     </div>
   );

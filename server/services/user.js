@@ -1,4 +1,4 @@
-const UserDetails = require("../models/userCredentials");
+const UserCredentials = require('../models/userCredentials');
 
 const getAllUserDetails = async () => {
     const userData = await UserDetails.find({});
