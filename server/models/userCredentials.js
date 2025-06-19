@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const userDetailsSchema = new mongoose.Schema({
+const userCredentialsSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
@@ -23,18 +23,6 @@ const userDetailsSchema = new mongoose.Schema({
         enum: ["dev", "hr", "team_lead"],
         default: "dev",
     },
-    designation: {
-        type: String,
-        default: "Software Engineer",
-    },
-    currentCourses: {
-        type: [String],
-        default: [],
-    },
-    assignedCourses:{
-        type: [String],
-        default: [],
-    },
     phoneNumber: {
         type: String,
         required: true
@@ -43,5 +31,5 @@ const userDetailsSchema = new mongoose.Schema({
 });
 
 module.exports =
-    mongoose.models.UserDetails ||
-    mongoose.model("UserDetails", userDetailsSchema);
+    mongoose.models.UserCredentials ||
+    mongoose.model("UserCredentials", userCredentialsSchema);
