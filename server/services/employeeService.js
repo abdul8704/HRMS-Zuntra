@@ -1,5 +1,5 @@
 const Attendance = require("../models/attendance")
-const User = require("../models/userDetails.js")
+const User = require("../models/userCredentials.js")
 
 const getAttendaceByUserId = async (userid, startDate, endDate) => {
     try {
