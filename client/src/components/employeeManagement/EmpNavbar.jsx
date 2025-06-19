@@ -3,14 +3,6 @@ import React from 'react'
 export const EmpNavbar = () => {
   return (
     <div className="emp-navbar">
-      <div className="left-buttons">
-        <button className="active-btn">New User</button>
-        <button>Employee</button>
-        <button>Role</button>
-      </div>
-      <div className="right-buttons">
-        <button className="Map"><FaMapMarkerAlt /></button>
-        <button className="Filter"><FaFilter /></button>
       <div className="nav-buttons">
         <button className="btn active">New User</button>
         <button className="btn inactive">Employee</button>
