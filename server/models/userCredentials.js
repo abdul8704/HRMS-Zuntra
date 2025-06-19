@@ -16,12 +16,11 @@ const userCredentialsSchema = new mongoose.Schema({
     },
     profilePicture: {
         type: String,
-        default: "default-profile-pic.png",
+        default: "https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png",
     },
     role: {
         type: String,
-        enum: ["dev", "hr", "team_lead"],
-        default: "dev",
+        default: "unassigned"
     },
     phoneNumber: {
         type: String,

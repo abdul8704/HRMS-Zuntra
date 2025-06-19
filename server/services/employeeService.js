@@ -1,5 +1,5 @@
 const Attendance = require("../models/attendance")
-const User = require("../models/userDetails.js")
+const User = require("../models/userCredentials.js")
 
 const getAttendaceByUserId = async (userid, startDate, endDate) => {
     try {
@@ -12,7 +12,7 @@ const getAttendaceByUserId = async (userid, startDate, endDate) => {
         const attendanceRecords = await Attendance.find({
             userid: userid,
             date: { $gte: start, $lte: end },
-        }).sort({ date: 1 }); 
+        }).sort({ date: 1 });
 
         return {
             success: true,
@@ -25,7 +25,7 @@ const getAttendaceByUserId = async (userid, startDate, endDate) => {
             message: error.message,
         };
     }
-}
+};
 
 const markAttendanceOnLogin = async (userid) => {
     const now = new Date();
@@ -61,5 +61,5 @@ const markAttendanceOnLogin = async (userid) => {
 
 module.exports = {
     getAttendaceByUserId,
-    markAttendanceOnLogin
-}
+    markAttendanceOnLogin,
+};
