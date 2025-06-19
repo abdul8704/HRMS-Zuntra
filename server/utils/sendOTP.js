@@ -237,4 +237,4 @@ const sendOTP = async (toEmail, otp) => {
     await transporter.sendMail(mailOptions);
 };
 
-module.exports = sendOTP;
+module.exports = { sendOTP };
