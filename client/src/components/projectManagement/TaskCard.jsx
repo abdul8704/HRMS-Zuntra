@@ -35,7 +35,7 @@ export const TaskCard = ({
       <style jsx>{`
         .task-container {
           display: flex;
-          width: 30%;
+          flex: 0 0 calc(50% - 32px);
           flex-direction: column;
           background-color: #C1E8BD;
           padding: 16px;
