@@ -17,6 +17,7 @@ export const HrEmployeeManagement = () => {
             date="10-06-2025"
             image="https://randomuser.me/api/portraits/men/30.jpg"
             bgColor="bg-purple-200"
+            STATUS= "0"
           />
         </div>
       </div>
