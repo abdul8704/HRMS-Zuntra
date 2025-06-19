@@ -129,7 +129,7 @@ export const Login = () => {
       <div className="login-divider"><span>or</span></div>
       <button type="button" className="login-google-button">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="login-google-icon" />
-        Sign up with Google
+        Continue with Google
       </button>
     </>
   );
@@ -250,8 +250,14 @@ export const Login = () => {
     padding: 0.4rem 0.8rem;
     margin-top: 0.6rem;
     border-radius: 0.5rem;
-    border: 0.11rem solid #000;
+    border: 0.104rem solid #000;
   }
+
+  .login-input::placeholder {
+  color: #000; 
+  opacity: 0.9;  
+}
+
 
   .login-forgot {
     width: 85%;
@@ -300,11 +306,11 @@ export const Login = () => {
 
   .login-google-button {
     width: 85%;
-    font-size: 0.95rem;
-    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    padding: 0.6rem 1rem;
     background-color: #fff;
     color: #000;
-    border: 0.125rem solid #000;
+    border: 0.104rem solid #000;
     border-radius: 5rem;
     cursor: pointer;
     display: flex;
@@ -346,7 +352,7 @@ export const Login = () => {
   .login-toggle {
     width: 3rem;
     height: 1.25rem;
-    background-color: #ccc;
+    background-color: #8C8C8C;
     border-radius: 1rem;
     position: relative;
     transition: background-color 0.3s;
@@ -407,7 +413,7 @@ export const Login = () => {
     .login-button,
     .login-google-button {
       width: 95%;
-      font-size: 0.95rem;
+      font-size: 0.70rem;
       padding: 0.5rem;
     }
 
