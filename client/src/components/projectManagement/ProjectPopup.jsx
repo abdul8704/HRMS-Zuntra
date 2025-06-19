@@ -33,7 +33,7 @@ export const ProjectPopup = () => {
 
   return (
     <>
-      {/* Floating + button */}
+      
       <button
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 w-14 h-14 bg-green-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-green-700 z-50"
@@ -41,12 +41,11 @@ export const ProjectPopup = () => {
         <Plus size={28} />
       </button>
 
-      {/* Popup Modal */}
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center pt-6 pb-10">
           <div className="bg-white w-[65%] max-w-3xl h-auto rounded-2xl shadow-xl relative px-8 py-6">
 
-            {/* Close X button */}
+           
             <button
               onClick={() => setIsOpen(false)}
               className="absolute top-2 right-4 p-2 rounded-full hover:bg-gray-100"
@@ -54,9 +53,8 @@ export const ProjectPopup = () => {
               <X size={20} className="text-gray-500" />
             </button>
 
-            {/* Form content */}
             <div className="space-y-5 mt-6 text-base">
-              {/* Project Title + Date */}
+              
               <div className="flex gap-4">
                 <input
                   type="text"
@@ -75,7 +73,6 @@ export const ProjectPopup = () => {
                 </div>
               </div>
 
-              {/* Description */}
               <textarea
                 placeholder="Project Description..."
                 value={formData.description}
@@ -84,7 +81,7 @@ export const ProjectPopup = () => {
                 rows={4}
               />
 
-              {/* Team Name + Lead */}
+              
               <div className="flex gap-4">
                 <input
                   type="text"
@@ -106,7 +103,7 @@ export const ProjectPopup = () => {
                 </select>
               </div>
 
-              {/* Team Members + Search */}
+              
               <div className="relative">
                 <textarea
                   placeholder="Team Members..."
@@ -153,7 +150,7 @@ export const ProjectPopup = () => {
                 )}
               </div>
 
-              {/* Add Button */}
+              
               <div className="text-center pt-2">
                 <button
                   onClick={handleAdd}
