@@ -1,7 +1,7 @@
-const asyncHandler=require('express-async-handler')
+const asyncHandler = require('express-async-handler')
 const courseService = require("../services/courseService"); // adjust path as needed
 
-const createCourseIntroController = asyncHandler(async (req, res) => {
+const createCourseIntroController = async (req, res) => {
   const courseData = req.body;
 
   const {
@@ -26,26 +26,26 @@ const createCourseIntroController = asyncHandler(async (req, res) => {
     throw new Error("Missing required course fields");
   }
 
-  if(await courseService.getCourseIntroById(courseId).length!==0){
+  const existingCourse = await courseService.getCourseIntroById(courseId);
+  if (existingCourse.length !== 0) {
     res.status(409);
     throw new Error("Course Id already exists")
   }
 
   const result = await courseService.addNewCourse(courseData);
 
-  if (result.success) {
+  if (result) {
     res.status(201).json({
-      message: "Course created successfully",
-      course: result.data,
+      success: true,
+      message: "Data added successfully",
     });
-  } 
-  else {
+  } else {
     res.status(500);
-    throw new Error("Failed to create course")
-    }
-});
+    throw new Error("Failed to create course content");
+  }
+};
 
-const createCourseContentController = asyncHandler(async (req, res) => {
+const createCourseContentController = async (req, res) => {
   const courseContentData = req.body;
 
   const { courseId, modules } = courseContentData;
@@ -95,60 +95,66 @@ const createCourseContentController = asyncHandler(async (req, res) => {
       }
     }
   }
+  const existingCourse = await courseService.getCourseContentById(courseId);
+  if (existingCourse.length !== 0) {
+    res.status(409);
+    throw new Error("Course Id already exists")
+  }
 
   const result = await courseService.addCourseContent(courseContentData);
 
-  if (result.success) {
+  if (result) {
     res.status(201).json({
-      message: "Course content created successfully",
-      content: result.data,
+      success: true,
+      message: "Data added successfully",
     });
   } else {
     res.status(500);
     throw new Error("Failed to create course content");
   }
-});
+};
 
 
-const getCourseDetails = asyncHandler(async (req, res) => {
+const getCourseDetails = async (req, res) => {
   const result = await courseService.getAllCourseDetails();
-
-  if (result.success) {
-    res.status(200).json({
-      message: "Courses fetched successfully",
-      courses: result.data,
-    });
-  } else {
-    res.status(500);
-    throw new Error("Failed to fetch course details");
-  }
-});
-
-const getCourseContentId = asyncHandler(async(req,res)=>{
-  const result = await courseService.getCourseContentById(req.params.id);
-    if (result.length===0) {
+  if (result.length === 0) {
     res.status(404);
-    throw new Error("Course does not exist");
-  } 
-    else{
+    throw new Error("No courses available");
+  }
+  else {
     res.status(200).json({
       success: true,
       data: result,
     });
-  } 
-});
-
-const getCourseIntroId = asyncHandler(async(req,res)=>{
-  const result = await courseService.getCourseIntroById(req.params.id);
-    if (result.success) {
-    res.status(200).json({
-      message: "Course content fetched successfully",
-      courses: result.data,
-    });
-  } else {
-    res.status(500);
-    throw new Error("Failed to fetch course details");
   }
-});
+};
 
-module.exports = {createCourseIntroController,createCourseContentController,getCourseDetails,getCourseContentId,getCourseIntroId};
+const getCourseContentId = async (req, res) => {
+  const result = await courseService.getCourseContentById(req.params.id);
+  if (result.length === 0) {
+    res.status(404);
+    throw new Error("Course does not exist");
+  }
+  else {
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  }
+};
+
+const getCourseIntroId = async (req, res) => {
+  const result = await courseService.getCourseIntroById(req.params.id);
+  if (result.length === 0) {
+    res.status(404);
+    throw new Error("Course does not exist");
+  }
+  else {
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  }
+};
+
+module.exports = { createCourseIntroController, createCourseContentController, getCourseDetails, getCourseContentId, getCourseIntroId };
