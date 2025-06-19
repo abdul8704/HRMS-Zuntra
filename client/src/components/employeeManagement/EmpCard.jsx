@@ -14,13 +14,16 @@ export const EmpCard = () => {
     { name: "Karan J", email: "karan.j@zuntra.com", phone: "+91 9871234560", date: "06-06-2025", image: "https://randomuser.me/api/portraits/men/54.jpg" },
     { name: "Ananya D", email: "ananya.d@zuntra.com", phone: "+91 9988123456", date: "07-06-2025", image: "https://randomuser.me/api/portraits/women/90.jpg" },
     { name: "Siddharth P", email: "sid.p@zuntra.com", phone: "+91 9612347850", date: "15-06-2025", image: "https://randomuser.me/api/portraits/men/39.jpg" },
-    { name: "Meera V", email: "meera.v@zuntra.com", phone: "+91 9765432100", date: "16-06-2025", image: "https://randomuser.me/api/portraits/women/65.jpg" }
+    { name: "Meera V", email: "meera.v@zuntra.com", phone: "+91 9765432100", date: "16-06-2025", image: "https://randomuser.me/api/portraits/women/65.jpg" },
+    { name: "Rajeev S", email: "rajeev.s@zuntra.com", phone: "+91 8123456789", date: "17-06-2025", image: "https://randomuser.me/api/portraits/men/47.jpg" },
+    { name: "Harsha K", email: "harsha.k@zuntra.com", phone: "+91 9345678901", date: "18-06-2025", image: "https://randomuser.me/api/portraits/women/50.jpg" },
+    { name: "Avinash T", email: "avinash.t@zuntra.com", phone: "+91 7890654321", date: "19-06-2025", image: "https://randomuser.me/api/portraits/men/15.jpg" },
   ];
 
   const bgClasses = ['bg1', 'bg2', 'bg3'];
 
   return (
-    <div className="empcard-scroll">
+    <div className="page-wrapper">
       <div className="empcard-grid">
         {employees.map((emp, index) => (
           <div key={index} className={`emp-card ${bgClasses[index % 3]}`}>
@@ -42,76 +45,80 @@ export const EmpCard = () => {
       </div>
 
       <style jsx>{`
-      .empcard-scroll {
-  height: 80vh;
-  overflow-y: auto;
-  margin-top: 20px;
-  padding-right: 8px;
-}
+        .page-wrapper {
+          background: #f1f5f9;
+          min-height: 100vh;
+          padding: 20px;
+          display: flex;
+          justify-content: center;
+        }
 
-.empcard-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
+        .empcard-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 16px;
+          overflow-y: auto;
+          padding: 16px;
+          max-height: 90vh;
+          width: 100%;
+          max-width: 1200px;
+          background: white;
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
 
-@media (min-width: 768px) {
-  .empcard-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
+        .emp-card {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 16px;
+          border-radius: 12px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
 
-.emp-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
+        .emp-info {
+          display: flex;
+          gap: 16px;
+          align-items: center;
+        }
 
-.emp-info {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
+        .emp-info img {
+          width: 64px;
+          height: 64px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
 
-.emp-info img {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-}
+        .emp-info h3 {
+          margin: 0;
+          font-weight: 600;
+        }
 
-.emp-info h3 {
-  margin: 0;
-  font-weight: 600;
-}
+        .emp-info p {
+          margin: 2px 0;
+          font-size: 14px;
+        }
 
-.emp-info p {
-  margin: 2px 0;
-  font-size: 14px;
-}
+        .emp-info .small {
+          font-size: 12px;
+          color: gray;
+        }
 
-.emp-info .small {
-  font-size: 12px;
-  color: gray;
-}
+        .emp-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
 
-.emp-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.emp-actions button {
-  border: none;
-  border-radius: 9999px;
-  width: 32px;
-  height: 32px;
-  font-size: 16px;
-  color: white;
-  cursor: pointer;
-}
+        .emp-actions button {
+          border: none;
+          border-radius: 9999px;
+          width: 32px;
+          height: 32px;
+          font-size: 16px;
+          color: white;
+          cursor: pointer;
+        }
 
 .emp-actions .approve {
   background-color: green;

@@ -26,6 +26,11 @@ const createCourseIntroController = asyncHandler(async (req, res) => {
     throw new Error("Missing required course fields");
   }
 
+  if(await courseService.getCourseIntroById(courseId).length!==0){
+    res.status(409);
+    throw new Error("Course Id already exists")
+  }
+
   const result = await courseService.addNewCourse(courseData);
 
   if (result.success) {
@@ -33,7 +38,8 @@ const createCourseIntroController = asyncHandler(async (req, res) => {
       message: "Course created successfully",
       course: result.data,
     });
-  } else {
+  } 
+  else {
     res.status(500);
     throw new Error("Failed to create course")
     }
@@ -120,15 +126,16 @@ const getCourseDetails = asyncHandler(async (req, res) => {
 
 const getCourseContentId = asyncHandler(async(req,res)=>{
   const result = await courseService.getCourseContentById(req.params.id);
-    if (result.success) {
+    if (result.length===0) {
+    res.status(404);
+    throw new Error("Course does not exist");
+  } 
+    else{
     res.status(200).json({
-      message: "Course content fetched successfully",
-      courses: result.data,
+      success: true,
+      data: result,
     });
-  } else {
-    res.status(500);
-    throw new Error("Failed to fetch course details");
-  }
+  } 
 });
 
 const getCourseIntroId = asyncHandler(async(req,res)=>{
