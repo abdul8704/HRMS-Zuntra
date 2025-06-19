@@ -7,11 +7,6 @@ const getAllCourseDetails = asyncHandler(async () => {
     return courseData
 });
 
-const addNewCourse = asyncHandler(async (courseData) => {
-  const newCourse = await courseDetails.create(courseData);
-  return newCourse;
-});
-
 const getCourseIntroById = asyncHandler(async (courseid) => {
     const courseIntro = await courseDetails.find({courseId:courseid});
     return courseIntro
@@ -20,6 +15,11 @@ const getCourseIntroById = asyncHandler(async (courseid) => {
 const getCourseContentById = asyncHandler(async (courseid) => {
     const content = await courseContent.find({courseId:courseid});
     return content
+});
+
+const addNewCourse = asyncHandler(async (courseData) => {
+  const newCourse = await courseDetails.create(courseData);
+  return newCourse;
 });
 
 const addCourseContent = asyncHandler(async (courseContents) => {

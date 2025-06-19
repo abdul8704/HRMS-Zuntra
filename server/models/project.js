@@ -35,7 +35,7 @@ const projectSchema = new mongoose.Schema({
     status: {
         type: String,
         required: true,
-        trime: true,
+        trim: true,
     },
 });
 
