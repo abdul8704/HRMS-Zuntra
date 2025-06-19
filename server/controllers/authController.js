@@ -1,10 +1,10 @@
 const asyncHandler = require("express-async-handler");
 const authService = require("../services/authService");
 const employeeService = require("../services/employeeService");
-const jwtUtils = require("../utils/generateJWT");
-const authOTP = require("../models/authOTP")
+const authOTP = require("../models/authOTP");
 const generateOTP = require("../utils/generateOTP");
-const transporter = require("../utils/sendOTP")
+const transporter = require("../utils/sendOTP");
+const jwtUtils = require("../utils/generateJWT");
 
 const handleRefreshToken = asyncHandler((req, res) => {
     const cookies = req.cookies;
@@ -23,6 +23,7 @@ const handleRefreshToken = asyncHandler((req, res) => {
             return res
                 .status(403)
                 .json({ sucess: false, message: err.message });
+
         const newToken = jwtUtils.generateToken({ userid: user.userid });
         return res.status(201).json({ sucess: true, token: newToken });
     });
@@ -37,12 +38,10 @@ const handleLogin = asyncHandler(async (req, res) => {
             .json({ success: false, message: "invalid input" });
 
     const verifyLogin = await authService.verifyLogin(email, password);
-    
+
     if (verifyLogin.success === true) {
         const token = jwtUtils.generateToken(verifyLogin.userData);
-        const refreshToken = jwtUtils.generateRefreshToken(
-            verifyLogin.userData
-        );
+        const refreshToken = jwtUtils.generateRefreshToken(verifyLogin.userData);
 
         const userid = verifyLogin.userData.userid;
         await employeeService.markAttendanceOnLogin(userid);
@@ -51,7 +50,7 @@ const handleLogin = asyncHandler(async (req, res) => {
             httpOnly: true,
             secure: true,
             sameSite: "None",
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            maxAge: 1 * 24 * 60 * 60 * 1000, // 1 days
         });
 
         res.status(200).json({
@@ -59,6 +58,7 @@ const handleLogin = asyncHandler(async (req, res) => {
             accessToken: token,
             message: "Login successful",
         });
+
     } else if (verifyLogin.message === "Wrong Password") {
         res.status(401);
         throw new Error("Wrong Password");
@@ -84,7 +84,30 @@ const signUpHandler = asyncHandler(async (req, res) => {
     }
 
     await authService.createNewUser(req.body);
-    return res.status(201).json({ success: true, message: "DONEE" });
+    
+    const newuser = await authService.getUserByEmail(email);
+
+    const payload = {
+        username: newuser.username,
+        userid: newuser._id,
+        role: newuser.role,
+    };
+
+    const token = jwtUtils.generateToken(payload);
+    const refreshToken = jwtUtils.generateRefreshToken(payload);
+
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
+    });
+
+    res.status(200).json({
+        success: true,
+        accessToken: token,
+        message: "Signup Successfull",
+    });
 });
 
 const userExists = asyncHandler(async (req, res) => {
@@ -140,12 +163,11 @@ const verifyOTPController = asyncHandler(async (req, res) => {
     }
 });
 
-
 module.exports = {
     handleLogin,
     signUpHandler,
     userExists,
     handleRefreshToken,
     sendOTPController,
-    verifyOTPController
+    verifyOTPController,
 };
