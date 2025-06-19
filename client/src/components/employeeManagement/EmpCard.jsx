@@ -1,3 +1,4 @@
+
 import React from "react";
 
 export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
@@ -76,8 +77,13 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
         .emp-text h3 {
           margin: 0;
           font-weight: 700;
-          font-size: 18px;
-        }
+  font-size: 18px;
+  text-align: left;
+  word-break: break-word;       /* Handles very long words */
+  white-space: normal;          /* Allows wrapping */
+  width: 100%;                  /* Ensures full-width */
+}
+
 
         .emp-text p {
           margin: 2px 0;
@@ -89,12 +95,13 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
         }
 
         .emp-text .small {
-          font-size: 12px;
-          color: black;
-          background-color: white;
-          border-radius: 50px;
-          padding: 4px 10px;
-        }
+  font-size: 12px;
+  color: black;
+  background-color: rgba(255, 255, 255, 0.6); /* white with 60% opacity */
+  border-radius: 50px;
+  padding: 4px 10px;
+}
+
 
         .icon {
           display: inline-flex;
