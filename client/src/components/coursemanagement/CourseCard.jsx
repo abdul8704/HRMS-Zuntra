@@ -21,8 +21,8 @@ export const CourseCard = ({ image, title, instructor, duration, rating }) => {
 const styles = {
   card: {
     width: '300px',
-    height: '280px',
-    backgroundColor: '#fff',
+    height: '350px',
+    backgroundColor: '#D9D9D9',
     borderRadius: '12px',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
     padding: '16px',
