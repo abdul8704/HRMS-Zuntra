@@ -37,7 +37,6 @@ const markAttendanceOnLogin = async (userid) => {
         let attendance = await Attendance.findOne({ userid, date: today });
 
         if (!attendance) {
-            // No attendance yet for today — create it
             attendance = new Attendance({
                 userid,
                 date: today,
@@ -48,7 +47,11 @@ const markAttendanceOnLogin = async (userid) => {
             });
         }
 
-        // Add a new login session with loginTime set
+        const lastSession = attendance.sessions[attendance.sessions.length - 1];
+        if (lastSession && !lastSession.logoutTime) {
+            lastSession.logoutTime = now;
+        }
+
         attendance.sessions.push({ loginTime: now });
 
         await attendance.save();

@@ -4,33 +4,36 @@ const asyncHandler = require("express-async-handler");
 
 require("dotenv").config();
 
-const verifyLogin = async (email, password) => {
+const verifyLogin = asyncHandler(async (email, password) => {
     try {
         const userData = await UserCreds.findOne(
             { email: email },
             {
                 _id: 1,
+                username: 1,
                 role: 1,
+                passwordHash: 1,
             }
         );
-        console.log("this", userData)
         if (!userData) return { success: false, message: "User not found" };
 
         const verify = await bcrypt.compare(password, userData.passwordHash);
-        
-        if (!verify) {
-            return { success: false, message: "Wrong Password" };
-        }
+
+        if (!verify) return { success: false, message: "Wrong Password" };
 
         return {
             success: true,
-            userData: userData,
             message: "credentials matched.",
+            userData: {
+                username: userData.username,
+                userid: userData._id,
+                role: userData.role,
+            },
         };
     } catch (err) {
         return { success: false, message: err.message };
     }
-};
+});
 
 const createNewUser = asyncHandler(async (userData) => {
     const { username, email, password, phoneNum } = userData;
@@ -40,11 +43,11 @@ const createNewUser = asyncHandler(async (userData) => {
         Number(process.env.HASH_SALT)
     );
 
-    const newUser = new PendingUser({
+    const newUser = new UserCreds({
         username: username,
         email: email,
         passwordHash: hashedpass,
-        phoneNum: phoneNum,
+        phoneNumber: phoneNum,
     });
 
     await newUser.save();
