@@ -45,35 +45,35 @@ export const Login = () => {
   };
 
   const handleResetSubmit = (e) => {
-  e.preventDefault();
-  const { email, otp, password, confirmPassword } = resetData;
+    e.preventDefault();
+    const { email, otp, password, confirmPassword } = resetData;
 
-  if (!otpSent) {
-    if (!email) {
-      alert("Please enter your email to receive OTP.");
-      return;
+    if (!otpSent) {
+      if (!email) {
+        alert("Please enter your email to receive OTP.");
+        return;
+      }
+      setOtpSent(true);
+      console.log('OTP sent to:', email);
+    } else if (!otpVerified) {
+      if (!otp) {
+        alert("Please enter the OTP.");
+        return;
+      }
+      setOtpVerified(true);
+      console.log('OTP verified:', otp);
+    } else {
+      if (!password || !confirmPassword) {
+        alert("Please fill all password fields.");
+        return;
+      }
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+      console.log('Reset confirmed:', { email, password, confirmPassword });
     }
-    setOtpSent(true);
-    console.log('OTP sent to:', email);
-  } else if (!otpVerified) {
-    if (!otp) {
-      alert("Please enter the OTP.");
-      return;
-    }
-    setOtpVerified(true);
-    console.log('OTP verified:', otp);
-  } else {
-    if (!password || !confirmPassword) {
-      alert("Please fill all password fields.");
-      return;
-    }
-    if (password !== confirmPassword) {
-      alert("Passwords do not match.");
-      return;
-    }
-    console.log('Reset confirmed:', { email, password, confirmPassword });
-  }
-};
+  };
 
   const renderGoogleButton = () => (
     <>
@@ -102,7 +102,7 @@ export const Login = () => {
                     <input name="phone" value={signupData.phone} onChange={handleSignupChange} className="login-input" type="tel" placeholder="Phone Number" />
                     <input name="password" value={signupData.password} onChange={handleSignupChange} className="login-input" type="password" placeholder="Password" />
                     <input name="confirmPassword" value={signupData.confirmPassword} onChange={handleSignupChange} className="login-input" type="password" placeholder="Confirm Password" />
-                  <div className="login-forgot"></div>
+                    <div className="login-forgot"></div>
                     <button type="submit" className="login-button">Sign Up</button>
                   </form>
                   {renderGoogleButton()}
@@ -112,7 +112,7 @@ export const Login = () => {
                   <h1 className="login-title">Login</h1>
                   <form className="login-form" onSubmit={handleLoginSubmit}>
                     <input name="email" value={loginData.email} onChange={handleLoginChange} className="login-input" type="email" placeholder="Email" />
-                    <input style={{marginBottom: 0}} name="password" value={loginData.password} onChange={handleLoginChange} className="login-input" type="password" placeholder="Password" />
+                    <input style={{ marginBottom: 0 }} name="password" value={loginData.password} onChange={handleLoginChange} className="login-input" type="password" placeholder="Password" />
                     <div className="login-forgot-container"><label className="login-forgot" onClick={() => setShowReset(true)}>Forgot Password?</label></div>
                     <button type="submit" className="login-button">Clock in</button>
                   </form>
@@ -122,64 +122,64 @@ export const Login = () => {
             ) : (
               <>
                 <h1 className="login-title">Reset Password</h1>
-<form className="login-form" onSubmit={handleResetSubmit}>
-  {!otpSent && (
-    <input
-      name="email"
-      value={resetData.email}
-      onChange={handleResetChange}
-      className="login-input"
-      type="email"
-      placeholder="Enter Email"
-    />
-  )}
-  {otpSent && !otpVerified && (
-    <input
-      name="otp"
-      value={resetData.otp}
-      onChange={handleResetChange}
-      className="login-input"
-      type="text"
-      placeholder="Enter OTP"
-    />
-  )}
-  {otpVerified && (
-    <>
-      <div style={{ fontSize: '0.9rem', color: '#555', marginBottom: '0.5rem' }}>
-      </div>
-      <input
-        name="password"
-        value={resetData.password}
-        onChange={handleResetChange}
-        className="login-input"
-        type="password"
-        placeholder="New Password"
-      />
-      <input
-        name="confirmPassword"
-        value={resetData.confirmPassword}
-        onChange={handleResetChange}
-        className="login-input"
-        type="password"
-        placeholder="Confirm Password"
-      />
-    </>
-  )}
-  <button type="submit" className="login-button">
-    {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
-  </button>
-  <div className="back-login-container">
-  <label className="back-login" onClick={() => {
-    setShowReset(false);
-    setOtpSent(false);
-    setOtpVerified(false);
-    setResetData({ email: '', otp: '', password: '', confirmPassword: '' });
-  }}>
-    Back to login
-  </label>
-</div>
+                <form className="login-form" onSubmit={handleResetSubmit}>
+                  {!otpSent && (
+                    <input
+                      name="email"
+                      value={resetData.email}
+                      onChange={handleResetChange}
+                      className="login-input"
+                      type="email"
+                      placeholder="Enter Email"
+                    />
+                  )}
+                  {otpSent && !otpVerified && (
+                    <input
+                      name="otp"
+                      value={resetData.otp}
+                      onChange={handleResetChange}
+                      className="login-input"
+                      type="text"
+                      placeholder="Enter OTP"
+                    />
+                  )}
+                  {otpVerified && (
+                    <>
+                      <div style={{ fontSize: '0.9rem', color: '#555', marginBottom: '0.5rem' }}>
+                      </div>
+                      <input
+                        name="password"
+                        value={resetData.password}
+                        onChange={handleResetChange}
+                        className="login-input"
+                        type="password"
+                        placeholder="New Password"
+                      />
+                      <input
+                        name="confirmPassword"
+                        value={resetData.confirmPassword}
+                        onChange={handleResetChange}
+                        className="login-input"
+                        type="password"
+                        placeholder="Confirm Password"
+                      />
+                    </>
+                  )}
+                  <button type="submit" className="login-button">
+                    {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
+                  </button>
+                  <div className="back-login-container">
+                    <label className="back-login" onClick={() => {
+                      setShowReset(false);
+                      setOtpSent(false);
+                      setOtpVerified(false);
+                      setResetData({ email: '', otp: '', password: '', confirmPassword: '' });
+                    }}>
+                      Back to login
+                    </label>
+                  </div>
 
-</form>
+                </form>
               </>
             )}
             {!showReset && (
@@ -274,6 +274,7 @@ export const Login = () => {
   .back-login-container {
     margin-top: 0.9rem;
     align-self: center;
+    text-align: center;
     width: 100%;
   }
   
