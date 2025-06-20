@@ -8,12 +8,14 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
         <div className="emp-text">
           <h3>{name}</h3>
           <p>
-            <span className="icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="14" fill="none" viewBox="0 0 18 14">
-                <path fill="#000" d="M1.891 13.838a1.67 1.67 0 0 1-1.193-.472A1.518 1.518 0 0 1 .2 12.228v-9.66c0-.444.165-.823.497-1.138.331-.315.73-.472 1.193-.473h13.526c.465 0 .863.158 1.194.473.331.316.497.695.496 1.137v9.66c0 .444-.165.823-.496 1.139-.33.315-.729.473-1.194.472H1.89Zm6.763-5.635 6.763-4.026v-1.61L8.654 6.592 1.891 2.567v1.61l6.763 4.026Z" />
-              </svg>
-            </span>
-            {email}
+            <a href={`mailto:${email}`} className="email-link">
+              <span className="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="14" fill="none" viewBox="0 0 18 14">
+                  <path fill="#000" d="M1.891 13.838a1.67 1.67 0 0 1-1.193-.472A1.518 1.518 0 0 1 .2 12.228v-9.66c0-.444.165-.823.497-1.138.331-.315.73-.472 1.193-.473h13.526c.465 0 .863.158 1.194.473.331.316.497.695.496 1.137v9.66c0 .444-.165.823-.496 1.139-.33.315-.729.473-1.194.472H1.89Zm6.763-5.635 6.763-4.026v-1.61L8.654 6.592 1.891 2.567v1.61l6.763 4.026Z" />
+                </svg>
+              </span>
+              {email}
+            </a>
           </p>
           <p>
             <span className="icon">
@@ -27,8 +29,8 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
         </div>
       </div>
       <div className="emp-actions">
-        <button className="approve">✓</button>
-        <button className="reject">✕</button>
+        <button className="empcard-approve">✓</button>
+        <button className="empcard-reject">✕</button>
       </div>
 
       <style jsx>{`
@@ -77,6 +79,10 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
           margin: 0;
           font-weight: 700;
           font-size: 18px;
+          text-align: left;
+          word-break: break-word;
+          white-space: normal;
+          width: 100%;
         }
 
         .emp-text p {
@@ -91,7 +97,7 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
         .emp-text .small {
           font-size: 12px;
           color: black;
-          background-color: white;
+          background-color: rgba(255, 255, 255, 0.6);
           border-radius: 50px;
           padding: 4px 10px;
         }
@@ -127,11 +133,11 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
           cursor: pointer;
         }
 
-        .emp-actions .approve {
+        .emp-actions .empcard-approve {
           background-color: green;
         }
 
-        .emp-actions .reject {
+        .emp-actions .empcard-reject {
           background-color: red;
         }
 
@@ -145,6 +151,15 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
 
         .bg3 {
           background-color: #ccfbf1;
+        }
+
+        .email-link {
+          color: inherit;
+          text-decoration: none;
+        }
+
+        .email-link:hover {
+          text-decoration: underline;
         }
       `}</style>
     </div>
