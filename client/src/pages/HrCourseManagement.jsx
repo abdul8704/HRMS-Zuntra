@@ -77,8 +77,8 @@ export const HrCourseManagement = () => {
         {/* ✅ Responsive CSS */}
         <style>{`
           .project-cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            display: flex;
+            flexWrap: wrap;
             gap: 2rem;
             margin-top: 35px;
             padding: 1rem;
