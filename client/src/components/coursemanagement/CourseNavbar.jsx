@@ -50,15 +50,15 @@ export const CourseNavbar = () => {
           background-color: #BBD3CC;
           border-radius: 1rem;
           width: 95%;
-          margin: 20px auto;
-          padding: 10px;
+          margin: 1rem auto;
+          padding: 0rem;
         }
 
         .course-navbar ul {
           list-style: none;
           display: flex;
-          align-items: center;
-          gap: 20px;
+          align-items: centre;
+          gap: 10rem;
           margin: 0;
           padding: 0;
         }
@@ -69,7 +69,7 @@ export const CourseNavbar = () => {
           justify-content: center;
           cursor: pointer;
           font-weight: 500;
-          font-size: 18px;
+          font-size: 6rem;
           padding: 1rem 1.5rem;
           border-radius: 1rem;
           transition: background 0.2s ease-in-out;
