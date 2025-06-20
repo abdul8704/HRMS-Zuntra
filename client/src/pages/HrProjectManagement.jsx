@@ -7,7 +7,7 @@ import { TaskNavbar } from '../components/projectManagement/TaskNavbar';
 import {ProjectPopup} from '../components/projectManagement/ProjectPopup'; 
 
 export const HrProjectManagement = () => {
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(1);
 
   return (
     <div className="relative">
