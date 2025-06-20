@@ -18,6 +18,8 @@ export const HrProjectManagement = () => {
       {active === 1 && <TaskNavbar/>}
         <div className="project-cards-container">
           <ProjectCard />
+          <ProjectCard />
+          <TaskCard />
           <TaskCard />
           <TaskCard />
           <TaskCard />
