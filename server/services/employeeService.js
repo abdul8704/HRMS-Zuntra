@@ -1,5 +1,5 @@
 const Attendance = require("../models/attendance")
-const User = require("../models/userDetails.js")
+const User = require("../models/userCredentials.js")
 
 const getAttendaceByUserId = async (userid, startDate, endDate) => {
     try {
@@ -12,7 +12,7 @@ const getAttendaceByUserId = async (userid, startDate, endDate) => {
         const attendanceRecords = await Attendance.find({
             userid: userid,
             date: { $gte: start, $lte: end },
-        }).sort({ date: 1 }); 
+        }).sort({ date: 1 });
 
         return {
             success: true,
@@ -25,7 +25,7 @@ const getAttendaceByUserId = async (userid, startDate, endDate) => {
             message: error.message,
         };
     }
-}
+};
 
 const markAttendanceOnLogin = async (userid) => {
     const now = new Date();
@@ -37,7 +37,6 @@ const markAttendanceOnLogin = async (userid) => {
         let attendance = await Attendance.findOne({ userid, date: today });
 
         if (!attendance) {
-            // No attendance yet for today — create it
             attendance = new Attendance({
                 userid,
                 date: today,
@@ -48,7 +47,11 @@ const markAttendanceOnLogin = async (userid) => {
             });
         }
 
-        // Add a new login session with loginTime set
+        const lastSession = attendance.sessions[attendance.sessions.length - 1];
+        if (lastSession && !lastSession.logoutTime) {
+            lastSession.logoutTime = now;
+        }
+
         attendance.sessions.push({ loginTime: now });
 
         await attendance.save();
@@ -61,5 +64,5 @@ const markAttendanceOnLogin = async (userid) => {
 
 module.exports = {
     getAttendaceByUserId,
-    markAttendanceOnLogin
-}
+    markAttendanceOnLogin,
+};
