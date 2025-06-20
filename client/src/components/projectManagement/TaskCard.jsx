@@ -1,102 +1,76 @@
-import React from 'react'
+import React from "react";
+import { FaPen, FaTrash } from "react-icons/fa";
 
-export const TaskCard = ({
-  TaskTitle = "Dummy Task Title",
-  Taskdescription = "This is a placeholder task description for testing.This place provides space for the task description to be worked on by the employee ie the task they should complete in the stipulated time.",
-  footer1 = "John Doe",
-  footer2 = "Due: 2025-07-01"
-}) => {
+const UserProfile = ({ userName, userRole, userImage, style }) => {
+  const styles = {
+    container: {
+      display: "flex",
+      alignItems: "center",
+      padding: "8px 12px",
+      borderRadius: "999px",
+      backgroundColor: "#e9f9e3",
+      ...style
+    },
+    avatar: { width: "40px", height: "40px", borderRadius: "50%", marginRight: "10px" },
+    userDetails: { display: "flex", flexDirection: "column" },
+    userName: { fontSize: "14px", fontWeight: "600" },
+    userRole: { fontSize: "12px", color: "#555" },
+  };
+
   return (
-    <div className="task-container">
-      <div className="task-header">
-        <h1>{TaskTitle}</h1>
-        <div className="icons-wrapper">
-          <div className="icon-container">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
-              <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/>
-            </svg>
-          </div>
-          <div className="icon-container">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
-              <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
-            </svg>
-          </div>
-        </div>
+    <div style={styles.container}>
+      <img src={userImage} alt="User Avatar" style={styles.avatar} />
+      <div style={styles.userDetails}>
+        <span style={styles.userName}>{userName}</span>
+        <span style={styles.userRole}>{userRole}</span>
       </div>
-      <div className= "task-description">
-        <p>{Taskdescription}</p>
-      </div>
-      
-      <div className="footer">
-        <div>{footer1}</div>
-        <div>{footer2}</div>
-      </div>
-             
-      <style jsx>{`
-        .task-container {
-          display: flex;
-          flex: 0 0 calc(50% - 32px);
-          flex-direction: column;
-          background-color: #C1E8BD;
-          padding: 16px;
-          border: 1px solid #e3e3e3;
-          border-radius: 8px;
-          margin: 16px;
-          
-        }
-                 
-        .task-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: left;
-          margin-bottom: 12px;
-          font-weight: bold;
-          font-size: 22px;
-        }
-
-        .icons-wrapper {
-        color: rgb(34, 33, 33);
-          display: flex;
-          gap: 4px;
-        }
-                 
-        .icon-container {
-          cursor: pointer;
-          padding: 4px;
-        }
-                 
-        .icon-container:hover {
-          background-color:rgb(193, 188, 188);
-          border-radius: 4px;
-        }
-                 
-        .footer {
-          display: flex;
-          justify-content: space-between;
-          flex-direction: row;
-          margin-top: 12px;
-          padding-top: 12px;
-          font-size:16px;
-          border-top: 1px solid #e3e3e3;
-        }
-                 
-        h1 {
-          margin: 0;
-          font-size: 18px;
-          font-weight: 600;
-        }
-                 
-        .task-description {
-          margin: 0;
-          color: #666;
-          font-size: 14px;
-          text-align: left;
-        }
-        .task-description p {
-          text-align: left;
-          margin: 0;
-  }
-      `}</style>
     </div>
   );
-};  
+};
+
+export const TaskCard = ({
+  title = "Dummy Task Title",
+  description = "This is a sample description. Tasks asigned must be completed by the user within the stipulated time. Happy working!",
+  userName = "John Doe",
+  userRole = "Embedded & IoT Developer",
+  userImage = "https://picsum.photos/40/40?random=1",
+  timeLeft = "3 Month left",
+}) => {
+  const styles = {
+    card: {
+      backgroundColor: "#cceec7",
+      borderRadius: "16px",
+      padding: "20px",
+      position: "relative",
+      fontFamily: "'Segoe UI', sans-serif",
+      boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+      maxWidth: "30%",
+      textAlign: "left",
+      margin: "10px",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      minHeight: "300px",
+    },
+    icons: { position: "absolute", top: "12px", right: "12px", display: "flex", gap: "10px", color: "#555", cursor: "pointer" },
+    title: { fontSize: "20px", fontWeight: "bold" },
+    description: { color: "#555", fontSize: "14px", lineHeight: "1.5", marginBottom: "40px" },
+    footer: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px", gap: "20px" },
+    badge: { backgroundColor: "#e9f9e3", padding: "4px 12px", borderRadius: "999px", fontWeight: "600", fontSize: "14px", color: "#555" },
+  };
+
+  return (
+    <div style={styles.card}>
+      <div style={styles.icons}>
+        <FaPen />
+        <FaTrash />
+      </div>
+      <h2 style={styles.title}>{title}</h2>
+      <p style={styles.description}>{description}</p>
+      <div style={styles.footer}>
+        <UserProfile userName={userName} userRole={userRole} userImage={userImage} />
+        <div style={styles.badge}>{timeLeft}</div>
+      </div>
+    </div>
+  );
+};
