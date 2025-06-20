@@ -20,7 +20,7 @@ const userCredentialsSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        required: true,
+        default: "unassigned"
     },
     phoneNumber: {
         type: String,
