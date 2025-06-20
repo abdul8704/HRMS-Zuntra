@@ -90,7 +90,7 @@ export default function ProfileSidebar() {
         <div style={{ paddingTop: isMobile ? '64px' : '24px', paddingBottom: '24px', paddingLeft: '24px', paddingRight: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <img 
-              src="../public/Zuntra.svg"
+              src="../../assets/Zuntra.svg"
               alt="ZUNTRA DIGITAL Logo"
               style={{ height: '64px', width: '', objectFit: 'contain' }}
             />
