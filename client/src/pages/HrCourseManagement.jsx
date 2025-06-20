@@ -74,31 +74,21 @@ export const HrCourseManagement = () => {
           />
         </div>
 
-        {/* Responsive Grid CSS */}
+        {/* ✅ Responsive CSS */}
         <style>{`
-          .project-cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-            padding: 1rem;
-            max-width: 100%;
-            overflow-y: auto;
-            box-sizing: border-box;
-          }
-
-          @media (max-width: 1024px) {
-            .project-cards-container {
-              gap: 1.5rem;
-            }
-          }
-
-          @media (max-width: 768px) {
-            .project-cards-container {
-              gap: 1rem;
-            }
-          }
-        `}</style>
+        .project-cards-container{
+          display: grid;
+          grid-template-columns: repeat(3, 1fr); 
+          margin-top: 35px;
+          column-gap: 2rem;
+          row-gap: 2rem;   
+          max-height:100%;
+          max-width:100%;
+          overflow-y:auto;
+          overflow-x:hidden;
+          padding:1rem;
+        }
+      `}</style>
       </div>
     </div>
   );
