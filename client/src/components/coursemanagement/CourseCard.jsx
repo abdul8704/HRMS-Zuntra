@@ -8,14 +8,17 @@ export const CourseCard = ({ image, title, instructor, duration, badgeColor, rat
     borderRadius: "12px",
     fontSize: "12px",
     fontWeight: "500",
+    whiteSpace: "nowrap",
   };
 
   return (
     <div style={styles.card}>
       <img src={image} alt={title} style={styles.image} />
       <div style={styles.content}>
-        <h3 style={styles.title}>{title}</h3>
-        <p style={styles.instructor}>by {instructor}</p>
+        <div style={styles.infoSection}>
+          <h3 style={styles.title}>{title}</h3>
+          <p style={styles.instructor}>by {instructor}</p>
+        </div>
         <div style={styles.footer}>
           <span style={badgeStyle}>{duration}</span>
           <span style={styles.rating}>{rating} ⭐</span>
@@ -47,7 +50,10 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    height: "100%",
+    flex: 1,
+  },
+  infoSection: {
+    marginBottom: "12px",
   },
   title: {
     fontSize: "16px",
@@ -57,7 +63,6 @@ const styles = {
   instructor: {
     fontSize: "13px",
     color: "#666",
-    marginBottom: "12px",
   },
   footer: {
     display: "flex",
@@ -70,5 +75,4 @@ const styles = {
     color: "#f4b400",
   },
 };
-
 
