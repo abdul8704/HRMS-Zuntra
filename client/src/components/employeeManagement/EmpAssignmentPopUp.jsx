@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Check, User, Clock, IndianRupee } from 'lucide-react';
 
 export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
   const [selectedRole, setSelectedRole] = useState('');
@@ -9,16 +8,16 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
   const roleInputRef = useRef();
 
   const roleSalaryMap = {
-    'Software Engineer': '₹8,00,000',
+    'Software Engineer': '₹80,000',
     'Senior Software Engineer': '₹1,20,000',
     'Team Lead': '₹1,50,000',
     'Project Manager': '₹1,80,000',
     'HR Executive': '₹6,00,000',
     'Business Analyst': '₹1,00,000',
-    'UI/UX Designer': '₹75,000',
-    'QA Engineer': '₹65,000',
+    'UI/UX Designer': '₹7,50,000',
+    'QA Engineer': '₹6,05,000',
     'DevOps Engineer': '₹1,10,000',
-    'Data Analyst': '₹90,000'
+    'Data Analyst': '₹9,00,000'
   };
 
   const roles = Object.keys(roleSalaryMap);
@@ -90,87 +89,90 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
     <>
       <div className="popup-overlay">
         <div className="popup-container">
-          <div className="popup-emp-info">
-            <img src={employee.image} alt={employee.name} className="popup-avatar" />
-            <div>
-              <h3 className="popup-emp-name">{employee.name}</h3>
-              <p className="popup-emp-email">{employee.email}</p>
-              <p className="popup-emp-date">Applied: {employee.date}</p>
-            </div>
-          </div>
-
-          <div className="popup-body">
-            <div ref={roleInputRef} style={{ position: 'relative' }}>
-  <label className="popup-label">Select Role *</label>
-  <div className="popup-select-wrapper">
-    <input
-      type="text"
-      placeholder="Choose the role"
-      value={selectedRole}
-      onChange={(e) => {
-        setSelectedRole(e.target.value);
-        setShowDropdown(true);
-      }}
-      onFocus={() => setShowDropdown(true)}
-      className="popup-select role-input"
-    />
-  </div>
-  {showDropdown && (
-    <ul className="popup-dropdown">
-      {getSortedRoles(selectedRole).map((role) => (
-        <li
-          key={role}
-          className="popup-dropdown-item"
-          onClick={() => handleRoleChange(role)}
-        >
-          {role}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-
-
-            <div>
-              <label className="popup-label">
-                Select Shift *
-              </label>
-              <select
-                value={selectedShift}
-                onChange={(e) => setSelectedShift(e.target.value)}
-                className="popup-select"
-              >
-                <option value="">Choose a shift...</option>
-                {shifts.map((shift) => (
-                  <option key={shift} value={shift}>{shift}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="popup-label">
-                Monthly Salary
-              </label>
-              <div className={`popup-salary ${!salary ? 'dim-text' : ''}`}>
-                {salary || 'Select a role to see salary'}
+          <div className="popup-content">
+            {/* Left: Employee Info */}
+            <div className="popup-emp-info">
+              <img src={employee.image} alt={employee.name} className="popup-avatar" />
+              <div className="popup-emp-details">
+                <h3 className="popup-emp-name">{employee.name}</h3>
+                <p className="popup-emp-email">{employee.email}</p>
+                <p className="popup-emp-phone">{employee.phone}</p>
+                <p className="popup-emp-date">Applied: {employee.date}</p>
               </div>
             </div>
-          </div>
 
-          <div className="popup-footer">
-            <button className="popup-cancel" onClick={handleClose}>Cancel</button>
-            <button
-              className="popup-submit"
-              onClick={handleSave}
-              disabled={!selectedRole || !selectedShift}
-            >
-             
-              Assign Employee
-            </button>
+            {/* Right: Form Side */}
+            <div className="popup-body">
+              <div ref={roleInputRef} className="popup-select-wrapper">
+                <input
+                  type="text"
+                  placeholder="Choose the role"
+                  value={selectedRole}
+                  onChange={(e) => {
+                    setSelectedRole(e.target.value);
+                    setShowDropdown(true);
+                    setSalary(roleSalaryMap[e.target.value] || ''); // update salary live
+                  }}
+                  onFocus={() => setShowDropdown(true)}
+                  className="popup-select role-input"
+                />
+                {showDropdown && (
+                  <ul className="popup-dropdown">
+                    {getSortedRoles(selectedRole).length > 0 ? (
+                      getSortedRoles(selectedRole).map((role) => (
+                        <li
+                          key={role}
+                          className="popup-dropdown-item"
+                          onClick={() => handleRoleChange(role)}
+                        >
+                          {role}
+                        </li>
+                      ))
+                    ) : (
+                      <li className="popup-dropdown-item no-result">Not found</li>
+                    )}
+                  </ul>
+                )}
+              </div>
+
+              <div className="popup-select-wrapper no-arrow">
+                <select
+                  value={selectedShift}
+                  onChange={(e) => setSelectedShift(e.target.value)}
+                  className="popup-select"
+                >
+                  {shifts.map((shift) => (
+                    <option key={shift} value={shift}>{shift}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="popup-select-wrapper no-arrow">
+                <input
+                  type="text"
+                  placeholder="Select role to get salary"
+                  value={salary}
+                  onChange={(e) => setSalary(e.target.value)}
+                  className="popup-select"
+                />
+              </div>
+
+              <div className="popup-button-group">
+                <button className="popup-cancel" onClick={handleClose}>Cancel</button>
+                <button
+                  className="popup-submit"
+                  onClick={handleSave}
+                  disabled={!selectedRole || !selectedShift}
+                >
+                  Recruit Employee
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Styles */}
       <style jsx>{`
         .popup-overlay {
           position: fixed;
@@ -187,26 +189,45 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           background: #fff;
           border-radius: 16px;
           width: 100%;
-          max-width: 480px;
+          max-width: 600px;
           box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
           overflow: hidden;
           animation: fadeIn 0.3s ease-in-out;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .popup-content {
+          display: flex;
+          flex-direction: row;
+          padding: 20px;
+          gap: 20px;
         }
 
         .popup-emp-info {
+          width: 35%;
           display: flex;
-          gap: 16px;
+          flex-direction: column;
+          justify-content: center;
           align-items: center;
-          padding: 20px;
-          border-bottom: 1px solid #eee;
+          text-align: center;
+          border-right: 1px solid #eee;
+          padding-right: 10px;
+        }
+
+        .popup-emp-details {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
 
         .popup-avatar {
-          width: 48px;
-          height: 48px;
-          border-radius: 999px;
+          width: 100px;
+          height: 100px;
           object-fit: cover;
           border: 2px solid #eee;
+          border-radius: 8px;
+          margin-bottom: 10px;
         }
 
         .popup-emp-name {
@@ -215,30 +236,28 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           color: #111827;
         }
 
-        .popup-emp-email {
+        .popup-emp-email,
+        .popup-emp-phone {
           margin: 2px 0;
-          font-size: 13px;
+          font-size: 14px;
           color: #6b7280;
         }
 
         .popup-emp-date {
-          font-size: 11px;
+          font-size: 13px;
           color: #9ca3af;
         }
 
         .popup-body {
-          padding: 20px;
+          width: 65%;
           display: flex;
           flex-direction: column;
           gap: 20px;
+          justify-content: center;
         }
 
-        .popup-label {
-          display: block;
-          font-size: 14px;
-          margin-bottom: 6px;
-          font-weight: 500;
-          color:black;
+        .popup-select-wrapper {
+          position: relative;
         }
 
         .popup-select {
@@ -248,31 +267,22 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           border-radius: 8px;
           font-size: 14px;
           color: rgba(0, 0, 0, 0.7);
-          background-color:#d9d9d9;
+          background-color: #d9d9d9;
         }
 
-        .popup-select-wrapper {
-          position: relative;
+        .popup-select-wrapper:not(.no-arrow)::after {
+          content: "";
+          position: absolute;
+          right: 12px;
+          top: 50%;
+          transfor        m: translateY(-50%);
+          width: 12px;
+          height: 12px;
+          pointer-events: none;
+          background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23444' strokeWidth='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-size: contain;
         }
-        .role-input {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  padding-right: 36px; /* space for arrow */
-}
-        .popup-select-wrapper::after {
-  content: "";
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 12px;
-  height: 12px;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23444' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-size: contain;
-}
 
         .popup-dropdown {
           border: 1px solid #e5e7eb;
@@ -295,52 +305,35 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           background-color: #f3f4f6;
         }
 
-        .popup-salary {
-          padding: 10px;
-          background: #f9fafb;
-          border: 1px solid #e5e7eb;
-          border-radius: 8px;
-          font-size: 13px;
-          font-weight: bold;
-          color: #111827;
+        .no-result {
+          color: rgba(0, 0, 0, 0.7);
+          cursor: default;
+          font-style: italic;
         }
 
-        .dim-text {
-          opacity: 0.5;
-          font-weight: normal;
-        }
-
-        .popup-select option:first-child {
-          color: #6b7280;
-          opacity: 0.5;
-          font-size: 13px;
-        }
-
-        .popup-footer {
-          padding: 20px;
+        .popup-button-group {
           display: flex;
           gap: 12px;
-          border-top: 1px solid #eee;
+          justify-content: center;
+          margin-top: 10px;
         }
 
-        .popup-footer .popup-cancel {
-          flex: 1;
-          padding: 10px;
+        .popup-button-group .popup-cancel {
+          padding: 10px 16px;
           border: 1px solid #e5e7eb;
-          background-color: rgba(255, 0, 0, 0.6); /* semi-transparent red */
-          color: white;
+          background-color: #E1BEC5;
+          color: black;
           border-radius: 8px;
           cursor: pointer;
         }
 
-        .popup-footer .popup-submit {
-          flex: 1;
-          padding: 10px;
-          background-color: rgba(0, 128, 0, 0.6); /* semi-transparent green */
-          color: white;
+        .popup-button-group .popup-submit {
+          padding: 10px 16px;
+          background-color: #C1E8BD;
+          color: black;
           border: none;
           border-radius: 8px;
-          font-weight: 500;
+          font-weight: normal;
           display: flex;
           align-items: center;
           justify-content: center;
