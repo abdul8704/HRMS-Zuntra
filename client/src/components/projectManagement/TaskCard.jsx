@@ -1,6 +1,6 @@
 import React from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
-
+import { EmpProfile } from "../employeeManagement/EmpProfile";
 const UserProfile = ({ userName, userRole, userImage, style }) => {
   const styles = {
     container: {
@@ -34,7 +34,7 @@ export const TaskCard = ({
   userName = "John Doe",
   userRole = "Embedded & IoT Developer",
   userImage = "https://picsum.photos/40/40?random=1",
-  timeLeft = "3 Month left",
+  timeLeft = "3 Months left",
 }) => {
   const styles = {
     card: {
@@ -44,13 +44,13 @@ export const TaskCard = ({
       position: "relative",
       fontFamily: "'Segoe UI', sans-serif",
       boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-      maxWidth: "30%",
       textAlign: "left",
-      margin: "10px",
+      marginTop: "20px",
+      marginRight: "20px",
       display: "flex",
       flexDirection: "column",
       justifyContent: "space-between",
-      minHeight: "300px",
+      width: "360px",
     },
     icons: { position: "absolute", top: "12px", right: "12px", display: "flex", gap: "10px", color: "#555", cursor: "pointer" },
     title: { fontSize: "20px", fontWeight: "bold" },
@@ -68,7 +68,7 @@ export const TaskCard = ({
       <h2 style={styles.title}>{title}</h2>
       <p style={styles.description}>{description}</p>
       <div style={styles.footer}>
-        <UserProfile userName={userName} userRole={userRole} userImage={userImage} />
+        <EmpProfile name="beryl"  role="front end dev" avatar="jykgk" />
         <div style={styles.badge}>{timeLeft}</div>
       </div>
     </div>
