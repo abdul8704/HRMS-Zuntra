@@ -5,6 +5,8 @@ export const Login = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [showReset, setShowReset] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+
 
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [signupData, setSignupData] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
@@ -43,28 +45,35 @@ export const Login = () => {
   };
 
   const handleResetSubmit = (e) => {
-    e.preventDefault();
-    const { email, otp, password, confirmPassword } = resetData;
+  e.preventDefault();
+  const { email, otp, password, confirmPassword } = resetData;
 
-    if (!otpSent) {
-      if (!email) {
-        alert("Please enter your email to receive OTP.");
-        return;
-      }
-      setOtpSent(true);
-      console.log('OTP sent to:', email);
-    } else {
-      if (!otp || !password || !confirmPassword) {
-        alert("Please fill all fields.");
-        return;
-      }
-      if (password !== confirmPassword) {
-        alert("Passwords do not match.");
-        return;
-      }
-      console.log('Reset Data:', resetData);
+  if (!otpSent) {
+    if (!email) {
+      alert("Please enter your email to receive OTP.");
+      return;
     }
-  };
+    setOtpSent(true);
+    console.log('OTP sent to:', email);
+  } else if (!otpVerified) {
+    if (!otp) {
+      alert("Please enter the OTP.");
+      return;
+    }
+    setOtpVerified(true);
+    console.log('OTP verified:', otp);
+  } else {
+    if (!password || !confirmPassword) {
+      alert("Please fill all password fields.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+    console.log('Reset confirmed:', { email, password, confirmPassword });
+  }
+};
 
   const renderGoogleButton = () => (
     <>
@@ -93,6 +102,7 @@ export const Login = () => {
                     <input name="phone" value={signupData.phone} onChange={handleSignupChange} className="login-input" type="tel" placeholder="Phone Number" />
                     <input name="password" value={signupData.password} onChange={handleSignupChange} className="login-input" type="password" placeholder="Password" />
                     <input name="confirmPassword" value={signupData.confirmPassword} onChange={handleSignupChange} className="login-input" type="password" placeholder="Confirm Password" />
+                  <div className="login-forgot"></div>
                     <button type="submit" className="login-button">Sign Up</button>
                   </form>
                   {renderGoogleButton()}
@@ -102,9 +112,9 @@ export const Login = () => {
                   <h1 className="login-title">Login</h1>
                   <form className="login-form" onSubmit={handleLoginSubmit}>
                     <input name="email" value={loginData.email} onChange={handleLoginChange} className="login-input" type="email" placeholder="Email" />
-                    <input name="password" value={loginData.password} onChange={handleLoginChange} className="login-input" type="password" placeholder="Password" />
-                    <p className="login-forgot" onClick={() => setShowReset(true)}>Forgot Password?</p>
-                    <button type="submit" className="login-button">Clock In</button>
+                    <input style={{marginBottom: 0}} name="password" value={loginData.password} onChange={handleLoginChange} className="login-input" type="password" placeholder="Password" />
+                    <div className="login-forgot-container"><label className="login-forgot" onClick={() => setShowReset(true)}>Forgot Password?</label></div>
+                    <button type="submit" className="login-button">Clock in</button>
                   </form>
                   {renderGoogleButton()}
                 </>
@@ -112,26 +122,73 @@ export const Login = () => {
             ) : (
               <>
                 <h1 className="login-title">Reset Password</h1>
-                <form className="login-form" onSubmit={handleResetSubmit}>
-                  <input name="email" value={resetData.email} onChange={handleResetChange} className="login-input" type="email" placeholder="Enter Email" />
-                  <input name="otp" value={resetData.otp} onChange={handleResetChange} className="login-input" type="text" placeholder="Enter OTP" />
-                  {otpSent && (
-                    <>
-                      <input name="password" value={resetData.password} onChange={handleResetChange} className="login-input" type="password" placeholder="New Password" />
-                      <input name="confirmPassword" value={resetData.confirmPassword} onChange={handleResetChange} className="login-input" type="password" placeholder="Confirm Password" />
-                    </>
-                  )}
-                  <button type="submit" className="login-button">{otpSent ? "Confirm" : "Send OTP"}</button>
-                </form>
+<form className="login-form" onSubmit={handleResetSubmit}>
+  {!otpSent && (
+    <input
+      name="email"
+      value={resetData.email}
+      onChange={handleResetChange}
+      className="login-input"
+      type="email"
+      placeholder="Enter Email"
+    />
+  )}
+  {otpSent && !otpVerified && (
+    <input
+      name="otp"
+      value={resetData.otp}
+      onChange={handleResetChange}
+      className="login-input"
+      type="text"
+      placeholder="Enter OTP"
+    />
+  )}
+  {otpVerified && (
+    <>
+      <div style={{ fontSize: '0.9rem', color: '#555', marginBottom: '0.5rem' }}>
+      </div>
+      <input
+        name="password"
+        value={resetData.password}
+        onChange={handleResetChange}
+        className="login-input"
+        type="password"
+        placeholder="New Password"
+      />
+      <input
+        name="confirmPassword"
+        value={resetData.confirmPassword}
+        onChange={handleResetChange}
+        className="login-input"
+        type="password"
+        placeholder="Confirm Password"
+      />
+    </>
+  )}
+  <button type="submit" className="login-button">
+    {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
+  </button>
+  <div className="back-login-container">
+  <label className="back-login" onClick={() => {
+    setShowReset(false);
+    setOtpSent(false);
+    setOtpVerified(false);
+    setResetData({ email: '', otp: '', password: '', confirmPassword: '' });
+  }}>
+    Back to login
+  </label>
+</div>
+
+</form>
               </>
             )}
             {!showReset && (
               <div className="login-switch" onClick={handleToggle}>
-                <span className={`login-switch-label ${!isSignup ? "login-switch-label-active" : ""}`}>Login</span>
+                <h6 className={`login-switch-label ${!isSignup ? "login-switch-label-active" : ""}`}>Clock in</h6>
                 <div className={`login-toggle ${isSignup ? "login-toggle-active" : ""}`}>
-                  <div className={`login-knob ${isSignup ? "login-knob-active" : ""}`}></div>
+                  <div className={` ${isSignup ? "login-knob-active" : "login-knob"}`}></div>
                 </div>
-                <span className={`login-switch-label ${isSignup ? "login-switch-label-active" : ""}`}>Sign up</span>
+                <h6 className={`login-switch-label ${isSignup ? "login-switch-label-active" : ""}`}>Sign up</h6>
               </div>
             )}
           </div>
@@ -139,267 +196,343 @@ export const Login = () => {
       </div>
 
       <style jsx>{`
-      .login-page {
-          width: 100vw;
-          height: 100vh;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background: #f8f9fa;
-        }
-
-        .login-logo-container {
-          position: absolute;
-          width: 10rem;
-          top: 1rem;
-          left: 1rem;
-        }
-
-        .login-container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 100%;
-        }
-
-        .login-wrapper {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .login-switch {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 1rem;
-          cursor: pointer;
-          margin-top: 2rem;
-        }
-
-        .login-switch-label {
-          font-size: 1rem;
-          color: #333;
-          font-weight: 500;
-        }
-
-        .login-switch-label-active {
-          text-decoration: underline;
-        }
-
-        .login-toggle {
-          width: 3rem;
-          height: 1.25rem;
-          background-color: #8C8C8C;
-          border-radius: 1rem;
-          position: relative;
-          transition: background-color 0.3s;
-        }
-
-        .login-toggle-active {
-          background-color: #08BDB1;
-        }
-
-        .login-knob {
-          width: 1rem;
-          height: 1rem;
-          background-color: #fff;
-          border-radius: 50%;
-          position: absolute;
-          top: 0.125rem;
-          left: 0.125rem;
-          transition: left 0.3s;
-        }
-
-        .login-knob-active {
-          left: 1.625rem;
-        }
-
-        .login-card {
-          background-color: #f2f1f1;
-          border-radius: 1rem;
-          box-shadow: 0 0 1.5rem rgba(0, 0, 0, 0.25);
-          padding: 1.5rem 1rem;
-          width: 24rem;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .login-title {
-          font-size: 1.5rem;
-          font-weight: 600;
-          margin-bottom: 1rem;
-          text-align: center;
-        }
-
-        .login-form {
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .login-input {
-          width: 92%;
-          font-size: 1rem;
-          padding: 0.4rem 0.8rem;
-          margin-top: 0.6rem;
-          border-radius: 0.5rem;
-          border: 0.11rem solid #000;
-        }
-
-        .login-input::placeholder {
-          color: #000;
-          opacity: 0.9;
-        }
-
-        .login-forgot {
-          width: 85%;
-          text-align: right;
-          font-size: 0.85rem;
-          margin-top: 0.2rem;
-          color: #0000ff;
-          cursor: pointer;
-        }
-
-        .login-button {
-          margin-top: 1rem;
-          padding: 0.5rem 1.2rem;
-          font-size: 1rem;
-          background-color: #08BDB1;
-          color: #ffffff;
-          border: none;
-          border-radius: 5rem;
-          cursor: pointer;
-        }
-
-        .login-divider {
-          width: 85%;
-          display: flex;
-          align-items: center;
-          text-align: center;
-          margin: 1rem 0 0.6rem;
-        }
-
-        .login-divider::before,
-        .login-divider::after {
-          content: "";
-          flex: 1;
-          border-top: 0.1rem solid #ccc;
-        }
-
-        .login-divider span {
-          margin: 0 0.5rem;
-          font-size: 0.9rem;
-          color: #999;
-        }
-
-        .login-google-button {
-          width: 85%;
-          font-size: 0.75rem;
-          padding: 0.6rem 1rem;
-          background-color: #fff;
-          color: #000;
-          border: 0.104rem solid #000;
-          border-radius: 5rem;
-          cursor: pointer;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 0.5rem;
-          margin-top: 0.6rem;
-          transition: background-color 0.3s;
-        }
-
-        .login-google-button:hover {
-          background-color: #f5f5f5;
-        }
-
-        .login-google-icon {
-          width: 1.25rem;
-          height: 1.25rem;
-        }
-        /* Already present styles remain unchanged */
-
-@media (max-width: 768px) {
-  .login-card {
-    width: 90%;
-    padding: 1rem 0.8rem;
-  }
-
-  .login-input {
-    font-size: 0.9rem;
-    padding: 0.35rem 0.7rem;
-  }
-
-  .login-button {
-    font-size: 0.9rem;
-    padding: 0.45rem 1rem;
-  }
-
-  .login-title {
-    font-size: 1.25rem;
-  }
-
-  .login-google-button {
-    font-size: 0.7rem;
-    padding: 0.5rem 0.8rem;
+  .login-page {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    position: relative;
+    padding: 1rem;
+    box-sizing: border-box;
   }
 
   .login-logo-container {
-    width: 8rem;
-    top: 0.5rem;
-    left: 0.5rem;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    width: 9rem;
   }
 
-  .login-switch {
-    margin-top: 1rem;
-    gap: 0.8rem;
+  .login-card {
+    background-color: #f2f1f1;
+    border-radius: 0.7rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    padding: 2rem;
+    width: 26rem;
+    max-width: 90vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
   }
 
-  .login-switch-label {
-    font-size: 0.9rem;
-  }
-
-  .login-toggle {
-    width: 2.5rem;
-    height: 1.1rem;
-  }
-
-  .login-knob {
-    width: 0.9rem;
-    height: 0.9rem;
-    top: 0.1rem;
-    left: 0.1rem;
-  }
-
-  .login-knob-active {
-    left: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
   .login-title {
-    font-size: 1.15rem;
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .login-input {
-    width: 95%;
-    font-size: 0.85rem;
+    width: 100%;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+    padding: clamp(0.5rem, 1.5vw, 0.6rem) clamp(0.7rem, 2vw, 0.9rem);
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #aaa;
+    background-color: #fff;
+    box-sizing: border-box;
   }
 
-  .login-google-icon {
-    width: 1rem;
-    height: 1rem;
+  .login-input:focus {
+  border-color: #08BDB1;
+  outline: none;
+  border-width: 1.7px;
+}
+
+  .login-input::placeholder {
+    color: #888;
+  }
+
+  .login-forgot-container {
+    align-self: flex-end;
+    margin-bottom: 0.8rem;
+    text-align: right;
+    width: 100%;
+  }
+
+  .back-login-container {
+    margin-top: 0.9rem;
+    align-self: center;
+    width: 100%;
+  }
+  
+  .login-forgot {
+    width: 100%;
+    font-size: clamp(0.7rem, 2vw, 0.8rem);
+    color: #215E97;
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    word-wrap: break-word;
+  }
+
+  .back-login {
+    text-decoration: underline;
+    width: 100%;
+    text-align: center;
+    font-size: clamp(0.7rem, 2vw, 0.8rem);
+    color: #215E97;
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    word-wrap: break-word;
+  }
+
+  .login-button {
+    background-color: #08BDB1;
+    color: white;
+    padding: clamp(0.5rem, 1.5vw, 0.6rem) clamp(0.5rem, 1.5vw, 0.6rem);
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+    border: none;
+    border-radius: 2rem;
+    cursor: pointer;
+    width: 40%;
+    min-width: 6rem;
+    transition: background-color 0.3s;
+  }
+
+  .login-button:hover {
+    background-color: #07a599;
+  }
+
+  .login-divider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0 1.5rem;
+  }
+
+  .login-divider::before,
+  .login-divider::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid #ccc;
   }
 
   .login-divider span {
-    font-size: 0.8rem;
+    margin: 0 0.5rem;
+    font-size: clamp(0.75rem, 2vw, 0.85rem);
+    color: #999;
+    white-space: nowrap;
   }
-}
 
-      `}</style>
+  .login-google-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: clamp(0.45rem, 1.4vw, 0.55rem);
+    border: 1px solid #000;
+    border-radius: 2rem;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: clamp(0.75rem, 2vw, 0.85rem);
+    margin-bottom: 1.8rem;
+    transition: background-color 0.3s;
+    box-sizing: border-box;
+  }
+
+  .login-google-button:hover {
+    background-color: #f0f0f0;
+  }
+
+  .login-google-icon {
+    width: clamp(1rem, 3vw, 1.25rem);
+    height: clamp(1rem, 3vw, 1.25rem);
+    flex-shrink: 0;
+  }
+
+  .login-switch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.5rem, 2vw, 1rem);
+    font-size: clamp(0.75rem, 2vw, 0.85rem);
+    flex-wrap: wrap;
+  }
+
+  .login-switch-label {
+    font-weight: 500;
+    color: #333;
+    white-space: nowrap;
+  }
+
+  .login-switch-label-active {
+    text-decoration: underline;
+  }
+
+  .login-toggle {
+    width: clamp(2.5rem, 7vw, 3rem);
+    height: clamp(1.1rem, 3vw, 1.3rem);
+    background-color: #8c8c8c;
+    border-radius: 1rem;
+    position: relative;
+    transition: background-color 0.3s;
+    flex-shrink: 0;
+  }
+
+  .login-toggle-active {
+    background-color: #08bdb1;
+  }
+
+  .login-knob {
+    width: clamp(1rem, 3vw, 1.3rem);
+    height: clamp(1rem, 3vw, 1.3rem);
+    background-color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 0rem;
+    left: 0rem;
+    border: 0.2rem solid #8c8c8c;
+    transition: left 0.3s;
+    box-sizing: border-box;
+  }
+    
+  .login-knob-active {
+    width: clamp(1rem, 3vw, 1.3rem);
+    height: clamp(1rem, 3vw, 1.3rem);
+    background-color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 0rem;
+    transition: left 0.3s;
+    border: 0.2rem solid #08bdb1;
+    right: 0rem;
+    box-sizing: border-box;
+  }
+
+  /* Tablet and smaller desktop styles */
+  @media (max-width: 1024px) {
+    .login-logo-container {
+      width: 8rem;
+    }
+  }
+
+  /* Tablet styles */
+  @media (max-width: 768px) {
+    .login-page {
+      padding: 0.5rem;
+    }
+    
+    .login-logo-container {
+      top: 0.5rem;
+      left: 0.5rem;
+      width: 7rem;
+    }
+
+    .login-card {
+      padding: 1.5rem;
+      margin: 0.5rem;
+    }
+
+    .login-switch {
+      gap: 0.5rem;
+    }
+  }
+
+  /* Mobile landscape */
+  @media (max-width: 640px) and (orientation: landscape) {
+    .login-page {
+      height: auto;
+      min-height: 100vh;
+      padding: 0.5rem;
+    }
+    
+    .login-card {
+      margin: 1rem 0;
+    }
+  }
+
+  /* Mobile portrait */
+  @media (max-width: 480px) {
+    .login-page {
+      padding: 0.25rem;
+    }
+    
+    .login-logo-container {
+      top: 0.25rem;
+      left: 0.25rem;
+      width: 6rem;
+    }
+
+    .login-card {
+      padding: 1.25rem;
+      margin: 0.25rem;
+      border-radius: 0.5rem;
+    }
+
+    .login-input {
+      margin-bottom: 0.8rem;
+    }
+
+    .login-title {
+      margin-bottom: 1.25rem;
+    }
+
+    .login-google-button {
+      margin-bottom: 1.5rem;
+    }
+
+    .login-switch {
+      gap: 0.5rem;
+      text-align: center;
+    }
+  }
+
+  /* Very small screens */
+  @media (max-width: 320px) {
+    .login-card {
+      padding: 1rem;
+    }
+    
+    .login-button {
+      width: 50%;
+      min-width: 5rem;
+    }
+  }
+
+  /* High DPI screens */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .login-card {
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .login-button,
+    .login-google-button,
+    .login-toggle,
+    .login-knob,
+    .login-knob-active {
+      transition: none;
+    }
+  }
+
+`}</style>
     </div>
   );
 };
