@@ -1,6 +1,7 @@
 import { Sidebar } from "../components/Sidebar"
 import { CourseCard } from '../components/coursemanagement/CourseCard'
 import { CourseNavbar } from '../components/coursemanagement/CourseNavbar'
+
 export const HrCourseManagement = () => {
   return (
     <div className="website-container">
@@ -8,22 +9,21 @@ export const HrCourseManagement = () => {
       <div className="website-module">
         <CourseNavbar />
         <div className="project-cards-container">
-           <CourseCard
+          <CourseCard
             image="https://img.icons8.com/fluency/96/graduation-cap.png"
             title="React Basics"
             instructor="Helen Coasta"
             duration="at your own pace"
             rating={4.5}
           />
-           <CourseCard
+          <CourseCard
             image="https://img.icons8.com/fluency/96/graduation-cap.png"
             title="Generative AI"
             instructor="Georgia"
             duration="In 3 Weeks"
             rating={3.5}
           />
-           
-           <CourseCard
+          <CourseCard
             image="https://img.icons8.com/fluency/96/graduation-cap.png"
             title="Full stack developer"
             instructor="Millie Brown"
@@ -73,20 +73,40 @@ export const HrCourseManagement = () => {
             rating={4.5}
           />
         </div>
+
+        {/* ✅ Responsive CSS */}
         <style>{`
-        .project-cards-container{
-          display: grid;
-          grid-template-columns: repeat(3, 1fr); 
-          margin-top: 35px;
-          column-gap: 2rem;
-          row-gap: 2rem;   
-          max-height:100%;
-          max-width:100%;
-          overflow-y:auto;
-          overflow-x:hidden;
-          padding:1rem;
-        }
-      `}</style>
+          .project-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 35px;
+            padding: 1rem;
+            max-width: 100%;
+            overflow-x: hidden;
+          }
+
+          @media (max-width: 1024px) {
+            .project-cards-container {
+              grid-template-columns: repeat(2, 1fr);
+              padding: 0.75rem;
+            }
+          }
+
+          @media (max-width: 768px) {
+            .project-cards-container {
+              grid-template-columns: 1fr;
+              padding: 0.5rem;
+            }
+          }
+
+          @media (max-width: 480px) {
+            .project-cards-container {
+              gap: 1rem;
+              padding: 0.5rem 0.25rem;
+            }
+          }
+        `}</style>
       </div>
     </div>
   )
