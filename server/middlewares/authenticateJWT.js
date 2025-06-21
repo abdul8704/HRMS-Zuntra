@@ -20,18 +20,14 @@ const authenticateToken = (req, res, next) => {
 
     const token = parts[1];
 
-    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
-        if (err) {
-            return res.status(403).json({
-                success: false,
-                message: "Invalid or expired token",
-                error: err.message,
-            });
-        }
-
+    try {
+        const user = jwt.verify(token, process.env.JWT_SECRET_KEY);
         req.user = user;
         next();
-    });
+    } catch (err) {
+        err.status = 403;
+        throw err;
+    }
 };
 
 module.exports = authenticateToken;
