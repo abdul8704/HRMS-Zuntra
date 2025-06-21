@@ -26,7 +26,16 @@ const userCredentialsSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-
+    dateJoined: {
+        type: Date,
+        default: Date.now()
+    },
+    shiftStart: {
+        type: Date,
+    },
+    shiftEnd: {
+        type: Date,
+    }
 });
 
 module.exports =

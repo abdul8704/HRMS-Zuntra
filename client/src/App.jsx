@@ -5,6 +5,8 @@ import { NotFound } from './pages/NotFound';
 import { HrProjectManagement } from './pages/HrProjectManagement';
 import { HrCourseManagement } from './pages/HrCourseManagement';
 import { HrEmployeeManagement } from './pages/HrEmployeeManagement';
+import { HrEmployeeDetail } from './pages/HrEmployeeDetail';
+import { HrCreateCourse } from './pages/HrCreateCourse';
 import './App.css'
 import './index.css'
 
@@ -20,6 +22,9 @@ function App() {
         <Route path="/project" element={<HrProjectManagement/>}></Route>
         <Route path="/course" element={<HrCourseManagement/>}></Route>
         <Route path="/employee" element={<HrEmployeeManagement/>}></Route>
+        <Route path="/employee/details"  element={<HrEmployeeDetail/>}></Route>
+        <Route path="/createcourse" element={<HrCreateCourse/>}></Route>
+
       </Routes>
     </BrowserRouter>
     </>
