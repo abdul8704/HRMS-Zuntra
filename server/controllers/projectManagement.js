@@ -72,5 +72,7 @@ const createNewProject = asyncHandler( async(req,res) => {
     })
 })
 
+// @desc Delete a course
+// @route delete /api/project/delete/:courseId
 
 module.exports = { getAllOnGoingProjects, getAllFinishedProjects, createNewProject };
