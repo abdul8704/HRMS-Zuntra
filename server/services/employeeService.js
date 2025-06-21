@@ -1,5 +1,6 @@
 const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
+const ApiError = require("../errors/ApiError.js");
 
 const getAttendaceByUserId = async (userid, startDate, endDate) => {
     try {
@@ -19,11 +20,7 @@ const getAttendaceByUserId = async (userid, startDate, endDate) => {
             data: attendanceRecords,
         };
     } catch (error) {
-        console.error("Error fetching attendance:", error);
-        return {
-            success: false,
-            message: error.message,
-        };
+        throw new ApiError(500, "Failed to fetch attendance records", error.message);
     }
 };
 
@@ -71,51 +68,54 @@ const markAttendanceOnLogin = async (userid) => {
 
         return { success: true, message: "Attendance marked on login" };
     } catch (error) {
-        console.error("Login attendance error:", error);
-        return { success: false, message: error.message };
+        throw new ApiError(500, "Failed to mark attendance on login", error.message);
     }
 };
 
 const markEndOfSession = async (userid, logoutTime) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    try{
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-    const attendance = await Attendance.findOne({ userid, date: today });
+        const attendance = await Attendance.findOne({ userid, date: today });
 
-    if (!attendance) {
+        if (!attendance) {
+            return {
+                success: false,
+                message: "No attendance found for today",
+            };
+        }
+
+        const lastSession = attendance.sessions[attendance.sessions.length - 1];
+
+        if (lastSession && !lastSession.logoutTime) {
+            const logout = new Date(logoutTime);
+            lastSession.logoutTime = logout;
+
+            const login = new Date(lastSession.loginTime);
+
+            const sessionDurationMs = logout - login;
+            const sessionDurationMinutes = sessionDurationMs / (1000 * 60); // convert ms to minutes
+
+            attendance.workingMinutes += sessionDurationMinutes;
+
+            await attendance.save();
+
+            return {
+                success: true,
+                message: "Logout recorded and working minutes updated",
+                sessionDurationMinutes: Math.round(sessionDurationMinutes),
+                totalWorkingMinutes: Math.round(attendance.workingMinutes),
+            };
+        }
+
         return {
             success: false,
-            message: "No attendance found for today",
+            message: "No active session to log out from",
         };
+    } catch(error){
+        throw new ApiError(500, "Failed to mark end of session", error.message);
     }
-
-    const lastSession = attendance.sessions[attendance.sessions.length - 1];
-
-    if (lastSession && !lastSession.logoutTime) {
-        const logout = new Date(logoutTime);
-        lastSession.logoutTime = logout;
-
-        const login = new Date(lastSession.loginTime);
-
-        const sessionDurationMs = logout - login;
-        const sessionDurationMinutes = sessionDurationMs / (1000 * 60); // convert ms to minutes
-
-        attendance.workingMinutes += sessionDurationMinutes;
-
-        await attendance.save();
-
-        return {
-            success: true,
-            message: "Logout recorded and working minutes updated",
-            sessionDurationMinutes: Math.round(sessionDurationMinutes),
-            totalWorkingMinutes: Math.round(attendance.workingMinutes),
-        };
-    }
-
-    return {
-        success: false,
-        message: "No active session to log out from",
-    };
 };
 
 module.exports = {

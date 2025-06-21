@@ -1,31 +1,56 @@
 const courseDetails = require("../models/courseDetails");
 const courseContent = require("../models/courseContent");
-const asyncHandler = require("express-async-handler");
+const ApiError = require("../utils/ApiError");
 
-const getAllCourseDetails = asyncHandler(async () => {
-    const courseData = await courseDetails.find();
-    return courseData;
-});
+const getAllCourseDetails = async () => {
+    try {
+        const courseData = await courseDetails.find();
+        return courseData;
+    } 
+    catch (err) {
+        throw new ApiError(500, "Failed to fetch all course details", err.message);
+    }
+};
 
-const getCourseIntroById = asyncHandler(async (courseid) => {
-    const courseIntro = await courseDetails.find({ courseId: courseid });
-    return courseIntro;
-});
+const getCourseIntroById = async (courseId) => {
+    try {
+        const courseIntro = await courseDetails.find({ courseId });
+        return courseIntro;
+    } 
+    catch (err) {
+        throw new ApiError(500, "Failed to fetch course intro", err.message);
+    }
+};
 
-const getCourseContentById = asyncHandler(async (courseid) => {
-    const content = await courseContent.find({ courseId: courseid });
-    return content;
-});
+const getCourseContentById = async (courseId) => {
+    try {
+        const content = await courseContent.find({ courseId });
+        return content;
+    } 
+    catch (err) {
+        throw new ApiError(500, "Failed to fetch course content", err.message);
+    }
+};
 
-const addNewCourse = asyncHandler(async (courseData) => {
-    const newCourse = await courseDetails.create(courseData);
-    return newCourse;
-});
+const addNewCourse = async (courseData) => {
+    try {
+        const newCourse = await courseDetails.create(courseData);
+        return newCourse;
+    } 
+    catch (err) {
+        throw new ApiError(500, "Failed to add new course", err.message);
+    }
+};
 
-const addCourseContent = asyncHandler(async (courseContents) => {
-    const newCourseContent = await courseContent.create(courseContents);
-    return newCourseContent;
-});
+const addCourseContent = async (courseContents) => {
+    try {
+        const newContent = await courseContent.create(courseContents);
+        return newContent;
+    } 
+    catch (err) {
+        throw new ApiError(500, "Failed to add course content", err.message);
+    }
+};
 
 module.exports = {
     addNewCourse,

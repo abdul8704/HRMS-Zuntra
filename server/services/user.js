@@ -1,5 +1,4 @@
-const asyncHandler=require('express-async-handler');
-const userCredentials = require('../models/userCredentials');
+const userCredentials = require("../models/userCredentials");
 
 const getAllUserDetails = async () => {
     const userData = await UserDetails.find({});
@@ -7,12 +6,12 @@ const getAllUserDetails = async () => {
 };
 
 // @desc Get details of a user
-const getDetailsOfaUser=asyncHandler(async(userid) =>{
+const getDetailsOfaUser = async (userid) => {
     const userCreds = await userCredentials.findById(userid);
     return userCreds;
-});
+};
 
 module.exports = {
     getAllUserDetails,
     getDetailsOfaUser,
-}
+};
