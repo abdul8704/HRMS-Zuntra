@@ -13,5 +13,10 @@ const getAllFinishedProjects=asyncHandler(async() =>{
     return projectsList;
 });
 
+// @desc Create new course
+const createNewProject = asyncHandler( async (data)=>{
+    const projectData = await Project.create(data);
+    return projectData;
+} )
 
-module.exports = { getAllOnGoingProjects, getAllFinishedProjects };
+module.exports = { getAllOnGoingProjects, getAllFinishedProjects, createNewProject};

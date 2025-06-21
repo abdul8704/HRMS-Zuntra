@@ -62,5 +62,15 @@ const getAllFinishedProjects = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc Create new course
+// @route post /api/project/create
+const createNewProject = asyncHandler( async(req,res) => {
+    const projectDetails = await projectService.createNewProject(req.body);
+    return res.status(201).json({
+        success: true,
+        message: "Project Created Successfully!!",
+    })
+})
 
-module.exports = { getAllOnGoingProjects, getAllFinishedProjects };
+
+module.exports = { getAllOnGoingProjects, getAllFinishedProjects, createNewProject };
