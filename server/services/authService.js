@@ -36,30 +36,34 @@ const verifyLogin = asyncHandler(async (email, password) => {
 });
 
 const createNewUser = asyncHandler(async (userData) => {
-    const { username, email, password, phoneNum } = userData;
+    try{
+        const { username, email, password, phoneNum } = userData;
 
-    const hashedpass = await bcrypt.hash(
-        password,
-        Number(process.env.HASH_SALT)
-    );
+        const hashedpass = await bcrypt.hash(
+            password,
+            Number(process.env.HASH_SALT)
+        );
 
-    const newUser = new UserCreds({
-        username: username,
-        email: email,
-        passwordHash: hashedpass,
-        phoneNumber: phoneNum,
-    });
+        const newUser = new UserCreds({
+            username: username,
+            email: email,
+            passwordHash: hashedpass,
+            phoneNumber: phoneNum,
+        });
 
-    await newUser.save();
+        await newUser.save();
 
-    return {
-        success: true,
-        message: "User registered successfully, wait for aproval.",
-    };
+        return {
+            success: true,
+            message: "User registered successfully, wait for aproval.",
+        };
+    }catch(err){
+        throw new ApiError(500, "Failed to create user", err.message);
+    }
 });
 
 const getUserByEmail = async (email) => {
-    const userData = UserCreds.findOne({ email: email });
+    const userData = await UserCreds.findOne({ email: email });
     return userData;
 };
 
