@@ -87,23 +87,23 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
 
   return (
     <>
-      <div className="popup-overlay">
-        <div className="popup-container">
-          <div className="popup-content">
+      <div className="emp-card-popup-overlay">
+        <div className="emp-card-popup-container">
+          <div className="emp-card-popup-content">
             {/* Left: Employee Info */}
-            <div className="popup-emp-info">
+            <div className="emp-card-popup-emp-info">
               <img src={employee.image} alt={employee.name} className="popup-avatar" />
-              <div className="popup-emp-details">
-                <h3 className="popup-emp-name">{employee.name}</h3>
-                <p className="popup-emp-email">{employee.email}</p>
-                <p className="popup-emp-phone">{employee.phone}</p>
-                <p className="popup-emp-date">Applied: {employee.date}</p>
+              <div className="emp-card-popup-emp-details">
+                <h3 className="emp-card-popup-emp-name">{employee.name}</h3>
+                <p className="emp-card-popup-emp-email">{employee.email}</p>
+                <p className="emp-card-popup-emp-phone">{employee.phone}</p>
+                <p className="emp-card-popup-emp-date">Applied: {employee.date}</p>
               </div>
             </div>
 
             {/* Right: Form Side */}
-            <div className="popup-body">
-              <div ref={roleInputRef} className="popup-select-wrapper">
+            <div className="emp-card-popup-body">
+              <div ref={roleInputRef} className="emp-card-popup-select-wrapper">
                 <input
                   type="text"
                   placeholder="Choose the role"
@@ -114,32 +114,32 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
                     setSalary(roleSalaryMap[e.target.value] || ''); // update salary live
                   }}
                   onFocus={() => setShowDropdown(true)}
-                  className="popup-select role-input"
+                  className="emp-card-popup-select role-input"
                 />
                 {showDropdown && (
-                  <ul className="popup-dropdown">
+                  <ul className="emp-card-popup-dropdown">
                     {getSortedRoles(selectedRole).length > 0 ? (
                       getSortedRoles(selectedRole).map((role) => (
                         <li
                           key={role}
-                          className="popup-dropdown-item"
+                          className="emp-card-popup-dropdown-item"
                           onClick={() => handleRoleChange(role)}
                         >
                           {role}
                         </li>
                       ))
                     ) : (
-                      <li className="popup-dropdown-item no-result">Not found</li>
+                      <li className="emp-card-popup-dropdown-item no-result">Not found</li>
                     )}
                   </ul>
                 )}
               </div>
 
-              <div className="popup-select-wrapper no-arrow">
+              <div className="emp-card-popup-select-wrapper no-arrow">
                 <select
                   value={selectedShift}
                   onChange={(e) => setSelectedShift(e.target.value)}
-                  className="popup-select"
+                  className="emp-card-popup-select"
                 >
                   {shifts.map((shift) => (
                     <option key={shift} value={shift}>{shift}</option>
@@ -147,20 +147,20 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
                 </select>
               </div>
 
-              <div className="popup-select-wrapper no-arrow">
+              <div className="emp-card-popup-select-wrapper no-arrow">
                 <input
                   type="text"
                   placeholder="Select role to get salary"
                   value={salary}
                   onChange={(e) => setSalary(e.target.value)}
-                  className="popup-select"
+                  className="emp-card-popup-select"
                 />
               </div>
 
-              <div className="popup-button-group">
-                <button className="popup-cancel" onClick={handleClose}>Cancel</button>
+              <div className="emp-card-popup-button-group">
+                <button className="emp-card-popup-cancel" onClick={handleClose}>Cancel</button>
                 <button
-                  className="popup-submit"
+                  className="emp-card-popup-submit"
                   onClick={handleSave}
                   disabled={!selectedRole || !selectedShift}
                 >
@@ -174,7 +174,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
 
       {/* Styles */}
       <style jsx>{`
-        .popup-overlay {
+        .emp-card-popup-overlay {
           position: fixed;
           inset: 0;
           background: rgba(0, 0, 0, 0.5);
@@ -185,7 +185,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           padding: 20px;
         }
 
-        .popup-container {
+        .emp-card-popup-container {
           background: #fff;
           border-radius: 16px;
           width: 100%;
@@ -197,14 +197,14 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           flex-direction: column;
         }
 
-        .popup-content {
+        .emp-card-popup-content {
           display: flex;
           flex-direction: row;
           padding: 20px;
           gap: 20px;
         }
 
-        .popup-emp-info {
+        .emp-card-popup-emp-info {
           width: 35%;
           display: flex;
           flex-direction: column;
@@ -215,13 +215,13 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           padding-right: 10px;
         }
 
-        .popup-emp-details {
+        .emp-card-popup-emp-details {
           display: flex;
           flex-direction: column;
           align-items: center;
         }
 
-        .popup-avatar {
+        .emp-card-popup-avatar {
           width: 100px;
           height: 100px;
           object-fit: cover;
@@ -230,25 +230,25 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           margin-bottom: 10px;
         }
 
-        .popup-emp-name {
+        .emp-card-popup-emp-name {
           margin: 0;
           font-weight: bold;
           color: #111827;
         }
 
-        .popup-emp-email,
-        .popup-emp-phone {
+        .emp-card-popup-emp-email,
+        .emp-card-popup-emp-phone {
           margin: 2px 0;
           font-size: 14px;
           color: #6b7280;
         }
 
-        .popup-emp-date {
+        .emp-card-popup-emp-date {
           font-size: 13px;
           color: #9ca3af;
         }
 
-        .popup-body {
+        .emp-card-popup-body {
           width: 65%;
           display: flex;
           flex-direction: column;
@@ -256,11 +256,11 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           justify-content: center;
         }
 
-        .popup-select-wrapper {
+        .emp-card-popup-select-wrapper {
           position: relative;
         }
 
-        .popup-select {
+        .emp-card-popup-select {
           width: 100%;
           padding: 10px;
           border: 1px solid #e5e7eb;
@@ -270,7 +270,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           background-color: #d9d9d9;
         }
 
-        .popup-select-wrapper:not(.no-arrow)::after {
+        .emp-card-popup-select-wrapper:not(.no-arrow)::after {
           content: "";
           position: absolute;
           right: 12px;
@@ -284,7 +284,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           background-size: contain;
         }
 
-        .popup-dropdown {
+        .emp-card-popup-dropdown {
           border: 1px solid #e5e7eb;
           border-radius: 8px;
           max-height: 160px;
@@ -296,29 +296,29 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           z-index: 1000;
         }
 
-        .popup-dropdown-item {
+        .emp-card-popup-dropdown-item {
           padding: 10px;
           cursor: pointer;
         }
 
-        .popup-dropdown-item:hover {
+        .emp-card-popup-dropdown-item:hover {
           background-color: #f3f4f6;
         }
 
-        .no-result {
+        .emp-card-no-result {
           color: rgba(0, 0, 0, 0.7);
           cursor: default;
           font-style: italic;
         }
 
-        .popup-button-group {
+        .emp-card-popup-button-group {
           display: flex;
           gap: 12px;
           justify-content: center;
           margin-top: 10px;
         }
 
-        .popup-button-group .popup-cancel {
+        .emp-card-popup-button-group .emp-card-popup-cancel {
           padding: 10px 16px;
           border: 1px solid #e5e7eb;
           background-color: #E1BEC5;
@@ -327,7 +327,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           cursor: pointer;
         }
 
-        .popup-button-group .popup-submit {
+        .emp-card-popup-button-group .emp-card-popup-submit {
           padding: 10px 16px;
           background-color: #C1E8BD;
           color: black;
@@ -340,9 +340,14 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           cursor: pointer;
         }
 
-        .popup-submit:disabled {
+        .emp-card-popup-submit:disabled {
           background: #d1d5db;
           cursor: not-allowed;
+        }
+
+        .emp-card-popup-button-group .emp-card-popup-cancel:hover{
+          background-color:red;
+          color:white;
         }
 
         @keyframes fadeIn {

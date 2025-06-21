@@ -69,8 +69,7 @@ export const EmpNavbar = () => {
   }
 
   .inactive.btn:hover {
-    background-color: #ffffff;
-    opacity: 0.5;
+    background-color: #d9d9d9;
   }
 
   .icon-btn {
@@ -78,7 +77,7 @@ export const EmpNavbar = () => {
   }
 
   .icon-btn:hover {
-    background-color: #A9C9BB;
+    background-color: #d9d9d9;
     color: white;
   }
 
