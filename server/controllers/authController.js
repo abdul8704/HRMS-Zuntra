@@ -6,36 +6,32 @@ const generateOTP = require("../utils/generateOTP");
 const transporter = require("../utils/sendOTP");
 const jwtUtils = require("../utils/generateJWT");
 
+const ApiError = require("../errors/ApiError");
+
+
 const handleRefreshToken = asyncHandler((req, res) => {
     const cookies = req.cookies;
 
-    if (!cookies?.refreshToken) {
-        return res.status(401).json({
-            success: false,
-            message: "Refresh token not found in cookies",
-        });
-    }
+    if (!cookies?.refreshToken)
+        throw new ApiError(401, "Refresh token not found in cookies");
 
     const refreshToken = cookies.refreshToken;
 
-    jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY, (err, user) => {
-        if (err)
-            return res
-                .status(403)
-                .json({ sucess: false, message: err.message });
-
+    try {
+        const user = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
         const newToken = jwtUtils.generateToken({ userid: user.userid });
-        return res.status(201).json({ sucess: true, token: newToken });
-    });
+        return res.status(201).json({ success: true, token: newToken });
+    } 
+    catch (err) {
+        throw new ApiError(403, "Invalid or expired refresh token", err.message);
+    }
 });
 
 const handleLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password)
-        return res
-            .status(400)
-            .json({ success: false, message: "invalid input" });
+        throw new ApiError(401, "Wrong Password");
 
     const verifyLogin = await authService.verifyLogin(email, password);
 
@@ -58,31 +54,22 @@ const handleLogin = asyncHandler(async (req, res) => {
             accessToken: token,
             message: "Login successful",
         });
+    } 
+    else if (verifyLogin.message === "Wrong Password") 
+        throw new ApiError(401, "Wrong Password");
 
-    } else if (verifyLogin.message === "Wrong Password") {
-        res.status(401);
-        throw new Error("Wrong Password");
-
-    } else if (verifyLogin.message === "User not found") {
-        res.status(401);
-        throw new Error("User not found");
-
-    } else {
-        res.status(500);
-        throw new Error("IDK what went wrong. Internal Server Error");
-    }
+    else if (verifyLogin.message === "User not found") 
+        throw new ApiError(401, "User not found");
+    else 
+        throw new ApiError(500, "IDK what went wrong. Internal Server Error", { reason: err.message });
 });
 
 const signUpHandler = asyncHandler(async (req, res) => {
     const { email, password, username, phoneNum } = req.body;
 
-    if (!username || !email || !password || !phoneNum) {
-        return res.status(400).json({
-            success: false,
-            message: "Username, email, and password are required.",
-        });
-    }
-
+    if (!username || !email || !password || !phoneNum) 
+        throw new ApiError(400, "Username, email, password, and phone number are required.");
+    
     await authService.createNewUser(req.body);
     
     const newuser = await authService.getUserByEmail(email);
@@ -113,10 +100,9 @@ const signUpHandler = asyncHandler(async (req, res) => {
 const userExists = asyncHandler(async (req, res) => {
     const { email } = req.body;
     const user = await authService.getUserByEmail(email);
-    if (user) {
-        res.status(409);
-        throw new Error("User Already Exists!!");
-    }
+    if (user) 
+        throw new ApiError(409, "User Already Exists!!");
+    
     return res.status(200).json({ success: true, messgae: "Good to go" });
 });
 
@@ -137,11 +123,7 @@ const sendOTPController = asyncHandler(async (req, res) => {
         await transporter.sendOTP(useremail, otp);
         res.status(200).json({ message: "OTP sent successfully" });
     } catch (err) {
-        res.status(500).json({
-            error: "Failed to send OTP",
-            details: err.message,
-            otp: otp,
-        });
+        throw new ApiError(500, "Failed to send OTP", err.message);
     }
 });
 
@@ -157,7 +139,7 @@ const verifyOTPController = asyncHandler(async (req, res) => {
                 .json({ message: "OTP verified successfully" });
         }
 
-        return res.status(400).json({ message: "Invalid or expired OTP" });
+        throw new ApiError(400, "Invalid or expired OTP");
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }

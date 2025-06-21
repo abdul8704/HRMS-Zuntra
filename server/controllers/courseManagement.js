@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const courseService = require("../services/courseService"); // adjust path as needed
 
-const createCourseIntroController = async (req, res) => {
+const createCourseIntroController = asyncHandler(async (req, res) => {
   const courseData = req.body;
 
   const {
@@ -22,15 +22,13 @@ const createCourseIntroController = async (req, res) => {
     !courseIntroVideo.videoTitle ||
     !courseIntroVideo.videoUrl
   ) {
-    res.status(400);
-    throw new Error("Missing required course fields");
+    throw new ApiError(400, "Missing required course fields");
   }
-
+  
   const existingCourse = await courseService.getCourseIntroById(courseId);
-  if (existingCourse.length !== 0) {
-    res.status(409);
-    throw new Error("Course Id already exists")
-  }
+  if (existingCourse.length !== 0) 
+    throw new ApiError(409, "Course Id already exists");
+  
 
   const result = await courseService.addNewCourse(courseData);
 
@@ -40,25 +38,22 @@ const createCourseIntroController = async (req, res) => {
       message: "Data added successfully",
     });
   } else {
-    res.status(500);
-    throw new Error("Failed to create course content");
+    throw new ApiError(500, "Failed to create course content");
   }
-};
+});
 
-const createCourseContentController = async (req, res) => {
+const createCourseContentController = asyncHandler(async (req, res) => {
   const courseContentData = req.body;
 
   const { courseId, modules } = courseContentData;
 
   if (!courseId || !modules || !Array.isArray(modules) || modules.length === 0) {
-    res.status(400);
-    throw new Error("Missing required fields: courseId or modules");
+    throw new ApiError(400, "Missing required fields: courseId or modules");
   }
 
   for (const module of modules) {
     if (!module.moduleTitle || !Array.isArray(module.submodules) || module.submodules.length === 0) {
-      res.status(400);
-      throw new Error("Each module must have a moduleTitle and at least one submodule");
+      throw new ApiError(400, "Each module must have a moduleTitle and at least one submodule");
     }
 
     for (const submodule of module.submodules) {
@@ -76,8 +71,7 @@ const createCourseContentController = async (req, res) => {
         !video.videoTitle ||
         !video.videoUrl
       ) {
-        res.status(400);
-        throw new Error("Each submodule must have submoduleTitle, description, and a valid video");
+        throw new ApiError(400, "Each submodule must have submoduleTitle, description, and a valid video");
       }
 
       if (quiz && Array.isArray(quiz.questions)) {
@@ -88,18 +82,15 @@ const createCourseContentController = async (req, res) => {
             question.options.length === 0 ||
             !question.correctAnswer
           ) {
-            res.status(400);
-            throw new Error("Each quiz question must have questionText, options, and correctAnswer");
+            throw new ApiError(400, "Each quiz question must have questionText, options, and correctAnswer");
           }
         }
       }
     }
   }
   const existingCourse = await courseService.getCourseContentById(courseId);
-  if (existingCourse.length !== 0) {
-    res.status(409);
-    throw new Error("Course Id already exists")
-  }
+  if (existingCourse.length !== 0) 
+    throw new ApiError(409, "Course Id already exists");
 
   const result = await courseService.addCourseContent(courseContentData);
 
@@ -109,17 +100,15 @@ const createCourseContentController = async (req, res) => {
       message: "Data added successfully",
     });
   } else {
-    res.status(500);
-    throw new Error("Failed to create course content");
+      throw new ApiError(500, "Failed to create course content");
   }
-};
+});
 
 
-const getCourseDetails = async (req, res) => {
+const getCourseDetails = asyncHandler(async (req, res) => {
   const result = await courseService.getAllCourseDetails();
   if (result.length === 0) {
-    res.status(404);
-    throw new Error("No courses available");
+      throw new ApiError(404, "No courses available");
   }
   else {
     res.status(200).json({
@@ -127,13 +116,12 @@ const getCourseDetails = async (req, res) => {
       data: result,
     });
   }
-};
+});
 
-const getCourseContentId = async (req, res) => {
+const getCourseContentId = asyncHandler(async (req, res) => {
   const result = await courseService.getCourseContentById(req.params.id);
   if (result.length === 0) {
-    res.status(404);
-    throw new Error("Course does not exist");
+    throw new ApiError(404, "Course does not exist");
   }
   else {
     res.status(200).json({
@@ -141,13 +129,12 @@ const getCourseContentId = async (req, res) => {
       data: result,
     });
   }
-};
+});
 
-const getCourseIntroId = async (req, res) => {
+const getCourseIntroId = asyncHandler(async (req, res) => {
   const result = await courseService.getCourseIntroById(req.params.id);
   if (result.length === 0) {
-    res.status(404);
-    throw new Error("Course does not exist");
+    throw new ApiError(404, "Course does not exist");
   }
   else {
     res.status(200).json({
@@ -155,6 +142,12 @@ const getCourseIntroId = async (req, res) => {
       data: result,
     });
   }
-};
+});
 
-module.exports = { createCourseIntroController, createCourseContentController, getCourseDetails, getCourseContentId, getCourseIntroId };
+module.exports = { 
+  createCourseIntroController, 
+  createCourseContentController, 
+  getCourseDetails, 
+  getCourseContentId, 
+  getCourseIntroId 
+};

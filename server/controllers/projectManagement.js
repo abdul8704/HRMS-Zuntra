@@ -1,15 +1,15 @@
 const asyncHandler = require('express-async-handler');
 const projectService = require("../services/projectService")
 const userService = require("../services/user")
+const ApiError = require("../errors/ApiError");
 
 // @desc Get all ongoing projects
 // @route GET /api/project/ongoing
 const getAllOnGoingProjects = asyncHandler(async (req, res) => {
     const projectsList = await projectService.getAllOnGoingProjects();
-    if (projectsList.length === 0) {
-        res.status(404);
-        throw new Error("No Projects Currently OnGoing")
-    }
+    if (projectsList.length === 0) 
+        throw new ApiError(404, "No Ongoing Projects Available")
+
     const formattedResult = await Promise.all(
         projectsList.map(async (project) => {
             const teamLeaderDetail = await userService.getDetailsOfaUser(project.teamLeader);
@@ -36,10 +36,10 @@ const getAllOnGoingProjects = asyncHandler(async (req, res) => {
 // @route GET /api/project/finished
 const getAllFinishedProjects = asyncHandler(async (req, res) => {
     const projectsList = await projectService.getAllFinishedProjects();
-    if (projectsList.length === 0) {
-        res.status(404);
-        throw new Error("No Finished Projects Available")
-    }
+    
+    if (projectsList.length === 0) 
+        throw new ApiError(404, "No Finished Projects Available");
+    
     const formattedResult = await Promise.all(
         projectsList.map(async (project) => {
             const teamLeaderDetail = await userService.getDetailsOfaUser(project.teamLeader);

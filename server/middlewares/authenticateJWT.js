@@ -1,22 +1,16 @@
 const jwt = require("jsonwebtoken");
+const asyncHandler = require("express-async-handler");
+const ApiError = require('../errors/ApiError')
 
-const authenticateToken = (req, res, next) => {
+const authenticateToken = asyncHandler((req, res, next) => {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader) {
-        return res.status(401).json({
-            success: false,
-            message: "Authorization header missing",
-        });
-    }
+    if (!authHeader) 
+        throw new ApiError(401, "Authorization header missing");
 
     const parts = authHeader.split(" ");
-    if (parts.length !== 2 || parts[0] !== "Bearer") {
-        return res.status(400).json({
-            success: false,
-            message: "Invalid token format. Expected 'Bearer <token>'",
-        });
-    }
+    if (parts.length !== 2 || parts[0] !== "Bearer") 
+        throw new ApiError(400, "Invalid token format. Expected 'Bearer <token>'");
 
     const token = parts[1];
 
@@ -25,9 +19,13 @@ const authenticateToken = (req, res, next) => {
         req.user = user;
         next();
     } catch (err) {
-        err.status = 403;
-        throw err;
+        throw new ApiError( 403,
+            err.name === "TokenExpiredError"
+                ? "Token has expired"
+                : "Invalid or malformed JWT",
+            err.message 
+        );
     }
-};
+});
 
 module.exports = authenticateToken;

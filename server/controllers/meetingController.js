@@ -1,13 +1,14 @@
+const ApiError = require('../errors/ApiError');
 const meetService = require('../services/meetingServices');
+const asyncHandler = require('express-async-handler');
 
-const getAllMeetingsData = async (req, res) => {
+const getAllMeetingsData = asyncHandler(async (req, res) => {
     const meetings = await meetService.getAllMeetings();
     if(meetings.length === 0){
-        res.status(404)
-        throw new Error("No meetings found");
+        throw new ApiError(404, 'No meetings found')
     }
     return res.status(200).json(meetings);
-};
+});
 
 module.exports = {
     getAllMeetingsData,

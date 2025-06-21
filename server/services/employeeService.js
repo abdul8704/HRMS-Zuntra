@@ -1,5 +1,5 @@
-const Attendance = require("../models/attendance")
-const User = require("../models/userCredentials.js")
+const Attendance = require("../models/attendance.js");
+const User = require("../models/userCredentials.js");
 
 const getAttendaceByUserId = async (userid, startDate, endDate) => {
     try {
@@ -29,9 +29,9 @@ const getAttendaceByUserId = async (userid, startDate, endDate) => {
 
 const markAttendanceOnLogin = async (userid) => {
     const now = new Date();
-    const shiftData = User.findOne({_id: userid})
-    const shiftStart = shiftData.shiftStart
-    const shiftEnd = shiftData.shiftEnd
+    const shiftData = User.findOne({ _id: userid });
+    const shiftStart = shiftData.shiftStart;
+    const shiftEnd = shiftData.shiftEnd;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -76,7 +76,6 @@ const markAttendanceOnLogin = async (userid) => {
     }
 };
 
-
 const markEndOfSession = async (userid, logoutTime) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -91,7 +90,7 @@ const markEndOfSession = async (userid, logoutTime) => {
     }
 
     const lastSession = attendance.sessions[attendance.sessions.length - 1];
-    
+
     if (lastSession && !lastSession.logoutTime) {
         const logout = new Date(logoutTime);
         lastSession.logoutTime = logout;
@@ -119,9 +118,8 @@ const markEndOfSession = async (userid, logoutTime) => {
     };
 };
 
-
 module.exports = {
     getAttendaceByUserId,
     markAttendanceOnLogin,
-    markEndOfSession
+    markEndOfSession,
 };
