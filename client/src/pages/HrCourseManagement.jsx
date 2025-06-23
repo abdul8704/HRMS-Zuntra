@@ -143,7 +143,7 @@ export const HrCourseManagement = () => {
   };
 
   return (
-    <div className="website-container" style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+    <div className="website-container" style={{ display: "flex", height: "100vh", overflow: "hidden", position: "relative" }}>
       <Sidebar />
       <div className="website-module" style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <CourseNavbar />
@@ -156,7 +156,7 @@ export const HrCourseManagement = () => {
         </div>
       </div>
       
-      {/* PopupCard Component */}
+      {/* PopupCard Component - This will now overlay properly */}
       <PopupCard
         isVisible={showPopup}
         onClose={handleClosePopup}
@@ -172,54 +172,28 @@ export const HrCourseManagement = () => {
         .scrollable-content {
           flex-grow: 1;
           overflow-y: auto;
-          padding: 0; /* Remove padding from scrollable content */
         }
 
         .card-flex {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 2rem;
-          width: 100%;
-          box-sizing: border-box;
-          padding: 1rem 2rem 2rem 2rem; /* Move padding here to match navbar exactly */
-          margin: 0; /* Ensure no margin */
-        }
-
-        /* Alternative flexbox approach if you prefer */
-        .card-flex-alternative {
           display: flex;
           flex-wrap: wrap;
-          justify-content: space-between;
-          gap: 2rem;
-          width: 100%;
+          justify-content: flex-start;
+          gap: 5rem;
+          padding: 1rem 0.5rem 1rem 2rem; /* 👈 Reduces right padding */
           box-sizing: border-box;
-        }
-
-        .card-flex-alternative > * {
-          flex: 1 1 280px;
-          max-width: calc(25% - 1.5rem); /* 4 cards per row with gaps */
-        }
-
-        @media (max-width: 1200px) {
-          .card-flex {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            padding: 1rem 1.5rem 2rem 1.5rem;
-          }
         }
 
         @media (max-width: 768px) {
           .card-flex {
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem;
+            justify-content: center;
             padding: 1rem;
           }
         }
 
         @media (max-width: 480px) {
           .card-flex {
-            grid-template-columns: 1fr;
-            gap: 1rem;
+            flex-direction: column;
+            align-items: center;
             padding: 1rem 0.5rem;
           }
         }
