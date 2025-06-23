@@ -21,7 +21,6 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
           <div className="emp-card-emp-text">
             <h3>{name}</h3>
 
-            {/* Email */}
             <div className="emp-card-emp-line centered-email">
               <span className="emp-card-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1.125rem" height="0.875rem" fill="none" viewBox="0 0 18 14">
@@ -31,7 +30,6 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
               <a href={`mailto:${email}`} className="emp-card-email-link">{email}</a>
             </div>
 
-            {/* Phone */}
             <div className="emp-card-emp-line centered-email">
               <span className="emp-card-icon">
                 <svg width="1rem" height="1rem" fill="currentColor" viewBox="0 0 24 24">
@@ -41,12 +39,10 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
               <span className="emp-card-emp-link">{phone}</span>
             </div>
 
-            {/* Date */}
             <p className="emp-card-small">{date}</p>
           </div>
         </div>
 
-        {/* Buttons */}
         <div className="emp-card-emp-actions">
           <button className="emp-card-approve" onClick={handleApproveClick}>✓</button>
           <button className="emp-card-reject">✕</button>
@@ -54,17 +50,31 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
 
         <style jsx>{`
           .emp-card {
+            width: 100%;
+            max-width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: stretch;
             border-radius: 0.75rem;
             box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.05);
             transition: transform 0.2s;
-            flex: 1 1 calc(33.333% - 0.75rem);
-            flex-wrap: wrap;
-            min-width: 17.5rem;
-            max-width: 100%;
             box-sizing: border-box;
+            margin-bottom: 1rem;
+            overflow: hidden; /* ensures no child overflow */
+          }
+
+          @media (min-width: 40rem) {
+            .emp-card {
+              width: calc(50% - 1rem);
+              max-width: calc(50% - 1rem);
+            }
+          }
+
+          @media (min-width: 64rem) {
+            .emp-card {
+              width: calc(33.333% - 1rem);
+              max-width: calc(33.333% - 1rem);
+            }
           }
 
           .emp-card:hover {
@@ -73,24 +83,25 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
 
           .emp-card-emp-info {
             display: flex;
-            gap: 1rem;
             flex: 1;
             align-items: stretch;
           }
 
           .emp-card-emp-info img {
-            width: 6.25rem;
+            width: 6rem;
             height: 100%;
-            object-fit: fill;
+            object-fit: cover;
             border-top-left-radius: 0.75rem;
             border-bottom-left-radius: 0.75rem;
+            flex-shrink: 0;
+            display: block;
           }
 
           .emp-card-emp-text {
             display: flex;
             flex-direction: column;
-            justify-content: space-evenly;
-            padding: 0.625rem 0;
+            justify-content: space-between;
+            padding: 1rem;
             width: 100%;
             overflow-wrap: break-word;
           }
@@ -103,13 +114,24 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
             text-align: left;
           }
 
+          .emp-card-small {
+            font-size: 0.75rem;
+            color: black;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 2rem;
+            padding: 0.3rem 0.6rem;
+            width: fit-content;
+            white-space: nowrap;
+            text-align: left;
+          }
+
           .emp-card-emp-line {
             display: flex;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             margin: 0.125rem 0;
             flex-wrap: nowrap;
-            text-align: left;
             min-width: 0;
+            text-align: left;
           }
 
           .centered-email {
@@ -134,9 +156,11 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
             flex: 1;
             display: block;
             text-align: left;
+            font-size: 0.75rem;
           }
 
-          .emp-card-email-link:hover {
+          .emp-card-email-link:hover,
+          .emp-card-emp-link:hover {
             text-decoration: underline;
           }
 
@@ -146,20 +170,7 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
             word-break: break-word;
             overflow-wrap: anywhere;
             text-align: left;
-          }
-
-          .emp-card-emp-link:hover {
-            text-decoration: underline;
-          }
-
-          .emp-card-small {
             font-size: 0.75rem;
-            color: black;
-            background-color: rgba(255, 255, 255, 0.6);
-            border-radius: 3rem;
-            padding: 0.25rem 0.3125rem;
-            width: 40%;
-            text-align: center;
           }
 
           .emp-card-emp-actions {
@@ -186,20 +197,20 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
             transition: background-color 0.3s ease, color 0.3s ease;
           }
 
-           .emp-card-emp-actions .emp-card-approve {
+          .emp-card-approve {
             background-color: #C1E8BD;
           }
 
-           .emp-card-emp-actions .emp-card-reject {
+          .emp-card-reject {
             background-color: #E1BEC5;
           }
 
-           .emp-card-emp-actions .emp-card-approve:hover {
+          .emp-card-approve:hover {
             background-color: green;
             color: white;
           }
 
-           .emp-card-emp-actions.emp-card-reject:hover {
+          .emp-card-reject:hover {
             background-color: red;
             color: white;
           }
