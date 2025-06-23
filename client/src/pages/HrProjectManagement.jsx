@@ -11,10 +11,8 @@ export const HrProjectManagement = () => {
     <div className="relative">
       <div className="website-container flex">
         <Sidebar />
-
         <div className="website-module flex-grow">
           <ProjectNavbar />
-
           <div className="project-cards-container">
             <ProjectCard />
           </div>
