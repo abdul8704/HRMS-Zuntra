@@ -102,7 +102,7 @@ export const TaskNavbar = () => {
       )}
 
       {/* Styles */}
-      <style jsx>{`
+      <style>{`
         .hamburger-toggle {
           position: fixed;
           top: 1rem;

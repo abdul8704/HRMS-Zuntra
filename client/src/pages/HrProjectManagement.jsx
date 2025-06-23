@@ -134,7 +134,7 @@ export const HrProjectManagement = () => {
 
       <ProjectPopup />
 
-      <style jsx>{`
+      <style>{`
         .project-cards-container {
           display: flex;
           flex-wrap: wrap;

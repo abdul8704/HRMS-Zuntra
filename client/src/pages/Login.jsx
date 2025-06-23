@@ -195,7 +195,7 @@ export const Login = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
   .login-page {
     width: 100vw;
     height: 100vh;

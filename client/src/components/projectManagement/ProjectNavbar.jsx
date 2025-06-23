@@ -16,7 +16,7 @@ export const ProjectNavbar = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .project-navbar {
           background-color: #BBD3CC;
           border-radius: 0.75rem;

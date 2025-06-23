@@ -62,7 +62,7 @@ export const HrEmployeeManagement = () => {
         </div>
 
         {/* Responsive Card Layout CSS */}
-        <style jsx>{`
+        <style>{`
           .cards-wrapper {
             padding: 1rem;
             overflow-x: hidden;

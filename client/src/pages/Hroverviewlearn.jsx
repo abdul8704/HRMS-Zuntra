@@ -16,7 +16,7 @@ export const HrOverviewLearning = () => {
 
             </div>
         </div>
-        <style jsx>{`
+        <style>{`
         .sidebar{
         display: flex;}
         .videoplayer{
