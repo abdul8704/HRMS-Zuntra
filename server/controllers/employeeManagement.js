@@ -13,6 +13,22 @@ const handleLogout = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, message: "Logout time recorded" });
 })
 
+const getAttendanceData = asyncHandler(async (req, res) => {
+    const { userid } = req.user;
+    const { startDate, endDate } = req.query;
+
+    if(!startDate || !endDate)
+        throw new ApiError(400, "Start date and end date not provided")
+
+    const attendanceData = await employeeService.getAttendanceDataByUserId(
+        userid,
+        startDate,
+        endDate
+    );
+    res.status(200).json({ success: true, attendanceData });
+})
+
 module.exports = {
-    handleLogout
-}
+    handleLogout,
+    getAttendanceData
+};
