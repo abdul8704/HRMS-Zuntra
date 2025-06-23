@@ -30,7 +30,7 @@ export default function OutTime({ time = "09:02", label = "Today's out time" }) 
   padding: 0.5rem 1rem;
   border-radius: 0.8rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-  width: 115px;
+  width: 125px;
   height: 45px;
   font-family: system-ui, Arial, sans-serif;
   margin: 1rem;
