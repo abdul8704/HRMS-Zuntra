@@ -155,18 +155,17 @@ export const HrCourseManagement = () => {
           </div>
         </div>
       </div>
-      
+
       {/* PopupCard Component - This will now overlay properly */}
       <PopupCard
         isVisible={showPopup}
-        onClose={handleClosePopup}
-        type="success"
-        title="Course Action"
-        message="Course operation completed successfully!"
-        duration={5000}
-        color="#10B981"
-        position="top-right"
+        onClose={() => setShowPopup(false)}
+        type="error"
+        title="Sheesh!"
+        message="Operation failed lorem ipsum djnhjdbshbdbdbscnd jnjdjnd dnjdnjdn jndcjndjn djcndcndjnc djndjn"
+        color="#E1BEC5"
       />
+
 
       <style>{`
         .scrollable-content {
