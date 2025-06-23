@@ -5,6 +5,8 @@ const authOTP = require("../models/authOTP");
 const generateOTP = require("../utils/generateOTP");
 const transporter = require("../utils/sendOTP");
 const jwtUtils = require("../utils/generateJWT");
+const GeoService = require("../services/geoLocationService")
+const User = require("../services/user")
 
 const ApiError = require("../errors/ApiError");
 
@@ -31,16 +33,13 @@ const handleLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password)
-        throw new ApiError(401, "Wrong Password");
+        throw new ApiError(401, "Provide credentials!!");
 
     const verifyLogin = await authService.verifyLogin(email, password);
 
     if (verifyLogin.success === true) {
         const token = jwtUtils.generateToken(verifyLogin.userData);
         const refreshToken = jwtUtils.generateRefreshToken(verifyLogin.userData);
-
-        const userid = verifyLogin.userData.userid;
-        await employeeService.markAttendanceOnLogin(userid);
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
@@ -63,6 +62,32 @@ const handleLogin = asyncHandler(async (req, res) => {
     else 
         throw new ApiError(500, "IDK what went wrong. Internal Server Error", { reason: err.message });
 });
+
+const geoFenceLogin = asyncHandler(async (req, res) => {
+    const { latitude, longitude, email } = req.body;
+    const user = await authService.getUserByEmail(email)
+    const userid = user._id;
+
+    if(!user)
+        throw new ApiError(404, "User not found");
+
+    if (!email || !latitude || !longitude || !user.campus)
+        throw new ApiError(400, "Incomplete location data");
+
+    const isInsideGeofence = await GeoService.isWithinGeofence(
+        latitude,
+        longitude,
+        user.campus
+    );
+
+
+    if(isInsideGeofence)
+        await employeeService.markAttendanceOnLogin(userid, "present");
+    else
+        await employeeService.markAttendanceOnLogin(userid, "remote");
+
+    res.status(200).json({ success: true, message: "Attendance marked" });
+})
 
 const signUpHandler = asyncHandler(async (req, res) => {
     const { email, password, username, phoneNum } = req.body;
@@ -147,6 +172,7 @@ const verifyOTPController = asyncHandler(async (req, res) => {
 
 module.exports = {
     handleLogin,
+    geoFenceLogin,
     signUpHandler,
     userExists,
     handleRefreshToken,

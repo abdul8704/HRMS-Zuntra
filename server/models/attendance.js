@@ -10,6 +10,10 @@ const sessionSchema = new mongoose.Schema({
     logoutTime: {
         type: Date,
     },
+    mode: {
+        type: String,
+        enum: ["present", "remote", "extra"]
+    }
 });
 
 const attendanceSchema = new mongoose.Schema({

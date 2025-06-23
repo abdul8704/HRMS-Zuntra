@@ -29,7 +29,7 @@ export const IntroductionCard = () => {
         </p>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .intro-card {
           background: #ffffff;
           border-radius: 12px;
