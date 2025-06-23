@@ -4,6 +4,7 @@ const router = express.Router();
 const authController = require("../controllers/authController")
 
 router.post("/login", authController.handleLogin);
+router.post("/geofence", authController.geoFenceLogin);
 router.post("/check", authController.userExists);
 router.post("/signup/send-otp", authController.sendOTPController);
 router.post("/signup/verify-otp", authController.verifyOTPController);
