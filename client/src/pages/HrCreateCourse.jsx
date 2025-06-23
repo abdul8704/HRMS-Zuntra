@@ -20,7 +20,9 @@ export const HrCreateCourse = () => {
         {/* Page content */}
         <div className="flex flex-col items-center justify-center flex-grow p-8">
           <h1 className="text-4xl font-bold mb-10">Record with Loom</h1>
-          <div className="flex flex-col md:flex-row gap-6">
+
+          {/* Button container: stacked vertically */}
+          <div className="flex flex-col gap-6 w-full max-w-sm">
             <GoToLoomButton />
             <InstallLoomExtensionButton />
           </div>
@@ -29,6 +31,3 @@ export const HrCreateCourse = () => {
     </div>
   );
 };
-
-
- 

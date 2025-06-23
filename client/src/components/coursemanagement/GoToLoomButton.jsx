@@ -16,7 +16,3 @@ const GoToLoomButton = () => {
 };
 
 export default GoToLoomButton;
-
-
-
-

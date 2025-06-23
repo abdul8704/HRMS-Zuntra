@@ -1,10 +1,11 @@
 const UserCreds = require("../models/userCredentials");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
+const ApiError = require("../errors/ApiError");
 
 require("dotenv").config();
 
-const verifyLogin = asyncHandler(async (email, password) => {
+const verifyLogin = async (email, password) => {
     try {
         const userData = await UserCreds.findOne(
             { email: email },
@@ -31,35 +32,39 @@ const verifyLogin = asyncHandler(async (email, password) => {
             },
         };
     } catch (err) {
-        return { success: false, message: err.message };
+        throw new ApiError(500, "Failed to verify login", err.message)
     }
-});
+};
 
-const createNewUser = asyncHandler(async (userData) => {
-    const { username, email, password, phoneNum } = userData;
+const createNewUser = async (userData) => {
+    try{
+        const { username, email, password, phoneNum } = userData;
 
-    const hashedpass = await bcrypt.hash(
-        password,
-        Number(process.env.HASH_SALT)
-    );
+        const hashedpass = await bcrypt.hash(
+            password,
+            Number(process.env.HASH_SALT)
+        );
 
-    const newUser = new UserCreds({
-        username: username,
-        email: email,
-        passwordHash: hashedpass,
-        phoneNumber: phoneNum,
-    });
+        const newUser = new UserCreds({
+            username: username,
+            email: email,
+            passwordHash: hashedpass,
+            phoneNumber: phoneNum,
+        });
 
-    await newUser.save();
+        await newUser.save();
 
-    return {
-        success: true,
-        message: "User registered successfully, wait for aproval.",
-    };
-});
+        return {
+            success: true,
+            message: "User registered successfully, wait for aproval.",
+        };
+    }catch(err){
+        throw new ApiError(500, "Failed to create user", err.message);
+    }
+};
 
 const getUserByEmail = async (email) => {
-    const userData = UserCreds.findOne({ email: email });
+    const userData = await UserCreds.findOne({ email: email });
     return userData;
 };
 

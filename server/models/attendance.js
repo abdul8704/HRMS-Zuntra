@@ -26,12 +26,12 @@ const attendanceSchema = new mongoose.Schema({
 
     sessions: [sessionSchema], // multiple login/logout pairs
 
-    workingHours: {
+    workingMinutes: {
         type: Number, // in hours (decimal), e.g. 7.5
         default: 0,
     },
 
-    breakHours: {
+    breakMinutes: {
         type: Number, // in hours (decimal)
         default: 0,
     },

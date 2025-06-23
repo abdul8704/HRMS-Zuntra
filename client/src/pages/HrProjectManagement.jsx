@@ -8,7 +8,7 @@ import {ProjectPopup} from '../components/projectManagement/ProjectPopup';
 import {TaskcardReview} from '../components/projectManagement/TaskcardReview';
 
 export const HrProjectManagement = () => {
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(1);
 
   return (
     <div className="relative">

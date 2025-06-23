@@ -1,97 +1,101 @@
-import React from 'react';
+import React from "react";
 
 export const CourseCard = ({ image, title, instructor, duration, rating }) => {
-  const isSelfPaced = duration.toLowerCase().includes('at your own pace');
-  const durationStyle = isSelfPaced ? styles.durationGreen : styles.durationOrange;
+  // Determine badge color and text color based on duration
+  const isSelfPaced = duration.toLowerCase().includes("at your own pace");
+  const badgeColor = isSelfPaced ? "#d0f5d0" : "#ffe0b2"; // background color
+  const badgeTextColor = isSelfPaced ? "#2e7d32" : "#d35400"; // text color
+
+  const badgeStyle = {
+    backgroundColor: badgeColor,
+    color: badgeTextColor,
+    padding: "4px 10px",
+    borderRadius: "12px",
+    fontSize: "12px",
+    fontWeight: "500",
+    whiteSpace: "nowrap",
+  };
 
   return (
     <div style={styles.card}>
-      <div style={styles.imageContainer}>
-        <img src={image} alt={title} style={styles.image} />
-      </div>
+      {/* Image */}
+      <img src={image} alt={title} style={styles.image} />
+
+      {/* Content */}
       <div style={styles.content}>
-        <h3 style={styles.title}>{title}</h3>
-        <p style={styles.instructor}>by {instructor}</p>
+        <div style={styles.infoSection}>
+          <h3 style={styles.title}>{title}</h3>
+          <p style={styles.instructor}>by {instructor}</p>
+        </div>
+
         <div style={styles.footer}>
-          <span style={durationStyle}>{duration}</span>
-          <span style={styles.rating}>{rating} ⭐</span>
+          <span style={badgeStyle}>{duration}</span>
+          <span style={styles.rating}>
+            <span style={styles.ratingNumber}>{rating}</span>
+            <span style={styles.star}>★</span>
+          </span>
         </div>
       </div>
     </div>
   );
 };
 
+// Styles
 const styles = {
   card: {
-    width: '90%',
-    maxWidth: '20rem',
-    height: '', // ✅ Increased card height
-    backgroundColor: '#ffffff',
-    borderRadius: '1rem',
-    boxShadow: '0 0.375rem 1rem rgba(0, 0, 0, 0.08)',
-    display: 'flex',
-    alignItems: 'stretch',
-    flexDirection: 'column',
-    overflow: 'hidden',
-    margin: '1rem',
-    boxSizing: 'border-box',
-  },
-  imageContainer: {
-    width: '100%',
-    height: '100%', // ✅ Increased image height
-    overflow: 'hidden',
-    borderTopLeftRadius: '1rem',
-    borderTopRightRadius: '1rem',
-    flexShrink: 0,
+    width: "250px",
+    height: "320px",
+    backgroundColor: "#D6D6D6",
+    borderRadius: "16px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
   },
   image: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
+    width: "100%",
+    height: "160px",
+    objectFit: "cover",
+    backgroundColor: "#f0f0f0",
   },
   content: {
-    padding: '1rem',
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1,
+    padding: "16px",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    flex: 1,
+  },
+  infoSection: {
+    marginBottom: "12px",
   },
   title: {
-    fontSize: '1.125rem',
-    fontWeight: '600',
-    margin: '0 0 0.5rem 0',
+    fontSize: "16px",
+    fontWeight: "600",
+    marginBottom: "4px",
   },
   instructor: {
-    fontSize: '0.875rem',
-    color: '#555',
-    marginBottom: '1rem',
+    fontSize: "13px",
+    color: "#666",
   },
   footer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    fontSize: '0.875rem',
-    marginTop: 'auto', // Ensures footer sticks to bottom
-  },
-  durationOrange: {
-    backgroundColor: '#D6C2C2',
-    color: '#000000',
-    padding: '0.25rem 0.5rem',
-    borderRadius: '0.75rem',
-    fontSize: '0.75rem',
-  },
-  durationGreen: {
-    backgroundColor: '#d0f5d0',
-    color: '#2e7d32',
-    padding: '0.25rem 0.5rem',
-    borderRadius: '0.75rem',
-    fontSize: '0.75rem',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   rating: {
-    fontWeight: 'bold',
-    color: '#f4b400',
-    fontSize: '0.875rem',
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+  },
+  ratingNumber: {
+    fontSize: "13px",
+    fontWeight: "bold",
+    color: "#000", // Black
+  },
+  star: {
+    fontSize: "25px",
+    color: "#f4b400", // Yellow star
   },
 };
 
 export default CourseCard;
-
