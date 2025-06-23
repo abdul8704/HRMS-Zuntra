@@ -10,7 +10,7 @@ import TabNavigationCard from "../components/attendance/TabNavigationCard";
 
 export const HrEmployeeDetail = () => {
     return (
-        <div>
+        <div className="attendance-page">
             <ProfileSidebar />
             <div className="attendance-container">
                 <TabNavigationCard />
@@ -21,8 +21,15 @@ export const HrEmployeeDetail = () => {
                 <WorkTime />
                 <ProgressCard />
             </div>
-        </div>
 
-        
+            <style jsx>{`
+              .attendance-page {
+                display: flex;
+              }
+                .attendance-container {
+                    flex: 1;
+                }
+            `}</style>
+        </div>
     );
 };
