@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 
 const navItems = [
   {
@@ -58,9 +59,23 @@ const navItems = [
   },
 ];
 export const TaskNavbar = () => {
-  const { navId }= useParams();
-  const [active, setActive] = useState(navId);
-const navigate=useNavigate();
+  const navigate = useNavigate();
+
+  const [activeNavId, setActiveNavId] = useState('overview');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];
+  
+const handleNavigation = (path) => {
+  setActiveNavId(path);
+  navigate(`/projects/${encodeURIComponent(path)}`);
+  setIsDropdownOpen(false);
+};
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
   return (
     <>
      <div className="project-navbar">
