@@ -69,7 +69,7 @@ export const TaskNavbar = () => {
   
 const handleNavigation = (path) => {
   setActiveNavId(path);
-  navigate(`/projects/${encodeURIComponent(path)}`);
+  navigate(`/project/${encodeURIComponent(path)}`);
   setIsDropdownOpen(false);
 };
 

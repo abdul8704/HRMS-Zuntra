@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { NotFound } from './pages/NotFound';
+import { HrProjectDetails } from './pages/HrProjectDetails';
 import { HrProjectManagement } from './pages/HrProjectManagement';
 import { HrCourseManagement } from './pages/HrCourseManagement';
 import { HrEmployeeManagement } from './pages/HrEmployeeManagement';
@@ -21,7 +22,8 @@ function App() {
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Login/>}></Route>
-        <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
+        <Route path="/projects" element={<HrProjectManagement/>}></Route>
+        <Route path="/project/:navId" element={<HrProjectDetails/>}></Route>
         <Route path="/courses/:navId" element={<HrCourseManagement/>}></Route>
         <Route path="/employee" element={<HrEmployeeManagement/>}></Route>
         <Route path="/employee/role" element={<GeoFencing/>}></Route>
