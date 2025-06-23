@@ -1,9 +1,14 @@
 import React from "react";
 
-export const CourseCard = ({ image, title, instructor, duration, badgeColor, rating }) => {
+export const CourseCard = ({ image, title, instructor, duration, rating }) => {
+  // Determine badge color and text color based on duration
+  const isSelfPaced = duration.toLowerCase().includes("at your own pace");
+  const badgeColor = isSelfPaced ? "#d0f5d0" : "#ffe0b2"; // background color
+  const badgeTextColor = isSelfPaced ? "#2e7d32" : "#d35400"; // text color
+
   const badgeStyle = {
     backgroundColor: badgeColor,
-    color: "#000",
+    color: badgeTextColor,
     padding: "4px 10px",
     borderRadius: "12px",
     fontSize: "12px",
@@ -13,26 +18,34 @@ export const CourseCard = ({ image, title, instructor, duration, badgeColor, rat
 
   return (
     <div style={styles.card}>
+      {/* Image */}
       <img src={image} alt={title} style={styles.image} />
+
+      {/* Content */}
       <div style={styles.content}>
         <div style={styles.infoSection}>
           <h3 style={styles.title}>{title}</h3>
           <p style={styles.instructor}>by {instructor}</p>
         </div>
+
         <div style={styles.footer}>
           <span style={badgeStyle}>{duration}</span>
-          <span style={styles.rating}>{rating} ⭐</span>
+          <span style={styles.rating}>
+            <span style={styles.ratingNumber}>{rating}</span>
+            <span style={styles.star}>★</span>
+          </span>
         </div>
       </div>
     </div>
   );
 };
 
+// Styles
 const styles = {
   card: {
     width: "250px",
     height: "320px",
-    backgroundColor: "#fff",
+    backgroundColor: "#D6D6D6",
     borderRadius: "16px",
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
     display: "flex",
@@ -70,9 +83,19 @@ const styles = {
     alignItems: "center",
   },
   rating: {
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+  },
+  ratingNumber: {
     fontSize: "13px",
     fontWeight: "bold",
-    color: "#f4b400",
+    color: "#000", // Black
+  },
+  star: {
+    fontSize: "25px",
+    color: "#f4b400", // Yellow star
   },
 };
 
+export default CourseCard;

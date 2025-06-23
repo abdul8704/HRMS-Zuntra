@@ -23,12 +23,11 @@ export const ProjectCard = () => {
       backgroundColor: "#f4b6b6",
       borderRadius: "16px",
       padding: "20px",
-      width: "360px",
+      width: "32%",
       fontFamily: "'Segoe UI', sans-serif",
       position: "relative",
       boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
       textAlign: "left",
-      marginTop: "20px",
     },
     "project-icons": {
       position: "absolute",
@@ -140,6 +139,7 @@ export const ProjectCard = () => {
             name={projectData.user.name}
             role={projectData.user.role}
             avatar={projectData.user.avatar}
+            
           />
           <div style={styles["project-badge"]}>2 weeks left</div>
         </div>

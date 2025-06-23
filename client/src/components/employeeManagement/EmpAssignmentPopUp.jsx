@@ -87,23 +87,23 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
 
   return (
     <>
-      <div className="popup-overlay">
-        <div className="popup-container">
-          <div className="popup-content">
+      <div className="emp-card-popup-overlay">
+        <div className="emp-card-popup-container">
+          <div className="emp-card-popup-content">
             {/* Left: Employee Info */}
-            <div className="popup-emp-info">
+            <div className="emp-card-popup-emp-info">
               <img src={employee.image} alt={employee.name} className="popup-avatar" />
-              <div className="popup-emp-details">
-                <h3 className="popup-emp-name">{employee.name}</h3>
-                <p className="popup-emp-email">{employee.email}</p>
-                <p className="popup-emp-phone">{employee.phone}</p>
-                <p className="popup-emp-date">Applied: {employee.date}</p>
+              <div className="emp-card-popup-emp-details">
+                <h3 className="emp-card-popup-emp-name">{employee.name}</h3>
+                <p className="emp-card-popup-emp-email">{employee.email}</p>
+                <p className="emp-card-popup-emp-phone">{employee.phone}</p>
+                <p className="emp-card-popup-emp-date">Applied: {employee.date}</p>
               </div>
             </div>
 
             {/* Right: Form Side */}
-            <div className="popup-body">
-              <div ref={roleInputRef} className="popup-select-wrapper">
+            <div className="emp-card-popup-body">
+              <div ref={roleInputRef} className="emp-card-popup-select-wrapper">
                 <input
                   type="text"
                   placeholder="Choose the role"
@@ -114,32 +114,32 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
                     setSalary(roleSalaryMap[e.target.value] || ''); // update salary live
                   }}
                   onFocus={() => setShowDropdown(true)}
-                  className="popup-select role-input"
+                  className="emp-card-popup-select role-input"
                 />
                 {showDropdown && (
-                  <ul className="popup-dropdown">
+                  <ul className="emp-card-popup-dropdown">
                     {getSortedRoles(selectedRole).length > 0 ? (
                       getSortedRoles(selectedRole).map((role) => (
                         <li
                           key={role}
-                          className="popup-dropdown-item"
+                          className="emp-card-popup-dropdown-item"
                           onClick={() => handleRoleChange(role)}
                         >
                           {role}
                         </li>
                       ))
                     ) : (
-                      <li className="popup-dropdown-item no-result">Not found</li>
+                      <li className="emp-card-popup-dropdown-item no-result">Not found</li>
                     )}
                   </ul>
                 )}
               </div>
 
-              <div className="popup-select-wrapper no-arrow">
+              <div className="emp-card-popup-select-wrapper no-arrow">
                 <select
                   value={selectedShift}
                   onChange={(e) => setSelectedShift(e.target.value)}
-                  className="popup-select"
+                  className="emp-card-popup-select"
                 >
                   {shifts.map((shift) => (
                     <option key={shift} value={shift}>{shift}</option>
@@ -147,20 +147,20 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
                 </select>
               </div>
 
-              <div className="popup-select-wrapper no-arrow">
+              <div className="emp-card-popup-select-wrapper no-arrow">
                 <input
                   type="text"
                   placeholder="Select role to get salary"
                   value={salary}
                   onChange={(e) => setSalary(e.target.value)}
-                  className="popup-select"
+                  className="emp-card-popup-select"
                 />
               </div>
 
-              <div className="popup-button-group">
-                <button className="popup-cancel" onClick={handleClose}>Cancel</button>
+              <div className="emp-card-popup-button-group">
+                <button className="emp-card-popup-cancel" onClick={handleClose}>Cancel</button>
                 <button
-                  className="popup-submit"
+                  className="emp-card-popup-submit"
                   onClick={handleSave}
                   disabled={!selectedRole || !selectedShift}
                 >
@@ -174,188 +174,194 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
 
       {/* Styles */}
       <style jsx>{`
-        .popup-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 9999;
-          padding: 20px;
-        }
+  .emp-card-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    padding: 1.25rem;
+  }
 
-        .popup-container {
-          background: #fff;
-          border-radius: 16px;
-          width: 100%;
-          max-width: 600px;
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-          overflow: hidden;
-          animation: fadeIn 0.3s ease-in-out;
-          display: flex;
-          flex-direction: column;
-        }
+  .emp-card-popup-container {
+    background: #fff;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 37.5rem; /* 600px */
+    box-shadow: 0 0.625rem 2.5rem rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    animation: fadeIn 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+  }
 
-        .popup-content {
-          display: flex;
-          flex-direction: row;
-          padding: 20px;
-          gap: 20px;
-        }
+  .emp-card-popup-content {
+    display: flex;
+    flex-direction: row;
+    padding: 1.25rem;
+    gap: 1.25rem;
+  }
 
-        .popup-emp-info {
-          width: 35%;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-          border-right: 1px solid #eee;
-          padding-right: 10px;
-        }
+  .emp-card-popup-emp-info {
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-right: 1px solid #eee;
+    padding-right: 0.625rem;
+  }
 
-        .popup-emp-details {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
+  .emp-card-popup-emp-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-        .popup-avatar {
-          width: 100px;
-          height: 100px;
-          object-fit: cover;
-          border: 2px solid #eee;
-          border-radius: 8px;
-          margin-bottom: 10px;
-        }
+  .emp-card-popup-avatar {
+    width: 6.25rem;
+    height: 6.25rem;
+    object-fit: cover;
+    border: 0.125rem solid #eee;
+    border-radius: 0.5rem;
+    margin-bottom: 0.625rem;
+  }
 
-        .popup-emp-name {
-          margin: 0;
-          font-weight: bold;
-          color: #111827;
-        }
+  .emp-card-popup-emp-name {
+    margin: 0;
+    font-weight: bold;
+    color: #111827;
+  }
 
-        .popup-emp-email,
-        .popup-emp-phone {
-          margin: 2px 0;
-          font-size: 14px;
-          color: #6b7280;
-        }
+  .emp-card-popup-emp-email,
+  .emp-card-popup-emp-phone {
+    margin: 0.125rem 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
 
-        .popup-emp-date {
-          font-size: 13px;
-          color: #9ca3af;
-        }
+  .emp-card-popup-emp-date {
+    font-size: 0.8125rem;
+    color: #9ca3af;
+  }
 
-        .popup-body {
-          width: 65%;
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-          justify-content: center;
-        }
+  .emp-card-popup-body {
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    justify-content: center;
+  }
 
-        .popup-select-wrapper {
-          position: relative;
-        }
+  .emp-card-popup-select-wrapper {
+    position: relative;
+  }
 
-        .popup-select {
-          width: 100%;
-          padding: 10px;
-          border: 1px solid #e5e7eb;
-          border-radius: 8px;
-          font-size: 14px;
-          color: rgba(0, 0, 0, 0.7);
-          background-color: #d9d9d9;
-        }
+  .emp-card-popup-select {
+    width: 100%;
+    padding: 0.625rem;
+    border: 0.0625rem solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.7);
+    background-color: #d9d9d9;
+  }
 
-        .popup-select-wrapper:not(.no-arrow)::after {
-          content: "";
-          position: absolute;
-          right: 12px;
-          top: 50%;
-          transfor        m: translateY(-50%);
-          width: 12px;
-          height: 12px;
-          pointer-events: none;
-          background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23444' strokeWidth='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
-          background-repeat: no-repeat;
-          background-size: contain;
-        }
+  .emp-card-popup-select-wrapper:not(.no-arrow)::after {
+    content: "";
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0.75rem;
+    height: 0.75rem;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23444' strokeWidth='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
 
-        .popup-dropdown {
-          border: 1px solid #e5e7eb;
-          border-radius: 8px;
-          max-height: 160px;
-          overflow-y: auto;
-          background-color: white;
-          margin-top: 4px;
-          position: absolute;
-          width: 100%;
-          z-index: 1000;
-        }
+  .emp-card-popup-dropdown {
+    border: 0.0625rem solid #e5e7eb;
+    border-radius: 0.5rem;
+    max-height: 10rem;
+    overflow-y: auto;
+    background-color: white;
+    margin-top: 0.25rem;
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+  }
 
-        .popup-dropdown-item {
-          padding: 10px;
-          cursor: pointer;
-        }
+  .emp-card-popup-dropdown-item {
+    padding: 0.625rem;
+    cursor: pointer;
+  }
 
-        .popup-dropdown-item:hover {
-          background-color: #f3f4f6;
-        }
+  .emp-card-popup-dropdown-item:hover {
+    background-color: #f3f4f6;
+  }
 
-        .no-result {
-          color: rgba(0, 0, 0, 0.7);
-          cursor: default;
-          font-style: italic;
-        }
+  .emp-card-no-result {
+    color: rgba(0, 0, 0, 0.7);
+    cursor: default;
+    font-style: italic;
+  }
 
-        .popup-button-group {
-          display: flex;
-          gap: 12px;
-          justify-content: center;
-          margin-top: 10px;
-        }
+  .emp-card-popup-button-group {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 0.625rem;
+  }
 
-        .popup-button-group .popup-cancel {
-          padding: 10px 16px;
-          border: 1px solid #e5e7eb;
-          background-color: #E1BEC5;
-          color: black;
-          border-radius: 8px;
-          cursor: pointer;
-        }
+  .emp-card-popup-button-group .emp-card-popup-cancel {
+    padding: 0.625rem 1rem;
+    border: 0.0625rem solid #e5e7eb;
+    background-color: #E1BEC5;
+    color: black;
+    border-radius: 0.5rem;
+    cursor: pointer;
+  }
 
-        .popup-button-group .popup-submit {
-          padding: 10px 16px;
-          background-color: #C1E8BD;
-          color: black;
-          border: none;
-          border-radius: 8px;
-          font-weight: normal;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-        }
+  .emp-card-popup-button-group .emp-card-popup-submit {
+    padding: 0.625rem 1rem;
+    background-color: #C1E8BD;
+    color: black;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
 
-        .popup-submit:disabled {
-          background: #d1d5db;
-          cursor: not-allowed;
-        }
+  .emp-card-popup-submit:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+  }
 
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: scale(0.98);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-      `}</style>
+  .emp-card-popup-button-group .emp-card-popup-cancel:hover {
+    background-color: red;
+    color: white;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+`}</style>
+
     </>
   );
 };
