@@ -7,7 +7,7 @@ export const HrEmployeeManagement = () => {
   const bgClasses = ['bg1', 'bg2', 'bg3'];
 
   const employees = [
-    { name: "John Joseph Mathew George Daniel A", email: "johnmathewgeorgedaniel@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
+    // { name: "John Joseph Mathew George Daniel A", email: "johnmathewgeorgedaniel@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
     { name: "Nisha Mehra", email: "nisha@zuntra.com", phone: "+91 9123456780", date: "12-06-2025", image: "https://randomuser.me/api/portraits/women/68.jpg" },
     { name: "Arun Raj", email: "arun.raj@zuntra.com", phone: "+91 9988000000", date: "09-06-2025", image: "https://randomuser.me/api/portraits/men/62.jpg" },
     { name: "Deepa S", email: "deepa.s@zuntra.com", phone: "+91 7896541230", date: "11-06-2025", image: "https://randomuser.me/api/portraits/women/75.jpg" },
