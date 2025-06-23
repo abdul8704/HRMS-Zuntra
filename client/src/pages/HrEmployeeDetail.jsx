@@ -7,7 +7,7 @@ import OutTime from "../components/attendance/OutTime";
 import WorkTime from "../components/attendance/WorkTime";
 import ProgressCard from "../components/attendance/ProgressCard";
 import TabNavigationCard from "../components/attendance/TabNavigationCard";
-
+import BreakTime from "../components/attendance/BreakTime";
 export const HrEmployeeDetail = () => {
     return (
         <div className="attendance-page">
@@ -19,6 +19,8 @@ export const HrEmployeeDetail = () => {
                 <InTime />
                 <OutTime />
                 <WorkTime />
+                <BreakTime/>
+
                 <ProgressCard />
             </div>
 
