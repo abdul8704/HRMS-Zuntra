@@ -22,7 +22,7 @@ function App() {
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Login/>}></Route>
         <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
-        <Route path="/courses" element={<HrCourseManagement/>}></Route>
+        <Route path="/courses/:navId" element={<HrCourseManagement/>}></Route>
         <Route path="/employee" element={<HrEmployeeManagement/>}></Route>
         <Route path="/employee/role" element={<GeoFencing/>}></Route>
         <Route path="/employee/details"  element={<HrEmployeeDetail/>}></Route>
