@@ -63,19 +63,28 @@ export const EmpCard = ({ name, email, phone, date, image, bgColor }) => {
             overflow: hidden; /* ensures no child overflow */
           }
 
-          @media (min-width: 40rem) {
-            .emp-card {
-              width: calc(50% - 1rem);
-              max-width: calc(50% - 1rem);
-            }
-          }
+/* Default: Desktop (3 per row) */
+.emp-card {
+  width: calc(33.333% - 1rem);
+  max-width: calc(33.333% - 1rem);
+}
 
-          @media (min-width: 64rem) {
-            .emp-card {
-              width: calc(33.333% - 1rem);
-              max-width: calc(33.333% - 1rem);
-            }
-          }
+/* Tablets (2 per row): below 1024px (64rem) */
+@media (max-width: 63.9375rem) {
+  .emp-card {
+    width: calc(50% - 1rem);
+    max-width: calc(50% - 1rem);
+  }
+}
+
+/* Mobile (1 per row): below 640px (40rem) */
+@media (max-width: 39.9375rem) {
+  .emp-card {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
 
           .emp-card:hover {
             transform: scale(1.01);
