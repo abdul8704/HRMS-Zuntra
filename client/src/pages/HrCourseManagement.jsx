@@ -156,7 +156,7 @@ export const HrCourseManagement = () => {
         </div>
       </div>
 
-      {/* PopupCard Component - This will now overlay properly */}
+      {/* PopupCard Component - This will now overlay properly
       <PopupCard
         isVisible={showPopup}
         onClose={() => setShowPopup(false)}
@@ -164,7 +164,7 @@ export const HrCourseManagement = () => {
         title="Sheesh!"
         message="Operation failed lorem ipsum djnhjdbshbdbdbscnd jnjdjnd dnjdnjdn jndcjndjn djcndcndjnc djndjn"
         color="#E1BEC5"
-      />
+      /> */}
 
 
       <style>{`
