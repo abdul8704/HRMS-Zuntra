@@ -4,5 +4,6 @@ const router = express.Router();
 const employeeController = require("../controllers/employeeManagement")
 
 router.post("/logout", employeeController.handleLogout);
+router.get("/attendance", employeeController.getAttendanceData);
 
 module.exports = router;

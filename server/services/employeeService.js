@@ -2,7 +2,12 @@ const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
 
-const getAttendaceByUserId = async (userid, startDate, endDate) => {
+const getAttendanceDataByUserId = async (
+    userid,
+    startDate,
+    endDate,
+    holidays = []
+) => {
     try {
         const start = new Date(startDate);
         start.setHours(0, 0, 0, 0);
@@ -10,17 +15,67 @@ const getAttendaceByUserId = async (userid, startDate, endDate) => {
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
 
+        // Fetch attendance records within the date range
         const attendanceRecords = await Attendance.find({
-            userid: userid,
+            userid,
             date: { $gte: start, $lte: end },
         }).sort({ date: 1 });
 
+        // Create a map for quick lookup
+        const attendanceMap = new Map();
+        for (const record of attendanceRecords) {
+            const dateStr = record.date.toISOString().split("T")[0];
+            attendanceMap.set(dateStr, record);
+        }
+
+        // Prepare to iterate over each date in the range
+        const result = [];
+        let presentCount = 0;
+        let holidayCount = 0;
+        let absentCount = 0;
+
+        const oneDay = 24 * 60 * 60 * 1000;
+        const totalDays = Math.ceil((end - start) / oneDay) + 1;
+
+        for (let i = 0; i < totalDays; i++) {
+            const current = new Date(start.getTime() + i * oneDay);
+            const currentDateStr = current.toISOString().split("T")[0];
+
+            if (holidays.includes(currentDateStr)) {
+                holidayCount++;
+                result.push({ date: currentDateStr, status: "holiday" });
+            } else if (attendanceMap.has(currentDateStr)) {
+                presentCount++;
+                result.push({
+                    date: currentDateStr,
+                    status: "present",
+                    ...attendanceMap.get(currentDateStr)._doc,
+                });
+            } else {
+                absentCount++;
+                result.push({ date: currentDateStr, status: "absent" });
+            }
+        }
+
+        const workingDays = totalDays - holidayCount;
+
         return {
             success: true,
-            data: attendanceRecords,
+            summary: {
+                totalDays,
+                workingDays,
+                holidays: holidayCount,
+                present: presentCount,
+                absent: absentCount,
+            },
+            detailedData: result,
         };
     } catch (error) {
-        throw new ApiError(500, "Failed to fetch attendance records", error.message);
+        throw new ApiError(
+            500,
+            "Failed to fetch attendance summary",
+            error.message
+        );
     }
 };
 
@@ -51,6 +106,12 @@ const markAttendanceOnLogin = async (userid) => {
 
         if (lastSession && !lastSession.logoutTime) {
             lastSession.logoutTime = now;
+            const lastLogin = lastSession.loginTime;
+
+            const sessionDurationMs = now - lastLogin;
+            const sessionDurationMinutes = sessionDurationMs / (1000 * 60); // convert ms to minutes
+
+            attendance.workingMinutes += sessionDurationMinutes;
         }
 
         if (now >= shiftStart && now <= shiftEnd && lastSession?.logoutTime) {
@@ -119,7 +180,7 @@ const markEndOfSession = async (userid, logoutTime) => {
 };
 
 module.exports = {
-    getAttendaceByUserId,
+    getAttendanceDataByUserId,
     markAttendanceOnLogin,
     markEndOfSession,
 };
