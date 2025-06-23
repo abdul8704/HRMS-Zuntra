@@ -22,5 +22,7 @@ export const HrEmployeeDetail = () => {
                 <ProgressCard />
             </div>
         </div>
+
+        
     );
 };

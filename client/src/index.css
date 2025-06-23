@@ -1,15 +1,14 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+*/
 
 *{
 margin: 0;
 padding: 0;
-font-size: 1vw;
 font-family: 'Poppins', sans-serif;
 }
-
+/*
 .website-container {
 width: 100vw;
 height: 100vh;
@@ -47,7 +46,7 @@ right: 1.5vw;
 z-index: 20;
 cursor: pointer;
 transition: transform 0.2s ease, opacity 0.3s ease;
-font-size: 2vw;
+font-size: 2rem;
 opacity: 0;
 }
 
@@ -470,4 +469,4 @@ font-size: 1.3vw;
 font-size: 1vw;
 padding: 0.8vh 2vw;
 }
-}
+} */

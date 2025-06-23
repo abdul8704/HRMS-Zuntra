@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
-import { EmpProfile } from "./EmpProfile"; // External profile component
+import { EmpProfile } from "../employeeManagement/EmpProfile"; // External profile component
 
 export const ProjectCard = () => {
   const [projectData, setProjectData] = useState({
