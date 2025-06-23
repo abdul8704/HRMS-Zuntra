@@ -1,40 +1,13 @@
 import React from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { EmpProfile } from "../employeeManagement/EmpProfile";
-const UserProfile = ({ userName, userRole, userImage, style }) => {
-  const styles = {
-    container: {
-      display: "flex",
-      alignItems: "center",
-      padding: "8px 12px",
-      borderRadius: "999px",
-      backgroundColor: "#e9f9e3",
-      ...style
-    },
-    avatar: { width: "40px", height: "40px", borderRadius: "50%", marginRight: "10px" },
-    userDetails: { display: "flex", flexDirection: "column" },
-    userName: { fontSize: "14px", fontWeight: "600" },
-    userRole: { fontSize: "12px", color: "#555" },
-  };
 
-  return (
-    <div style={styles.container}>
-      <img src={userImage} alt="User Avatar" style={styles.avatar} />
-      <div style={styles.userDetails}>
-        <span style={styles.userName}>{userName}</span>
-        <span style={styles.userRole}>{userRole}</span>
-      </div>
-    </div>
-  );
-};
-
-export const TaskCard = ({
+export const TaskcardReview = ({
   title = "Dummy Task Title",
   description = "This is a sample description. Tasks asigned must be completed by the user within the stipulated time. Happy working!",
   userName = "John Doe",
   userRole = "Embedded & IoT Developer",
   userImage = "https://picsum.photos/40/40?random=1",
-  timeLeft = "3 Months left",
 }) => {
   const styles = {
     card: {
@@ -56,7 +29,19 @@ export const TaskCard = ({
     title: { fontSize: "20px", fontWeight: "bold" },
     description: { color: "#555", fontSize: "14px", lineHeight: "1.5", marginBottom: "40px" },
     footer: { display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px", gap: "20px" },
-    badge: { backgroundColor: "#e9f9e3", padding: "4px 12px", borderRadius: "999px", fontWeight: "600", fontSize: "14px", color: "#555" },
+    bubble: {
+      width: "30px",
+      height: "30px",
+      borderRadius: "50%",
+      backgroundColor: "#e9f9e3",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      fontSize: "16px",
+      fontWeight: "bold",
+      color: "#555",
+      cursor: "pointer",
+    },
   };
 
   return (
@@ -68,8 +53,11 @@ export const TaskCard = ({
       <h2 style={styles.title}>{title}</h2>
       <p style={styles.description}>{description}</p>
       <div style={styles.footer}>
-        <EmpProfile name="beryl"  role="front end dev" avatar="jykgk" />
-        <div style={styles.badge}>{timeLeft}</div>
+        <EmpProfile name={userName} role={userRole} avatar={userImage} />
+        <div style={{ display: "flex", gap: "10px" }}>
+          <div style={styles.bubble}>✔</div>
+          <div style={styles.bubble}>✕</div>
+        </div>
       </div>
     </div>
   );
