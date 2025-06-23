@@ -4,12 +4,12 @@ import { EmpProfile } from "./EmpProfile"; // External profile component
 
 export const ProjectCard = () => {
   const [projectData, setProjectData] = useState({
-    title: "Project 4",
-    subtitle: "Data Drifters",
+    title: "Project 6",
+    subtitle: "6 Aurora",
     description:
       "This is a sample description for a Project. I am typing more since there should be more lines. One more line and we’re good to go. Huhh, more lines since they want this to overflow.",
     user: {
-      name: "Abish DM",
+      name: "Cheril Gracenciya",
       role: "Full Stack Developer",
       avatar: "https://i.pravatar.cc/100?img=5",
     },

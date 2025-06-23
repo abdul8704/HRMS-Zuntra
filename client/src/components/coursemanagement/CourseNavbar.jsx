@@ -57,8 +57,8 @@ export const CourseNavbar = () => {
         .course-navbar ul {
           list-style: none;
           display: flex;
-          align-items: center;
-          gap: 10 rem;
+          align-items: centre;
+          gap: 10rem;
           margin: 0;
           padding: 0;
         }
@@ -68,7 +68,7 @@ export const CourseNavbar = () => {
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          font-weight: 400;
+          font-weight: 500;
           font-size: 6rem;
           padding: 1rem 1.5rem;
           border-radius: 1rem;
