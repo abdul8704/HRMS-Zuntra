@@ -1,6 +1,6 @@
 const courseDetails = require("../models/courseDetails");
 const courseContent = require("../models/courseContent");
-const ApiError = require("../utils/ApiError");
+const ApiError = require("../errors/ApiError");
 
 const getAllCourseDetails = async () => {
     try {
