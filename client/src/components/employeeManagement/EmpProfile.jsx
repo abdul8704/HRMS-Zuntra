@@ -2,7 +2,7 @@ import React from "react";
 import { FaCrown } from "react-icons/fa";
 
 export const EmpProfile = ({ name, role, avatar }) => {
-  const firstName = name.split(" ")[0]; // extract first name only
+  const firstName = name.split(" ")[0];
 
   const styles = {
     "project-profileContainer": {
@@ -13,6 +13,7 @@ export const EmpProfile = ({ name, role, avatar }) => {
       alignItems: "center",
       marginRight: "0.625rem",
       maxWidth: "13.75rem",
+      position: "relative", // for absolute positioning
     },
     "project-avatar": {
       width: "3rem",
@@ -30,8 +31,6 @@ export const EmpProfile = ({ name, role, avatar }) => {
       overflow: "hidden",
     },
     "project-nameRow": {
-      display: "flex",
-      alignItems: "center",
       fontWeight: "600",
       fontSize: "0.875rem",
       whiteSpace: "nowrap",
@@ -39,8 +38,11 @@ export const EmpProfile = ({ name, role, avatar }) => {
       textOverflow: "ellipsis",
     },
     "project-crownIcon": {
-      marginLeft: "0.375rem",
-      fontSize: "0.875rem",
+      position: "absolute",
+      top: "-0.4rem",
+      right: "-0.3rem",
+      fontSize: "1rem",
+      color: "#d4af37", // optional gold-like color
     },
     "project-role": {
       fontSize: "0.6875rem",
@@ -54,12 +56,10 @@ export const EmpProfile = ({ name, role, avatar }) => {
 
   return (
     <div style={styles["project-profileContainer"]}>
+      <FaCrown style={styles["project-crownIcon"]} />
       <img src={avatar} alt={firstName} style={styles["project-avatar"]} />
       <div style={styles["project-userDetails"]}>
-        <div style={styles["project-nameRow"]}>
-          {firstName}
-          <FaCrown style={styles["project-crownIcon"]} />
-        </div>
+        <div style={styles["project-nameRow"]}>{firstName}</div>
         <div style={styles["project-role"]}>{role}</div>
       </div>
     </div>
