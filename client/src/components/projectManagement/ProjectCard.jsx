@@ -23,7 +23,7 @@ export const ProjectCard = () => {
       backgroundColor: "#f4b6b6",
       borderRadius: "16px",
       padding: "20px",
-      width: "30%",
+      width: "32%",
       fontFamily: "'Segoe UI', sans-serif",
       position: "relative",
       boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
