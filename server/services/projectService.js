@@ -13,6 +13,12 @@ const getAllFinishedProjects = async () => {
     return projectsList;
 };
 
+// @desc Get a finished projects
+const getAProject = async (id) => {
+    const projectsList = await Project.findById(id);
+    return projectsList;
+};
+
 // @desc Create new course
 const createNewProject = async (data) => {
     const projectData = await Project.create(data);
@@ -22,5 +28,6 @@ const createNewProject = async (data) => {
 module.exports = {
     getAllOnGoingProjects,
     getAllFinishedProjects,
+    getAProject,
     createNewProject,
 };
