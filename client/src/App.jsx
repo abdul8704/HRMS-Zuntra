@@ -9,6 +9,7 @@ import { HrEmployeeDetail } from './pages/HrEmployeeDetail';
 import { HrCreateCourse } from './pages/HrCreateCourse';
 import './App.css'
 import './index.css'
+import { GeoFencing } from './components/employeeManagement/GeoFencing';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -22,6 +23,7 @@ function App() {
         <Route path="/project" element={<HrProjectManagement/>}></Route>
         <Route path="/course" element={<HrCourseManagement/>}></Route>
         <Route path="/employee" element={<HrEmployeeManagement/>}></Route>
+        <Route path="/employee/role" element={<GeoFencing/>}></Route>
         <Route path="/employee/details"  element={<HrEmployeeDetail/>}></Route>
         <Route path="/createcourse" element={<HrCreateCourse/>}></Route>
 
