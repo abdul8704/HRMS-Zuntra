@@ -105,7 +105,7 @@ const createCourseContentController = asyncHandler(async (req, res) => {
 });
 
 
-const getCourseDetails = asyncHandler(async (req, res) => {
+const getCourseDetailsController = asyncHandler(async (req, res) => {
   const result = await courseService.getAllCourseDetails();
   if (result.length === 0) {
       throw new ApiError(404, "No courses available");
@@ -118,7 +118,7 @@ const getCourseDetails = asyncHandler(async (req, res) => {
   }
 });
 
-const getCourseIntroId = asyncHandler(async (req, res) => {
+const getCourseIntroIdController = asyncHandler(async (req, res) => {
   const result = await courseService.getCourseIntroById(req.params.id);
   if (result.length === 0) {
     throw new ApiError(404, "Course does not exist");
@@ -131,7 +131,7 @@ const getCourseIntroId = asyncHandler(async (req, res) => {
   }
 });
 
-const getCourseContentId = asyncHandler(async (req, res) => {
+const getCourseContentIdController = asyncHandler(async (req, res) => {
   const result = await courseService.getCourseContentById(req.params.id);
   if (result.length === 0) {
     throw new ApiError(404, "Course does not exist");
@@ -144,7 +144,7 @@ const getCourseContentId = asyncHandler(async (req, res) => {
   }
 });
 
-const editCourseIntro = asyncHandler(async (req, res) => {
+const editCourseIntroController = asyncHandler(async (req, res) => {
   const result = await courseService.updateCourseIntro(req.params.id,req.body);
   if (result.length === 0) {
     throw new ApiError(404, "Course does not exist");
@@ -157,7 +157,7 @@ const editCourseIntro = asyncHandler(async (req, res) => {
   }
 });
 
-const editCourseContent = asyncHandler(async (req, res) => {
+const editCourseContentController = asyncHandler(async (req, res) => {
   const result = await courseService.updateCourseContent(req.params.id,req.body);
   if (result.length === 0) {
     throw new ApiError(404, "Course does not exist");
@@ -170,12 +170,25 @@ const editCourseContent = asyncHandler(async (req, res) => {
   }
 });
 
+const deleteCourseController = asyncHandler(async (req, res) => {
+  const result = await courseService.deleteCourse(req.params.id);
+  if (!result || result.length === 0) {
+    throw new ApiError(404, "Course does not exist");
+  }
+
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
 module.exports = { 
   createCourseIntroController, 
   createCourseContentController, 
-  getCourseDetails, 
-  getCourseContentId, 
-  getCourseIntroId,
-  editCourseIntro,
-  editCourseContent
+  getCourseDetailsController, 
+  getCourseContentIdController, 
+  getCourseIntroIdController,
+  editCourseIntroController,
+  editCourseContentController,
+  deleteCourseController
 };

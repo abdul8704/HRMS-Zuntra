@@ -54,7 +54,7 @@ const addCourseContent = async (courseContents) => {
 
 const updateCourseIntro = async (courseId, updateBody) => {
     try {
-        const updatedContent = await courseContent.findOneAndUpdate(
+        const updatedContent = await courseDetails.findOneAndUpdate(
             { courseId },
             updateBody, 
             { new: true }
@@ -90,6 +90,29 @@ const updateCourseContent = async (courseId, updateBody) => {
     }
 };
 
+const deleteCourse = async (courseId) => {
+    try {
+        const deletedCourseIntro = await courseDetails.findOneAndDelete({courseId});
+        const deletedCourseContent = await courseContent.findOneAndDelete({courseId});
+
+        if (!deletedCourseIntro) {
+            throw new ApiError(404, "Course intro not found");
+        }
+
+        if (!deletedCourseContent) {
+            throw new ApiError(404, "Course content not found");
+        }
+
+        return [deletedCourseIntro,deletedCourseContent];
+    } 
+    catch (err) {
+        throw new ApiError(500, "Failed to delete course content", err.message);
+    }
+};
+
+
+
+
 module.exports = {
     addNewCourse,
     getAllCourseDetails,
@@ -97,5 +120,6 @@ module.exports = {
     getCourseContentById,
     addCourseContent,
     updateCourseIntro,
-    updateCourseContent
+    updateCourseContent,
+    deleteCourse
 };
