@@ -62,6 +62,8 @@ const getAllFinishedProjects = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc Create a course details
+// @route post /api/project/:projectId
 const getAProject = asyncHandler(async(req,res)=>{
     const projectDetails = await projectService.getAProject(req.params.projectId);
     return res.status(200).json({
