@@ -143,7 +143,7 @@ export const HrCourseManagement = () => {
   };
 
   return (
-    <div className="website-container" style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+    <div className="website-container" style={{ display: "flex", height: "100vh", overflow: "hidden", position: "relative" }}>
       <Sidebar />
       <div className="website-module" style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <CourseNavbar />
@@ -156,7 +156,7 @@ export const HrCourseManagement = () => {
         </div>
       </div>
       
-      {/* PopupCard Component */}
+      {/* PopupCard Component - This will now overlay properly */}
       <PopupCard
         isVisible={showPopup}
         onClose={handleClosePopup}

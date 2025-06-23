@@ -2,23 +2,31 @@ import React, { useState } from 'react';
 
 export const CourseNavbar = () => {
   const [active, setActive] = useState(0);
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = ['Courses', 'Create Course', 'Add Course'];
 
   return (
     <>
       <div className="course-navbar">
-        <ul>
+        {/* Hamburger icon for mobile */}
+        <div className="mobile-menu-icon" onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>
+          ☰
+        </div>
+
+        <ul className={`nav-list ${isMobileMenuOpen ? 'open' : ''}`}> 
           {navItems.map((label, index) => (
             <li
               key={index}
               className={active === index ? 'active' : ''}
-              onClick={() => setActive(index)}
+              onClick={() => {
+                setActive(index);
+                setMobileMenuOpen(false); // Close menu on item click (for mobile)
+              }}
             >
               <span>{label}</span>
             </li>
           ))}
-          {/* Equalizer Icon */}
           <li className="eq-icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -52,39 +60,48 @@ export const CourseNavbar = () => {
           width: 95%;
           margin: 1rem auto;
           padding: 0rem;
+          position: relative;
         }
 
-        .course-navbar ul {
+        .mobile-menu-icon {
+          display: none;
+          font-size: 2.5rem;
+          padding: 1rem;
+          cursor: pointer;
+        }
+
+        .nav-list {
           list-style: none;
           display: flex;
-          align-items: centre;
+          align-items: center;
           gap: 10rem;
           margin: 0;
-          padding: 0;
+          padding: 0 1rem;
+          flex-wrap: nowrap;
         }
 
-        .course-navbar li {
+        .nav-list li {
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
           font-weight: 500;
-          font-size: 6rem;
+          font-size: 1.2rem;
           padding: 1rem 1.5rem;
           border-radius: 1rem;
           transition: background 0.2s ease-in-out;
           user-select: none;
         }
 
-        .course-navbar li:hover {
+        .nav-list li:hover {
           background-color: #e0e0e0;
         }
 
-        .course-navbar li.active {
+        .nav-list li.active {
           background-color: #d0d0d0;
         }
 
-        .course-navbar .eq-icon {
+        .nav-list .eq-icon {
           margin-left: auto;
           padding: 1rem 0.5rem;
           cursor: pointer;
@@ -96,11 +113,44 @@ export const CourseNavbar = () => {
           stroke: #000000;
           opacity: 0.5;
         }
+
+        /* ===== Responsive Styles ===== */
+        @media (max-width: 768px) {
+          .mobile-menu-icon {
+            display: block;
+          }
+
+          .nav-list {
+            display: none;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+            width: 100%;
+            background-color: #BBD3CC;
+            border-radius: 0 0 1rem 1rem;
+            padding: 1rem;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 10;
+          }
+
+          .nav-list.open {
+            display: flex;
+          }
+
+          .nav-list li {
+            width: 100%;
+            font-size: 1.1rem;
+            justify-content: flex-start;
+          }
+
+          .nav-list .eq-icon {
+            align-self: flex-end;
+            margin-top: 1rem;
+          }
+        }
       `}</style>
     </>
   );
 };
-
-
-
-
