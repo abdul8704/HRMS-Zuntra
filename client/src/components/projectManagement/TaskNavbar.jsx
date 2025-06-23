@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 const navItems = [
   {
@@ -58,18 +60,18 @@ const navItems = [
 ];
 
 export const TaskNavbar = () => {
+  const navigate = useNavigate();
+
   const [activeNavId, setActiveNavId] = useState('overview');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
   const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];
   
-  const handleNavigation = (path) => {
-    setActiveNavId(path);
-    const newUrl = `/projects/${encodeURIComponent(path)}`;
-    window.history.pushState({}, '', newUrl);
-    window.dispatchEvent(new CustomEvent('navigation', { detail: { path } }));
-    setIsDropdownOpen(false);
-  };
+const handleNavigation = (path) => {
+  setActiveNavId(path);
+  navigate(`/projects/${encodeURIComponent(path)}`);
+  setIsDropdownOpen(false);
+};
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
