@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Sidebar } from "../components/Sidebar";
 import { CourseNavbar } from "../components/coursemanagement/CourseNavbar";
 import { CourseCard } from "../components/coursemanagement/CourseCard";
+import { PopupCard } from "../components/PopupCard";
 
 const courseList = [
   {
@@ -127,6 +129,19 @@ const courseList = [
 ];
 
 export const HrCourseManagement = () => {
+  // Popup state
+  const [showPopup, setShowPopup] = useState(true); // Set to true to test the popup
+
+  // Function to show popup (you can call this from anywhere in your component)
+  const handleShowPopup = () => {
+    setShowPopup(true);
+  };
+
+  // Function to close popup
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
+
   return (
     <div className="website-container" style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <Sidebar />
@@ -140,6 +155,18 @@ export const HrCourseManagement = () => {
           </div>
         </div>
       </div>
+      
+      {/* PopupCard Component */}
+      <PopupCard
+        isVisible={showPopup}
+        onClose={handleClosePopup}
+        type="success"
+        title="Course Action"
+        message="Course operation completed successfully!"
+        duration={5000}
+        color="#10B981"
+        position="top-right"
+      />
 
       <style>{`
         .scrollable-content {
