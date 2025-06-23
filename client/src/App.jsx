@@ -21,8 +21,8 @@ function App() {
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Login/>}></Route>
-        <Route path="/project" element={<HrProjectManagement/>}></Route>
-        <Route path="/course" element={<HrCourseManagement/>}></Route>
+        <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
+        <Route path="/courses" element={<HrCourseManagement/>}></Route>
         <Route path="/employee" element={<HrEmployeeManagement/>}></Route>
         <Route path="/employee/role" element={<GeoFencing/>}></Route>
         <Route path="/employee/details"  element={<HrEmployeeDetail/>}></Route>

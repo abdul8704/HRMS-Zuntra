@@ -57,7 +57,7 @@ export const HrEmployeeDetail = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         /* --- overall sidebar + main column --- */
         .attendance-page {
           display: flex;

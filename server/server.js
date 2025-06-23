@@ -16,11 +16,23 @@ const rolesRouter = require('./routes/rolesRoutes')
 const errorHandler=require('./middlewares/errorHandler')
 const JWTauth = require('./middlewares/authenticateJWT')
 
-app.use(cors());
+const corsOptions = {
+    origin: [
+        "http://localhost:5173",
+        "http://localhost:5174"
+    ],
+    credentials: true, // Include cookies and auth headers if needed
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use("/auth", authRouter)
 app.use("/api", JWTauth);
 
+app.use("/api/hr", hrRoutes);
 app.use("/api/course", courseRouter);
 app.use("/api/meeting", meetingRouter);
 app.use("/api/task", taskRouter);

@@ -55,7 +55,7 @@ export const TableOfContents = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .toc-container {
           background: #e5e5e5;
           padding: 16px;

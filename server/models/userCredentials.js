@@ -35,6 +35,9 @@ const userCredentialsSchema = new mongoose.Schema({
     },
     shiftEnd: {
         type: Date,
+    },
+    campus: {
+        type: String
     }
 });
 
