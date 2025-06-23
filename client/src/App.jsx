@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { NotFound } from './pages/NotFound';
+import { HrDashboard } from './pages/HrDashboard';
 import { HrProjectDetails } from './pages/HrProjectDetails';
 import { HrProjectManagement } from './pages/HrProjectManagement';
 import { HrCourseManagement } from './pages/HrCourseManagement';
@@ -22,6 +23,7 @@ function App() {
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Login/>}></Route>
+        <Route path="/dashboard" element={<HrDashboard/>}></Route>
         <Route path="/projects" element={<HrProjectManagement/>}></Route>
         <Route path="/project/:navId" element={<HrProjectDetails/>}></Route>
         <Route path="/courses/:navId" element={<HrCourseManagement/>}></Route>

@@ -9,8 +9,10 @@
 import React, { useState, useEffect } from 'react'
 import zuntraSquareLogo from "../assets/zuntra_square_no_text.png"
 import zuntraLogo from "../assets/zuntra.png"
+import { useNavigate } from 'react-router-dom';
 
 export const Sidebar = () => {
+  const navigate = useNavigate();
   const [sideBarStatus, setSidebar] = useState(0); //0 collapsed 1 hovered 2 expanded 3 pinned
   const [role, setRole] = useState("HR");
   const [active, setActive] = useState(0);
@@ -129,12 +131,14 @@ export const Sidebar = () => {
     }
   };
 
-  const handleItemClick = (index) => {
-    setActive(index);
-    if (isMobile) {
-      setSidebar(0);
-    }
-  };
+const handleItemClick = (index) => {
+  setActive(index);
+  const selectedItem = sidebarItems.filter(item => role === "HR" || item.role === "EMP")[index];
+  navigate(selectedItem.path);
+  if (isMobile) {
+    setSidebar(0);
+  }
+};
 
   return (
     <>

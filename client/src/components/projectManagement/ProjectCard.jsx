@@ -2,20 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Edit2, Trash2 } from "lucide-react";
 import { EmpProfile } from "../employeeManagement/EmpProfile"
 
-// ✅ ProjectCard component
-export const ProjectCard = () => {
-  const [projectData, setProjectData] = useState({
-    title: "Project 1",
-    subtitle: "Data Drifters",
-    description:
-      "This is a sample description for a Project. I am typing more since there should be more lines. One more line and we're good to go. Huhh, more lines since they want this to overflow.",
-    user: {
-      name: "Abish DM",
-      role: "Full Stack Developer",
-      avatar: "https://i.pravatar.cc/100?img=5",
-    },
-  });
-
+export const ProjectCard = ({projectData}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(projectData);
   const [screenSize, setScreenSize] = useState({
@@ -42,7 +29,7 @@ export const ProjectCard = () => {
       backgroundColor: "#f4b6b6",
       borderRadius: "1rem",
       padding: isMobile ? "1rem" : "1.25rem",
-      width: isMobile ? "100%" : isTablet ? "48%" : "32%",
+      width: isMobile ? "100%" : isTablet ? "48%" : "30%",
       minWidth: isMobile ? "280px" : "300px",
       maxWidth: isMobile ? "100%" : "400px",
       fontFamily: "'Segoe UI', sans-serif",
