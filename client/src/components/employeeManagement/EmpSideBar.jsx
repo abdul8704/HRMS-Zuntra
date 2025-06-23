@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Users, Mail, Phone, DollarSign, Edit3, Menu, X } from "lucide-react";
+import ZuntraLogo from "../../assets/Zuntra.svg"
 
 export default function ProfileSidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -90,9 +91,9 @@ export default function ProfileSidebar() {
         <div style={{ paddingTop: isMobile ? '64px' : '24px', paddingBottom: '24px', paddingLeft: '24px', paddingRight: '24px' }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <img 
-              src="../../assets/Zuntra.svg"
+              src={ZuntraLogo}
               alt="ZUNTRA DIGITAL Logo"
-              style={{ height: '64px', width: '', objectFit: 'contain' }}
+              style={{ height: '50px', width: 'auto', objectFit: 'contain' }}
             />
           </div>
         </div>
