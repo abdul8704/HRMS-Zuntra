@@ -62,6 +62,14 @@ const getAllFinishedProjects = asyncHandler(async (req, res) => {
     });
 });
 
+const getAProject = asyncHandler(async(req,res)=>{
+    const projectDetails = await projectService.getAProject(req.params.projectId);
+    return res.status(200).json({
+        success: true,
+        data: projectDetails,
+    })
+})
+
 // @desc Create new course
 // @route post /api/project/create
 const createNewProject = asyncHandler( async(req,res) => {
@@ -72,7 +80,5 @@ const createNewProject = asyncHandler( async(req,res) => {
     })
 })
 
-// @desc Delete a course
-// @route delete /api/project/delete/:courseId
 
-module.exports = { getAllOnGoingProjects, getAllFinishedProjects, createNewProject };
+module.exports = { getAllOnGoingProjects, getAllFinishedProjects, createNewProject, getAProject, };
