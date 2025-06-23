@@ -8,17 +8,19 @@ export const EmpProfile = ({ name, role, avatar }) => {
     "project-profileContainer": {
       backgroundColor: "#f7caca",
       borderRadius: "999px",
-      padding: "6px 12px 6px 6px",
+      padding: "0px 12px 0px 0px",
       display: "flex",
       alignItems: "center",
       marginRight: "10px",
       maxWidth: "220px",
     },
     "project-avatar": {
-      width: "40px",
-      height: "40px",
+      width: "48px",
+      height: "48px",
       borderRadius: "50%",
       marginRight: "10px",
+      objectFit: "cover",
+      display: "block",
       flexShrink: 0,
     },
     "project-userDetails": {

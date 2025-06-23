@@ -139,6 +139,7 @@ export const Sidebar = () => {
   // <div className="website-container">
   {/* Sidebar */}
   return (
+    <>
       <div
         className={`website-sidebar ${sideBarStatus === 0 ? 'website-sidebar-collapsed' : ''} ${sideBarStatus === 2 || sideBarStatus === 3 ? 'website-sidebar-expanded' : ''}`}
         onMouseEnter={handleMouseEnter}
@@ -208,6 +209,7 @@ export const Sidebar = () => {
           </div>
         )}
       </div>
+      </>
   );
 }
 {/* Main Content */}
