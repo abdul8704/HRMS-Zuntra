@@ -139,6 +139,7 @@ export const ProjectCard = () => {
             name={projectData.user.name}
             role={projectData.user.role}
             avatar={projectData.user.avatar}
+            
           />
           <div style={styles["project-badge"]}>2 weeks left</div>
         </div>
