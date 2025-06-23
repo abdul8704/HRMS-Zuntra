@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle, Info, AlertTriangle, XCircle, X } from 'lucide-react';
 
-export const PopupCard = ({ 
-  isVisible, 
-  onClose, 
-  type = 'success', 
-  title = 'Success', 
-  message = 'Operation completed successfully', 
+export const PopupCard = ({
+  isVisible,
+  onClose,
+  type,
+  title,
+  message,
   duration = 5000,
-  color = '#10B981', // Default green color
-  position = 'top-right' // top-right, top-left, bottom-right, bottom-left
+  color,
 }) => {
   const [show, setShow] = useState(false);
   const [animate, setAnimate] = useState(false);
@@ -18,7 +16,7 @@ export const PopupCard = ({
     if (isVisible) {
       setShow(true);
       setTimeout(() => setAnimate(true), 10);
-      
+
       const timer = setTimeout(() => {
         handleClose();
       }, duration);
@@ -38,52 +36,50 @@ export const PopupCard = ({
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return <CheckCircle style={{ width: '24px', height: '24px', color }} />;
+        return (
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q65 0 123 19t107 53l-58 59q-38-24-81-37.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160q133 0 226.5-93.5T800-480q0-18-2-36t-6-35l65-65q11 32 17 66t6 70q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm-56-216L254-466l56-56 114 114 400-401 56 56-456 457Z" /></svg>
+        );
       case 'info':
-        return <Info style={{ width: '24px', height: '24px', color }} />;
+        return (
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg>
+        );
       case 'warning':
-        return <AlertTriangle style={{ width: '24px', height: '24px', color }} />;
+        return (
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M80-560q0-100 44.5-183.5T244-882l47 64q-60 44-95.5 111T160-560H80Zm720 0q0-80-35.5-147T669-818l47-64q75 55 119.5 138.5T880-560h-80ZM160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z" /></svg>
+        );
       case 'error':
-        return <XCircle style={{ width: '24px', height: '24px', color }} />;
+        return (
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm-40-160h80v-240h-80v240Zm40 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg>
+        );
       default:
-        return <CheckCircle style={{ width: '24px', height: '24px', color }} />;
+        return null;
     }
-  };
-
-  const getPositionStyles = () => {
-    switch (position) {
-      case 'top-right':
-        return { top: '20px', right: '20px' };
-      case 'top-left':
-        return { top: '20px', left: '20px' };
-      case 'bottom-right':
-        return { bottom: '20px', right: '20px' };
-      case 'bottom-left':
-        return { bottom: '20px', left: '20px' };
-      default:
-        return { top: '20px', right: '20px' };
-    }
-  };
-
-  // Convert hex to rgba with opacity
-  const hexToRgba = (hex, opacity) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
   };
 
   if (!show) return null;
 
-  const isRight = position.includes('right');
-  const translateX = animate ? '0' : (isRight ? '100%' : '-100%');
+  const translateX = animate ? '0' : '100%';
   const opacity = animate ? '1' : '0';
 
+  const darkenColor = (hex, percent) => {
+    let num = parseInt(hex.replace('#', ''), 16);
+    let r = (num >> 16) - percent;
+    let g = ((num >> 8) & 0x00FF) - percent;
+    let b = (num & 0x0000FF) - percent;
+
+    r = r < 0 ? 0 : r;
+    g = g < 0 ? 0 : g;
+    b = b < 0 ? 0 : b;
+
+    return `rgb(${r}, ${g}, ${b})`;
+  };
+
   return (
-    <div 
+    <div
       style={{
         position: 'fixed',
-        ...getPositionStyles(),
+        top: '2vh',
+        right: '2vw',
         zIndex: 9999,
         transform: `translateX(${translateX})`,
         opacity: opacity,
@@ -91,22 +87,22 @@ export const PopupCard = ({
         pointerEvents: 'auto'
       }}
     >
-      {/* White background card */}
       <div style={{
         backgroundColor: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)'
+        borderRadius: '0.5rem',
+        boxShadow: '0 1rem 2.5rem rgba(0, 0, 0, 0.15)',
+        overflow: 'hidden',
+        border: `3.1px solid ${darkenColor(color, 70)}`
       }}>
-        {/* Colored overlay card */}
-        <div 
-          style={{ 
+        <div
+          style={{
             position: 'relative',
-            borderRadius: '8px',
-            border: `2px solid ${color}`,
-            padding: '12px',
-            minWidth: '256px',
-            maxWidth: '384px',
-            backgroundColor: hexToRgba(color, 0.1)
+            backgroundColor: color,
+            padding: '1rem 1rem 1rem 1rem',
+            minWidth: '18rem',
+            maxWidth: '24rem',
+            width: '100%',
+            boxSizing: 'border-box',
           }}
         >
           {/* Close button */}
@@ -114,14 +110,14 @@ export const PopupCard = ({
             onClick={handleClose}
             style={{
               position: 'absolute',
-              top: '8px',
-              right: '8px',
-              padding: '4px',
+              top: '0.5rem',
+              right: '0.5rem',
+              padding: '0.25rem',
               borderRadius: '50%',
               border: 'none',
               backgroundColor: 'transparent',
               cursor: 'pointer',
-              color: color,
+              color: 'black',
               transition: 'background-color 0.2s'
             }}
             onMouseEnter={(e) => {
@@ -131,45 +127,44 @@ export const PopupCard = ({
               e.target.style.backgroundColor = 'transparent';
             }}
           >
-            <X style={{ width: '16px', height: '16px' }} />
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6l12 12" stroke="#000" strokeWidth="2" strokeLinecap="round" />
+            </svg>
           </button>
+
 
           {/* Content */}
           <div style={{
             display: 'flex',
-            alignItems: 'flex-start',
-            gap: '8px',
-            paddingRight: '20px'
+            alignItems: 'center',
+            gap: '0.75rem',
           }}>
             {/* Icon */}
-            <div style={{
-              flexShrink: 0,
-              marginTop: '2px'
-            }}>
+            <div style={{ flexShrink: 0 }}>
               {getIcon()}
             </div>
 
             {/* Text content */}
             <div style={{ flex: 1, minWidth: 0 }}>
-              <h3 
-                style={{ 
-                  fontSize: '16px',
+              <h3
+                style={{
+                  fontSize: '1rem',
                   fontWeight: '600',
-                  lineHeight: '1.2',
-                  margin: '0 0 4px 0',
-                  color: color
+                  lineHeight: '1.3',
+                  margin: '0 0 0.25rem 0',
+                  color: '#000000'
                 }}
               >
                 {title}
               </h3>
-              <p 
-                style={{ 
-                  fontSize: '14px',
-                  lineHeight: '1.4',
+              <p
+                style={{
+                  fontSize: '0.875rem',
+                  lineHeight: '1.5',
                   margin: 0,
-                  wordBreak: 'break-words',
-                  whiteSpace: 'pre-wrap',
-                  color: color
+                  color: '#333333',
+                  wordBreak: 'break-word',
+                  whiteSpace: 'pre-wrap'
                 }}
               >
                 {message}
