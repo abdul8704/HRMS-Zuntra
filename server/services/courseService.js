@@ -52,10 +52,74 @@ const addCourseContent = async (courseContents) => {
     }
 };
 
+const updateCourseIntro = async (courseId, updateBody) => {
+    try {
+        const updatedContent = await courseDetails.findOneAndUpdate(
+            { courseId },
+            updateBody, 
+            { new: true }
+        );
+
+        if (!updatedContent) {
+            throw new ApiError(404, "Course intro not found");
+        }
+
+        return updatedContent;
+    } 
+    catch (err) {
+        throw new ApiError(500, "Failed to update course intro", err.message);
+    }
+};
+
+const updateCourseContent = async (courseId, updateBody) => {
+    try {
+        const updatedContent = await courseContent.findOneAndUpdate(
+            { courseId },
+            updateBody, 
+            { new: true }
+        );
+
+        if (!updatedContent) {
+            throw new ApiError(404, "Course content not found");
+        }
+
+        return updatedContent;
+    } 
+    catch (err) {
+        throw new ApiError(500, "Failed to update course content", err.message);
+    }
+};
+
+const deleteCourse = async (courseId) => {
+    try {
+        const deletedCourseIntro = await courseDetails.findOneAndDelete({courseId});
+        const deletedCourseContent = await courseContent.findOneAndDelete({courseId});
+
+        if (!deletedCourseIntro) {
+            throw new ApiError(404, "Course intro not found");
+        }
+
+        if (!deletedCourseContent) {
+            throw new ApiError(404, "Course content not found");
+        }
+
+        return [deletedCourseIntro,deletedCourseContent];
+    } 
+    catch (err) {
+        throw new ApiError(500, "Failed to delete course content", err.message);
+    }
+};
+
+
+
+
 module.exports = {
     addNewCourse,
     getAllCourseDetails,
     getCourseIntroById,
     getCourseContentById,
     addCourseContent,
+    updateCourseIntro,
+    updateCourseContent,
+    deleteCourse
 };

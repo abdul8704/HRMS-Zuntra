@@ -136,8 +136,6 @@ export const Sidebar = () => {
     }
   };
 
-  // <div className="website-container">
-  {/* Sidebar */}
   return (
     <>
       <div
@@ -212,16 +210,3 @@ export const Sidebar = () => {
       </>
   );
 }
-{/* Main Content */}
-{/* <div className="website-module">
-  <div>
-    <h2>Module Content</h2>
-    <p>Current sidebar state: {["Collapsed", "Hovered (Arrow Visible)", "Expanded", "Pinned"][sideBarStatus]}</p>
-    <p>Current role: {role}</p>
-    <p>Device: {isMobile ? "Mobile/Tablet" : "Desktop"}</p>
-    <button onClick={() => setRole(role === "HR" ? "EMP" : "HR")}>
-      Switch to {role === "HR" ? "Employee" : "HR"} view
-    </button>
-  </div>
-</div>
-</div> */}
