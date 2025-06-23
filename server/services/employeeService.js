@@ -79,59 +79,97 @@ const getAttendanceDataByUserId = async (
     }
 };
 
-const markAttendanceOnLogin = async (userid) => {
+const markAttendanceOnLogin = async (userid, mode) => {
     const now = new Date();
-    const shiftData = User.findOne({ _id: userid });
-    const shiftStart = shiftData.shiftStart;
-    const shiftEnd = shiftData.shiftEnd;
-
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     try {
+        const shiftData = await User.findById(userid);
+        const shiftStart = new Date(shiftData.shiftStart);
+        const shiftEnd = new Date(shiftData.shiftEnd);
+
         let attendance = await Attendance.findOne({ userid, date: today });
 
+        // 🧾 FIRST LOGIN OF THE DAY
         if (!attendance) {
             attendance = new Attendance({
                 userid,
                 date: today,
-                sessions: [],
+                sessions: [
+                    {
+                        loginTime: now,
+                        mode:
+                            now >= shiftStart && now <= shiftEnd
+                                ? mode
+                                : "extra",
+                    },
+                ],
                 workingMinutes: 0,
                 breakMinutes: 0,
-                status: "present",
+                status: mode, // status can't be extra
             });
+
+            await attendance.save();
+            return {
+                success: true,
+                message: "Attendance marked (first login of the day)",
+            };
+        }
+
+        // ✅ If status was remote and new mode is present, update status
+        if (attendance.status === "remote" && mode === "present") {
+            attendance.status = "present";
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
 
+        // 🕓 Previous session exists and has no logout time
         if (lastSession && !lastSession.logoutTime) {
+            const sessionDurationMs = now - new Date(lastSession.loginTime);
+            const sessionDurationMinutes = sessionDurationMs / (1000 * 60);
+
             lastSession.logoutTime = now;
-            const lastLogin = lastSession.loginTime;
-
-            const sessionDurationMs = now - lastLogin;
-            const sessionDurationMinutes = sessionDurationMs / (1000 * 60); // convert ms to minutes
-
             attendance.workingMinutes += sessionDurationMinutes;
         }
 
-        if (now >= shiftStart && now <= shiftEnd && lastSession?.logoutTime) {
+        // 🕒 If previous session had logoutTime, calculate break only if within shift hours
+        if (lastSession?.logoutTime) {
             const breakDurationMs = now - new Date(lastSession.logoutTime);
             const breakDurationMinutes = breakDurationMs / (1000 * 60);
 
-            if (breakDurationMinutes > 1) {
-                attendance.breakMinutes += breakDurationMinutes / 60; // Convert to hours
+            const isWithinShift = now >= shiftStart && now <= shiftEnd;
+
+            attendance.sessions.push({
+                loginTime: now,
+                mode: isWithinShift ? mode : "extra",
+            });
+
+            if (isWithinShift && breakDurationMinutes > 1) {
+                attendance.breakMinutes += breakDurationMinutes;
             }
+        } else {
+            // No previous session? Just push a new session (shouldn’t occur, but safe fallback)
+            attendance.sessions.push({
+                loginTime: now,
+                mode: now >= shiftStart && now <= shiftEnd ? mode : "extra",
+            });
         }
 
-        attendance.sessions.push({ loginTime: now });
-
         await attendance.save();
-
-        return { success: true, message: "Attendance marked on login" };
+        return {
+            success: true,
+            message: "Attendance updated (subsequent login)",
+        };
     } catch (error) {
-        throw new ApiError(500, "Failed to mark attendance on login", error.message);
+        throw new ApiError(
+            500,
+            "Failed to mark attendance on login",
+            error.message
+        );
     }
 };
+
 
 const markEndOfSession = async (userid, logoutTime) => {
     try{

@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import zuntraLogo from "../assets/zuntra.png";
+import api from "../api/axios";
+
+
 
 export const Login = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -21,13 +24,61 @@ export const Login = () => {
   const handleSignupChange = (e) => setSignupData({ ...signupData, [e.target.name]: e.target.value });
   const handleResetChange = (e) => setResetData({ ...resetData, [e.target.name]: e.target.value });
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     if (!loginData.email || !loginData.password) {
       alert("Please enter both email and password.");
       return;
     }
-    console.log('Login Data:', loginData);
+    try{
+      const response = await api.post("/auth/login", loginData);
+      if(response.status === 200){
+        const token = response.data.accessToken;
+        localStorage.setItem("accessToken", token);
+
+        if (!navigator.geolocation) {
+          console.error("Geolocation is not supported by your browser");
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+
+            try {
+              const res = await api.post("/auth/geofence", {
+                latitude: latitude,
+                longitude: longitude,
+                email: loginData.email
+              })
+              if (res.status === 200) {
+                console.log("Attendace MArked buddy");
+              } else {
+                console.warn("Location not within geofence");
+              }
+            } catch (error) {
+              console.error("Failed to send location", error);
+            }
+          },
+          (error) => {
+            console.error("Error getting location:", error);
+          }
+        );
+        
+      }
+    }
+    catch(err){
+      if(err.status === 401){
+        if(err.response.data.data.message === "Wrong Password"){
+          alert("Wrong Password!!")
+        }
+        else if (err.response.data.data.message === 'User not found'){
+          alert("User not found!!")
+        }
+        console.log(err.response.data);
+        
+      }
+    }
+    
   };
 
   const handleSignupSubmit = (e) => {
