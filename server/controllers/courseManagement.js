@@ -118,6 +118,19 @@ const getCourseDetails = asyncHandler(async (req, res) => {
   }
 });
 
+const getCourseIntroId = asyncHandler(async (req, res) => {
+  const result = await courseService.getCourseIntroById(req.params.id);
+  if (result.length === 0) {
+    throw new ApiError(404, "Course does not exist");
+  }
+  else {
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  }
+});
+
 const getCourseContentId = asyncHandler(async (req, res) => {
   const result = await courseService.getCourseContentById(req.params.id);
   if (result.length === 0) {
@@ -131,8 +144,21 @@ const getCourseContentId = asyncHandler(async (req, res) => {
   }
 });
 
-const getCourseIntroId = asyncHandler(async (req, res) => {
-  const result = await courseService.getCourseIntroById(req.params.id);
+const editCourseIntro = asyncHandler(async (req, res) => {
+  const result = await courseService.updateCourseIntro(req.params.id,req.body);
+  if (result.length === 0) {
+    throw new ApiError(404, "Course does not exist");
+  }
+  else {
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  }
+});
+
+const editCourseContent = asyncHandler(async (req, res) => {
+  const result = await courseService.updateCourseContent(req.params.id,req.body);
   if (result.length === 0) {
     throw new ApiError(404, "Course does not exist");
   }
@@ -149,5 +175,7 @@ module.exports = {
   createCourseContentController, 
   getCourseDetails, 
   getCourseContentId, 
-  getCourseIntroId 
+  getCourseIntroId,
+  editCourseIntro,
+  editCourseContent
 };
