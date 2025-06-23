@@ -38,41 +38,30 @@ export const PopupCard = ({
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return <CheckCircle className="w-6 h-6" style={{ color }} />;
+        return <CheckCircle style={{ width: '24px', height: '24px', color }} />;
       case 'info':
-        return <Info className="w-6 h-6" style={{ color }} />;
+        return <Info style={{ width: '24px', height: '24px', color }} />;
       case 'warning':
-        return <AlertTriangle className="w-6 h-6" style={{ color }} />;
+        return <AlertTriangle style={{ width: '24px', height: '24px', color }} />;
       case 'error':
-        return <XCircle className="w-6 h-6" style={{ color }} />;
+        return <XCircle style={{ width: '24px', height: '24px', color }} />;
       default:
-        return <CheckCircle className="w-6 h-6" style={{ color }} />;
+        return <CheckCircle style={{ width: '24px', height: '24px', color }} />;
     }
   };
 
-  const getPositionClasses = () => {
+  const getPositionStyles = () => {
     switch (position) {
       case 'top-right':
-        return 'top-20 right-4';
+        return { top: '20px', right: '20px' };
       case 'top-left':
-        return 'top-4 left-4';
+        return { top: '20px', left: '20px' };
       case 'bottom-right':
-        return 'bottom-4 right-4';
+        return { bottom: '20px', right: '20px' };
       case 'bottom-left':
-        return 'bottom-4 left-4';
+        return { bottom: '20px', left: '20px' };
       default:
-        return 'top-4 right-4';
-    }
-  };
-
-  const getAnimationClasses = () => {
-    const isRight = position.includes('right');
-    const baseClasses = 'transition-all duration-300 ease-in-out';
-    
-    if (animate) {
-      return `${baseClasses} transform translate-x-0 opacity-100`;
-    } else {
-      return `${baseClasses} transform ${isRight ? 'translate-x-full' : '-translate-x-full'} opacity-0`;
+        return { top: '20px', right: '20px' };
     }
   };
 
@@ -86,45 +75,102 @@ export const PopupCard = ({
 
   if (!show) return null;
 
+  const isRight = position.includes('right');
+  const translateX = animate ? '0' : (isRight ? '100%' : '-100%');
+  const opacity = animate ? '1' : '0';
+
   return (
-    <div className={`fixed ${getPositionClasses()} z-50 ${getAnimationClasses()}`}>
+    <div 
+      style={{
+        position: 'fixed',
+        ...getPositionStyles(),
+        zIndex: 9999,
+        transform: `translateX(${translateX})`,
+        opacity: opacity,
+        transition: 'all 0.3s ease-in-out',
+        pointerEvents: 'auto'
+      }}
+    >
       {/* White background card */}
-      <div className="bg-white rounded-lg shadow-lg">
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)'
+      }}>
         {/* Colored overlay card */}
         <div 
-          className="relative rounded-lg border-2 p-3 min-w-64 max-w-sm"
           style={{ 
-            backgroundColor: hexToRgba(color, 0.1),
-            borderColor: color 
+            position: 'relative',
+            borderRadius: '8px',
+            border: `2px solid ${color}`,
+            padding: '12px',
+            minWidth: '256px',
+            maxWidth: '384px',
+            backgroundColor: hexToRgba(color, 0.1)
           }}
         >
           {/* Close button */}
           <button
             onClick={handleClose}
-            className="absolute top-2 right-2 p-1 rounded-full hover:bg-black hover:bg-opacity-10 transition-colors"
-            style={{ color }}
+            style={{
+              position: 'absolute',
+              top: '8px',
+              right: '8px',
+              padding: '4px',
+              borderRadius: '50%',
+              border: 'none',
+              backgroundColor: 'transparent',
+              cursor: 'pointer',
+              color: color,
+              transition: 'background-color 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = 'transparent';
+            }}
           >
-            <X className="w-4 h-4" />
+            <X style={{ width: '16px', height: '16px' }} />
           </button>
 
           {/* Content */}
-          <div className="flex items-start space-x-2 pr-5">
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '8px',
+            paddingRight: '20px'
+          }}>
             {/* Icon */}
-            <div className="flex-shrink-0 mt-0.5">
+            <div style={{
+              flexShrink: 0,
+              marginTop: '2px'
+            }}>
               {getIcon()}
             </div>
 
             {/* Text content */}
-            <div className="flex-1 min-w-0">
+            <div style={{ flex: 1, minWidth: 0 }}>
               <h3 
-                className="text-base font-semibold leading-tight mb-1"
-                style={{ color }}
+                style={{ 
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  lineHeight: '1.2',
+                  margin: '0 0 4px 0',
+                  color: color
+                }}
               >
                 {title}
               </h3>
               <p 
-                className="text-sm leading-relaxed break-words whitespace-pre-wrap"
-                style={{ color }}
+                style={{ 
+                  fontSize: '14px',
+                  lineHeight: '1.4',
+                  margin: 0,
+                  wordBreak: 'break-words',
+                  whiteSpace: 'pre-wrap',
+                  color: color
+                }}
               >
                 {message}
               </p>
