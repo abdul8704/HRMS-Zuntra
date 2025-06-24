@@ -5,25 +5,67 @@ import { IntroductionCard } from "../components/upskill/introtocourse";
 import { TableOfContents } from "../components/upskill/TableContents";
 
 export const HrOverviewLearning = () => {
-    return ( 
-        <div>
-        <div className="flex min-h-screen">
-            {/* Sidebar on the left */}
-            <div className="sidebar"><Sidebar />
-            <div className="videoplayer"><CourseVideoPlayer /></div>
-            <div className="introtocourse"><IntroductionCard /></div>
-            <div className="TableOfContents"><TableOfContents /></div>
+  return (
+    <div className="main-layout">
+      <Sidebar />
 
-            </div>
+      {/* Main Content Area */}
+      <div className="content-area">
+        <div className="left-column">
+          <div className="video-card">
+            <CourseVideoPlayer />
+          </div>
+          <div className="intro-card">
+            <IntroductionCard />
+          </div>
         </div>
-        <style>{`
-        .sidebar{
-        display: flex;}
-        .videoplayer{
-        flex: 1;
+
+        <div className="right-column">
+          <TableOfContents />
+        </div>
+      </div>
+
+      <style>{`
+        .main-layout {
+          display: flex;
+          height: 100vh;
         }
-        `}</style>
-        
-        </div>
-    );
-}
+
+        .content-area {
+          display: flex;
+          flex: 1;
+          padding: 24px;
+          gap: 24px;
+        }
+
+        .left-column {
+          flex: 7;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+
+        .video-card,
+        .intro-card {
+          width: 100%;
+        }
+
+        .right-column {
+          flex: 3;
+          display: flex;
+          justify-content: flex-end;
+        }
+
+        @media (max-width: 1024px) {
+          .content-area {
+            flex-direction: column;
+          }
+
+          .right-column {
+            justify-content: center;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};

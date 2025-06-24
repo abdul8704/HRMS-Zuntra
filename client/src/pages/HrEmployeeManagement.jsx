@@ -2,6 +2,9 @@ import React from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { EmpNavbar } from '../components/employeeManagement/EmpNavbar';
 import { EmpCard } from '../components/employeeManagement/EmpCard';
+import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
+import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
+
 import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 
@@ -48,50 +51,57 @@ export const HrEmployeeManagement = () => {
     { lat: 12.965365, lng: 80.246109, title: "Perungudi" },
   ];
 
+  const roleData = [
+  { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+  { role: "Video Editor", memberCount: 3, bgColor: "#e9d5ff", ibgcolor: "#ab47bc" },
+  { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
+  { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
+  { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
+  { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
+  { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
+  { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+  { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+  { role: "Video Editor", memberCount: 3, bgColor: "#e9d5ff", ibgcolor: "#ab47bc" },
+  { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
+  { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
+  { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
+  { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
+  { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
+  { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+];
+
+
   return (
     <div className="website-container">
       <Sidebar />
       <div className="website-module">
         <EmpNavbar />
 
-        {navId === "all" || navId === "roles" ? (
-          <div
-            style={{
-              padding: "3rem 5rem",
-              borderRadius: "1.5rem",
-              background: "rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              textAlign: "center",
-              fontFamily: "'Poppins', sans-serif",
-            }}
-          >
-            <style>{`
-              @keyframes pulse {
-                0%, 100% {
-                  text-shadow: 0 0 10px #BBD3CC, 0 0 20px #BBD3CC;
-                }
-                50% {
-                  text-shadow: 0 0 20px #BBD3CC, 0 0 40px #BBD3CC;
-                }
-              }
-            `}</style>
-            <h1
-              style={{
-                fontSize: "5rem",
-                fontWeight: "700",
-                color: "rgb(153, 153, 153)",
-                textShadow: "0 0 10px #BBD3CC, 0 0 20px #BBD3CC",
-                animation: "pulse 2s infinite ease-in-out",
-                margin: 0,
-              }}
-            >
-              🚀 Under Development, Coming Soon
-            </h1>
-          </div>
-        ) : navId === "location" ? (
+        {navId === "all" && (
+          <EmployeeCard />
+        )} 
+        {navId === "roles" && (
+  <div className="project-cards-container">
+    {roleData.map((role, idx) => (
+      <EmpRoleCard
+        key={idx}
+        role={role.role}
+        memberCount={role.memberCount}
+        bgColor={role.bgColor}
+        ibgcolor={role.ibgcolor}
+      />
+    ))}
+  </div>
+)}
+
+        {navId === "geofencing" && (
           <GeoFencing locations={locations} />
-        ) : navId === "newusers" ? (
+        ) }
+        {navId === "newusers" && (
           <div className="project-cards-container">
             {employees.map((emp, index) => (
               <EmpCard
@@ -105,21 +115,41 @@ export const HrEmployeeManagement = () => {
               />
             ))}
           </div>
-        ) : null}
+        )}
 
         <style>{`
-          .project-cards-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            justify-content: center;
-            align-items: center;
-            margin-top: 1.5rem;
-            max-height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-          }
-        `}</style>
+  .project-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    align-items: stretch;
+    margin-top: 1.5rem;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .project-cards-container > * {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  @media (min-width: 48rem) {
+    .project-cards-container > * {
+      flex: 1 1 calc(50% - 1rem);
+      max-width: calc(50% - 1rem);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .project-cards-container > * {
+      flex: 1 1 calc(33.333% - 1rem);
+      max-width: calc(33.333% - 1rem);
+    }
+  }
+`}</style>
+
       </div>
     </div>
   );
