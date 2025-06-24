@@ -2,12 +2,15 @@ import React from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { EmpNavbar } from '../components/employeeManagement/EmpNavbar';
 import { EmpCard } from '../components/employeeManagement/EmpCard';
+import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
+import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
+
 import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
-  const bgClasses = ['#F2C3B9', '#7B08BD', '#6AC8BA', '#BFBFF7'];
+  const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
 
   const employees = [
     { name: "John Joseph Mathew George Daniel A", email: "johnmathewgeorgedaniel@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
@@ -42,84 +45,63 @@ export const HrEmployeeManagement = () => {
   const bgColorList = getGridBgColors(employees.length, columns, bgClasses);
 
   const locations = [
-  {
-    lat: 12.979545214368582,
-    lng: 80.22630407471307,
-    title: "Velachery",
-    address: "Flat No. A-203, Sai Residency Apartments, 100 Feet Bypass Road, Velachery, Chennai - 600042"
-  },
-  {
-    lat: 12.9715987,
-    lng: 77.5945627,
-    title: "MG Road",
-    address: "Flat No. B-501, Green Valley Towers, MG Road, Near Trinity Metro Station, Bengaluru - 560001"
-  },
-  {
-    lat: 13.0826802,
-    lng: 80.2707184,
-    title: "T. Nagar",
-    address: "No. 15, 3rd Cross Street, Raghavaiah Road, T. Nagar, Chennai - 600017"
-  },
-  {
-    lat: 17.385044,
-    lng: 78.486671,
-    title: "Banjara Hills",
-    address: "Villa No. 6, Lotus Enclave, Road No. 10, Banjara Hills, Hyderabad - 500034"
-  },
-  {
-    lat: 19.0760,
-    lng: 72.8777,
-    title: "Andheri West",
-    address: "Flat No. 1203, Daffodil Heights, JP Road, Opp. Infiniti Mall, Andheri West, Mumbai - 400058"
-  }
+    { lat: 12.979545214368582, lng: 80.22630407471307, title: "Map1" },
+    { lat: 12.9715987, lng: 77.5945627, title: "Map2" },
+    { lat: 13.0826802, lng: 80.2707184, title: "Map3" },
+    { lat: 12.965365, lng: 80.246109, title: "Perungudi" },
+  ];
+
+  const roleData = [
+  { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+  { role: "Video Editor", memberCount: 3, bgColor: "#e9d5ff", ibgcolor: "#ab47bc" },
+  { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
+  { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
+  { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
+  { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
+  { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
+  { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+  { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+  { role: "Video Editor", memberCount: 3, bgColor: "#e9d5ff", ibgcolor: "#ab47bc" },
+  { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
+  { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
+  { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
+  { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
+  { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
+  { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
 ];
+
 
   return (
     <div className="website-container">
       <Sidebar />
       <div className="website-module">
         <EmpNavbar />
-        {navId === "all" || navId === "roles" ? (
-          <div
-            style={{
-              padding: "3rem 5rem",
-              borderRadius: "1.5rem",
-              background: "rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              textAlign: "center",
-              fontFamily: "'Poppins', sans-serif",
-            }}
-          >
-            <style>{`
-              @keyframes pulse {
-                0%, 100% {
-                  text-shadow: 0 0 10px #BBD3CC, 0 0 20px #BBD3CC;
-                }
-                50% {
-                  text-shadow: 0 0 20px #BBD3CC, 0 0 40px #BBD3CC;
-                }
-              }
-            `}</style>
-            <h1
-              style={{
-                fontSize: "5rem",
-                fontWeight: "700",
-                color: "rgb(153, 153, 153)",
-                textShadow: "0 0 10px #BBD3CC, 0 0 20px #BBD3CC",
-                animation: "pulse 2s infinite ease-in-out",
-                margin: 0,
-              }}
-            >
-              🚀 Under Development, Coming Soon
-            </h1>
-          </div>
-          
-        ) : navId === "geofencing" ? (
-          <div className='project-cards-container'>
+
+        {navId === "all" && (
+          <EmployeeCard />
+        )} 
+        {navId === "roles" && (
+  <div className="project-cards-container">
+    {roleData.map((role, idx) => (
+      <EmpRoleCard
+        key={idx}
+        role={role.role}
+        memberCount={role.memberCount}
+        bgColor={role.bgColor}
+        ibgcolor={role.ibgcolor}
+      />
+    ))}
+  </div>
+)}
+
+        {navId === "location" && (
           <GeoFencing locations={locations} />
-          </div>
-        ) : navId === "newusers" ? (
+        ) }
+        {navId === "newusers" && (
           <div className="project-cards-container">
             {employees.map((emp, index) => (
               <EmpCard
@@ -133,21 +115,41 @@ export const HrEmployeeManagement = () => {
               />
             ))}
           </div>
-        ) : null}
+        )}
 
         <style>{`
-          .project-cards-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            justify-content: center;
-            align-items: center;
-            margin-top: 1.5rem;
-            max-height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-          }
-        `}</style>
+  .project-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    align-items: stretch;
+    margin-top: 1.5rem;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .project-cards-container > * {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  @media (min-width: 48rem) {
+    .project-cards-container > * {
+      flex: 1 1 calc(50% - 1rem);
+      max-width: calc(50% - 1rem);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .project-cards-container > * {
+      flex: 1 1 calc(33.333% - 1rem);
+      max-width: calc(33.333% - 1rem);
+    }
+  }
+`}</style>
+
       </div>
     </div>
   );

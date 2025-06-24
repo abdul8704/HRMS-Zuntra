@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const navItems = [
   {
@@ -13,7 +14,7 @@ const navItems = [
   {
     label: 'Create Course',
     icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 40 40">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 40 40">
         <path fill="#000000" d="M40 17.776H28.303l10.13-5.849-2.224-3.854-10.13 5.849 5.847-10.13-3.854-2.225-5.847 10.129V0h-4.45v11.697l-5.85-10.13-3.852 2.225 5.848 10.129-10.13-5.848-2.224 3.853 10.13 5.849H0v4.45h11.695L1.567 28.072l2.224 3.854 10.13-5.848-5.85 10.13 3.855 2.224 5.848-10.13V40h4.45V28.304l5.847 10.13 3.854-2.225-5.849-10.13 10.13 5.848 2.225-3.854-10.129-5.848h11.696v-4.45H40ZM20 26.05a6.074 6.074 0 1 1 0-12.148 6.074 6.074 0 1 1 0 12.148Z" />
       </svg>
     ),
@@ -30,154 +31,242 @@ const navItems = [
   }
 ];
 
-export const CourseNavbar = () => {
-  const [active, setActive] = useState(0);
-  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navItems = ['Courses', 'Create Course', 'Add Course'];
+export const CourseNavbar = () => {
+  const navigate = useNavigate();
+  const { navId } = useParams();
+  const [activeNavId, setActiveNavId] = useState(navId);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];
+  
+  const handleNavigation = (path) => {
+    setActiveNavId(path);
+    navigate(`/courses/${encodeURIComponent(path)}`);
+    setIsDropdownOpen(false);
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
   return (
     <>
-      <div className="course-navbar">
-        {/* Hamburger icon for mobile */}
-        <div className="mobile-menu-icon" onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>
-          ☰
-        </div>
-
-        <ul className={`nav-list ${isMobileMenuOpen ? 'open' : ''}`}>
-          {navItems.map((label, index) => (
+      <div className="project-navbar">
+        {/* Desktop Navigation */}
+        <ul className="desktop-nav">
+          {navItems.map((item) => (
             <li
-              key={index}
-              className={active === index ? 'active' : ''}
-              onClick={() => {
-                setActive(index);
-                setMobileMenuOpen(false); // Close menu on item click (for mobile)
-              }}
+              key={item.path}
+              className={navId === item.path ? 'active' : ''}
+              onClick={() => handleNavigation(item.path)}
             >
-              <span>{label}</span>
+              <span className="project-icon">{item.icon}</span>
+              {item.label}
             </li>
           ))}
-          <li className="eq-icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="4" y1="21" x2="4" y2="14" />
-              <line x1="4" y1="10" x2="4" y2="3" />
-              <line x1="12" y1="21" x2="12" y2="12" />
-              <line x1="12" y1="8" x2="12" y2="3" />
-              <line x1="20" y1="21" x2="20" y2="16" />
-              <line x1="20" y1="12" x2="20" y2="3" />
-              <line x1="1" y1="14" x2="7" y2="14" />
-              <line x1="9" y1="8" x2="15" y2="8" />
-              <line x1="17" y1="16" x2="23" y2="16" />
-            </svg>
-          </li>
         </ul>
+
+        {/* Mobile/Tablet Dropdown */}
+        <div className="mobile-nav">
+          <div className="dropdown-container">
+            <button 
+              className="dropdown-trigger"
+              onClick={toggleDropdown}
+              aria-expanded={isDropdownOpen}
+            >
+              <span className="project-icon">{activeItem.icon}</span>
+              <span className="active-label">{activeItem.label}</span>
+              <svg 
+                className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`}
+                width="12" 
+                height="12" 
+                viewBox="0 0 12 12" 
+                fill="none"
+              >
+                <path 
+                  d="M3 4.5L6 7.5L9 4.5" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            
+            {isDropdownOpen && (
+              <div className="dropdown-menu">
+                {navItems
+                  .filter(item => item.path !== activeNavId)
+                  .map((item) => (
+                    <button
+                      key={item.path}
+                      className="dropdown-item"
+                      onClick={() => handleNavigation(item.path)}
+                    >
+                      <span className="project-icon">{item.icon}</span>
+                      {item.label}
+                    </button>
+                  ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <style>{`
-        .course-navbar {
+        .project-navbar {
           background-color: #BBD3CC;
-          border-radius: 1rem;
-          width: 95%;
-          margin: 1rem auto;
-          padding: 0rem;
+          border-radius: 0.75rem;
+          width: 100%;
           position: relative;
         }
 
-        .mobile-menu-icon {
-          display: none;
-          font-size: 2.5rem;
-          padding: 1rem;
-          cursor: pointer;
-        }
-
-        .nav-list {
+        /* Desktop Navigation */
+        .desktop-nav {
           list-style: none;
           display: flex;
-          align-items: center;
-          gap: 10rem;
+          width: 100%;
           margin: 0;
-          padding: 0 1rem;
-          flex-wrap: nowrap;
+          padding: 0;
         }
 
-        .nav-list li {
+        .desktop-nav li {
+          flex: 1;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
           font-weight: 500;
-          font-size: 1.2rem;
-          padding: 1rem 1.5rem;
-          border-radius: 1rem;
+          padding: 1rem 0;
+          border-radius: 0.5rem;
           transition: background 0.2s ease-in-out;
           user-select: none;
         }
 
-        .nav-list li:hover {
+        .desktop-nav li:hover {
+          background-color: #d0d0d0;
+        }
+          
+        .desktop-nav li.active {
           background-color: #e0e0e0;
         }
 
-        .nav-list li.active {
+        /* Mobile Navigation */
+        .mobile-nav {
+          display: none;
+        }
+
+        .dropdown-container {
+          position: relative;
+        }
+
+        .dropdown-trigger {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1rem;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          font-weight: 500;
+          border-radius: 0.75rem;
+          transition: background 0.2s ease-in-out;
+        }
+
+        .dropdown-trigger:hover {
           background-color: #d0d0d0;
         }
 
-        .nav-list .eq-icon {
-          margin-left: auto;
-          padding: 1rem 0.5rem;
+        .dropdown-trigger .active-label {
+          flex: 1;
+          text-align: left;
+          margin-left: 0.5rem;
+        }
+
+        .dropdown-arrow {
+          transition: transform 0.2s ease-in-out;
+          margin-left: 0.5rem;
+        }
+
+        .dropdown-arrow.open {
+          transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background-color: #BBD3CC;
+          border-radius: 0.5rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          z-index: 10;
+          margin-top: 0.25rem;
+          overflow: hidden;
+        }
+
+        .dropdown-item {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          padding: 0.75rem 1rem;
+          background: transparent;
+          border: none;
           cursor: pointer;
+          font-weight: 500;
+          transition: background 0.2s ease-in-out;
+          text-align: left;
         }
 
-        .eq-icon svg {
-          width: 20px;
-          height: 20px;
-          stroke: #000000;
-          opacity: 0.5;
+        .dropdown-item:hover {
+          background-color: #d0d0d0;
         }
 
-        /* ===== Responsive Styles ===== */
+        .project-icon {
+          margin-right: 0.5rem;
+          display: flex;
+          align-items: center;
+          flex-shrink: 0;
+        }
+
+        /* Responsive breakpoints */
         @media (max-width: 768px) {
-          .mobile-menu-icon {
+          .desktop-nav {
+            display: none;
+          }
+          
+          .mobile-nav {
             display: block;
           }
+        }
 
-          .nav-list {
-            display: none;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
-            width: 100%;
-            background-color: #BBD3CC;
-            border-radius: 0 0 1rem 1rem;
-            padding: 1rem;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            z-index: 10;
+        @media (max-width: 480px) {
+          .project-navbar {
+            border-radius: 0.5rem;
           }
-
-          .nav-list.open {
-            display: flex;
+          
+          .dropdown-trigger {
+            padding: 0.875rem;
           }
-
-          .nav-list li {
-            width: 100%;
-            font-size: 1.1rem;
-            justify-content: flex-start;
+          
+          .dropdown-item {
+            padding: 0.75rem;
           }
+        }
 
-          .nav-list .eq-icon {
-            align-self: flex-end;
-            margin-top: 1rem;
+        @media (max-width: 480px) {
+          .dropdown-trigger {
+            padding: 0.75rem;
+          }
+          
+          .dropdown-item {
+            padding: 0.625rem;
+          }
+          
+          .project-icon {
+            margin-right: 0.375rem;
           }
         }
       `}</style>
