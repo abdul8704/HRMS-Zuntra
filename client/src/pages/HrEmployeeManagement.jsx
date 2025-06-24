@@ -99,7 +99,9 @@ export const HrEmployeeManagement = () => {
 )}
 
         {navId === "geofencing" && (
+          <div className="project-cards-container">
           <GeoFencing locations={locations} />
+          </div>
         ) }
         {navId === "newusers" && (
           <div className="project-cards-container">
@@ -122,8 +124,6 @@ export const HrEmployeeManagement = () => {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    justify-content: center;
-    align-items: stretch;
     margin-top: 1.5rem;
     max-height: 100%;
     overflow-y: auto;
