@@ -12,7 +12,7 @@ export const GeoFencing = ({ locations = [] }) => {
   const handleClose = () => {
     setShowForm(false); // this will hide the form
   };
-
+  
   return (
     <>
       {showForm && <AddLocationForm onClose={handleClose} />}
