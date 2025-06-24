@@ -6,8 +6,6 @@ const generateOTP = require("../utils/generateOTP");
 const transporter = require("../utils/sendOTP");
 const jwtUtils = require("../utils/generateJWT");
 const GeoService = require("../services/geoLocationService")
-const User = require("../services/user")
-
 const ApiError = require("../errors/ApiError");
 
 
@@ -131,7 +129,6 @@ const userExists = asyncHandler(async (req, res) => {
 });
 
 const sendOTPController = asyncHandler(async (req, res) => {
-    console.log(req.body)
     const { useremail } = req.body;
     const otp = generateOTP();
 
@@ -154,7 +151,7 @@ const sendOTPController = asyncHandler(async (req, res) => {
 
 const verifyOTPController = asyncHandler(async (req, res) => {
     const { useremail, otp } = req.body;
-    try {
+   
         const storedOTP = await authOTP.findOne({ useremail: useremail });
 
         if (storedOTP.otp === Number(otp)) {
@@ -164,11 +161,20 @@ const verifyOTPController = asyncHandler(async (req, res) => {
                 .json({ message: "OTP verified successfully" });
         }
 
-        throw new ApiError(400, "Invalid or expired OTP");
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
-    }
+        throw new ApiError(400, "Incorrect OTP");
+ 
 });
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+
+    const resetPass = await authService.passwordReset(email, password);
+    
+    if(resetPass.success === true)
+        res.status(201).json({ success: true, message: "Password Changed!!" })
+
+    res.status(500).json({ success: false, message: "Something went wrong", details: resetPass })
+})
 
 module.exports = {
     handleLogin,
@@ -178,4 +184,5 @@ module.exports = {
     handleRefreshToken,
     sendOTPController,
     verifyOTPController,
+    resetPassword,
 };
