@@ -204,6 +204,8 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           align-items: center;
           z-index: 9999;
           padding: 20px;
+          height: 100vh;
+          width: 100vw;
         }
 
         .emp-card-popup-container {
