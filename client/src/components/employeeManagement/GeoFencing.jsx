@@ -10,7 +10,6 @@ export const GeoFencing = ({ locations = [] }) => {
           return (
             <div className="map-card" key={index}>
               {/* Top-left rectangle with address */}
-
               <iframe
                 title={loc.title || `Map${index + 1}`}
                 src={src}
