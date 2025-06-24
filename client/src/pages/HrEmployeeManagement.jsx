@@ -97,9 +97,12 @@ export const HrEmployeeManagement = () => {
         )}
 
         {navId === "geofencing" && (
+          <div className="project-cards-container">
           <GeoFencing locations={locations} />
         )}
 
+          </div>
+        ) }
         {navId === "newusers" && (
           <div className="project-cards-container">
             {employees.map((emp, index) => (
@@ -132,6 +135,16 @@ export const HrEmployeeManagement = () => {
           overflow-y: auto;
           overflow-x: hidden;
         }
+        <style>{`
+  .project-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 
         .project-cards-container > * {
           flex: 1 1 100%;

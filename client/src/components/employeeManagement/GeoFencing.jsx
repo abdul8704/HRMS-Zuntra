@@ -1,6 +1,11 @@
 import React from 'react';
 
 export const GeoFencing = ({ locations = [] }) => {
+
+  const handleAddButton = () => {
+    alert("swmhcdsf")
+  }
+
   return (
     <>
       <div className="map-wrapper">
@@ -9,7 +14,6 @@ export const GeoFencing = ({ locations = [] }) => {
 
           return (
             <div className="map-card" key={index}>
-              {/* Top-left rectangle with address */}
               <iframe
                 title={loc.title || `Map${index + 1}`}
                 src={src}
@@ -22,13 +26,15 @@ export const GeoFencing = ({ locations = [] }) => {
         })}
       </div>
 
+      {/* Fixed "+" Button */}
+      <button className="floating-button" onClick={handleAddButton}>+</button>
+
       <style>{`
         .map-wrapper {
           display: flex;
           flex-direction: column;
           gap: 2rem;
           padding: 2rem;
-          width: 100%;
         }
 
         .map-card {
@@ -36,7 +42,7 @@ export const GeoFencing = ({ locations = [] }) => {
           border-radius: 16px;
           overflow: hidden;
           box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-          width: 100%;
+          width: 80vw;
         }
 
         .map-card iframe {
@@ -62,9 +68,37 @@ export const GeoFencing = ({ locations = [] }) => {
           text-overflow: ellipsis;
         }
 
+        .floating-button {
+          position: fixed;
+          bottom: 2rem;
+          right: 2rem;
+          width: 3.5rem;
+          height: 3.5rem;
+          border-radius: 50%;
+          border: none;
+          background-color: #7da695;
+          color: white;
+          font-size: 2rem;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          z-index: 999;
+        }
+
+        .floating-button:hover {
+          background-color: #689a85;
+        }
+
         @media (max-width: 768px) {
           .map-card iframe {
             height: 18rem;
+          }
+
+          .floating-button {
+            width: 3rem;
+            height: 3rem;
+            font-size: 1.5rem;
+            bottom: 1rem;
+            right: 1rem;
           }
         }
       `}</style>
