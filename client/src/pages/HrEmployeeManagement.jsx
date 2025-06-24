@@ -51,6 +51,30 @@ export const HrEmployeeManagement = () => {
     { lat: 12.965365, lng: 80.246109, title: "Perungudi" },
   ];
 
+  const roleData = [
+  { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+  { role: "Video Editor", memberCount: 3, bgColor: "#e9d5ff", ibgcolor: "#ab47bc" },
+  { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
+  { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
+  { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
+  { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
+  { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
+  { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+  { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+  { role: "Video Editor", memberCount: 3, bgColor: "#e9d5ff", ibgcolor: "#ab47bc" },
+  { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
+  { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
+  { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
+  { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
+  { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
+  { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+];
+
+
   return (
     <div className="website-container">
       <Sidebar />
@@ -61,8 +85,19 @@ export const HrEmployeeManagement = () => {
           <EmployeeCard />
         )} 
         {navId === "roles" && (
-          <EmpRoleCard />
-        )} 
+  <div className="project-cards-container">
+    {roleData.map((role, idx) => (
+      <EmpRoleCard
+        key={idx}
+        role={role.role}
+        memberCount={role.memberCount}
+        bgColor={role.bgColor}
+        ibgcolor={role.ibgcolor}
+      />
+    ))}
+  </div>
+)}
+
         {navId === "location" && (
           <GeoFencing locations={locations} />
         ) }
@@ -83,18 +118,38 @@ export const HrEmployeeManagement = () => {
         )}
 
         <style>{`
-          .project-cards-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            justify-content: center;
-            align-items: center;
-            margin-top: 1.5rem;
-            max-height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-          }
-        `}</style>
+  .project-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    align-items: stretch;
+    margin-top: 1.5rem;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .project-cards-container > * {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  @media (min-width: 48rem) {
+    .project-cards-container > * {
+      flex: 1 1 calc(50% - 1rem);
+      max-width: calc(50% - 1rem);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .project-cards-container > * {
+      flex: 1 1 calc(33.333% - 1rem);
+      max-width: calc(33.333% - 1rem);
+    }
+  }
+`}</style>
+
       </div>
     </div>
   );

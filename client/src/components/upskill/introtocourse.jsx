@@ -2,23 +2,17 @@ import React from "react";
 
 export const IntroductionCard = () => {
   return (
-    <div className="intro-card">
-      {/* Title and Instructor */}
-      <h2 className="title">Introduction to course</h2>
-      <p className="instructor">by Prof. Dr. Diwakar</p>
+    <div className="intro-wrapper">
+      {/*<h2 className="title">Introduction to course</h2>
+      <p className="instructor">by Prof. Dr. Diwakar</p>*/}
 
-      {/* Description */}
       <div className="description-box">
         <h3 className="desc-title">Description</h3>
         <p className="desc-text">
           This course provides a comprehensive introduction to key concepts,
           tools, and techniques in theoretical knowledge with practical
-          applications to help learners gain real-world skills. Designed for
-          beginners and learners, the course encourages interactive learning
-          through assignments, projects, and assessments. I have no more content
-          to type in this description. I was searching some words.
-          <br />
-          <br />
+          applications to help learners gain real-world skills.
+          <br /><br />
           By the end of the course, participants will be equipped to tackle
           real-world problems with confidence. Covering essential concepts,
           tools, and techniques, the course integrates interactive lectures,
@@ -26,17 +20,36 @@ export const IntroductionCard = () => {
           understanding and application. Learners will engage in structured
           modules that promote critical thinking, problem-solving, and technical
           proficiency.
+          <br /><br />
+          Topics include software engineering, database systems, web development,
+          machine learning basics, UI/UX, deployment strategies, and cloud
+          fundamentals.
+          <br /><br />
+          Assignments and real-world scenarios will challenge learners to apply
+          theoretical knowledge to practical problems. The course ends with a
+          capstone project.
+          <br /><br />
+          Resources include downloadable materials, interactive quizzes,
+          peer-reviewed assignments, and 1:1 mentorship support.
+          <br /><br />
+          No prior experience is needed, but commitment to learning and growth
+          is encouraged. Ideal for students, professionals, and curious minds.
+          <br /><br />
+          Join now to begin your journey into modern tech!
         </p>
       </div>
 
       <style>{`
-        .intro-card {
+        .intro-wrapper {
+          width: 100%;
+          height: 320px;
           background: #ffffff;
           border-radius: 12px;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          padding: 20px;
-          max-width: 800px;
-          margin: auto;
+          padding: 2px;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
         }
 
         .title {
@@ -53,10 +66,10 @@ export const IntroductionCard = () => {
         }
 
         .description-box {
+          flex: 1;
           background: #f9fafb;
           border-radius: 8px;
           padding: 16px;
-          max-height: 220px;
           overflow-y: auto;
         }
 
@@ -73,10 +86,10 @@ export const IntroductionCard = () => {
           line-height: 1.6;
         }
 
-        /* Optional scrollbar styling */
         .description-box::-webkit-scrollbar {
           width: 6px;
         }
+
         .description-box::-webkit-scrollbar-thumb {
           background-color: #d1d5db;
           border-radius: 6px;
