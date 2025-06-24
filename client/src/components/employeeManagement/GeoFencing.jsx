@@ -1,13 +1,21 @@
 import React from 'react';
-
+import AddLocationForm from './AddLocationForm'
+import {useState} from 'react'
 export const GeoFencing = ({ locations = [] }) => {
 
+  const [showForm, setShowForm] = useState(false);
+
   const handleAddButton = () => {
-    alert("swmhcdsf")
-  }
+    setShowForm(true); // this will show the form
+  };
+
+  const handleClose = () => {
+    setShowForm(false); // this will hide the form
+  };
 
   return (
     <>
+      {showForm && <AddLocationForm onClose={handleClose} />}
       <div className="map-wrapper">
         {locations.map((loc, index) => {
           const src = `https://www.google.com/maps?q=${loc.lat},${loc.lng}&z=15&output=embed`;
