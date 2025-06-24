@@ -83,18 +83,38 @@ export const HrEmployeeManagement = () => {
         )}
 
         <style>{`
-          .project-cards-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            justify-content: center;
-            align-items: center;
-            margin-top: 1.5rem;
-            max-height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-          }
-        `}</style>
+  .project-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    align-items: stretch;
+    margin-top: 1.5rem;
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .project-cards-container > * {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  @media (min-width: 48rem) {
+    .project-cards-container > * {
+      flex: 1 1 calc(50% - 1rem);
+      max-width: calc(50% - 1rem);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .project-cards-container > * {
+      flex: 1 1 calc(33.333% - 1rem);
+      max-width: calc(33.333% - 1rem);
+    }
+  }
+`}</style>
+
       </div>
     </div>
   );

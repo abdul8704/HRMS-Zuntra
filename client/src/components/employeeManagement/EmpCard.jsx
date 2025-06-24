@@ -186,12 +186,14 @@ export const EmpCard = ({ name, email, phone, date, image, color}) => {
         }
 
         .emp-actions {
-          position: absolute;
-          top: 0.8rem;
-          right: 0.8rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.6rem;
+           position: absolute;
+  top: 0;
+  right: 0.8rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* ← Center vertically */
+  gap: 0.6rem;
         }
 
         .emp-approve,
