@@ -61,8 +61,8 @@ const navItems = [
 
 export const TaskNavbar = () => {
   const navigate = useNavigate();
-
-  const [activeNavId, setActiveNavId] = useState('overview');
+  const { navId } = useParams();
+  const [activeNavId, setActiveNavId] = useState(navId);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
   const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];

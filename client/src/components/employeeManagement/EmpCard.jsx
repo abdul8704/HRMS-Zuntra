@@ -89,12 +89,12 @@ export const EmpCard = ({ name, email, phone, date, image, color }) => {
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .emp-card {
           display: flex;
           position: relative;
           border-radius: 1rem;
-          width: 100%;
+          width: 30%;
           height: 8rem;
           box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
           overflow: hidden;
@@ -166,7 +166,7 @@ export const EmpCard = ({ name, email, phone, date, image, color }) => {
 
         .emp-date {
           background-color: #fff;
-          opacity: 0.5;
+          opacity: 0.4;
           padding: 0.2rem 0.6rem;
           border-radius: 1rem;
           font-size: 0.8rem;

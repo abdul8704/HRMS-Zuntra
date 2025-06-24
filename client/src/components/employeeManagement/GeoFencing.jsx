@@ -1,11 +1,8 @@
 import React from 'react';
-import { Sidebar } from "../../components/Sidebar";
-import { EmpNavbar } from "../employeeManagement/EmpNavbar";
 
-export const GeoFencing = () => {
-  // ✅ Function that returns a map card with scrollable iframe
+export const GeoFencing = ({ locations }) => {
   const renderMap = (lat, lng, title) => {
-    const src = `https://www.google.com/maps/embed/v1/view?key=YOUR_GOOGLE_MAPS_API_KEY&center=${lat},${lng}&zoom=15`;
+    const src = `https://www.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
     return (
       <div className="map-card" key={title}>
         <iframe
@@ -20,34 +17,14 @@ export const GeoFencing = () => {
   };
 
   return (
-    <div className="website-container">
-      <Sidebar />
-      <div className="website-module">
-        <EmpNavbar />
-
-        <div className="map-wrapper">
-          {renderMap(12.979545214368582, 80.22630407471307, "Map1")}
-          {renderMap(12.9715987, 77.5945627, "Map2")}
-          {renderMap(13.0826802, 80.2707184, "Map3")}
-          {renderMap(12.965365, 80.246109, "Perungudi")}
-        </div>
+    <>
+      <div className="map-wrapper">
+        {locations.map((loc, index) =>
+          renderMap(loc.lat, loc.lng, loc.title || `Map${index + 1}`)
+        )}
       </div>
 
       <style>{`
-        .geo-wrapper {
-          display: flex;
-          width: 100%;
-          height: 100vh;
-          background-color: #fff;
-        }
-
-        .content-area {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          padding: 10px 20px;
-        }
-
         .map-wrapper {
           margin-top: 20px;
           display: flex;
@@ -59,8 +36,8 @@ export const GeoFencing = () => {
         }
 
         .map-card {
-          height: 800px;             /* 🔼 Taller outer card */
-          overflow: auto;            /* ✅ Internal scroll */
+          height: 800px;
+          overflow: auto;
           border-radius: 8px;
           padding: 10px;
           background-color: white;
@@ -69,7 +46,7 @@ export const GeoFencing = () => {
 
         .map-card iframe {
           width: 100%;
-          height: 1000px;            /* ✅ Long scrollable iframe */
+          height: 1000px;
           border: none;
           border-radius: 8px;
         }
@@ -84,6 +61,6 @@ export const GeoFencing = () => {
           }
         }
       `}</style>
-    </div>
+    </>
   );
 };

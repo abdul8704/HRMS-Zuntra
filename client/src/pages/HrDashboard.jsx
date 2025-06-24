@@ -1,10 +1,8 @@
 import React from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { useParams } from 'react-router-dom';
-import { ProjectPopup } from "../components/projectManagement/ProjectPopup";
 
 export const HrDashboard = () => {
-  const { navId } = useParams();
 
   return (
     <div className="relative">
@@ -49,8 +47,6 @@ export const HrDashboard = () => {
           </div>
         </div>
       </div>
-
-      <ProjectPopup />
 
       <style>{`
         .project-cards-container {

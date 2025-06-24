@@ -26,8 +26,8 @@ function App() {
         <Route path="/dashboard" element={<HrDashboard/>}></Route>
         <Route path="/projects" element={<HrProjectManagement/>}></Route>
         <Route path="/project/:navId" element={<HrProjectDetails/>}></Route>
+        <Route path="/employee/:navId" element={<HrEmployeeManagement/>}></Route>
         <Route path="/courses/:navId" element={<HrCourseManagement/>}></Route>
-        <Route path="/employee" element={<HrEmployeeManagement/>}></Route>
         <Route path="/employee/role" element={<GeoFencing/>}></Route>
         <Route path="/employee/details"  element={<HrEmployeeDetail/>}></Route>
         <Route path="/createcourse" element={<HrCreateCourse/>}></Route>
