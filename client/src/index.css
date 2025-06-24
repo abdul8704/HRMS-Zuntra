@@ -1,7 +1,7 @@
-/* @tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
-*/
+
 
 * {
     margin: 0;
@@ -9,6 +9,37 @@
     font-family: 'Poppins', sans-serif;
 }
 
+/* Global sleek scrollbar in #bbd3cc theme */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #bbd3cc transparent;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #bbd3cc;
+  border-radius: 0.25rem;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  transition: background-color 0.3s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #a0c4b2; /* Slightly darker on hover */
+}
+
+
+
+/* <------SIDEBAR------> */
 .website-container {
     width: 100vw;
     height: 100vh;
@@ -153,7 +184,7 @@
 .website-sidebar-expand-arrow {
     position: absolute;
     top: 10vh;
-    right: -1.5rem;
+    right: -1.0rem;
     width: 2.5vw;
     height: 2.5vw;
     min-width: 1.5rem;
@@ -261,7 +292,7 @@
         min-height: 3rem;
         max-width: 3rem;
         max-height: 3rem;
-        top: 2vh;
+        top: 10vh;
         font-size: auto;
     }
 

@@ -11,7 +11,7 @@ export const NotFound = () => {
         <a href="/" className="notfound-link">Go back home</a>
       </main>
 
-      <style jsx>{`
+      <style>{`
         .notfound-container {
           background-color: #ffffff;
           height: 100vh;

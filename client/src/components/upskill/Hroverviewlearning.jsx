@@ -15,7 +15,7 @@ export const CourseVideoPlayer = () => {
         Your browser does not support the video tag.
       </video>
 
-      <style jsx>{`
+      <style>{`
         .video-wrapper {
           width: 50%;
           height: 50%;
