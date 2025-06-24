@@ -4,6 +4,8 @@ import { CourseNavbar } from "../components/coursemanagement/CourseNavbar";
 import { CourseCard } from "../components/coursemanagement/CourseCard";
 import { PopupCard } from "../components/PopupCard";
 import { useParams } from "react-router-dom";
+import GoToLoomButton from "../components/coursemanagement/GoToLoomButton";
+import InstallLoomExtensionButton from "../components/coursemanagement/InstallLoomExtensionButton";
 
 const courseList = [
   {
@@ -149,6 +151,15 @@ export const HrCourseManagement = () => {
             {courseList.map((course, index) => (
               <CourseCard key={index} {...course} />
             ))}
+          </div>
+          )}
+          {(navId=="create")&&(
+          <div className="card-flex">
+            <GoToLoomButton/>
+            <InstallLoomExtensionButton/>
+            
+
+            
           </div>
           )}
         </div>
