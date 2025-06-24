@@ -61,10 +61,23 @@ export const HrEmployeeManagement = () => {
           <EmployeeCard />
         )} 
         {navId === "roles" && (
-          <EmpRoleCard />
-        )} 
-        {navId === "location" && (
+  <div className="project-cards-container">
+    {roleData.map((role, idx) => (
+      <EmpRoleCard
+        key={idx}
+        role={role.role}
+        memberCount={role.memberCount}
+        bgColor={role.bgColor}
+        ibgcolor={role.ibgcolor}
+      />
+    ))}
+  </div>
+)}
+
+        {navId === "geofencing" && (
+          <div className="project-cards-container">
           <GeoFencing locations={locations} />
+          </div>
         ) }
         {navId === "newusers" && (
           <div className="project-cards-container">
@@ -87,8 +100,6 @@ export const HrEmployeeManagement = () => {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    justify-content: center;
-    align-items: stretch;
     margin-top: 1.5rem;
     max-height: 100%;
     overflow-y: auto;

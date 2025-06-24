@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { X, Plus } from 'lucide-react';
-
+import { EmpProfile } from '../employeeManagement/EmpProfile'
 const styles = {
   floatingButton: {
     position: 'fixed',
     bottom: '24px',
     right: '24px',
-    width: '56px',
-    height: '56px',
-    backgroundColor: '#16a34a',
+    width: '46px',
+    height: '46px',
+    backgroundColor: '#BBD3CC',
     color: 'white',
     borderRadius: '50%',
     border: 'none',
@@ -125,9 +125,9 @@ const styles = {
     right: '12px',
     padding: '4px',
     border: 'none',
-    backgroundColor: 'transparent',
+    backgroundColor: '#BBD3CC',
     cursor: 'pointer',
-    borderRadius: '4px',
+    borderRadius: '50%',
     transition: 'background-color 0.2s ease'
   },
   dropdown: {
@@ -183,12 +183,74 @@ export const ProjectPopup = () => {
     title: '',
     description: '',
     teamName: '',
-    teamLead: '',
+    teamLead: null,
     teamMembers: '',
     date: ''
   });
+  const employeeList = [
+  {
+    name: 'Johny Doe',
+    role: 'Frontend Developer',
+    avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
+    tl: false,
+    color: '#f7caca',
+  },
+  {
+    name: 'Sarah Johnson',
+    role: 'Backend Developer',
+    avatar: 'https://randomuser.me/api/portraits/men/62.jpg',
+    tl: false,
+    color: '#d0e1f9',
+  },
+  {
+    name: 'Mike Davis',
+    role: 'UI/UX Designer',
+    avatar: 'https://randomuser.me/api/portraits/women/75.jpg',
+    tl: false,
+    color: '#f9e79f',
+  },
+  {
+    name: 'Emma Watson',
+    role: 'QA Engineer',
+    avatar: 'https://randomuser.me/api/portraits/men/48.jpg',
+    tl: false,
+    color: '#ffd6d6',
+  },
+  {
+    name: 'Liam Brown',
+    role: 'DevOps Engineer',
+    avatar: 'https://randomuser.me/api/portraits/women/21.jpg',
+    tl: false,
+    color: '#d6f5d6',
+  },
+  {
+    name: 'Olivia Martin',
+    role: 'Mobile App Developer',
+    avatar: 'https://randomuser.me/api/portraits/men/30.jpg',
+    tl: false,
+    color: '#e6ccff',
+  },
+  {
+    name: 'Noah Wilson',
+    role: 'Product Manager',
+    avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+    tl: false,
+    color: '#ffe6cc',
+  },
+  {
+    name: 'Ava Moore',
+    role: 'Scrum Master',
+    avatar: 'https://randomuser.me/api/portraits/men/54.jpg',
+    tl: false,
+    color: '#ccffe6',
+  },
+];
+
+
   const [showMemberSearch, setShowMemberSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showTeamLeadDropdown, setShowTeamLeadDropdown] = useState(false);
+
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -212,10 +274,15 @@ export const ProjectPopup = () => {
       <button
         onClick={() => setIsOpen(true)}
         style={styles.floatingButton}
-        onMouseEnter={(e) => e.target.style.backgroundColor = '#15803d'}
-        onMouseLeave={(e) => e.target.style.backgroundColor = '#16a34a'}
+        onMouseEnter={(e) => e.target.style.backgroundColor = '#BBD3CC'}
+        onMouseLeave={(e) => e.target.style.backgroundColor = '#BBD3CC'}
       >
-        <Plus size={28} />
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 40 40">
+  <path fill="#000" fill-opacity=".5" d="M20 0a4 4 0 0 1 4 4v12h12a4 4 0 0 1 0 8H24v12a4 4 0 0 1-8 0V24H4a4 4 0 0 1 0-8h12V4a4 4 0 0 1 4-4Z"/>
+</svg>
+
+
+
       </button>
 
       {isOpen && (
@@ -242,11 +309,17 @@ export const ProjectPopup = () => {
                     style={{...styles.input, ...styles.inputTwoThirds}}
                   />
                   <input
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => handleInputChange('date', e.target.value)}
-                    style={{...styles.input, ...styles.inputOneThird}}
-                  />
+  type="text"
+  placeholder="Deadline"
+  onFocus={(e) => (e.target.type = 'date')}
+  onBlur={(e) => {
+    if (!e.target.value) e.target.type = 'text';
+  }}
+  value={formData.date}
+  onChange={(e) => handleInputChange('date', e.target.value)}
+  style={{ ...styles.input, ...styles.inputOneThird }}
+/>
+
                 </div>
 
                 {/* Description */}
@@ -260,24 +333,90 @@ export const ProjectPopup = () => {
 
                 {/* Team Name and Team Lead Row */}
                 <div style={styles.row}>
-                  <input
-                    type="text"
-                    placeholder="Team Name..."
-                    value={formData.teamName}
-                    onChange={(e) => handleInputChange('teamName', e.target.value)}
-                    style={{...styles.input, ...styles.inputTwoThirds}}
-                  />
-                  <select
-                    value={formData.teamLead}
-                    onChange={(e) => handleInputChange('teamLead', e.target.value)}
-                    style={{...styles.select, ...styles.inputOneThird}}
-                  >
-                    <option value="" disabled>Team Lead</option>
-                    <option value="john">John Smith</option>
-                    <option value="sarah">Sarah Johnson</option>
-                    <option value="mike">Mike Davis</option>
-                    <option value="anna">Anna Wilson</option>
-                  </select>
+  <input
+    type="text"
+    placeholder="Team Name..."
+    value={formData.teamName}
+    onChange={(e) => handleInputChange('teamName', e.target.value)}
+    style={{ ...styles.input, ...styles.inputTwoThirds }}
+  />
+
+ <div style={{ ...styles.inputOneThird, position: 'relative' }}>
+
+
+  {/* Input with arrow */}
+  <div style={{ position: 'relative' }}>
+    <input
+      type="text"
+      placeholder="Search team lead..."
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        handleInputChange('teamLead', null); // reset selection
+      }}
+      onClick={() => setShowTeamLeadDropdown(true)}
+      style={{
+        ...styles.input,
+        ...styles.inputOneThird,
+        paddingRight: '36px',
+        backgroundColor: formData.teamLead ? formData.teamLead.color : '#D9D9D9',
+        color: formData.teamLead ? '#000' : '#000'
+      }}
+    />
+
+    {/* Arrow Icon */}
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      style={{
+        position: 'absolute',
+        right: '12px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        pointerEvents: 'none',
+        color: '#6b7280'
+      }}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </div>
+
+  {/* Dropdown List */}
+  {showTeamLeadDropdown && searchTerm && (
+    <div style={{ ...styles.dropdown, marginTop: '4px' }}>
+      <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+        {employeeList
+          .filter(emp =>
+            emp.name.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+          .map((emp, i) => (
+            <div
+              key={i}
+              onClick={() => {
+                handleInputChange('teamLead', emp);
+                setSearchTerm(emp.name);
+                setShowTeamLeadDropdown(false);
+              }}
+              style={{
+                padding: '8px',
+                cursor: 'pointer',
+                backgroundColor: emp.color,
+                borderRadius: '12px',
+                margin: '8px 12px'
+              }}
+            >
+              <EmpProfile {...emp} />
+            </div>
+          ))}
+      </div>
+    </div>
+  )}
+</div>
+
                 </div>
 
                 {/* Team Members */}
@@ -292,10 +431,13 @@ export const ProjectPopup = () => {
                   <button
                     onClick={() => setShowMemberSearch(!showMemberSearch)}
                     style={styles.addMemberButton}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#f3f4f6'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#BBD3CC'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#BBD3CC'}
                   >
-                    <Plus size={16} style={{ color: '#6b7280' }} />
+                   <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 19 18">
+  <path fill="#000" fill-opacity=".5" d="M9.469.428c.947 0 1.713.767 1.714 1.714v5.143h5.143a1.714 1.714 0 0 1 0 3.428h-5.143v5.143a1.714 1.714 0 0 1-3.428 0v-5.143H2.61a1.714 1.714 0 1 1 0-3.428h5.144V2.142c0-.947.767-1.714 1.714-1.714Z"/>
+</svg>
+
                   </button>
 
                   {showMemberSearch && (
