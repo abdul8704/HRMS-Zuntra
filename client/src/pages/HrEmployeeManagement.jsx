@@ -86,7 +86,7 @@ export const HrEmployeeManagement = () => {
                 margin: 0,
               }}
             >
-              🚀 Coming Soon
+              🚀 Under Development, Coming Soon
             </h1>
           </div>
         ) : navId === "location" ? (

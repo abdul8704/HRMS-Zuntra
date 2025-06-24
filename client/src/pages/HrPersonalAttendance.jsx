@@ -2,7 +2,7 @@ import React from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { useParams } from 'react-router-dom';
 
-export const HrDashboard = () => {
+export const HrPersonalAttendance = () => {
 
   return (
     <>

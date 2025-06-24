@@ -13,6 +13,8 @@ import { HrOverviewLearning } from './pages/Hroverviewlearn';
 import './App.css'
 import './index.css'
 import { GeoFencing } from './components/employeeManagement/GeoFencing';
+import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
+import { Upskill } from './pages/Upskill';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -27,9 +29,10 @@ function App() {
         <Route path="/projects" element={<HrProjectManagement/>}></Route>
         <Route path="/project/:navId" element={<HrProjectDetails/>}></Route>
         <Route path="/employee/:navId" element={<HrEmployeeManagement/>}></Route>
-        <Route path="/courses/:navId" element={<HrCourseManagement/>}></Route>
-        <Route path="/employee/role" element={<GeoFencing/>}></Route>
         <Route path="/employee/details"  element={<HrEmployeeDetail/>}></Route>
+        <Route path="/courses/:navId" element={<HrCourseManagement/>}></Route>
+        <Route path="/attendance" element={<HrPersonalAttendance/>}></Route>
+        <Route path="/upskill/:navId" element={<Upskill/>}></Route>
         <Route path="/createcourse" element={<HrCreateCourse/>}></Route>
         <Route path="/overviewlearning" element={<HrOverviewLearning/>}></Route>
         

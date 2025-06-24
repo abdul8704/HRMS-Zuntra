@@ -82,7 +82,7 @@ useEffect(() => {
     {
       role: "EMP",
       label: "Attendance",
-      path: "/cs",
+      path: "/attendance",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="29" height="28" fill="none" viewBox="0 0 29 28">
           <g clipPath="url(#a)">
@@ -102,7 +102,7 @@ useEffect(() => {
     {
       role: "EMP",
       label: "UpSkill",
-      path: "/cs",
+      path: "/upskill/all",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="24" fill="none" viewBox="0 0 30 24">
           <path fill="currentColor" d="M29.284 1.2v21.6c0 .318-.084.623-.234.848-.15.226-.353.352-.566.352h-22.4c-.212 0-.415-.126-.565-.352a1.553 1.553 0 0 1-.235-.848c0-.318.085-.623.235-.849.15-.225.353-.351.565-.351h4.8v-6c0-.318.085-.623.235-.848.15-.226.353-.352.565-.352h4.8v-6c0-.318.085-.623.235-.849.15-.225.353-.351.565-.351h4.8v-6c0-.318.085-.623.235-.849.15-.225.353-.351.565-.351h5.6c.213 0 .416.126.566.351.15.226.234.53.234.849Z" />
