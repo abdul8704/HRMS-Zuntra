@@ -1,70 +1,84 @@
 import React from "react";
+import { FiExternalLink } from "react-icons/fi"; // Make sure react-icons is installed
 
 export const TableOfContents = () => {
   return (
-    <div className="toc-container">
-      <h3 className="toc-heading">Table of contents</h3>
+    <div className="wrapper">
+      {/* Floating External Icon */}
+      {/*<button className="external-icon-btn" title="Open externally">
+        <FiExternalLink size={24} />
+      </button>/*}
 
-      {/* Scrollable Modules */}
-      <div className="toc-scroll">
-        <div className="module">
-          <div className="module-title active">
-            <span className="bar active-bar"></span>
-            <span>Module 1 Name</span>
-          </div>
-          <ul className="submodules">
-            <li><span className="dash active-dash"></span>Sub Module 1 Name</li>
-            <li><span className="dash active-dash"></span>Sub Module 2 Name</li>
-            <li><span className="dash active-dash"></span>Sub Module 3 Name</li>
-            <li><span className="dash active-dash"></span>Sub Module 4 Name</li>
-          </ul>
+      {/* Table of Contents Card */}
+      <div className="toc-container">
+        <h3 className="toc-heading">Table of contents</h3>
+
+        {/* Scrollable Modules */}
+        <div className="toc-scroll">
+          {Array.from({ length: 7 }, (_, index) => (
+            <div className="module" key={index}>
+              <div className={`module-title ${index === 0 ? "active" : "inactive"}`}>
+                <span className={`bar ${index === 0 ? "active-bar" : "inactive-bar"}`}></span>
+                <span>{`Module ${index + 1}`}</span>
+              </div>
+              <ul className="submodules">
+                {[...Array(5)].map((_, subIndex) => (
+                  <li key={subIndex}>
+                    <span className={`dash ${index === 0 ? "active-dash" : "inactive-dash"}`}></span>
+                    Sub Module {subIndex + 1} Name
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <div className="module">
-          <div className="module-title inactive">
-            <span className="bar inactive-bar"></span>
-            <span>Module 2</span>
+        {/* Continue Button */}
+        <div className="button-wrapper">
+          <button className="continue-btn">Continue Learning</button>
+          <div className="progress-bar">
+            <div className="progress-filled" style={{ width: '75%' }}></div>
           </div>
-          <ul className="submodules">
-            <li><span className="dash active-dash"></span>Sub Module 1 Name</li>
-            <li><span className="dash inactive-dash"></span>Sub Module 2 Name</li>
-            <li><span className="dash inactive-dash"></span>Sub Module 3 Name</li>
-          </ul>
-        </div>
-
-        <div className="module">
-          <div className="module-title inactive">
-            <span className="bar inactive-bar"></span>
-            <span>Module 3</span>
-          </div>
-          <ul className="submodules">
-            <li><span className="dash inactive-dash"></span>Sub Module 1 Name</li>
-            <li><span className="dash inactive-dash"></span>Sub Module 2 Name</li>
-            <li><span className="dash inactive-dash"></span>Sub Module 3 Name</li>
-            <li><span className="dash inactive-dash"></span>Sub Module 4 Name</li>
-            <li><span className="dash inactive-dash"></span>Sub Module 5 Name</li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Continue Button */}
-      <div className="button-wrapper">
-        <button className="continue-btn">Continue Learning</button>
-        <div className="progress-bar">
-          <div className="progress-filled" style={{ width: '75%' }}></div>
         </div>
       </div>
 
       <style>{`
+        .wrapper {
+          position: relative;
+          width: fit-content;
+        }
+
+        .external-icon-btn {
+          position: absolute;
+          top: -20px;
+          right: -20px;
+          width: 54px;
+          height: 54px;
+          background-color: white;
+          border-radius: 50%;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 10;
+        }
+
+        .external-icon-btn:hover {
+          background-color: #f0f0f0;
+        }
+
         .toc-container {
           background: #e5e5e5;
           padding: 16px;
-          width: 270px;
-          height: 550px;
+          width: 350px;
+          height: 96vh;
           border-radius: 8px;
           font-family: sans-serif;
           display: flex;
           flex-direction: column;
+          overflow: hidden;
         }
 
         .toc-heading {
@@ -76,7 +90,7 @@ export const TableOfContents = () => {
 
         .toc-scroll {
           flex: 1;
-          overflow-y: scroll;
+          overflow-y: auto;
           margin-bottom: 12px;
           padding-right: 4px;
         }
@@ -190,5 +204,4 @@ export const TableOfContents = () => {
     </div>
   );
 };
-
 

@@ -1,19 +1,9 @@
 import React, { useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
-import { EmpProfile } from "../employeeManagement/EmpProfile"; // External profile component
+import { EmpProfile } from "../employeeManagement/EmpProfile";
 
-export const ProjectCard = () => {
-  const [projectData, setProjectData] = useState({
-    title: "Project 6",
-    subtitle: "6 Aurora",
-    description:
-      "This is a sample description for a Project. I am typing more since there should be more lines. One more line and we’re good to go. Huhh, more lines since they want this to overflow.",
-    user: {
-      name: "Cheril Gracenciya",
-      role: "Full Stack Developer",
-      avatar: "https://i.pravatar.cc/100?img=5",
-    },
-  });
+export const ProjectCard = ({ projectData }) => {
+  if (!projectData) return null;
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(projectData);
@@ -21,55 +11,55 @@ export const ProjectCard = () => {
   const styles = {
     "project-card": {
       backgroundColor: "#f4b6b6",
-      borderRadius: "16px",
-      padding: "20px",
-      width: "360px",
+      borderRadius: "1rem",
+      padding: "1.25rem",
+      width: "22.5rem", // 360px
       fontFamily: "'Segoe UI', sans-serif",
       position: "relative",
-      boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+      boxShadow: "0 0.125rem 0.625rem rgba(0,0,0,0.1)",
       textAlign: "left",
-      marginTop: "20px",
+      marginTop: "1.25rem",
     },
     "project-icons": {
       position: "absolute",
-      top: "12px",
-      right: "12px",
+      top: "0.75rem",
+      right: "0.75rem",
       display: "flex",
-      gap: "10px",
+      gap: "0.625rem",
       color: "#444",
       cursor: "pointer",
     },
     "project-projectTitle": {
-      fontSize: "18px",
+      fontSize: "1.125rem",
       fontWeight: 600,
       margin: 0,
     },
     "project-projectId": {
-      fontSize: "22px",
+      fontSize: "1.375rem",
       fontWeight: 700,
-      margin: "5px 0 16px 0",
+      margin: "0.3125rem 0 1rem 0",
     },
     "project-description": {
       color: "#4f4f4f",
-      fontSize: "14px",
+      fontSize: "0.875rem",
       lineHeight: "1.5",
-      marginBottom: "60px",
+      marginBottom: "3.75rem",
     },
     "project-footer": {
       position: "absolute",
-      bottom: "15px",
-      left: "20px",
-      right: "20px",
+      bottom: "0.9375rem",
+      left: "1.25rem",
+      right: "1.25rem",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
     },
     "project-badge": {
       backgroundColor: "#f7caca",
-      padding: "6px 16px",
-      borderRadius: "999px",
+      padding: "0.375rem 1rem",
+      borderRadius: "62.4375rem",
       fontWeight: 600,
-      fontSize: "14px",
+      fontSize: "0.875rem",
       color: "#5b5b5b",
     },
     "modal-overlay": {
@@ -86,29 +76,29 @@ export const ProjectCard = () => {
     },
     "modal-content": {
       backgroundColor: "#fff",
-      padding: "20px",
-      borderRadius: "12px",
-      width: "340px",
+      padding: "1.25rem",
+      borderRadius: "0.75rem",
+      width: "21.25rem", // 340px
       display: "flex",
       flexDirection: "column",
-      gap: "10px",
+      gap: "0.625rem",
     },
     "modal-input": {
-      padding: "8px",
-      borderRadius: "6px",
+      padding: "0.5rem",
+      borderRadius: "0.375rem",
       border: "1px solid #ccc",
       width: "100%",
     },
     "modal-buttons": {
       display: "flex",
       justifyContent: "flex-end",
-      gap: "10px",
-      marginTop: "10px",
+      gap: "0.625rem",
+      marginTop: "0.625rem",
     },
     "modal-label": {
       fontWeight: 600,
-      marginBottom: "4px",
-      fontSize: "14px",
+      marginBottom: "0.25rem",
+      fontSize: "0.875rem",
     },
   };
 
@@ -137,9 +127,10 @@ export const ProjectCard = () => {
 
         <div style={styles["project-footer"]}>
           <EmpProfile
-            name={projectData.user.name}
-            role={projectData.user.role}
-            avatar={projectData.user.avatar}
+            name={projectData.user?.name}
+            role={projectData.user?.role}
+            avatar={projectData.user?.avatar}
+            tl={true}
           />
           <div style={styles["project-badge"]}>2 weeks left</div>
         </div>
