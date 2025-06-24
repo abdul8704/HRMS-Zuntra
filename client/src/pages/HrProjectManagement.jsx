@@ -4,6 +4,7 @@ import { ProjectCard } from '../components/projectManagement/ProjectCard';
 import { ProjectNavbar } from '../components/projectManagement/ProjectNavbar';
 import { Link, useParams } from 'react-router-dom';
 import { ProjectPopup } from '../components/projectManagement/ProjectPopup';
+import { TaskCard } from '../components/projectManagement/TaskCard';
 
 export const HrProjectManagement = () => {
   const { navId } = useParams();
@@ -143,4 +144,8 @@ export const HrProjectManagement = () => {
       `}</style>
     </div>
   );
+
+  
+
+  
 };
