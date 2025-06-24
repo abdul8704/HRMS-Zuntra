@@ -2,12 +2,10 @@ import React from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { EmpNavbar } from '../components/employeeManagement/EmpNavbar';
 import { EmpCard } from '../components/employeeManagement/EmpCard';
-import { useParams } from 'react-router-dom';
-import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
-  const bgClasses = ['#F2C3B9', '#7B08BD', '#6AC8BA', '#BFBFF7'];
+  const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
 
   const employees = [
     { name: "John Joseph Mathew George Daniel A", email: "johnmathewgeorgedaniel@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
@@ -41,85 +39,55 @@ export const HrEmployeeManagement = () => {
   const columns = 3;
   const bgColorList = getGridBgColors(employees.length, columns, bgClasses);
 
-  const locations = [
-    { lat: 12.979545214368582, lng: 80.22630407471307, title: "Map1" },
-    { lat: 12.9715987, lng: 77.5945627, title: "Map2" },
-    { lat: 13.0826802, lng: 80.2707184, title: "Map3" },
-    { lat: 12.965365, lng: 80.246109, title: "Perungudi" },
-  ];
-
   return (
-    <div className="website-container">
+    <div className="website-container flex">
       <Sidebar />
-      <div className="website-module">
+      <div className="website-module flex-1">
         <EmpNavbar />
 
-        {navId === "all" || navId === "roles" ? (
-          <div
-            style={{
-              padding: "3rem 5rem",
-              borderRadius: "1.5rem",
-              background: "rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              textAlign: "center",
-              fontFamily: "'Poppins', sans-serif",
-            }}
-          >
-            <style>{`
-              @keyframes pulse {
-                0%, 100% {
-                  text-shadow: 0 0 10px #BBD3CC, 0 0 20px #BBD3CC;
-                }
-                50% {
-                  text-shadow: 0 0 20px #BBD3CC, 0 0 40px #BBD3CC;
-                }
-              }
-            `}</style>
-            <h1
-              style={{
-                fontSize: "5rem",
-                fontWeight: "700",
-                color: "rgb(153, 153, 153)",
-                textShadow: "0 0 10px #BBD3CC, 0 0 20px #BBD3CC",
-                animation: "pulse 2s infinite ease-in-out",
-                margin: 0,
-              }}
-            >
-              🚀 Under Development, Coming Soon
-            </h1>
-          </div>
-        ) : navId === "location" ? (
-          <GeoFencing locations={locations} />
-        ) : navId === "newusers" ? (
+        {/* Cards Section */}
+        <div className="cards-wrapper">
           <div className="project-cards-container">
-            {employees.map((emp, index) => (
-              <EmpCard
-                key={index}
-                name={emp.name}
-                email={emp.email}
-                phone={emp.phone}
-                date={emp.date}
-                image={emp.image}
-                color={bgColorList[index]}
-              />
-            ))}
-          </div>
-        ) : null}
+  {employees.map((emp, index) => (
+    <EmpCard
+      key={index}
+      name={emp.name}
+      email={emp.email}
+      phone={emp.phone}
+      date={emp.date}
+      image={emp.image}
+      color={bgColorList[index]}
+    /> 
+  ))} 
+</div>
 
-        <style>{`
-          .project-cards-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            justify-content: center;
-            align-items: center;
-            margin-top: 1.5rem;
-            max-height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-          }
-        `}</style>
+        </div>
+
+        <style jsx>{`
+  .cards-wrapper {
+    padding: 1rem;
+    overflow-x: hidden;
+  }
+
+  .project-cards-container {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(1, 1fr); /* Mobile default */
+  }
+
+  @media (min-width: 48rem) {
+    .project-cards-container {
+      grid-template-columns: repeat(2, 1fr); /* Tablet */
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .project-cards-container {
+      grid-template-columns: repeat(3, 1fr); /* 1024px+ */
+    }
+  }
+`}</style>
+
       </div>
     </div>
   );
