@@ -54,6 +54,7 @@ export const Login = () => {
               })
               if (res.status === 200) {
                 console.log("Attendace MArked buddy");
+                navigate("/dashboard")
               } else {
                 console.warn("Location not within geofence");
               }
