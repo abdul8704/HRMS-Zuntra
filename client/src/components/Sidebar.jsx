@@ -9,12 +9,22 @@
 import React, { useState, useEffect } from 'react'
 import zuntraSquareLogo from "../assets/zuntra_square_no_text.png"
 import zuntraLogo from "../assets/zuntra.png"
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export const Sidebar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [sideBarStatus, setSidebar] = useState(0); //0 collapsed 1 hovered 2 expanded 3 pinned
   const [role, setRole] = useState("HR");
   const [active, setActive] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+
+useEffect(() => {
+  const filteredItems = sidebarItems.filter(item => role === "HR" || item.role === "EMP");
+  const activeIndex = filteredItems.findIndex(item => location.pathname.startsWith(item.path));
+  setActive(activeIndex);
+}, [location.pathname, role]);
+
 
   useEffect(() => {
     const checkMobile = () => {
@@ -31,6 +41,7 @@ export const Sidebar = () => {
     {
       role: "EMP",
       label: "Dashboard",
+      path: "/dashboard",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" fill="none" viewBox="0 0 25 24">
           <path fill="currentColor" d="M14.951 8a1.29 1.29 0 0 1-.95-.384 1.296 1.296 0 0 1-.383-.95V1.334c0-.377.128-.694.384-.949s.572-.383.95-.384h8c.377 0 .694.128.95.384s.383.572.382.95v5.333c0 .377-.128.694-.384.95a1.285 1.285 0 0 1-.949.383h-8ZM1.618 13.333a1.29 1.29 0 0 1-.95-.384A1.296 1.296 0 0 1 .284 12V1.333C.284.956.412.64.668.384s.573-.383.95-.384h8c.378 0 .694.128.95.384s.384.572.383.95V12c0 .378-.128.695-.384.95a1.285 1.285 0 0 1-.95.383h-8ZM14.95 24a1.29 1.29 0 0 1-.95-.384 1.296 1.296 0 0 1-.383-.95V12c0-.378.128-.694.384-.95a1.3 1.3 0 0 1 .95-.383h8c.377 0 .694.128.95.384s.383.572.382.949v10.667c0 .377-.128.694-.384.95a1.285 1.285 0 0 1-.949.383h-8ZM1.618 24a1.29 1.29 0 0 1-.95-.384 1.296 1.296 0 0 1-.384-.95v-5.333c0-.377.128-.694.384-.949s.573-.383.95-.384h8c.378 0 .694.128.95.384s.384.572.383.95v5.333c0 .377-.128.694-.384.95a1.285 1.285 0 0 1-.95.383h-8Z" />
@@ -40,6 +51,7 @@ export const Sidebar = () => {
     {
       role: "EMP",
       label: "Project Management",
+      path: "/projects",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="29" fill="none" viewBox="0 0 26 29">
           <path fill="currentColor" d="M13 8.598c.718 0 1.3-.57 1.3-1.273 0-.702-.582-1.272-1.3-1.272-.718 0-1.3.57-1.3 1.272 0 .703.582 1.273 1.3 1.273Zm-7.8 12.73h15.6v2.545H5.2v-2.545Zm5.2-6.58 3.63 3.556 5.111-5.009 1.659 1.669V9.873h-5.2l1.703 1.623-3.275 3.206-3.628-3.556-5.2 5.09 1.838 1.8 3.362-3.288Z" />
@@ -50,6 +62,7 @@ export const Sidebar = () => {
     {
       role: "HR",
       label: "Employee Management",
+      path: "/employee/all",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="27" fill="none" viewBox="0 0 24 27">
           <path fill="currentColor" d="M10.297 11.857c2.853 0 5.165-2.447 5.165-5.466 0-3.018-2.312-5.465-5.165-5.465-2.852 0-5.164 2.447-5.164 5.465 0 3.02 2.312 5.466 5.164 5.466ZM8.81 23.542v2.538c0 .225.084.44.234.598.15.16.354.248.566.248H23.2a.777.777 0 0 0 .566-.248.872.872 0 0 0 .234-.598v-8.46a.872.872 0 0 0-.234-.599.777.777 0 0 0-.565-.248h-5.597V15.53a.872.872 0 0 0-.234-.599.777.777 0 0 0-.565-.248.778.778 0 0 0-.566.248.872.872 0 0 0-.234.599v1.243h-1.598v-3.029a24.207 24.207 0 0 0-4.11-.355 19.825 19.825 0 0 0-8.794 2.022A2.677 2.677 0 0 0 .4 16.447c-.266.45-.405.971-.4 1.502v5.593h8.81Zm13.591 1.692H10.41v-6.769h5.596v.356c0 .224.085.44.235.598.15.159.353.248.565.248a.78.78 0 0 0 .565-.248.872.872 0 0 0 .234-.598v-.356h4.797v6.769Z" />
@@ -59,6 +72,7 @@ export const Sidebar = () => {
     {
       role: "HR",
       label: "Course Management",
+      path: "/courses/overview",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="27" height="20" fill="none" viewBox="0 0 27 20">
           <path fill="currentColor" d="M11.465.42a4.158 4.158 0 0 1 3.64 0l10.56 5.131c.184.09.34.23.449.406a1.132 1.132 0 0 1 .01 1.18c-.107.178-.26.322-.442.414l-10.508 5.347a4.16 4.16 0 0 1-3.778 0L2.452 8.347v4.986c0 .295-.114.578-.317.786a1.07 1.07 0 0 1-.766.325 1.07 1.07 0 0 1-.766-.325 1.126 1.126 0 0 1-.317-.786V6.611a1.13 1.13 0 0 1 .153-.626c.11-.189.272-.34.466-.434l10.56-5.13ZM4.62 11.931v3.625a1.136 1.136 0 0 0 .318.786l.005.007.05.047.13.124c.108.104.265.242.47.416.405.34.99.788 1.72 1.24 1.451.89 3.54 1.824 5.973 1.824s4.524-.933 5.973-1.824a14.55 14.55 0 0 0 2.193-1.656l.13-.124.034-.036.013-.013.003-.003.004-.002a1.115 1.115 0 0 0 .316-.786v-3.627l-5.815 2.96a6.281 6.281 0 0 1-2.851.686 6.28 6.28 0 0 1-2.851-.686L4.62 11.931Z" />
@@ -68,6 +82,7 @@ export const Sidebar = () => {
     {
       role: "EMP",
       label: "Attendance",
+      path: "/attendance",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="29" height="28" fill="none" viewBox="0 0 29 28">
           <g clipPath="url(#a)">
@@ -87,6 +102,7 @@ export const Sidebar = () => {
     {
       role: "EMP",
       label: "UpSkill",
+      path: "/upskill/all",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="24" fill="none" viewBox="0 0 30 24">
           <path fill="currentColor" d="M29.284 1.2v21.6c0 .318-.084.623-.234.848-.15.226-.353.352-.566.352h-22.4c-.212 0-.415-.126-.565-.352a1.553 1.553 0 0 1-.235-.848c0-.318.085-.623.235-.849.15-.225.353-.351.565-.351h4.8v-6c0-.318.085-.623.235-.848.15-.226.353-.352.565-.352h4.8v-6c0-.318.085-.623.235-.849.15-.225.353-.351.565-.351h4.8v-6c0-.318.085-.623.235-.849.15-.225.353-.351.565-.351h5.6c.213 0 .416.126.566.351.15.226.234.53.234.849Z" />
@@ -97,6 +113,7 @@ export const Sidebar = () => {
     {
       role: "EMP",
       label: "Logout",
+      path: "/",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" viewBox="0 0 54 54">
           <path fill="#000" d="M20.25 45.902a1.35 1.35 0 0 1 0-2.7H37.8a5.4 5.4 0 0 0 5.4-5.4v-21.6a5.4 5.4 0 0 0-5.4-5.4H20.25a1.35 1.35 0 0 1 0-2.7H37.8a8.1 8.1 0 0 1 8.1 8.1v21.6a8.1 8.1 0 0 1-8.1 8.1H20.25Zm-3.094-29.306a1.35 1.35 0 0 0-1.912 0l-9.45 9.45a1.349 1.349 0 0 0 0 1.911l9.45 9.45a1.353 1.353 0 0 0 1.912-1.911l-7.147-7.144h23.74a1.35 1.35 0 0 0 0-2.7H10.01l7.147-7.145a1.35 1.35 0 0 0 0-1.911Z" />
@@ -129,12 +146,13 @@ export const Sidebar = () => {
     }
   };
 
-  const handleItemClick = (index) => {
-    setActive(index);
-    if (isMobile) {
-      setSidebar(0);
-    }
-  };
+const handleItemClick = (index) => {
+  const selectedItem = sidebarItems.filter(item => role === "HR" || item.role === "EMP")[index];
+  navigate(selectedItem.path);
+  if (isMobile) {
+    setSidebar(0);
+  }
+};
 
   return (
     <>
