@@ -98,7 +98,7 @@ export const HrEmployeeManagement = () => {
   </div>
 )}
 
-        {navId === "location" && (
+        {navId === "geofencing" && (
           <GeoFencing locations={locations} />
         ) }
         {navId === "newusers" && (

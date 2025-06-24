@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import zuntraLogo from "../assets/zuntra.png";
 import api from "../api/axios";
-
+import {useNavigate} from "react-router-dom"
 
 
 export const Login = () => {
@@ -10,6 +10,7 @@ export const Login = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [otpPhase, setOtpPhase] = useState(false);
+  const navigate = useNavigate();
 
 
   const [loginData, setLoginData] = useState({ email: '', password: '' });
@@ -53,6 +54,7 @@ export const Login = () => {
               })
               if (res.status === 200) {
                 console.log("Attendace MArked buddy");
+                navigate("/dashboard")
               } else {
                 console.warn("Location not within geofence");
               }
@@ -82,7 +84,7 @@ export const Login = () => {
 
   };
 
-const handleSignupSubmit = (e) => {
+const handleSignupSubmit = async (e) => {
   e.preventDefault();
 
   const { name, email, phone, password, confirmPassword, otp } = signupData;
@@ -97,12 +99,32 @@ const handleSignupSubmit = (e) => {
       alert("Passwords do not match.");
       return;
     }
+    const userExist = await api.post("/auth/check", {
+      email: email
+    })
 
-    // Simulate sending OTP here (in real case: call backend)
-    setOtpPhase(true);
-    alert("OTP sent to your email/phone.");
-    return;
-  } else {
+    if(userExist.data.exists === false){
+      const sendotp = await api.post("/auth/signup/send-otp", {
+        useremail: email
+      })
+
+        if(sendotp.status === 200){
+          setOtpPhase(true);
+          alert("OTP sent to your email/phone.");
+          return;
+        }
+        else{
+          alert("Failed to send OTP");
+          return;
+        }
+    }
+    else{
+      alert("User already exists");
+      return;
+    }
+  
+  } 
+  else {
     if (!otp) {
       alert("Please enter the OTP.");
       return;
@@ -111,11 +133,35 @@ const handleSignupSubmit = (e) => {
     // Final signup logic here
     console.log("Final Sign Up Data:", signupData);
 
-    // Reset or redirect as needed
-    setIsSignup(false);
-    setOtpPhase(false);
-    setSignupData({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });
-    alert("Signup successful!");
+    const verifyOtp = await api.post("/auth/signup/verify-otp", {
+      useremail: email,
+      otp: otp
+    })
+
+    if(verifyOtp.status === 200){
+      const newUser = await api.post("/auth/signup/newuser", {
+        username: name,
+        email: email,
+        phoneNum: phone,
+        password: password
+      })
+
+      if(newUser.status === 200){
+        alert("success")
+        console.log("User created successfully");
+        setIsSignup(false);
+        setOtpPhase(false);
+        setSignupData({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });
+        alert("Signup successful!");
+        navigate("/dashboard")
+      }
+      else{
+        alert("Failed to create user");
+        return;
+      }
+    }
+
+
   }
 };
 
