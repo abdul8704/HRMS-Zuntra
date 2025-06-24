@@ -9,6 +9,7 @@ export const Login = () => {
   const [showReset, setShowReset] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
+  const [otpPhase, setOtpPhase] = useState(false);
 
 
   const [loginData, setLoginData] = useState({ email: '', password: '' });
@@ -30,9 +31,9 @@ export const Login = () => {
       alert("Please enter both email and password.");
       return;
     }
-    try{
+    try {
       const response = await api.post("/auth/login", loginData);
-      if(response.status === 200){
+      if (response.status === 200) {
         const token = response.data.accessToken;
         localStorage.setItem("accessToken", token);
 
@@ -63,27 +64,31 @@ export const Login = () => {
             console.error("Error getting location:", error);
           }
         );
-        
+
       }
     }
-    catch(err){
-      if(err.status === 401){
-        if(err.response.data.data.message === "Wrong Password"){
+    catch (err) {
+      if (err.status === 401) {
+        if (err.response.data.data.message === "Wrong Password") {
           alert("Wrong Password!!")
         }
-        else if (err.response.data.data.message === 'User not found'){
+        else if (err.response.data.data.message === 'User not found') {
           alert("User not found!!")
         }
         console.log(err.response.data);
-        
+
       }
     }
-    
+
   };
 
-  const handleSignupSubmit = (e) => {
-    e.preventDefault();
-    const { name, email, phone, password, confirmPassword } = signupData;
+const handleSignupSubmit = (e) => {
+  e.preventDefault();
+
+  const { name, email, phone, password, confirmPassword, otp } = signupData;
+
+  if (!otpPhase) {
+    // Initial sign-up validation
     if (!name || !email || !phone || !password || !confirmPassword) {
       alert("All fields are required.");
       return;
@@ -92,8 +97,27 @@ export const Login = () => {
       alert("Passwords do not match.");
       return;
     }
-    console.log('Signup Data:', signupData);
-  };
+
+    // Simulate sending OTP here (in real case: call backend)
+    setOtpPhase(true);
+    alert("OTP sent to your email/phone.");
+    return;
+  } else {
+    if (!otp) {
+      alert("Please enter the OTP.");
+      return;
+    }
+
+    // Final signup logic here
+    console.log("Final Sign Up Data:", signupData);
+
+    // Reset or redirect as needed
+    setIsSignup(false);
+    setOtpPhase(false);
+    setSignupData({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });
+    alert("Signup successful!");
+  }
+};
 
   const handleResetSubmit = (e) => {
     e.preventDefault();
@@ -151,10 +175,18 @@ export const Login = () => {
                     <input name="name" value={signupData.name} onChange={handleSignupChange} className="login-input" type="text" placeholder="Name" />
                     <input name="email" value={signupData.email} onChange={handleSignupChange} className="login-input" type="email" placeholder="Email" />
                     <input name="phone" value={signupData.phone} onChange={handleSignupChange} className="login-input" type="tel" placeholder="Phone Number" />
-                    <input name="password" value={signupData.password} onChange={handleSignupChange} className="login-input" type="password" placeholder="Password" />
-                    <input name="confirmPassword" value={signupData.confirmPassword} onChange={handleSignupChange} className="login-input" type="password" placeholder="Confirm Password" />
+
+                    {!otpPhase ? (
+                      <>
+                        <input name="password" value={signupData.password} onChange={handleSignupChange} className="login-input" type="password" placeholder="Password" />
+                        <input name="confirmPassword" value={signupData.confirmPassword} onChange={handleSignupChange} className="login-input" type="password" placeholder="Confirm Password" />
+                      </>
+                    ) : (
+                      <input name="otp" value={signupData.otp} onChange={handleSignupChange} className="login-input" type="text" placeholder="Enter OTP" />
+                    )}
+
                     <div className="login-forgot"></div>
-                    <button type="submit" className="login-button">Sign Up</button>
+                    <button type="submit" className="login-button">{otpPhase ? "Submit" : "Sign Up"}</button>
                   </form>
                   {renderGoogleButton()}
                 </>
@@ -246,7 +278,7 @@ export const Login = () => {
         </div>
       </div>
 
-      <style>{`
+      <style jsx>{`
   .login-page {
     width: 100vw;
     height: 100vh;

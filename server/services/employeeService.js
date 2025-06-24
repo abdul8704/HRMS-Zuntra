@@ -1,6 +1,8 @@
 const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
+const attendanceHelper = require("../utils/attendanceHelper.js")
+const asyncHandler = require("express-async-handler");
 
 const getAttendanceDataByUserId = async (
     userid,
@@ -79,8 +81,7 @@ const getAttendanceDataByUserId = async (
     }
 };
 
-const markAttendanceOnLogin = async (userid, mode) => {
-    const now = new Date();
+const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -89,9 +90,15 @@ const markAttendanceOnLogin = async (userid, mode) => {
         const shiftStart = new Date(shiftData.shiftStart);
         const shiftEnd = new Date(shiftData.shiftEnd);
 
+        const shiftStartTime = attendanceHelper.toTimeOnly(shiftStart);
+        const shiftEndTime = attendanceHelper.toTimeOnly(shiftEnd);
+        
+        const now = new Date();
+        now.setSeconds(0, 0);
+
         let attendance = await Attendance.findOne({ userid, date: today });
 
-        // 🧾 FIRST LOGIN OF THE DAY
+        // FIRST LOGIN OF THE DAY
         if (!attendance) {
             attendance = new Attendance({
                 userid,
@@ -100,26 +107,27 @@ const markAttendanceOnLogin = async (userid, mode) => {
                     {
                         loginTime: now,
                         mode:
-                            now >= shiftStart && now <= shiftEnd
+                            now >= shiftStartTime && now <= shiftEndTime
                                 ? mode
                                 : "extra",
                     },
                 ],
                 workingMinutes: 0,
                 breakMinutes: 0,
-                status: mode, // status can't be extra
+                status: (mode === "remote") ? "remote": "present", 
             });
 
             await attendance.save();
+
             return {
                 success: true,
                 message: "Attendance marked (first login of the day)",
             };
         }
-
+ 
         // ✅ If status was remote and new mode is present, update status
-        if (attendance.status === "remote" && mode === "present") {
-            attendance.status = "present";
+        if (attendance.status === "remote" && mode === "onsite") {
+            attendance.status = "onsite";
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
@@ -138,7 +146,7 @@ const markAttendanceOnLogin = async (userid, mode) => {
             const breakDurationMs = now - new Date(lastSession.logoutTime);
             const breakDurationMinutes = breakDurationMs / (1000 * 60);
 
-            const isWithinShift = now >= shiftStart && now <= shiftEnd;
+            const isWithinShift = now >= shiftStartTime && now <= shiftEndTime;
 
             attendance.sessions.push({
                 loginTime: now,
@@ -168,7 +176,7 @@ const markAttendanceOnLogin = async (userid, mode) => {
             error.message
         );
     }
-};
+});
 
 
 const markEndOfSession = async (userid, logoutTime) => {
