@@ -2,7 +2,7 @@ import React from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { ProjectCard } from '../components/projectManagement/ProjectCard';
 import { ProjectNavbar } from '../components/projectManagement/ProjectNavbar';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { ProjectPopup } from '../components/projectManagement/ProjectPopup';
 
 export const HrProjectManagement = () => {
@@ -117,11 +117,14 @@ export const HrProjectManagement = () => {
         <Sidebar />
         <div className="website-module flex-grow">
           <ProjectNavbar />
-          <div className="project-cards-container">
-            {projects.map((project, index) => (
-              <ProjectCard key={index} projectData={project} />
-            ))}
-          </div>
+<div className="project-cards-container">
+  {projects.map((project, index) => (
+    <Link to="/project/overview" key={index} style={{ textDecoration: 'none', color: 'inherit' }}>
+      <ProjectCard projectData={project} />
+    </Link>
+  ))}
+</div>
+
         </div>
       </div>
       <ProjectPopup />
