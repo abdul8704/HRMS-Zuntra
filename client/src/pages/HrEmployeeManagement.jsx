@@ -1,23 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { EmpNavbar } from '../components/employeeManagement/EmpNavbar';
 import { EmpCard } from '../components/employeeManagement/EmpCard';
 import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
 import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
-
+import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
 import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
+  const [showPopup, setShowPopup] = useState(false);
+
   const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
 
   const employees = [
-    { name: "John Joseph Mathew George Daniel A", email: "johnmathewgeorgedaniel@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
+    { name: "John Joseph", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
     { name: "Nisha Mehra", email: "nisha@zuntra.com", phone: "+91 9123456780", date: "12-06-2025", image: "https://randomuser.me/api/portraits/women/68.jpg" },
-    { name: "Arun Raj", email: "arun.raj@zuntra.com", phone: "+91 9988000000", date: "09-06-2025", image: "https://randomuser.me/api/portraits/men/62.jpg" },
-    { name: "Deepa S", email: "deepa.s@zuntra.com", phone: "+91 7896541230", date: "11-06-2025", image: "https://randomuser.me/api/portraits/women/75.jpg" },
-    { name: "Pranav K", email: "pranav.k@zuntra.com", phone: "+91 9876543210", date: "08-06-2025", image: "https://randomuser.me/api/portraits/men/48.jpg" },
     { name: "Ishita T", email: "ishita.t@zuntra.com", phone: "+91 9080706050", date: "10-06-2025", image: "https://randomuser.me/api/portraits/women/21.jpg" },
     { name: "Ravi Kumar", email: "ravi.kumar@zuntra.com", phone: "+91 8899776655", date: "13-06-2025", image: "https://randomuser.me/api/portraits/men/30.jpg" },
     { name: "Sneha Reddy", email: "sneha.r@zuntra.com", phone: "+91 7776665554", date: "14-06-2025", image: "https://randomuser.me/api/portraits/women/44.jpg" },
@@ -45,35 +44,30 @@ export const HrEmployeeManagement = () => {
   const bgColorList = getGridBgColors(employees.length, columns, bgClasses);
 
   const locations = [
-    { lat: 12.979545214368582, lng: 80.22630407471307, title: "Map1" },
-    { lat: 12.9715987, lng: 77.5945627, title: "Map2" },
-    { lat: 13.0826802, lng: 80.2707184, title: "Map3" },
-    { lat: 12.965365, lng: 80.246109, title: "Perungudi" },
+    { lat: 12.9795, lng: 80.2263, title: "Map1" },
+    { lat: 12.9715, lng: 77.5945, title: "Map2" },
   ];
 
   const roleData = [
-  { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-  { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
-  { role: "Video Editor", memberCount: 3, bgColor: "#e9d5ff", ibgcolor: "#ab47bc" },
-  { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-  { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
-  { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
-  { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
-  { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
-  { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
-  { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
-  { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-  { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
-  { role: "Video Editor", memberCount: 3, bgColor: "#e9d5ff", ibgcolor: "#ab47bc" },
-  { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-  { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
-  { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
-  { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
-  { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
-  { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
-  { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
-];
-
+    { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+    { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+    { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+    { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
+    { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
+    { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
+    { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
+    { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
+    { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+    { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+    { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+    { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+    { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
+    { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
+    { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
+    { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
+    { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
+    { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+  ];
 
   return (
     <div className="website-container">
@@ -81,26 +75,31 @@ export const HrEmployeeManagement = () => {
       <div className="website-module">
         <EmpNavbar />
 
-        {navId === "all" && (
-          <EmployeeCard />
-        )} 
+        {navId === "all" && <EmployeeCard />}
+
         {navId === "roles" && (
-  <div className="project-cards-container">
-    {roleData.map((role, idx) => (
-      <EmpRoleCard
-        key={idx}
-        role={role.role}
-        memberCount={role.memberCount}
-        bgColor={role.bgColor}
-        ibgcolor={role.ibgcolor}
-      />
-    ))}
-  </div>
-)}
+          <div className="project-cards-container">
+            {roleData.map((role, idx) => (
+              <EmpRoleCard
+                key={idx}
+                role={role.role}
+                memberCount={role.memberCount}
+                bgColor={role.bgColor}
+                ibgcolor={role.ibgcolor}
+              />
+            ))}
+
+            {/* Floating Plus Button */}
+            <div className="plus-button" onClick={() => setShowPopup(true)}>
+              <span>+</span>
+            </div>
+          </div>
+        )}
 
         {navId === "geofencing" && (
           <GeoFencing locations={locations} />
-        ) }
+        )}
+
         {navId === "newusers" && (
           <div className="project-cards-container">
             {employees.map((emp, index) => (
@@ -116,41 +115,67 @@ export const HrEmployeeManagement = () => {
             ))}
           </div>
         )}
-
-        <style>{`
-  .project-cards-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-    align-items: stretch;
-    margin-top: 1.5rem;
-    max-height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  .project-cards-container > * {
-    flex: 1 1 100%;
-    max-width: 100%;
-  }
-
-  @media (min-width: 48rem) {
-    .project-cards-container > * {
-      flex: 1 1 calc(50% - 1rem);
-      max-width: calc(50% - 1rem);
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .project-cards-container > * {
-      flex: 1 1 calc(33.333% - 1rem);
-      max-width: calc(33.333% - 1rem);
-    }
-  }
-`}</style>
-
       </div>
+
+      {/* Popup should be here, outside layout containers */}
+      {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
+
+      <style>{`
+        .project-cards-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          justify-content: center;
+          align-items: stretch;
+          margin-top: 1.5rem;
+          max-height: 100%;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        .project-cards-container > * {
+          flex: 1 1 100%;
+          max-width: 100%;
+        }
+
+        @media (min-width: 48rem) {
+          .project-cards-container > * {
+            flex: 1 1 calc(50% - 1rem);
+            max-width: calc(50% - 1rem);
+          }
+        }
+
+        @media (min-width: 64rem) {
+          .project-cards-container > * {
+            flex: 1 1 calc(33.333% - 1rem);
+            max-width: calc(33.333% - 1rem);
+          }
+        }
+
+        .plus-button {
+          position: fixed;
+          bottom: 2rem;
+          right: 5rem;
+          width: 3.5rem;
+          height: 3.5rem;
+          border-radius: 50%;
+          background-color: #BBD3CC;
+          color: #6c6c6c;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2rem;
+          font-weight: bold;
+          cursor: pointer;
+          transition: transform 0.2s ease;
+          z-index: 1000;
+        }
+
+        .plus-button:hover {
+          transform: scale(1.1);
+          background-color: #cbd5e1;
+        }
+      `}</style>
     </div>
   );
 };
