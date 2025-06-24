@@ -42,18 +42,43 @@ export const HrEmployeeManagement = () => {
   const bgColorList = getGridBgColors(employees.length, columns, bgClasses);
 
   const locations = [
-    { lat: 12.979545214368582, lng: 80.22630407471307, title: "Map1" },
-    { lat: 12.9715987, lng: 77.5945627, title: "Map2" },
-    { lat: 13.0826802, lng: 80.2707184, title: "Map3" },
-    { lat: 12.965365, lng: 80.246109, title: "Perungudi" },
-  ];
+  {
+    lat: 12.979545214368582,
+    lng: 80.22630407471307,
+    title: "Velachery",
+    address: "Flat No. A-203, Sai Residency Apartments, 100 Feet Bypass Road, Velachery, Chennai - 600042"
+  },
+  {
+    lat: 12.9715987,
+    lng: 77.5945627,
+    title: "MG Road",
+    address: "Flat No. B-501, Green Valley Towers, MG Road, Near Trinity Metro Station, Bengaluru - 560001"
+  },
+  {
+    lat: 13.0826802,
+    lng: 80.2707184,
+    title: "T. Nagar",
+    address: "No. 15, 3rd Cross Street, Raghavaiah Road, T. Nagar, Chennai - 600017"
+  },
+  {
+    lat: 17.385044,
+    lng: 78.486671,
+    title: "Banjara Hills",
+    address: "Villa No. 6, Lotus Enclave, Road No. 10, Banjara Hills, Hyderabad - 500034"
+  },
+  {
+    lat: 19.0760,
+    lng: 72.8777,
+    title: "Andheri West",
+    address: "Flat No. 1203, Daffodil Heights, JP Road, Opp. Infiniti Mall, Andheri West, Mumbai - 400058"
+  }
+];
 
   return (
     <div className="website-container">
       <Sidebar />
       <div className="website-module">
         <EmpNavbar />
-
         {navId === "all" || navId === "roles" ? (
           <div
             style={{
@@ -89,8 +114,11 @@ export const HrEmployeeManagement = () => {
               🚀 Under Development, Coming Soon
             </h1>
           </div>
-        ) : navId === "location" ? (
+          
+        ) : navId === "geofencing" ? (
+          <div className='project-cards-container'>
           <GeoFencing locations={locations} />
+          </div>
         ) : navId === "newusers" ? (
           <div className="project-cards-container">
             {employees.map((emp, index) => (
