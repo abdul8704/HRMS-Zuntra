@@ -1,8 +1,8 @@
 import React from "react";
 import { Sidebar } from "../components/Sidebar";
 import GoToLoomButton from "../components/coursemanagement/GoToLoomButton";
-import InstallLoomExtensionButton from "../components/coursemanagement/InstallLoomExtensionButton";
 import { CourseNavbar } from "../components/coursemanagement/CourseNavbar";
+import InstallLoomExtensionButton from "../components/coursemanagement/InstallLoomExtensionButton"
 
 export const HrCreateCourse = () => {
   return (
@@ -24,7 +24,7 @@ export const HrCreateCourse = () => {
           {/* Button container: stacked vertically */}
           <div className="flex flex-col gap-6 w-full max-w-sm">
             <GoToLoomButton />
-            <InstallLoomExtensionButton />
+            <InstallLoomExtensionButton/>
           </div>
         </div>
       </div>
