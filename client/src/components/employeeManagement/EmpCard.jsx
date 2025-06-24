@@ -83,7 +83,11 @@ export const EmpCard = ({ name, email, phone, date, image, color }) => {
       {tooltip.show && (
         <div
           className="emp-tooltip"
-          style={{ top: `${tooltip.top}px`, left: `${tooltip.left}px` }}
+          style={{
+            top: tooltip.top + "px",
+            left: tooltip.left + "px",
+            position: "absolute"
+          }}
         >
           {tooltip.text}
         </div>
@@ -202,7 +206,6 @@ export const EmpCard = ({ name, email, phone, date, image, color }) => {
         }
 
         .emp-tooltip {
-          position: absolute;
           background: #333;
           color: white;
           padding: 0.5rem 1rem;
