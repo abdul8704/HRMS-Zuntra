@@ -2,6 +2,9 @@ import React from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { EmpNavbar } from '../components/employeeManagement/EmpNavbar';
 import { EmpCard } from '../components/employeeManagement/EmpCard';
+import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
+import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
+
 import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 
@@ -54,44 +57,16 @@ export const HrEmployeeManagement = () => {
       <div className="website-module">
         <EmpNavbar />
 
-        {navId === "all" || navId === "roles" ? (
-          <div
-            style={{
-              padding: "3rem 5rem",
-              borderRadius: "1.5rem",
-              background: "rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              textAlign: "center",
-              fontFamily: "'Poppins', sans-serif",
-            }}
-          >
-            <style>{`
-              @keyframes pulse {
-                0%, 100% {
-                  text-shadow: 0 0 10px #BBD3CC, 0 0 20px #BBD3CC;
-                }
-                50% {
-                  text-shadow: 0 0 20px #BBD3CC, 0 0 40px #BBD3CC;
-                }
-              }
-            `}</style>
-            <h1
-              style={{
-                fontSize: "5rem",
-                fontWeight: "700",
-                color: "rgb(153, 153, 153)",
-                textShadow: "0 0 10px #BBD3CC, 0 0 20px #BBD3CC",
-                animation: "pulse 2s infinite ease-in-out",
-                margin: 0,
-              }}
-            >
-              🚀 Under Development, Coming Soon
-            </h1>
-          </div>
-        ) : navId === "location" ? (
+        {navId === "all" && (
+          <EmployeeCard />
+        )} 
+        {navId === "roles" && (
+          <EmpRoleCard />
+        )} 
+        {navId === "location" && (
           <GeoFencing locations={locations} />
-        ) : navId === "newusers" ? (
+        ) }
+        {navId === "newusers" && (
           <div className="project-cards-container">
             {employees.map((emp, index) => (
               <EmpCard
@@ -105,7 +80,7 @@ export const HrEmployeeManagement = () => {
               />
             ))}
           </div>
-        ) : null}
+        )}
 
         <style>{`
           .project-cards-container {
