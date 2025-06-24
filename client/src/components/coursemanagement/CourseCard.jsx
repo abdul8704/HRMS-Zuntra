@@ -37,14 +37,14 @@ export const CourseCard = ({ image, title, instructor, duration, rating }) => {
 
 const styles = {
   card: {
-    width: "250px",
-    height: "300px",
+    width: "23%",
+    height: "45vh",
     backgroundColor: "#D6D6D6",
     borderRadius: "5px",
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
     display: "flex",
     flexDirection: "column",
-    overflow: "hidden",
+    overflow: "hidden"
   },
   image: {
     width: "100%",

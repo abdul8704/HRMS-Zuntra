@@ -2,7 +2,12 @@ const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
 
-const getAttendaceByUserId = async (userid, startDate, endDate) => {
+const getAttendanceDataByUserId = async (
+    userid,
+    startDate,
+    endDate,
+    holidays = []
+) => {
     try {
         const start = new Date(startDate);
         start.setHours(0, 0, 0, 0);
@@ -10,67 +15,161 @@ const getAttendaceByUserId = async (userid, startDate, endDate) => {
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
 
+        // Fetch attendance records within the date range
         const attendanceRecords = await Attendance.find({
-            userid: userid,
+            userid,
             date: { $gte: start, $lte: end },
         }).sort({ date: 1 });
 
+        // Create a map for quick lookup
+        const attendanceMap = new Map();
+        for (const record of attendanceRecords) {
+            const dateStr = record.date.toISOString().split("T")[0];
+            attendanceMap.set(dateStr, record);
+        }
+
+        // Prepare to iterate over each date in the range
+        const result = [];
+        let presentCount = 0;
+        let holidayCount = 0;
+        let absentCount = 0;
+
+        const oneDay = 24 * 60 * 60 * 1000;
+        const totalDays = Math.ceil((end - start) / oneDay) + 1;
+
+        for (let i = 0; i < totalDays; i++) {
+            const current = new Date(start.getTime() + i * oneDay);
+            const currentDateStr = current.toISOString().split("T")[0];
+
+            if (holidays.includes(currentDateStr)) {
+                holidayCount++;
+                result.push({ date: currentDateStr, status: "holiday" });
+            } else if (attendanceMap.has(currentDateStr)) {
+                presentCount++;
+                result.push({
+                    date: currentDateStr,
+                    status: "present",
+                    ...attendanceMap.get(currentDateStr)._doc,
+                });
+            } else {
+                absentCount++;
+                result.push({ date: currentDateStr, status: "absent" });
+            }
+        }
+
+        const workingDays = totalDays - holidayCount;
+
         return {
             success: true,
-            data: attendanceRecords,
+            summary: {
+                totalDays,
+                workingDays,
+                holidays: holidayCount,
+                present: presentCount,
+                absent: absentCount,
+            },
+            detailedData: result,
         };
     } catch (error) {
-        throw new ApiError(500, "Failed to fetch attendance records", error.message);
+        throw new ApiError(
+            500,
+            "Failed to fetch attendance summary",
+            error.message
+        );
     }
 };
 
-const markAttendanceOnLogin = async (userid) => {
+const markAttendanceOnLogin = async (userid, mode) => {
     const now = new Date();
-    const shiftData = User.findOne({ _id: userid });
-    const shiftStart = shiftData.shiftStart;
-    const shiftEnd = shiftData.shiftEnd;
-
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     try {
+        const shiftData = await User.findById(userid);
+        const shiftStart = new Date(shiftData.shiftStart);
+        const shiftEnd = new Date(shiftData.shiftEnd);
+
         let attendance = await Attendance.findOne({ userid, date: today });
 
+        // 🧾 FIRST LOGIN OF THE DAY
         if (!attendance) {
             attendance = new Attendance({
                 userid,
                 date: today,
-                sessions: [],
+                sessions: [
+                    {
+                        loginTime: now,
+                        mode:
+                            now >= shiftStart && now <= shiftEnd
+                                ? mode
+                                : "extra",
+                    },
+                ],
                 workingMinutes: 0,
                 breakMinutes: 0,
-                status: "present",
+                status: mode, // status can't be extra
             });
+
+            await attendance.save();
+            return {
+                success: true,
+                message: "Attendance marked (first login of the day)",
+            };
+        }
+
+        // ✅ If status was remote and new mode is present, update status
+        if (attendance.status === "remote" && mode === "present") {
+            attendance.status = "present";
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
 
+        // 🕓 Previous session exists and has no logout time
         if (lastSession && !lastSession.logoutTime) {
+            const sessionDurationMs = now - new Date(lastSession.loginTime);
+            const sessionDurationMinutes = sessionDurationMs / (1000 * 60);
+
             lastSession.logoutTime = now;
+            attendance.workingMinutes += sessionDurationMinutes;
         }
 
-        if (now >= shiftStart && now <= shiftEnd && lastSession?.logoutTime) {
+        // 🕒 If previous session had logoutTime, calculate break only if within shift hours
+        if (lastSession?.logoutTime) {
             const breakDurationMs = now - new Date(lastSession.logoutTime);
             const breakDurationMinutes = breakDurationMs / (1000 * 60);
 
-            if (breakDurationMinutes > 1) {
-                attendance.breakMinutes += breakDurationMinutes / 60; // Convert to hours
+            const isWithinShift = now >= shiftStart && now <= shiftEnd;
+
+            attendance.sessions.push({
+                loginTime: now,
+                mode: isWithinShift ? mode : "extra",
+            });
+
+            if (isWithinShift && breakDurationMinutes > 1) {
+                attendance.breakMinutes += breakDurationMinutes;
             }
+        } else {
+            // No previous session? Just push a new session (shouldn’t occur, but safe fallback)
+            attendance.sessions.push({
+                loginTime: now,
+                mode: now >= shiftStart && now <= shiftEnd ? mode : "extra",
+            });
         }
 
-        attendance.sessions.push({ loginTime: now });
-
         await attendance.save();
-
-        return { success: true, message: "Attendance marked on login" };
+        return {
+            success: true,
+            message: "Attendance updated (subsequent login)",
+        };
     } catch (error) {
-        throw new ApiError(500, "Failed to mark attendance on login", error.message);
+        throw new ApiError(
+            500,
+            "Failed to mark attendance on login",
+            error.message
+        );
     }
 };
+
 
 const markEndOfSession = async (userid, logoutTime) => {
     try{
@@ -119,7 +218,7 @@ const markEndOfSession = async (userid, logoutTime) => {
 };
 
 module.exports = {
-    getAttendaceByUserId,
+    getAttendanceDataByUserId,
     markAttendanceOnLogin,
     markEndOfSession,
 };
