@@ -3,6 +3,7 @@ import { Sidebar } from "../components/Sidebar";
 import { CourseNavbar } from "../components/coursemanagement/CourseNavbar";
 import { CourseCard } from "../components/coursemanagement/CourseCard";
 import { PopupCard } from "../components/PopupCard";
+import { useParams } from "react-router-dom";
 
 const courseList = [
   {
@@ -136,42 +137,22 @@ const courseList = [
 ];
 
 export const HrCourseManagement = () => {
-  // Popup state
-  const [showPopup, setShowPopup] = useState(true); // Set to true to test the popup
-
-  // Function to show popup (you can call this from anywhere in your component)
-  const handleShowPopup = () => {
-    setShowPopup(true);
-  };
-
-  // Function to close popup
-  const handleClosePopup = () => {
-    setShowPopup(false);
-  };
-
+    const {navId}= useParams();
   return (
     <div className="website-container" style={{ display: "flex", height: "100vh", overflow: "hidden", position: "relative" }}>
       <Sidebar />
       <div className="website-module" style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <CourseNavbar />
         <div className="scrollable-content">
+          {(navId=="all")&&(
           <div className="card-flex">
             {courseList.map((course, index) => (
               <CourseCard key={index} {...course} />
             ))}
           </div>
+          )}
         </div>
       </div>
-
-      {/* PopupCard Component - This will now overlay properly
-      <PopupCard
-        isVisible={showPopup}
-        onClose={() => setShowPopup(false)}
-        type="error"
-        title="Sheesh!"
-        message="Operation failed lorem ipsum djnhjdbshbdbdbscnd jnjdjnd dnjdnjdn jndcjndjn djcndcndjnc djndjn"
-        color="#E1BEC5"
-      /> */}
 
 
       <style>{`

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { useNavigate, useParams } from 'react-router-dom';
 
 const navItems = [
   {
@@ -33,16 +33,16 @@ const navItems = [
 
 
 export const CourseNavbar = () => {
-  const [activeNavId, setActiveNavId] = useState('overview');
+  const navigate = useNavigate();
+  const { navId } = useParams();
+  const [activeNavId, setActiveNavId] = useState(navId);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
   const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];
   
   const handleNavigation = (path) => {
     setActiveNavId(path);
-    const newUrl = `/projects/${encodeURIComponent(path)}`;
-    window.history.pushState({}, '', newUrl);
-    window.dispatchEvent(new CustomEvent('navigation', { detail: { path } }));
+    navigate(`/courses/${encodeURIComponent(path)}`);
     setIsDropdownOpen(false);
   };
 
