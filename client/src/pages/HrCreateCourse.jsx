@@ -1,7 +1,6 @@
 import React from "react";
 import { Sidebar } from "../components/Sidebar";
-import { CourseNavbar } from "../components/coursemanagement/CourseNavbar";
-import { AddCourse } from "../components/coursemanagement/AddCourse"; // ✅ Make sure this path is correct
+import { CourseNavbar } from "../components/coursemanagement/CourseNavbar"// ✅ Make sure this path is correct
 
 export const HrCreateCourse = () => {
   return (
@@ -18,7 +17,7 @@ export const HrCreateCourse = () => {
 
         {/* Page content */}
         <div className="flex flex-col flex-grow p-4">
-          <AddCourse />
+          
         </div>
       </div>
     </div>
