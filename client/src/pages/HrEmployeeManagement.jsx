@@ -2,6 +2,11 @@ import React from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { EmpNavbar } from '../components/employeeManagement/EmpNavbar';
 import { EmpCard } from '../components/employeeManagement/EmpCard';
+import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
+import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
+
+import { useParams } from 'react-router-dom';
+import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
@@ -39,55 +44,57 @@ export const HrEmployeeManagement = () => {
   const columns = 3;
   const bgColorList = getGridBgColors(employees.length, columns, bgClasses);
 
+  const locations = [
+    { lat: 12.979545214368582, lng: 80.22630407471307, title: "Map1" },
+    { lat: 12.9715987, lng: 77.5945627, title: "Map2" },
+    { lat: 13.0826802, lng: 80.2707184, title: "Map3" },
+    { lat: 12.965365, lng: 80.246109, title: "Perungudi" },
+  ];
+
   return (
-    <div className="website-container flex">
+    <div className="website-container">
       <Sidebar />
-      <div className="website-module flex-1">
+      <div className="website-module">
         <EmpNavbar />
 
-        {/* Cards Section */}
-        <div className="cards-wrapper">
+        {navId === "all" && (
+          <EmployeeCard />
+        )} 
+        {navId === "roles" && (
+          <EmpRoleCard />
+        )} 
+        {navId === "location" && (
+          <GeoFencing locations={locations} />
+        ) }
+        {navId === "newusers" && (
           <div className="project-cards-container">
-  {employees.map((emp, index) => (
-    <EmpCard
-      key={index}
-      name={emp.name}
-      email={emp.email}
-      phone={emp.phone}
-      date={emp.date}
-      image={emp.image}
-      color={bgColorList[index]}
-    /> 
-  ))} 
-</div>
+            {employees.map((emp, index) => (
+              <EmpCard
+                key={index}
+                name={emp.name}
+                email={emp.email}
+                phone={emp.phone}
+                date={emp.date}
+                image={emp.image}
+                color={bgColorList[index]}
+              />
+            ))}
+          </div>
+        )}
 
-        </div>
-
-        <style jsx>{`
-  .cards-wrapper {
-    padding: 1rem;
-    overflow-x: hidden;
-  }
-
-  .project-cards-container {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(1, 1fr); /* Mobile default */
-  }
-
-  @media (min-width: 48rem) {
-    .project-cards-container {
-      grid-template-columns: repeat(2, 1fr); /* Tablet */
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .project-cards-container {
-      grid-template-columns: repeat(3, 1fr); /* 1024px+ */
-    }
-  }
-`}</style>
-
+        <style>{`
+          .project-cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1.5rem;
+            max-height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+          }
+        `}</style>
       </div>
     </div>
   );
