@@ -1,5 +1,5 @@
 // ✅ Cleaned EmpProfile component
-export const EmpProfile = ({ name, role, avatar, tl = false, color = "#f7caca" }) => {
+export const EmpProfile = ({ name, role, avatar, tl = false, color="rgba(255,255,255,0.2)" }) => {
   const firstName = name.split(" ")[0];
 
   const styles = {

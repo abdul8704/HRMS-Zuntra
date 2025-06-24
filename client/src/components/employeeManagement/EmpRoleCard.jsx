@@ -1,6 +1,6 @@
 import React from "react";
 
-export const RoleCard = ({ role, memberCount, bgColor,ibgcolor }) => {
+export const EmpRoleCard = ({ role, memberCount, bgColor,ibgcolor }) => {
   return (
     <div className="role-card" style={{ backgroundColor: bgColor }}>
       {/* Left: Person Icon */}
@@ -22,7 +22,7 @@ export const RoleCard = ({ role, memberCount, bgColor,ibgcolor }) => {
       </div>
 
       {/* Styles */}
-      <style jsx>{`
+      <style >{`
         .role-card {
           display: flex;
           align-items: center;

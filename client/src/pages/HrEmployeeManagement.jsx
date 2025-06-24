@@ -2,6 +2,11 @@ import React from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { EmpNavbar } from '../components/employeeManagement/EmpNavbar';
 import { EmpCard } from '../components/employeeManagement/EmpCard';
+import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
+import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
+
+import { useParams } from 'react-router-dom';
+import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
@@ -39,51 +44,108 @@ export const HrEmployeeManagement = () => {
   const columns = 3;
   const bgColorList = getGridBgColors(employees.length, columns, bgClasses);
 
+  const locations = [
+    { lat: 12.979545214368582, lng: 80.22630407471307, title: "Map1" },
+    { lat: 12.9715987, lng: 77.5945627, title: "Map2" },
+    { lat: 13.0826802, lng: 80.2707184, title: "Map3" },
+    { lat: 12.965365, lng: 80.246109, title: "Perungudi" },
+  ];
+
+  const roleData = [
+  { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+  { role: "Video Editor", memberCount: 3, bgColor: "#e9d5ff", ibgcolor: "#ab47bc" },
+  { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
+  { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
+  { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
+  { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
+  { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
+  { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+  { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+  { role: "Video Editor", memberCount: 3, bgColor: "#e9d5ff", ibgcolor: "#ab47bc" },
+  { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+  { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
+  { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
+  { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
+  { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
+  { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
+  { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+];
+
+
   return (
-    <div className="website-container flex">
+    <div className="website-container">
       <Sidebar />
-      <div className="website-module flex-1">
+      <div className="website-module">
         <EmpNavbar />
 
-        {/* Cards Section */}
-        <div className="cards-wrapper">
+        {navId === "all" && (
+          <EmployeeCard />
+        )} 
+        {navId === "roles" && (
+  <div className="project-cards-container">
+    {roleData.map((role, idx) => (
+      <EmpRoleCard
+        key={idx}
+        role={role.role}
+        memberCount={role.memberCount}
+        bgColor={role.bgColor}
+        ibgcolor={role.ibgcolor}
+      />
+    ))}
+  </div>
+)}
+
+        {navId === "geofencing" && (
+          <GeoFencing locations={locations} />
+        ) }
+        {navId === "newusers" && (
           <div className="project-cards-container">
-  {employees.map((emp, index) => (
-    <EmpCard
-      key={index}
-      name={emp.name}
-      email={emp.email}
-      phone={emp.phone}
-      date={emp.date}
-      image={emp.image}
-      color={bgColorList[index]}
-    /> 
-  ))} 
-</div>
+            {employees.map((emp, index) => (
+              <EmpCard
+                key={index}
+                name={emp.name}
+                email={emp.email}
+                phone={emp.phone}
+                date={emp.date}
+                image={emp.image}
+                color={bgColorList[index]}
+              />
+            ))}
+          </div>
+        )}
 
-        </div>
-
-        <style jsx>{`
-  .cards-wrapper {
-    padding: 1rem;
+        <style>{`
+  .project-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    align-items: stretch;
+    margin-top: 1.5rem;
+    max-height: 100%;
+    overflow-y: auto;
     overflow-x: hidden;
   }
 
-  .project-cards-container {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(1, 1fr); /* Mobile default */
+  .project-cards-container > * {
+    flex: 1 1 100%;
+    max-width: 100%;
   }
 
   @media (min-width: 48rem) {
-    .project-cards-container {
-      grid-template-columns: repeat(2, 1fr); /* Tablet */
+    .project-cards-container > * {
+      flex: 1 1 calc(50% - 1rem);
+      max-width: calc(50% - 1rem);
     }
   }
 
   @media (min-width: 64rem) {
-    .project-cards-container {
-      grid-template-columns: repeat(3, 1fr); /* 1024px+ */
+    .project-cards-container > * {
+      flex: 1 1 calc(33.333% - 1rem);
+      max-width: calc(33.333% - 1rem);
     }
   }
 `}</style>
