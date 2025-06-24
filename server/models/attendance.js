@@ -12,7 +12,7 @@ const sessionSchema = new mongoose.Schema({
     },
     mode: {
         type: String,
-        enum: ["present", "remote", "extra"]
+        enum: ["onsite", "remote", "extra"]
     }
 });
 

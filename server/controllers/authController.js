@@ -80,9 +80,8 @@ const geoFenceLogin = asyncHandler(async (req, res) => {
         user.campus
     );
 
-
     if(isInsideGeofence)
-        await employeeService.markAttendanceOnLogin(userid, "present");
+        await employeeService.markAttendanceOnLogin(userid, "onsite");
     else
         await employeeService.markAttendanceOnLogin(userid, "remote");
 
@@ -126,12 +125,13 @@ const userExists = asyncHandler(async (req, res) => {
     const { email } = req.body;
     const user = await authService.getUserByEmail(email);
     if (user) 
-        throw new ApiError(409, "User Already Exists!!");
+        return res.status(200).json({ success: true, exists: true });
     
-    return res.status(200).json({ success: true, messgae: "Good to go" });
+    return res.status(200).json({ success: true, exists: false });
 });
 
 const sendOTPController = asyncHandler(async (req, res) => {
+    console.log(req.body)
     const { useremail } = req.body;
     const otp = generateOTP();
 
