@@ -4,7 +4,8 @@ import { EmpNavbar } from '../components/employeeManagement/EmpNavbar';
 import { EmpCard } from '../components/employeeManagement/EmpCard';
 
 export const HrEmployeeManagement = () => {
-  const bgClasses = ['#F2C3B9', '#7B08BD', '#6AC8BA','#BFBFF7'];
+  const { navId } = useParams();
+  const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
 
   const employees = [
     { name: "John Joseph Mathew George Daniel A", email: "johnmathewgeorgedaniel@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
