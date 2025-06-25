@@ -2,8 +2,7 @@ import { useParams } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
 import { CourseNavbar } from "../components/coursemanagement/CourseNavbar";
 import { CourseCard } from "../components/coursemanagement/CourseCard";
-import GoToLoomButton from "../components/coursemanagement/GoToLoomButton";
-import InstallLoomExtensionButton from "../components/coursemanagement/InstallLoomExtensionButton";
+import { CreateCourse } from "../components/courseManagement/CreateCourse";
 
 const courseList = [
   {
@@ -98,94 +97,87 @@ export const HrCourseManagement = () => {
       >
         <CourseNavbar />
 
-        <div className="scrollable-content">
-          {navId === "all" && (
+        {navId === "all" && (
+          <div className="scrollable-content">
             <div className="card-flex">
               {courseList.map((course, index) => (
                 <CourseCard key={index} {...course} />
               ))}
             </div>
-          )}
+          </div>
+        )}
 
-          {navId === "create" && (
-            <div className="loom-section">
-              <h1 className="loom-heading">Record with Loom</h1>
-              <div className="loom-buttons">
-                <GoToLoomButton />
-                <InstallLoomExtensionButton />
-              </div>
-            </div>
-          )}
-        </div>
+        {navId === "create" && (
+          <CreateCourse />
+        )}
       </div>
 
-      <style>{`
-        .scrollable-content {
-          flex-grow: 1;
-          overflow-y: auto;
-          margin-top: 1.5rem;
-        }
+      <style>
+        {`
+      .scrollable-content {
+        flex-grow: 1;
+        overflow-y: auto;
+        margin-top: 1.5rem;
+      }
 
+      .card-flex {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+        box-sizing: border-box;
+        padding: 1rem;
+      }
+
+      .loom-section {
+        height: calc(100vh - 80px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .loom-section h1 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+      }
+
+      .loom-section button {
+        background-color: #cde1db;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        margin: 0.5rem 0;
+        border-radius: 1rem;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background-color 0.3s ease;
+      }
+
+      .loom-section button:hover {
+        background-color: #b0d4c9;
+      }
+
+      @media (max-width: 768px) {
         .card-flex {
-          display: flex;
-          flex-wrap: wrap;
           justify-content: center;
-          gap: 1.5rem;
-          box-sizing: border-box;
-          padding: 1rem;
         }
+      }
 
-        .loom-section {
-          height: calc(100vh - 80px);
-          display: flex;
+      @media (max-width: 480px) {
+        .card-flex {
           flex-direction: column;
-          justify-content: center;
           align-items: center;
-          text-align: center;
-          padding: 2rem;
+          padding: 1rem 0.5rem;
         }
-
-        .loom-heading {
-          font-size: 2.5rem;
-          font-weight: bold;
-          margin-bottom: 2rem;
-        }
-
-        .loom-buttons {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-          width: 100%;
-          max-width: 400px;
-        }
-
-        @media (max-width: 768px) {
-          .card-flex {
-            justify-content: center;
-          }
-
-          .loom-heading {
-            font-size: 2rem;
-          }
-
-          .loom-buttons a {
-            width: 100%;
-            justify-content: center;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .card-flex {
-            flex-direction: column;
-            align-items: center;
-            padding: 1rem 0.5rem;
-          }
-
-          .loom-heading {
-            font-size: 1.5rem;
-          }
-        }
-      `}</style>
+      }
+      `}
+      </style>
     </div>
   );
 };

@@ -211,7 +211,7 @@ export const AddLocationForm = ({ isOpen = false, onClose = () => { }, onSubmit 
           }
 
           .add-loc-add-btn:hover {
-            background-color: #BBD3CC;
+            background-color: #A6C4BA;
           }
 
           .add-loc-error-text {
