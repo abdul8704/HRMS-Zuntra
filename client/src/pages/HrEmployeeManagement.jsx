@@ -8,12 +8,14 @@ import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
 import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
+import { AddLocationForm } from '../components/employeeManagement/AddLocationForm'
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
   const [showPopup, setShowPopup] = useState(false);
   const [showAssignPopup, setShowAssignPopup] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [showLocationForm, setShowLocationForm] = useState(false);
 
   const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
 
@@ -47,9 +49,28 @@ export const HrEmployeeManagement = () => {
   const bgColorList = getGridBgColors(employees.length, columns, bgClasses);
 
   const locations = [
-    { lat: 12.9795, lng: 80.2263, title: "Map1" },
-    { lat: 12.9715, lng: 77.5945, title: "Map2" },
+    {
+      branchName: "Chennai",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+    },
+    {
+      branchName: "Bangalore",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+    },
+    {
+      branchName: "Hyderabad",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+    },
+    {
+      branchName: "Coimbatore",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+    },
+    {
+      branchName: "Trichy",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+    }
   ];
+
 
   const roleData = [
     { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
@@ -79,16 +100,21 @@ export const HrEmployeeManagement = () => {
     setSelectedEmployee(null);
   };
 
+
   return (
     <div className="website-container">
       <Sidebar />
       <div className="website-module">
         <EmpNavbar />
 
-        {navId === "all" && <EmployeeCard />}
+        {navId === "all" && (
+          <div className="emp-cards-container">
+            <EmployeeCard />
+          </div>
+        )}
 
         {navId === "roles" && (
-          <div className="project-cards-container">
+          <div className="emp-cards-container">
             {roleData.map((role, idx) => (
               <EmpRoleCard
                 key={idx}
@@ -99,19 +125,35 @@ export const HrEmployeeManagement = () => {
               />
             ))}
             <div className="plus-button" onClick={() => setShowPopup(true)}>
-              <span>+</span>
+              <span><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg></span>
             </div>
           </div>
         )}
 
+        {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
+
         {navId === "geofencing" && (
-          <div className="project-cards-container">
-            <GeoFencing locations={locations} />
+          <div className="emp-cards-container">
+            {locations.map((loc, index) => (
+              <GeoFencing key={index} embedUrl={loc.embedUrl} branchName={loc.branchName} />
+            ))}
+            <button className="plus-button" onClick={() => setShowLocationForm(true)}><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg></button>
           </div>
         )}
 
+        {showLocationForm && (
+          <AddLocationForm
+            isOpen={showLocationForm}
+            onClose={() => setShowLocationForm(false)}
+            onSubmit={(formData) => {
+              console.log('Submitted:', formData);
+              // Handle submitted data here
+            }}
+          />
+        )}
+
         {navId === "newusers" && (
-          <div className="project-cards-container">
+          <div className="emp-cards-container">
             {employees.map((emp, index) => (
               <EmpCard
                 key={index}
@@ -142,11 +184,11 @@ export const HrEmployeeManagement = () => {
       )}
 
       <style>{`
-        .project-cards-container {
+        .emp-cards-container {
           display: flex;
           flex-wrap: wrap;
           gap: 1rem;
-          justify-content: center;
+          max-width: 100%;
           align-items: stretch;
           margin-top: 1.5rem;
           max-height: 100%;
@@ -154,20 +196,20 @@ export const HrEmployeeManagement = () => {
           overflow-x: hidden;
         }
 
-        .project-cards-container > * {
+        .emp-cards-container > * {
           flex: 1 1 100%;
           max-width: 100%;
         }
 
         @media (min-width: 48rem) {
-          .project-cards-container > * {
+          .emp-cards-container > * {
             flex: 1 1 calc(50% - 1rem);
             max-width: calc(50% - 1rem);
           }
         }
 
         @media (min-width: 64rem) {
-          .project-cards-container > * {
+          .emp-cards-container > * {
             flex: 1 1 calc(33.333% - 1rem);
             max-width: calc(33.333% - 1rem);
           }

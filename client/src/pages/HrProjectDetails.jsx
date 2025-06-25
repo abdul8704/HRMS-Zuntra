@@ -58,7 +58,7 @@ export const HrProjectDetails = () => {
               </div>
             )}
 
-            {navId === "todo" && <TaskCard />}
+            {/* {navId === "todo" && <TaskCard />} */}
           </div>
         </div>
       </div>
