@@ -1,29 +1,63 @@
 import React from "react";
 import { Sidebar } from "../components/Sidebar";
-import { CourseVideoPlayer } from "../components/upskill/Hroverviewlearning";
-import { IntroductionCard } from "../components/upskill/introtocourse";
 import { TableOfContents } from "../components/upskill/TableContents";
+import { PageHeader } from "../components/upskill/PageHeader";
+import { VideoAndDescriptionContainer } from "../components/upskill/VideoAndDescription";
 
 export const HrOverviewLearning = () => {
-    return ( 
-        <div>
-        <div className="flex min-h-screen">
-            {/* Sidebar on the left */}
-            <div className="sidebar"><Sidebar />
-            <div className="videoplayer"><CourseVideoPlayer /></div>
-            <div className="introtocourse"><IntroductionCard /></div>
-            <div className="TableOfContents"><TableOfContents /></div>
+  
+  return (
+    <div className="website-container">
+      <Sidebar />
 
+      <div className="website-module">
+          <PageHeader />
+          <div className="content-wrapper">
+            <div className="left-side">
+              <VideoAndDescriptionContainer />
             </div>
-        </div>
-        <style>{`
-        .sidebar{
-        display: flex;}
-        .videoplayer{
-        flex: 1;
+            <div className="right-side">
+              <TableOfContents progress={"70%"} enrolled={true} />
+            </div>
+          </div>
+      </div>
+
+      <style>{`
+        .content-wrapper {
+          height: 75vh;
+          display: flex;
+          gap: 24px;
         }
-        `}</style>
-        
-        </div>
-    );
-}
+
+        .left-side {
+          flex: 7;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .right-side {
+          flex: 3;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+
+        @media (max-width: 768px) {
+          .content-wrapper {
+            flex-direction: column;
+          }
+
+          .left-side,
+          .right-side {
+            width: 100%;
+          }
+
+          .right-side {
+            justify-content: center;
+            margin-top: 16px;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};

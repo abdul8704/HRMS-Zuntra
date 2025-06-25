@@ -1,78 +1,78 @@
 import React, { useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
-import { EmpProfile } from "../employeeManagement/EmpProfile"; // External profile component
+import { EmpProfile } from "../employeeManagement/EmpProfile";
 
-export const ProjectCard = () => {
-  const [projectData, setProjectData] = useState({
-    title: "Project 6",
-    subtitle: "6 Aurora",
-    description:
-      "This is a sample description for a Project. I am typing more since there should be more lines. One more line and we’re good to go. Huhh, more lines since they want this to overflow.",
+export const ProjectCard = ({ projectData }) => {
+  if (!projectData) return null;
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    title: projectData.title || "",
+    subtitle: projectData.subtitle || "",
+    description: projectData.description || "",
+    date: projectData.date || "",
+    teamName: projectData.teamName || "",
+    teamMembers: projectData.teamMembers || "",
     user: {
-      name: "Cheril Gracenciya",
-      role: "Full Stack Developer",
-      avatar: "https://i.pravatar.cc/100?img=5",
+      name: projectData.user?.name || "",
+      role: projectData.user?.role || "",
+      avatar: projectData.user?.avatar || "",
     },
   });
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(projectData);
-
   const styles = {
-    "project-card": {
+    card: {
       backgroundColor: "#f4b6b6",
-      borderRadius: "16px",
-      padding: "20px",
-      width: "360px",
+      borderRadius: "1rem",
+      padding: "1.25rem",
+      width: "22.5rem",
       fontFamily: "'Segoe UI', sans-serif",
       position: "relative",
       boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-      textAlign: "left",
-      marginTop: "20px",
+      marginTop: "1.25rem",
     },
-    "project-icons": {
+    icons: {
       position: "absolute",
-      top: "12px",
-      right: "12px",
+      top: "0.75rem",
+      right: "0.75rem",
       display: "flex",
-      gap: "10px",
+      gap: "0.625rem",
       color: "#444",
       cursor: "pointer",
     },
-    "project-projectTitle": {
-      fontSize: "18px",
-      fontWeight: 600,
-      margin: 0,
-    },
-    "project-projectId": {
-      fontSize: "22px",
+    title: {
+      fontSize: "1.375rem",
       fontWeight: 700,
-      margin: "5px 0 16px 0",
+      margin: "0.3125rem 0 0.5rem 0",
     },
-    "project-description": {
+    subtitle: {
+      fontSize: "1.125rem",
+      fontWeight: 600,
+      margin: "0 0 0.5rem 0",
+    },
+    description: {
       color: "#4f4f4f",
-      fontSize: "14px",
-      lineHeight: "1.5",
-      marginBottom: "60px",
+      fontSize: "0.875rem",
+      marginBottom: "3rem",
     },
-    "project-footer": {
+    footer: {
       position: "absolute",
-      bottom: "15px",
-      left: "20px",
-      right: "20px",
+      bottom: "1rem",
+      left: "1.25rem",
+      right: "1.25rem",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
     },
-    "project-badge": {
+    badge: {
       backgroundColor: "#f7caca",
-      padding: "6px 16px",
-      borderRadius: "999px",
+      padding: "0.375rem 1rem",
+      borderRadius: "62.5rem",
       fontWeight: 600,
-      fontSize: "14px",
+      fontSize: "0.875rem",
       color: "#5b5b5b",
     },
-    "modal-overlay": {
+    modalOverlay: {
       position: "fixed",
       top: 0,
       left: 0,
@@ -82,112 +82,148 @@ export const ProjectCard = () => {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      zIndex: 999,
+      zIndex: 9999,
     },
-    "modal-content": {
+    modal: {
       backgroundColor: "#fff",
-      padding: "20px",
-      borderRadius: "12px",
-      width: "340px",
+      padding: "1.5rem",
+      borderRadius: "1rem",
+      width: "38rem",
       display: "flex",
       flexDirection: "column",
-      gap: "10px",
+      gap: "1rem",
     },
-    "modal-input": {
-      padding: "8px",
-      borderRadius: "6px",
-      border: "1px solid #ccc",
-      width: "100%",
-    },
-    "modal-buttons": {
+    inputRow: {
       display: "flex",
-      justifyContent: "flex-end",
-      gap: "10px",
-      marginTop: "10px",
+      gap: "1rem",
     },
-    "modal-label": {
-      fontWeight: 600,
-      marginBottom: "4px",
-      fontSize: "14px",
+    input: {
+      flex: 1,
+      padding: "0.75rem",
+      borderRadius: "0.5rem",
+      border: "1px solid #ccc",
+      fontSize: "1rem",
+    },
+    textarea: {
+      padding: "0.75rem",
+      borderRadius: "0.5rem",
+      border: "1px solid #ccc",
+      fontSize: "1rem",
+      width: "100%",
+      resize: "vertical",
+      minHeight: "80px",
+    },
+    addBtn: {
+      marginTop: "0.5rem",
+      alignSelf: "flex-end",
+      fontSize: "1.1rem",
+      cursor: "pointer",
+    },
+    actions: {
+      display: "flex",
+      justifyContent: "center",
+      marginTop: "1rem",
+    },
+    actionBtn: {
+      padding: "0.5rem 1.25rem",
+      fontSize: "1rem",
+      borderRadius: "0.5rem",
+      border: "1px solid #ccc",
+      cursor: "pointer",
+      margin: "0 0.5rem",
     },
   };
 
   const openModal = () => {
-    setFormData(projectData);
+    setFormData({
+      title: projectData.title || "",
+      subtitle: projectData.subtitle || "",
+      description: projectData.description || "",
+      date: projectData.date || "",
+      teamName: projectData.teamName || "",
+      teamMembers: projectData.teamMembers || "",
+      user: {
+        name: projectData.user?.name || "",
+        role: projectData.user?.role || "",
+        avatar: projectData.user?.avatar || "",
+      },
+    });
     setIsEditing(true);
   };
 
   const handleSave = () => {
-    console.log("Updated Project Data:", formData);
+    console.log("Updated Data:", formData);
     setIsEditing(false);
   };
 
   return (
     <>
-      <div style={styles["project-card"]}>
-        <div style={styles["project-icons"]}>
-          <FaPen onClick={openModal} />
+      <div style={styles.card}>
+        <div style={styles.icons}>
+          <FaPen onClick={(e) => { e.stopPropagation(); openModal(); }} />
           <FaTrash />
         </div>
+        <h2 style={styles.title}>{projectData.title}</h2>
+        <h3 style={styles.subtitle}>{projectData.subtitle}</h3>
+        <p style={styles.description}>{projectData.description}</p>
 
-        <h2 style={styles["project-projectId"]}>{projectData.title}</h2>
-        <h3 style={styles["project-projectTitle"]}>{projectData.subtitle}</h3>
-
-        <p style={styles["project-description"]}>{projectData.description}</p>
-
-        <div style={styles["project-footer"]}>
+        <div style={styles.footer}>
           <EmpProfile
-            name={projectData.user.name}
-            role={projectData.user.role}
-            avatar={projectData.user.avatar}
+            name={projectData.user?.name}
+            role={projectData.user?.role}
+            avatar={projectData.user?.avatar}
+            tl={true}
           />
-          <div style={styles["project-badge"]}>2 weeks left</div>
+          <div style={styles.badge}>2 weeks left</div>
         </div>
       </div>
 
       {isEditing && (
-        <div style={styles["modal-overlay"]}>
-          <div style={styles["modal-content"]}>
-            <label>
-              <div style={styles["modal-label"]}>Title</div>
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <div style={styles.inputRow}>
               <input
                 type="text"
+                placeholder="Project Title..."
                 value={formData.title}
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
                 }
-                style={styles["modal-input"]}
+                style={styles.input}
               />
-            </label>
-
-            <label>
-              <div style={styles["modal-label"]}>Subtitle</div>
               <input
                 type="text"
-                value={formData.subtitle}
+                placeholder="dd-mm-yyyy"
+                value={formData.date}
                 onChange={(e) =>
-                  setFormData({ ...formData, subtitle: e.target.value })
+                  setFormData({ ...formData, date: e.target.value })
                 }
-                style={styles["modal-input"]}
+                style={styles.input}
               />
-            </label>
+            </div>
 
-            <label>
-              <div style={styles["modal-label"]}>Description</div>
-              <textarea
-                rows={4}
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                style={styles["modal-input"]}
-              />
-            </label>
+            <textarea
+              placeholder="Project Description..."
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              style={styles.textarea}
+            />
 
-            <label>
-              <div style={styles["modal-label"]}>Employee Name</div>
+            <div style={styles.inputRow}>
               <input
                 type="text"
+                placeholder="Team Name..."
+                value={formData.teamName}
+                onChange={(e) =>
+                  setFormData({ ...formData, teamName: e.target.value })
+                }
+                style={styles.input}
+              />
+              <input
+                type="text"
+                placeholder="Team Lead"
                 value={formData.user.name}
                 onChange={(e) =>
                   setFormData({
@@ -195,28 +231,31 @@ export const ProjectCard = () => {
                     user: { ...formData.user, name: e.target.value },
                   })
                 }
-                style={styles["modal-input"]}
+                style={styles.input}
               />
-            </label>
+            </div>
 
-            <label>
-              <div style={styles["modal-label"]}>Role</div>
-              <input
-                type="text"
-                value={formData.user.role}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    user: { ...formData.user, role: e.target.value },
-                  })
-                }
-                style={styles["modal-input"]}
-              />
-            </label>
+            <textarea
+              placeholder="Team Members..."
+              value={formData.teamMembers}
+              onChange={(e) =>
+                setFormData({ ...formData, teamMembers: e.target.value })
+              }
+              style={styles.textarea}
+            />
 
-            <div style={styles["modal-buttons"]}>
-              <button onClick={() => setIsEditing(false)}>Cancel</button>
-              <button onClick={handleSave}>Save</button>
+            <div style={styles.addBtn}>＋</div>
+
+            <div style={styles.actions}>
+              <button
+                onClick={() => setIsEditing(false)}
+                style={styles.actionBtn}
+              >
+                Cancel
+              </button>
+              <button onClick={handleSave} style={styles.actionBtn}>
+                Save
+              </button>
             </div>
           </div>
         </div>

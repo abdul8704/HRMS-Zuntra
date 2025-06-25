@@ -10,5 +10,6 @@ router.post("/signup/send-otp", authController.sendOTPController);
 router.post("/signup/verify-otp", authController.verifyOTPController);
 router.post("/signup/newuser", authController.signUpHandler)
 router.post("/refresh-token", authController.handleRefreshToken)
+router.post("/reset-password", authController.resetPassword)
 
 module.exports = router;

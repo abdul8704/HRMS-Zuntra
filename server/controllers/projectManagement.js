@@ -1,18 +1,29 @@
 const asyncHandler = require('express-async-handler');
-const projectService = require("../services/projectService")
-const userService = require("../services/user")
+const projectService = require("../services/projectService");
+const userService = require("../services/user");
 const ApiError = require("../errors/ApiError");
-
+const { dateDiff } = require("../utils/dateDiff");
 // @desc Get all ongoing projects
 // @route GET /api/project/ongoing
 const getAllOnGoingProjects = asyncHandler(async (req, res) => {
     const projectsList = await projectService.getAllOnGoingProjects();
-    if (projectsList.length === 0) 
-        throw new ApiError(404, "No Ongoing Projects Available")
+
+    if (projectsList.length === 0) {
+        throw new ApiError(404, "No Ongoing Projects Available");
+    }
 
     const formattedResult = await Promise.all(
         projectsList.map(async (project) => {
             const teamLeaderDetail = await userService.getDetailsOfaUser(project.teamLeader);
+
+            let totalDaysLeft = "Invalid deadline";
+            try {
+                const diffArray = dateDiff(project.deadline);
+                totalDaysLeft = diffArray[3].replace("Total days: ", ""); // only the number
+            } catch (err) {
+                console.warn(`Invalid deadline for project ${project.projectTitle}:`, err.message);
+            }
+
             return {
                 id: project._id.toString(),
                 clientName: project.clientName,
@@ -21,16 +32,18 @@ const getAllOnGoingProjects = asyncHandler(async (req, res) => {
                 teamLeader: teamLeaderDetail.username,
                 teamLeaderRole: teamLeaderDetail.role,
                 teamLeaderProfile: teamLeaderDetail.profilePicture,
-                deadline: project.deadLine,
+                deadline: totalDaysLeft, // now contains remaining days
                 teamName: project.teamName,
             };
         })
     );
-    return res.status(200).json({
+
+    res.status(200).json({
         success: true,
         data: formattedResult,
     });
 });
+
 
 // @desc Get all finished projects
 // @route GET /api/project/finished
