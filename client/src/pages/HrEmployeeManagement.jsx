@@ -110,25 +110,6 @@ export const HrEmployeeManagement = () => {
           </div>
         )}
 
-          <div className="employee-card-wrapper">
-            {employees.map((emp, index) => (
-              <EmployeeCard
-                key={index}
-                name={emp.name}
-                email={emp.email}
-                phone={emp.phone}
-                image={emp.image}
-                role="UI/UX Designer"
-                inTime="09:02"
-                outTime="16:55"
-                workTime="09:02"
-                breakTime="16:55"
-                bgColor={bgColorList[index]} // 👈 use dynamic background
-              />
-
-            ))}
-          </div>
-        )}
         {navId === "roles" && (
           <div className="emp-cards-container">
             {roleData.map((role, idx) => (
@@ -141,7 +122,11 @@ export const HrEmployeeManagement = () => {
               />
             ))}
             <div className="plus-button" onClick={() => setShowPopup(true)}>
-              <span><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg></span>
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                  <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+                </svg>
+              </span>
             </div>
           </div>
         )}
@@ -152,7 +137,9 @@ export const HrEmployeeManagement = () => {
               <GeoFencing key={index} embedUrl={loc.embedUrl} branchName={loc.branchName} />
             ))}
             <button className="plus-button" onClick={() => setShowLocationForm(true)}>
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+              </svg>
             </button>
           </div>
         )}

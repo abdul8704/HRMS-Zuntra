@@ -244,7 +244,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
   margin: 0.5rem 0;
   word-wrap: break-word;    /* ensures long words break */
   white-space: normal;      /* allows text to wrap */
-  text-align: left;
+  text-align: center;
   width: 100%;              /* ensure it stays inside container */
 }
 
