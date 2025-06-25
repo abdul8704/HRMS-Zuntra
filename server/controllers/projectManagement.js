@@ -3,6 +3,9 @@ const projectService = require("../services/projectService");
 const userService = require("../services/user");
 const ApiError = require("../errors/ApiError");
 const dateUtils = require("../utils/dateUtils");
+const roleService = require("../services/rolesService")
+
+
 // @desc Get all ongoing projects
 // @route GET /api/project/ongoing
 const getAllOnGoingProjects = asyncHandler(async (req, res) => {
@@ -15,9 +18,12 @@ const getAllOnGoingProjects = asyncHandler(async (req, res) => {
     const formattedResult = await Promise.all(
         projectsList.map(async (project) => {
             const teamLeaderDetail = await userService.getDetailsOfaUser(project.teamLeader);
+            const roleDetail = await roleService.getRoleDetailsByName(teamLeaderDetail.role);
+            const roleColor = roleDetail?.color || "#000000";
 
             const diffArray = dateUtils.dateDiff(project.endDate);
             const totalDaysLeft = diffArray[3].replace("Total days: ", "");
+
             return {
                 id: project._id.toString(),
                 clientName: project.clientName,
@@ -26,6 +32,7 @@ const getAllOnGoingProjects = asyncHandler(async (req, res) => {
                 teamLeader: teamLeaderDetail.username,
                 teamLeaderRole: teamLeaderDetail.role,
                 teamLeaderProfile: teamLeaderDetail.profilePicture,
+                color: roleColor,
                 teamName: project.teamName,
                 startDate: dateUtils.formatDateToDDMMYYYY(project.startDate),
                 deadline: totalDaysLeft,
@@ -44,7 +51,7 @@ const getAllOnGoingProjects = asyncHandler(async (req, res) => {
 // @route GET /api/project/finished
 const getAllFinishedProjects = asyncHandler(async (req, res) => {
     const projectsList = await projectService.getAllFinishedProjects();
-    
+
     if (projectsList.length === 0) {
         throw new ApiError(404, "No Finished Projects Available");
     }
@@ -52,6 +59,8 @@ const getAllFinishedProjects = asyncHandler(async (req, res) => {
     const formattedResult = await Promise.all(
         projectsList.map(async (project) => {
             const teamLeaderDetail = await userService.getDetailsOfaUser(project.teamLeader);
+            const roleDetail = await roleService.getRoleDetailsByName(teamLeaderDetail.role);
+            const roleColor = roleDetail?.color || "#000000";
 
             return {
                 id: project._id.toString(),
@@ -61,6 +70,7 @@ const getAllFinishedProjects = asyncHandler(async (req, res) => {
                 teamLeader: teamLeaderDetail.username,
                 teamLeaderRole: teamLeaderDetail.role,
                 teamLeaderProfile: teamLeaderDetail.profilePicture,
+                color: roleColor,
                 teamName: project.teamName,
                 startDate: dateUtils.formatDateToDDMMYYYY(project.startDate),
                 endDate: dateUtils.formatDateToDDMMYYYY(project.endDate),
@@ -81,6 +91,8 @@ const getAProject = asyncHandler(async (req, res) => {
   const projectDetails = await projectService.getAProject(req.params.projectId);
 
   const teamLeaderDetail = await userService.getDetailsOfaUser(projectDetails.teamLeader);
+  const roleDetail = await roleService.getRoleDetailsByName(teamLeaderDetail.role);
+  const roleColor = roleDetail?.color || "#000000";
 
   const teamMembersDetails = await Promise.all(
     projectDetails.teamMembers.map((memberId) =>
@@ -102,6 +114,7 @@ const getAProject = asyncHandler(async (req, res) => {
       username: teamLeaderDetail.username,
       role: teamLeaderDetail.role,
       profilePicture: teamLeaderDetail.profilePicture,
+      color: roleColor
     },
     teamMembers: teamMembersDetails.map((member) => ({
       id: member._id.toString(),
