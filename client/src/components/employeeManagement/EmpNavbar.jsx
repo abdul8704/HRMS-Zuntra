@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
 
 const navItems = [
   {
@@ -44,7 +43,7 @@ const navItems = [
       </svg>
     ),
     path: 'geofencing',
-  },
+  }
 ];
 
 export const EmpNavbar = () => {
@@ -52,27 +51,35 @@ export const EmpNavbar = () => {
   const { navId } = useParams();
   const [activeNavId, setActiveNavId] = useState(navId);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
-  const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];
-  
-const handleNavigation = (path) => {
-  setActiveNavId(path);
-  navigate(`/employee/${encodeURIComponent(path)}`);
-  setIsDropdownOpen(false);
-};
+  const navRefs = useRef([]);
+  const sliderRef = useRef(null);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];
+
+  const handleNavigation = (path) => {
+    setActiveNavId(path);
+    navigate(`/employee/${encodeURIComponent(path)}`);
+    setIsDropdownOpen(false);
   };
+
+  useEffect(() => {
+    const activeIndex = navItems.findIndex(item => item.path === activeNavId);
+    const tab = navRefs.current[activeIndex];
+    if (tab && sliderRef.current) {
+      sliderRef.current.style.width = `${tab.offsetWidth}px`;
+      sliderRef.current.style.transform = `translateX(${tab.offsetLeft}px)`;
+    }
+  }, [activeNavId]);
 
   return (
     <>
       <div className="project-navbar">
-        {/* Desktop Navigation */}
         <ul className="desktop-nav">
-          {navItems.map((item) => (
+          <div className="nav-slider" ref={sliderRef}></div>
+          {navItems.map((item, index) => (
             <li
               key={item.path}
+              ref={(el) => (navRefs.current[index] = el)}
               className={activeNavId === item.path ? 'active' : ''}
               onClick={() => handleNavigation(item.path)}
             >
@@ -82,47 +89,23 @@ const handleNavigation = (path) => {
           ))}
         </ul>
 
-        {/* Mobile/Tablet Dropdown */}
         <div className="mobile-nav">
           <div className="dropdown-container">
-            <button 
-              className="dropdown-trigger"
-              onClick={toggleDropdown}
-              aria-expanded={isDropdownOpen}
-            >
+            <button className="dropdown-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
               <span className="project-icon">{activeItem.icon}</span>
               <span className="active-label">{activeItem.label}</span>
-              <svg 
-                className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`}
-                width="12" 
-                height="12" 
-                viewBox="0 0 12 12" 
-                fill="none"
-              >
-                <path 
-                  d="M3 4.5L6 7.5L9 4.5" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                />
+              <svg className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`} width="12" height="12" viewBox="0 0 12 12">
+                <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
-            
             {isDropdownOpen && (
               <div className="dropdown-menu">
-                {navItems
-                  .filter(item => item.path !== activeNavId)
-                  .map((item) => (
-                    <button
-                      key={item.path}
-                      className="dropdown-item"
-                      onClick={() => handleNavigation(item.path)}
-                    >
-                      <span className="project-icon">{item.icon}</span>
-                      {item.label}
-                    </button>
-                  ))}
+                {navItems.filter(item => item.path !== activeNavId).map((item) => (
+                  <button key={item.path} className="dropdown-item" onClick={() => handleNavigation(item.path)}>
+                    <span className="project-icon">{item.icon}</span>
+                    {item.label}
+                  </button>
+                ))}
               </div>
             )}
           </div>
@@ -136,46 +119,58 @@ const handleNavigation = (path) => {
           width: 100%;
           position: relative;
         }
-
-        /* Desktop Navigation */
         .desktop-nav {
+          position: relative;
           list-style: none;
           display: flex;
-          width: 100%;
           margin: 0;
           padding: 0;
+          border-radius: 0.75rem;
+          overflow: hidden;
         }
-
+        .nav-slider {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          background-color: rgba(255, 255, 255, 0.4);
+          border-radius: 0.75rem;
+          transition: transform 0.3s ease, width 0.3s ease;
+          z-index: 1;
+        }
         .desktop-nav li {
           flex: 1;
+          position: relative;
+          z-index: 2;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
           font-weight: 500;
           padding: 1rem 0;
-          border-radius: 0.5rem;
-          transition: background 0.2s ease-in-out;
           user-select: none;
+          transition: background 0.2s ease-in-out;
         }
-
-        .desktop-nav li:hover {
-          background-color: #d0d0d0;
+        .desktop-nav li:not(.active):hover {
+          background-color: rgba(0, 0, 0, 0.05);
+          border-radius: 0.75rem;
         }
-          
         .desktop-nav li.active {
-          background-color: #e0e0e0;
+          color: #111;
+          border-radius: 0.75rem;
         }
-
-        /* Mobile Navigation */
+        .project-icon {
+          margin-right: 0.5rem;
+          display: flex;
+          align-items: center;
+          flex-shrink: 0;
+        }
         .mobile-nav {
           display: none;
         }
-
         .dropdown-container {
           position: relative;
         }
-
         .dropdown-trigger {
           width: 100%;
           display: flex;
@@ -187,28 +182,14 @@ const handleNavigation = (path) => {
           cursor: pointer;
           font-weight: 500;
           border-radius: 0.75rem;
-          transition: background 0.2s ease-in-out;
         }
-
-        .dropdown-trigger:hover {
-          background-color: #d0d0d0;
-        }
-
-        .dropdown-trigger .active-label {
-          flex: 1;
-          text-align: left;
-          margin-left: 0.5rem;
-        }
-
         .dropdown-arrow {
           transition: transform 0.2s ease-in-out;
           margin-left: 0.5rem;
         }
-
         .dropdown-arrow.open {
           transform: rotate(180deg);
         }
-
         .dropdown-menu {
           position: absolute;
           top: 100%;
@@ -216,12 +197,10 @@ const handleNavigation = (path) => {
           right: 0;
           background-color: #BBD3CC;
           border-radius: 0.5rem;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-          z-index: 10;
           margin-top: 0.25rem;
           overflow: hidden;
+          z-index: 10;
         }
-
         .dropdown-item {
           width: 100%;
           display: flex;
@@ -231,57 +210,17 @@ const handleNavigation = (path) => {
           border: none;
           cursor: pointer;
           font-weight: 500;
-          transition: background 0.2s ease-in-out;
           text-align: left;
         }
-
         .dropdown-item:hover {
-          background-color: #d0d0d0;
+          background-color: rgba(0, 0, 0, 0.05);
         }
-
-        .project-icon {
-          margin-right: 0.5rem;
-          display: flex;
-          align-items: center;
-          flex-shrink: 0;
-        }
-
-        /* Responsive breakpoints */
         @media (max-width: 768px) {
           .desktop-nav {
             display: none;
           }
-          
           .mobile-nav {
             display: block;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .project-navbar {
-            border-radius: 0.5rem;
-          }
-          
-          .dropdown-trigger {
-            padding: 0.875rem;
-          }
-          
-          .dropdown-item {
-            padding: 0.75rem;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .dropdown-trigger {
-            padding: 0.75rem;
-          }
-          
-          .dropdown-item {
-            padding: 0.625rem;
-          }
-          
-          .project-icon {
-            margin-right: 0.375rem;
           }
         }
       `}</style>
