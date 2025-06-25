@@ -64,7 +64,7 @@ export const VideoAndDescriptionContainer = () => {
 
         .video-element {
           width: 100%;
-          height: 50%;
+          height: 90%;
           object-fit: cover;
           border-radius: 12px;
         }
