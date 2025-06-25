@@ -1,6 +1,6 @@
 import React from "react";
 
-export const TableOfContents = () => {
+export const TableOfContents = ({progress, enrolled}) => {
   const modules = [
     {
       title: "Module 1 Name",
@@ -47,8 +47,8 @@ export const TableOfContents = () => {
           ))}
         </div>
       </div>
-
-      <button className="continue-btn">Continue Learning</button>
+      { enrolled ? (<button className="continue-btn">Continue Learning</button> ):(<button className="enroll-btn">Enroll Now</button>)}
+      
 
       <style>{`
         .toc-wrapper {
@@ -89,7 +89,13 @@ export const TableOfContents = () => {
           color: #111;
         }
 
-        .bar {
+        .bar-incomplete {
+          width: 4px;
+          height: 24px;
+          background-color: #00cfd1;
+          border-radius: 2px;
+        }
+        .bar-completed{
           width: 4px;
           height: 24px;
           background-color: #00cfd1;
@@ -121,7 +127,20 @@ export const TableOfContents = () => {
         }
 
         .continue-btn {
-          background: linear-gradient(to right, #bbd3cc  40%, #e5e5e5 30%);
+          background: linear-gradient(to right, #bbd3cc  ${progress}, #e5e5e5 30%);
+          font-weight: bold;
+          font-size: 18px;
+          padding: 14px 24px;
+          border: none;
+          border-radius: 12px;
+          width: 100%;
+          max-width: 100%;
+          text-align: center;
+          color: #000;
+          cursor: pointer;
+        }
+        .enroll-btn {
+          background: #e5e5e5;
           font-weight: bold;
           font-size: 18px;
           padding: 14px 24px;
