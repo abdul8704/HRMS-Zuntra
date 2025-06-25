@@ -7,8 +7,9 @@ import { HrProjectManagement } from './pages/HrProjectManagement';
 import { HrCourseManagement } from './pages/HrCourseManagement';
 import { HrEmployeeManagement } from './pages/HrEmployeeManagement';
 import { HrEmployeeDetail } from './pages/HrEmployeeDetail';
-import { HrCreateCourse } from './pages/HrCreateCourse';
+import  HrCreateCourse  from './pages/HrCreateCourse';
 import { HrOverviewLearning } from './pages/Hroverviewlearn';
+import { NewUser } from "./pages/NewUser";
 import './App.css'
 import './index.css'
 import { GeoFencing } from './components/employeeManagement/GeoFencing';
@@ -25,7 +26,8 @@ function App() {
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Login/>}></Route>
-        <Route path="/dashboard" element={<DashBoard/>}></Route>
+        <Route path="/newuser" element={<NewUser/>} />
+        <Route path="/dashboard" element={<HrDashboard/>}></Route>
         <Route path="/projects" element={<HrProjectManagement/>}></Route>
         <Route path="/project/:navId" element={<HrProjectDetails/>}></Route>
         <Route path="/employee/:navId" element={<HrEmployeeManagement/>}></Route>
