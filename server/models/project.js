@@ -16,9 +16,6 @@ const projectSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
-    deadline: {
-        type: Date,
-    },
     teamName: {
         type: String,
         required: true,
@@ -42,7 +39,8 @@ const projectSchema = new mongoose.Schema({
         default: Date.now()
     },
     endDate: {
-        type: Date
+        type: Date,
+        required: true,
     }
 });
 
