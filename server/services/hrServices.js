@@ -1,14 +1,18 @@
 const UserCredentials = require("../models/userCredentials");
 const UserPersonal = require('../models/userPersonal')
 const UserCourse = require('../models/userCourse')
+const attendanceHelper = require('../utils/attendanceHelper')
 
 const updateUserData = async (email, shiftStart, shiftEnd, campus, role) => {
+    const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart)
+    const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
+    
     const update = await UserCredentials.updateOne(
         { email: email },
         {
             $set: {
-                shiftStart: shiftStart,
-                shiftEnd: shiftEnd,
+                shiftStart: shiftStartTime,
+                shiftEnd: shiftEndTime,
                 campus: campus,
                 role: role,
             },
