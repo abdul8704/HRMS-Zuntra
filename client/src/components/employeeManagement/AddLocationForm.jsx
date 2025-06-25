@@ -7,28 +7,70 @@ export const AddLocationForm = ({ isOpen = false, onClose = () => { }, onSubmit 
     radius: ''
   });
 
+  const [formErrors, setFormErrors] = useState({
+    branchName: '',
+    address: '',
+    radius: ''
+  });
+
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
+
+    setFormErrors(prev => ({
+      ...prev,
+      [field]: ''
+    }));
   };
 
   const handleAdd = () => {
-    console.log('Form Data:', formData);
-    onSubmit(formData);
+    const { branchName, address, radius } = formData;
+    const errors = {
+      branchName: '',
+      address: '',
+      radius: ''
+    };
+
+    let isValid = true;
+
+    if (!branchName.trim()) {
+      errors.branchName = 'Branch name is required.';
+      isValid = false;
+    }
+    if (!address.trim()) {
+      errors.address = 'Address is required.';
+      isValid = false;
+    } else if (!address.startsWith('https://www.google.com/maps/embed?')) {
+      errors.address = 'Address must be a valid Google Maps embed URL.';
+      isValid = false;
+    }
+
+    const radiusValue = parseFloat(radius);
+    if (!radius.trim()) {
+      errors.radius = 'Radius is required.';
+      isValid = false;
+    } else if (isNaN(radiusValue) || radiusValue <= 0) {
+      errors.radius = 'Radius must be a valid positive number.';
+      isValid = false;
+    }
+
+    setFormErrors(errors);
+
+    if (!isValid) return;
+
+    onSubmit({ ...formData, radius: radiusValue });
     onClose();
   };
 
   if (!isOpen) return null;
+
   return (
     <>
       <div className="add-loc-overlay">
         <div className="add-loc-container">
-          <button
-            onClick={onClose}
-            className="add-loc-close-btn"
-          >
+          <button onClick={onClose} className="add-loc-close-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M18 6L6 18M6 6l12 12" stroke="#000" strokeWidth="2" strokeLinecap="round" />
             </svg>
@@ -37,37 +79,43 @@ export const AddLocationForm = ({ isOpen = false, onClose = () => { }, onSubmit 
           <div className="add-loc-content">
             <h2 className="add-loc-title">Add New Company Location</h2>
 
-            <div className="add-loc-input-group">
-              <input
-                type="text"
-                placeholder="Enter branch name"
-                value={formData.branchName}
-                onChange={(e) => handleInputChange('branchName', e.target.value)}
-                className="add-loc-input"
-              />
+            <form className="add-loc-input-group" onSubmit={(e) => e.preventDefault()}>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Enter branch name"
+                  value={formData.branchName}
+                  onChange={(e) => handleInputChange('branchName', e.target.value)}
+                  className="add-loc-input"
+                />
+                {formErrors.branchName && <p className="add-loc-error-text">{formErrors.branchName}</p>}
+              </div>
 
-              <input
-                type="text"
-                placeholder="Enter address"
-                value={formData.address}
-                onChange={(e) => handleInputChange('address', e.target.value)}
-                className="add-loc-input"
-              />
+              <div>
+                <input
+                  type="text"
+                  placeholder="Enter address URL"
+                  value={formData.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  className="add-loc-input"
+                />
+                {formErrors.address && <p className="add-loc-error-text">{formErrors.address}</p>}
+              </div>
 
-              <input
-                type="text"
-                placeholder="Enter radius (in meters)"
-                value={formData.radius}
-                onChange={(e) => handleInputChange('radius', e.target.value)}
-                className="add-loc-input"
-              />
-            </div>
+              <div>
+                <input
+                  type="text"
+                  placeholder="Enter radius (in meters)"
+                  value={formData.radius}
+                  onChange={(e) => handleInputChange('radius', e.target.value)}
+                  className="add-loc-input"
+                />
+                {formErrors.radius && <p className="add-loc-error-text">{formErrors.radius}</p>}
+              </div>
+            </form>
 
             <div className="add-loc-button-wrapper">
-              <button
-                onClick={handleAdd}
-                className="add-loc-add-btn"
-              >
+              <button onClick={handleAdd} className="add-loc-add-btn">
                 Add
               </button>
             </div>
@@ -164,6 +212,13 @@ export const AddLocationForm = ({ isOpen = false, onClose = () => { }, onSubmit 
 
           .add-loc-add-btn:hover {
             background-color: #BBD3CC;
+          }
+
+          .add-loc-error-text {
+            color: #dc2626;
+            font-size: 0.675rem;
+            margin-top: 0.25rem;
+            margin-left: 0.25rem;
           }
         `}
       </style>
