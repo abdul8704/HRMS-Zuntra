@@ -8,7 +8,7 @@ import { HrProjectManagement } from './pages/HrProjectManagement';
 import { HrCourseManagement } from './pages/HrCourseManagement';
 import { HrEmployeeManagement } from './pages/HrEmployeeManagement';
 import { HrEmployeeDetail } from './pages/HrEmployeeDetail';
-import { HrCreateCourse } from './pages/HrCreateCourse';
+import  HrCreateCourse  from './pages/HrCreateCourse';
 import { HrOverviewLearning } from './pages/Hroverviewlearn';
 import './App.css'
 import './index.css'
