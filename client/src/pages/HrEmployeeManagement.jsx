@@ -133,7 +133,7 @@ export const HrEmployeeManagement = () => {
         {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
 
         {navId === "geofencing" && (
-          <div className="emp-cards-container">
+          <div className="geo-cards-container">
             {locations.map((loc, index) => (
               <GeoFencing key={index} embedUrl={loc.embedUrl} branchName={loc.branchName} />
             ))}
@@ -187,6 +187,17 @@ export const HrEmployeeManagement = () => {
         .emp-cards-container {
           display: flex;
           flex-wrap: wrap;
+          gap: 1rem;
+          max-width: 100%;
+          align-items: stretch;
+          margin-top: 1.5rem;
+          max-height: 100%;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+        .geo-cards-container {
+          display: flex;
+          flex-direction: column;
           gap: 1rem;
           max-width: 100%;
           align-items: stretch;
