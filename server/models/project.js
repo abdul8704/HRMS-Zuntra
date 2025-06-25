@@ -37,6 +37,13 @@ const projectSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    startDate: {
+        type: Date,
+        default: Date.now()
+    },
+    endDate: {
+        type: Date
+    }
 });
 
 module.exports = mongoose.model("projectDetails", projectSchema);
