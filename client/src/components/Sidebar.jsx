@@ -5,7 +5,7 @@
 //     <--PUT YOUR CONTENT HERE--->
 //   </div>
 // </div>
-
+import api from '../api/axios'
 import React, { useState, useEffect } from 'react'
 import zuntraSquareLogo from "../assets/zuntra_square_no_text.png"
 import zuntraLogo from "../assets/zuntra.png"
@@ -146,8 +146,14 @@ useEffect(() => {
     }
   };
 
-const handleItemClick = (index) => {
+const handleItemClick = async (index) => {
   const selectedItem = sidebarItems.filter(item => role === "HR" || item.role === "EMP")[index];
+  if(selectedItem.label === 'Logout'){
+    const time = new Date()
+    const pp = await api.post('/api/employee/logout', {
+      logoutTime: time
+    })
+  }
   navigate(selectedItem.path);
   if (isMobile) {
     setSidebar(0);
@@ -204,6 +210,7 @@ const handleItemClick = (index) => {
                 className={`website-sidebar-icon ${index === active ? "website-sidebar-icon-active" : ""}`}
                 key={index}
                 onClick={() => handleItemClick(index)}
+                
               >
                 <div className="website-icon-wrapper">{item.icon}</div>
                 <div className={`website-label-wrapper ${(sideBarStatus === 2 || sideBarStatus === 3) ? 'show' : 'hide'}`}>

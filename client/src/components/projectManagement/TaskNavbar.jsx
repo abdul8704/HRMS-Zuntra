@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
 
 const navItems = [
   {
@@ -21,7 +20,7 @@ const navItems = [
         <path fill="#000" fillRule="evenodd" d="M0 3.07c0-.553.21-1.084.582-1.476A1.942 1.942 0 0 1 1.99.982h11.93c.527 0 1.033.22 1.406.612s.582.923.582 1.477v6.264H13.92V3.07H1.989v16.704H6.96v2.088H1.99c-.528 0-1.034-.22-1.407-.611A2.142 2.142 0 0 1 0 19.775V3.071Zm3.977 4.177c0-.277.105-.543.292-.739a.97.97 0 0 1 .703-.305h5.966c.263 0 .516.11.703.305.186.196.29.462.29.739 0 .277-.104.542-.29.738a.971.971 0 0 1-.703.306H4.972a.97.97 0 0 1-.703-.306 1.071 1.071 0 0 1-.292-.738Zm0 4.176c0-.277.105-.543.292-.738a.97.97 0 0 1 .703-.306h.994a.97.97 0 0 1 .703.306c.187.195.291.461.291.738 0 .277-.104.542-.29.738a.97.97 0 0 1-.704.306h-.994a.97.97 0 0 1-.703-.306 1.071 1.071 0 0 1-.292-.738Zm8.95 2.088c-.792 0-1.55.33-2.11.917a3.214 3.214 0 0 0-.874 2.215c0 .83.315 1.627.874 2.215.56.587 1.318.917 2.11.917.79 0 1.55-.33 2.109-.917a3.216 3.216 0 0 0 .873-2.215c0-.83-.314-1.627-.873-2.215a2.913 2.913 0 0 0-2.11-.917Zm-4.972 3.132c0-1.384.523-2.712 1.456-3.691a4.855 4.855 0 0 1 3.515-1.53c1.319 0 2.583.55 3.516 1.53a5.356 5.356 0 0 1 1.456 3.691 5.356 5.356 0 0 1-1.456 3.691 4.855 4.855 0 0 1-3.516 1.53 4.855 4.855 0 0 1-3.515-1.53 5.356 5.356 0 0 1-1.456-3.69Zm4.971-2.61c.264 0 .517.11.703.306.187.196.292.461.292.738v.522c.263 0 .516.11.703.306.186.196.29.461.29.738 0 .277-.104.543-.29.738a.971.971 0 0 1-.703.306h-.995a.971.971 0 0 1-.703-.306 1.071 1.071 0 0 1-.291-.738v-1.566c0-.277.105-.542.291-.738a.971.971 0 0 1 .703-.306Z" clipRule="evenodd"/>
       </svg>
     ),
-    path: 'todo'
+    path: 'todo',
   },
   {
     label: 'In Progress',
@@ -58,53 +57,80 @@ const navItems = [
     path: 'completed',
   },
 ];
+
 export const TaskNavbar = () => {
   const navigate = useNavigate();
   const { navId } = useParams();
-  const [activeNavId, setActiveNavId] = useState(navId);
+  const [activeNavId, setActiveNavId] = useState(navId || navItems[0].path);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
-  const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];
-  
-const handleNavigation = (path) => {
-  setActiveNavId(path);
-  navigate(`/project/${encodeURIComponent(path)}`);
-  setIsDropdownOpen(false);
-};
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  const navRefs = useRef([]);
+  const sliderRef = useRef(null);
+
+  const activeItem = navItems.find((item) => item.path === activeNavId) || navItems[0];
+
+  const handleNavigation = (path) => {
+    setActiveNavId(path);
+    navigate(`/project/${encodeURIComponent(path)}`);
+    setIsDropdownOpen(false);
   };
+
+  useEffect(() => {
+    const index = navItems.findIndex((item) => item.path === activeNavId);
+    const currentTab = navRefs.current[index];
+    if (currentTab && sliderRef.current) {
+      sliderRef.current.style.width = `${currentTab.offsetWidth}px`;
+      sliderRef.current.style.left = `${currentTab.offsetLeft}px`;
+    }
+  }, [activeNavId]);
 
   return (
     <>
-     <div className="project-navbar">
-      <ul>
-        {navItems.map((item) => (
-          <li
-            key={item.path}
-            className={navId === item.path ? 'active' : ''}
-            onClick={() => navigate(`/project/${encodeURIComponent(item.path)}`)}
-          >
-            <span className="project-icon">{item.icon}</span>
-            {item.label}
-          </li>
-        ))}
-      </ul>
-    </div>
-      <style>{`
+      <div className="project-navbar">
+        <ul className="desktop-nav">
+          <div className="nav-slider" ref={sliderRef}></div>
+          {navItems.map((item, index) => (
+            <li
+              key={item.path}
+              ref={(el) => (navRefs.current[index] = el)}
+              className={item.path === activeNavId ? 'active' : ''}
+              onClick={() => handleNavigation(item.path)}
+            >
+              <span className="project-icon">{item.icon}</span>
+              {item.label}
+            </li>
+          ))}
+        </ul>
+
+        <div className="mobile-nav">
+          <button className="dropdown-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+            <span className="project-icon">{activeItem.icon}</span>
+            <span>{activeItem.label}</span>
+            <svg className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`} width="12" height="12" viewBox="0 0 12 12">
+              <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          {isDropdownOpen && (
+            <div className="dropdown-menu">
+              {navItems
+                .filter((item) => item.path !== activeNavId)
+                .map((item) => (
+                  <button key={item.path} className="dropdown-item" onClick={() => handleNavigation(item.path)}>
+                    <span className="project-icon">{item.icon}</span>
+                    {item.label}
+                  </button>
+                ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <style jsx>{`
         .project-navbar {
           background-color: #BBD3CC;
           border-radius: 0.75rem;
           width: 100%;
-        }
-
-        .project-navbar ul {
-          list-style: none;
-          display: flex;
-          width: 100%;
-          margin: 0;
-          padding: 0;
+          position: relative;
         }
 
         .project-navbar li {
@@ -120,18 +146,110 @@ const handleNavigation = (path) => {
           user-select: none;
         }
 
-        .project-navbar li:hover {
-          background-color: #d0d0d0;
-          }
+        .nav-slider {
+          position: absolute;
+          top: 0;
+          height: 100%;
+          background-color: rgba(255, 255, 255, 0.4);
+          border-radius: 0.75rem;
+          transition: all 0.3s ease;
+          z-index: 1;
+        }
+
+        .desktop-nav li:not(.active):hover {
+          background-color: rgba(0, 0, 0, 0.05);
+          border-radius: 0.75rem;
+        }
           
-          .project-navbar li.active {
-            background-color: #e0e0e0;
+        // .project-navbar li.active {
+        //   background-color: rgba(0, 0, 0, 0.05);
+        //   border-radius: 0.75rem;
+        // }
+
+        .project-icon {
+          margin-right: 0.5rem;
+          display: flex;
+          align-items: center;
+          flex-shrink: 0;
+        }
+
+        .desktop-nav {
+          list-style: none;
+          display: flex;
+          margin: 0;
+          padding: 0;
+          position: relative;
+        }
+
+        .desktop-nav li {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 1rem 0;
+          cursor: pointer;
+          font-weight: 500;
+          position: relative;
+          z-index: 2;
+        }
+
+        .desktop-nav li.active {
+          color: #111;
         }
 
         .project-icon {
           margin-right: 0.5rem;
           display: flex;
           align-items: center;
+        }
+
+        .mobile-nav {
+          display: none;
+        }
+
+        .dropdown-trigger {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: none;
+          border: none;
+          padding: 1rem;
+          cursor: pointer;
+        }
+
+        .dropdown-menu {
+          background: #BBD3CC;
+          border-radius: 0.5rem;
+          margin-top: 0.25rem;
+          overflow: hidden;
+        }
+
+        .dropdown-item {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          padding: 0.75rem 1rem;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+        }
+
+        .dropdown-arrow {
+          transition: transform 0.2s ease;
+        }
+
+        .dropdown-arrow.open {
+          transform: rotate(180deg);
+        }
+
+        @media (max-width: 768px) {
+          .desktop-nav {
+            display: none;
+          }
+          .mobile-nav {
+            display: block;
+          }
         }
       `}</style>
     </>
