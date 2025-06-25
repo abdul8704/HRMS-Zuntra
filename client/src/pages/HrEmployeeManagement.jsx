@@ -110,6 +110,25 @@ export const HrEmployeeManagement = () => {
           </div>
         )}
 
+          <div className="employee-card-wrapper">
+            {employees.map((emp, index) => (
+              <EmployeeCard
+                key={index}
+                name={emp.name}
+                email={emp.email}
+                phone={emp.phone}
+                image={emp.image}
+                role="UI/UX Designer"
+                inTime="09:02"
+                outTime="16:55"
+                workTime="09:02"
+                breakTime="16:55"
+                bgColor={bgColorList[index]} // 👈 use dynamic background
+              />
+
+            ))}
+          </div>
+        )}
         {navId === "roles" && (
           <div className="emp-cards-container">
             {roleData.map((role, idx) => (
