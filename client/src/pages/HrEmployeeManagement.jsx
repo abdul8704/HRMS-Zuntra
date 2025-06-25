@@ -275,7 +275,7 @@ export const HrEmployeeManagement = () => {
 
         .plus-button:hover {
           transform: scale(1.1);
-          background-color: #cbd5e1;
+          background-color: #A6C4BA;
         }
 
         .popup-overlay {
