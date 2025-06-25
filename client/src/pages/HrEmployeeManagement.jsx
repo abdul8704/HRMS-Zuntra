@@ -8,7 +8,7 @@ import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
 import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
-import { AddLocationForm } from '../components/employeeManagement/AddLocationForm'
+import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
@@ -20,7 +20,7 @@ export const HrEmployeeManagement = () => {
   const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
 
   const employees = [
-    { name: "John Joseph aesctra srs terab aevy 4WTVtac  gestv 4wteeSVtr vging yt frytygincd frfdvbboyfr8d rdv56uurvibr rvub5oifdg ", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
+    { name: "John Joseph", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
     { name: "Nisha Mehra", email: "nisha@zuntra.com", phone: "+91 9123456780", date: "12-06-2025", image: "https://randomuser.me/api/portraits/women/68.jpg" },
     { name: "Ishita T", email: "ishita.t@zuntra.com", phone: "+91 9080706050", date: "10-06-2025", image: "https://randomuser.me/api/portraits/women/21.jpg" },
     { name: "Ravi Kumar", email: "ravi.kumar@zuntra.com", phone: "+91 8899776655", date: "13-06-2025", image: "https://randomuser.me/api/portraits/men/30.jpg" },
@@ -71,7 +71,6 @@ export const HrEmployeeManagement = () => {
     }
   ];
 
-
   const roleData = [
     { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
     { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
@@ -100,7 +99,6 @@ export const HrEmployeeManagement = () => {
     setSelectedEmployee(null);
   };
 
-
   return (
     <div className="website-container">
       <Sidebar />
@@ -121,12 +119,12 @@ export const HrEmployeeManagement = () => {
                 outTime="16:55"
                 workTime="09:02"
                 breakTime="16:55"
-                bgColor={bgColorList[index]} // 👈 use dynamic background
+                bgColor={bgColorList[index]}
               />
-
             ))}
           </div>
         )}
+
         {navId === "roles" && (
           <div className="emp-cards-container">
             {roleData.map((role, idx) => (
@@ -139,19 +137,25 @@ export const HrEmployeeManagement = () => {
               />
             ))}
             <div className="plus-button" onClick={() => setShowPopup(true)}>
-              <span><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg></span>
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                  <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+                </svg>
+              </span>
             </div>
           </div>
         )}
-
-        {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
 
         {navId === "geofencing" && (
           <div className="geo-cards-container">
             {locations.map((loc, index) => (
               <GeoFencing key={index} embedUrl={loc.embedUrl} branchName={loc.branchName} />
             ))}
-            <button className="plus-button" onClick={() => setShowLocationForm(true)}><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg></button>
+            <button className="plus-button" onClick={() => setShowLocationForm(true)}>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+              </svg>
+            </button>
           </div>
         )}
 
@@ -185,6 +189,16 @@ export const HrEmployeeManagement = () => {
 
       {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
 
+      {showLocationForm && (
+        <AddLocationForm
+          isOpen={showLocationForm}
+          onClose={() => setShowLocationForm(false)}
+          onSubmit={(formData) => {
+            console.log('Submitted:', formData);
+          }}
+        />
+      )}
+
       {showAssignPopup && selectedEmployee && (
         <div className="popup-overlay">
           <EmpAssignmentPopUp
@@ -208,6 +222,7 @@ export const HrEmployeeManagement = () => {
           overflow-y: auto;
           overflow-x: hidden;
         }
+
         .geo-cards-container {
           display: flex;
           flex-direction: column;

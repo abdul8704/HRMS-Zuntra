@@ -28,7 +28,7 @@ export const DashBoard = () => {
                 {
                     display:grid;
                     border:1rem;
-                    grid-template-columns:repeat(8,1fr);
+                    grid-template-columns:repeat(9,1fr);
                     grid-template-rows:repeat(9,1fr);
                     place-content:center;
                     gap: 1rem;
@@ -71,7 +71,7 @@ export const DashBoard = () => {
                     border-radius: 20px;                }
                     .remainder
                 {
-                    grid-column: 1/5;
+                    grid-column: 1/6;
                     grid-row: 4/7;
                     background-color: #BFBFF7;
                     border-radius: 20px;
@@ -85,21 +85,21 @@ export const DashBoard = () => {
                 }
                     .deadline
                 {
-                    grid-column: 5/9;
-                    grid-row: 1/5;
+                    grid-column: 5/10;
+                    grid-row: 1/4;
                     background-color: #F2C3B9;
                     border-radius: 20px;
                 }
                     .notification
                 {
-                    grid-column: 5/9;
-                    grid-row: 5/7;
+                    grid-column: 6/10;
+                    grid-row: 4/7;
                     background-color: #F6E0BF;
                     border-radius: 20px;
                 }
                     .leave
                 {
-                    grid-column: 4/9;
+                    grid-column: 4/10;
                     grid-row: 7/10;
                     background-color: #ADC0DA;
                     border-radius: 20px;
