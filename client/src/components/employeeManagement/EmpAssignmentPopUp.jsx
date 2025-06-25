@@ -92,7 +92,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
         {/* Left Side */}
         <div className="popup-left">
           <img src={employee.image} alt="Profile" />
-          <h3 className="emp-name">{employee.name}</h3>
+          <h3 className="emp-emp-name">{employee.name}</h3>
 <p className="emp-info emp-email-bg">{employee.email}</p>
 <p className="emp-info">{employee.phone}</p>
 <p className="emp-info">Applied on : {employee.date}</p>
@@ -238,13 +238,13 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
           margin-bottom: 1rem;
         }
 
-        .emp-name {
+        .emp-emp-name {
   font-size: 1.5rem;
   font-weight: normal;
   margin: 0.5rem 0;
   word-wrap: break-word;    /* ensures long words break */
   white-space: normal;      /* allows text to wrap */
-  text-align: center;
+  text-align: left;
   width: 100%;              /* ensure it stays inside container */
 }
 
