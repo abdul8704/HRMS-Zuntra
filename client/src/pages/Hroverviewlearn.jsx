@@ -5,6 +5,7 @@ import { PageHeader } from "../components/upskill/PageHeader";
 import { VideoAndDescriptionContainer } from "../components/upskill/VideoAndDescription";
 
 export const HrOverviewLearning = () => {
+  
   return (
     <div className="website-container">
       <Sidebar />
@@ -16,14 +17,14 @@ export const HrOverviewLearning = () => {
               <VideoAndDescriptionContainer />
             </div>
             <div className="right-side">
-              <TableOfContents />
+              <TableOfContents progress={"70%"} enrolled={true} />
             </div>
           </div>
       </div>
 
       <style>{`
         .content-wrapper {
-          height: 100%;
+          height: 75vh;
           display: flex;
           gap: 24px;
         }
@@ -32,14 +33,13 @@ export const HrOverviewLearning = () => {
           flex: 7;
           display: flex;
           flex-direction: column;
-          background-color: #000000;
         }
 
         .right-side {
           flex: 3;
           display: flex;
+          flex-direction: column;
           height: 100%;
-          background-color:rgb(0, 0, 0);
         }
 
         @media (max-width: 768px) {
