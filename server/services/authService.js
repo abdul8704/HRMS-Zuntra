@@ -68,8 +68,19 @@ const getUserByEmail = async (email) => {
     return userData;
 };
 
+const passwordReset = async (email, password) => {
+    const hashedpass = await bcrypt.hash(password, Number(process.env.HASH_SALT));
+
+    await UserCreds.updateOne({email: email}, {
+        passwordHash: hashedpass
+    })
+
+    return { success: true, message: "pass changed"}
+}
+
 module.exports = {
     verifyLogin,
     createNewUser,
     getUserByEmail,
+    passwordReset,
 };
