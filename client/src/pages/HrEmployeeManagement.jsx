@@ -8,7 +8,7 @@ import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
 import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
-import { AddLocationForm } from '../components/employeeManagement/AddLocationForm'
+import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
@@ -20,7 +20,7 @@ export const HrEmployeeManagement = () => {
   const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
 
   const employees = [
-    { name: "John Joseph aesctra srs terab aevy 4WTVtac  gestv 4wteeSVtr vging yt frytygincd frfdvbboyfr8d rdv56uurvibr rvub5oifdg ", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
+    { name: "John Joseph", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
     { name: "Nisha Mehra", email: "nisha@zuntra.com", phone: "+91 9123456780", date: "12-06-2025", image: "https://randomuser.me/api/portraits/women/68.jpg" },
     { name: "Ishita T", email: "ishita.t@zuntra.com", phone: "+91 9080706050", date: "10-06-2025", image: "https://randomuser.me/api/portraits/women/21.jpg" },
     { name: "Ravi Kumar", email: "ravi.kumar@zuntra.com", phone: "+91 8899776655", date: "13-06-2025", image: "https://randomuser.me/api/portraits/men/30.jpg" },
@@ -50,27 +50,26 @@ export const HrEmployeeManagement = () => {
 
   const locations = [
     {
-      branchName: "Chennai",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+      branchName: "Perungudi",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.2300795125925!2d80.24268317484109!3d12.957124087356895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525d2313e5fa83%3A0x86751fde2142c085!2sZuntra%20Digital%20Private%20Limited!5e0!3m2!1sen!2sin!4v1750855923184!5m2!1sen!2sin"
     },
     {
-      branchName: "Bangalore",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+      branchName: "Selaiyur",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124440.7668226528!2d79.99512631640623!3d12.922244400000007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f6ed2136c9f%3A0x195a3558e9f5f39b!2sZUDIO%20-%20Selaiyur%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856070265!5m2!1sen!2sin"
     },
     {
-      branchName: "Hyderabad",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+      branchName: "Kodambakkam",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124374.89066981588!2d80.08488851640625!3d13.053783100000024!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52676cb6734ecb%3A0x29afa95d29fddde!2sZUDIO%20-%20Kodambakkam%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856107276!5m2!1sen!2sin"
     },
     {
-      branchName: "Coimbatore",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+      branchName: "Adyar",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124403.6466499826!2d80.11916441640622!3d12.996525300000012!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526700208c639b%3A0xe27864459a616099!2sZUDIO!5e0!3m2!1sen!2sin!4v1750856305753!5m2!1sen!2sin"
     },
     {
-      branchName: "Trichy",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+      branchName: "Avadi",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124344.53302174553!2d79.96295661640626!3d13.113963500000008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526369c5679e39%3A0xf15ed76fbd823a9c!2sZUDIO%20-%20Avadi%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856241763!5m2!1sen!2sin"
     }
   ];
-
 
   const roleData = [
     { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
@@ -100,7 +99,6 @@ export const HrEmployeeManagement = () => {
     setSelectedEmployee(null);
   };
 
-
   return (
     <div className="website-container">
       <Sidebar />
@@ -108,28 +106,22 @@ export const HrEmployeeManagement = () => {
         <EmpNavbar />
 
         {navId === "all" && (
-  <div className="employee-card-wrapper">
-    {employees.map((emp, index) => (
-      <EmployeeCard
-  key={index}
-  name={emp.name}
-  email={emp.email}
-  phone={emp.phone}
-  image={emp.image}
-  role="UI/UX Designer"
-  inTime="09:02"
-  outTime="16:55"
-  workTime="09:02"
-  breakTime="16:55"
-  bgColor={bgColorList[index]} // 👈 use dynamic background
-/>
-
-    ))}
-  </div>
-)}
- 
-          <div className="emp-cards-container">
-            <EmployeeCard />
+          <div className="employee-card-wrapper">
+            {employees.map((emp, index) => (
+              <EmployeeCard
+                key={index}
+                name={emp.name}
+                email={emp.email}
+                phone={emp.phone}
+                image={emp.image}
+                role="UI/UX Designer"
+                inTime="09:02"
+                outTime="16:55"
+                workTime="09:02"
+                breakTime="16:55"
+                bgColor={bgColorList[index]}
+              />
+            ))}
           </div>
         )}
 
@@ -145,19 +137,25 @@ export const HrEmployeeManagement = () => {
               />
             ))}
             <div className="plus-button" onClick={() => setShowPopup(true)}>
-              <span><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg></span>
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                  <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+                </svg>
+              </span>
             </div>
           </div>
         )}
-
-        {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
 
         {navId === "geofencing" && (
           <div className="geo-cards-container">
             {locations.map((loc, index) => (
               <GeoFencing key={index} embedUrl={loc.embedUrl} branchName={loc.branchName} />
             ))}
-            <button className="plus-button" onClick={() => setShowLocationForm(true)}><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg></button>
+            <button className="plus-button" onClick={() => setShowLocationForm(true)}>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+              </svg>
+            </button>
           </div>
         )}
 
@@ -167,7 +165,6 @@ export const HrEmployeeManagement = () => {
             onClose={() => setShowLocationForm(false)}
             onSubmit={(formData) => {
               console.log('Submitted:', formData);
-              // Handle submitted data here
             }}
           />
         )}
@@ -192,6 +189,16 @@ export const HrEmployeeManagement = () => {
 
       {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
 
+      {showLocationForm && (
+        <AddLocationForm
+          isOpen={showLocationForm}
+          onClose={() => setShowLocationForm(false)}
+          onSubmit={(formData) => {
+            console.log('Submitted:', formData);
+          }}
+        />
+      )}
+
       {showAssignPopup && selectedEmployee && (
         <div className="popup-overlay">
           <EmpAssignmentPopUp
@@ -215,6 +222,7 @@ export const HrEmployeeManagement = () => {
           overflow-y: auto;
           overflow-x: hidden;
         }
+
         .geo-cards-container {
           display: flex;
           flex-direction: column;
