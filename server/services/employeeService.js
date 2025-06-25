@@ -11,11 +11,11 @@ const getAttendanceDataByUserId = async (
     holidays = []
 ) => {
     try {
-        const start = new Date(startDate);
-        start.setHours(0, 0, 0, 0);
+        const start = attendanceHelper.normalizeToUTCDate(startDate);
+        start.setUTCHours(0, 0, 0, 0);
 
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
+        const end = attendanceHelper.normalizeToUTCDate(endDate);
+        end.setUTCHours(23, 59, 59, 999);
 
         // Fetch attendance records within the date range
         const attendanceRecords = await Attendance.find({
@@ -82,19 +82,17 @@ const getAttendanceDataByUserId = async (
 };
 
 const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const today = attendanceHelper.normalizeToUTCDate(new Date());
 
     try {
         const shiftData = await User.findById(userid);
         const shiftStart = new Date(shiftData.shiftStart);
         const shiftEnd = new Date(shiftData.shiftEnd);
 
-        const shiftStartTime = attendanceHelper.toTimeOnly(shiftStart);
-        const shiftEndTime = attendanceHelper.toTimeOnly(shiftEnd);
+        const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart);
+        const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
         
         const now = new Date();
-        now.setSeconds(0, 0);
 
         let attendance = await Attendance.findOne({ userid, date: today });
 
@@ -181,9 +179,7 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
 
 const markEndOfSession = async (userid, logoutTime) => {
     try{
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
+        const today = attendanceHelper.normalizeToUTCDate(new Date());
         const attendance = await Attendance.findOne({ userid, date: today });
 
         if (!attendance) {
@@ -194,7 +190,7 @@ const markEndOfSession = async (userid, logoutTime) => {
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
-
+        
         if (lastSession && !lastSession.logoutTime) {
             const logout = new Date(logoutTime);
             lastSession.logoutTime = logout;
