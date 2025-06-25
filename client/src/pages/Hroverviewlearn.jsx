@@ -1,68 +1,60 @@
 import React from "react";
 import { Sidebar } from "../components/Sidebar";
-import { CourseVideoPlayer } from "../components/upskill/Hroverviewlearning";
-import { IntroductionCard } from "../components/upskill/introtocourse";
 import { TableOfContents } from "../components/upskill/TableContents";
+import { PageHeader } from "../components/upskill/PageHeader";
+import { VideoAndDescriptionContainer } from "../components/upskill/VideoAndDescription";
 
 export const HrOverviewLearning = () => {
+  
   return (
-    <div className="main-layout">
+    <div className="website-container">
       <Sidebar />
 
-      {/* Main Content Area */}
-      <div className="content-area">
-        <div className="left-column">
-          <div className="video-card">
-            <CourseVideoPlayer />
+      <div className="website-module">
+          <PageHeader />
+          <div className="content-wrapper">
+            <div className="left-side">
+              <VideoAndDescriptionContainer />
+            </div>
+            <div className="right-side">
+              <TableOfContents progress={"70%"} enrolled={true} />
+            </div>
           </div>
-          <div className="intro-card">
-            <IntroductionCard />
-          </div>
-        </div>
-
-        <div className="right-column">
-          <TableOfContents />
-        </div>
       </div>
 
       <style>{`
-        .main-layout {
+        .content-wrapper {
+          height: 75vh;
           display: flex;
-          height: 100vh;
-        }
-
-        .content-area {
-          display: flex;
-          flex: 1;
-          padding: 24px;
           gap: 24px;
         }
 
-        .left-column {
+        .left-side {
           flex: 7;
           display: flex;
           flex-direction: column;
-          gap: 24px;
         }
 
-        .video-card,
-        .intro-card {
-          width: 100%;
-        }
-
-        .right-column {
+        .right-side {
           flex: 3;
           display: flex;
-          justify-content: flex-end;
+          flex-direction: column;
+          height: 100%;
         }
 
-        @media (max-width: 1024px) {
-          .content-area {
+        @media (max-width: 768px) {
+          .content-wrapper {
             flex-direction: column;
           }
 
-          .right-column {
+          .left-side,
+          .right-side {
+            width: 100%;
+          }
+
+          .right-side {
             justify-content: center;
+            margin-top: 16px;
           }
         }
       `}</style>

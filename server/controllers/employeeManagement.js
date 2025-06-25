@@ -8,8 +8,9 @@ const handleLogout = asyncHandler(async (req, res) => {
 
     if(!logoutTime) 
         throw new ApiError(400, "Logout time not provided")
-
-    await employeeService.markEndOfSession(userid, logoutTime);
+    const logout = await employeeService.markEndOfSession(userid, logoutTime);
+    if(logout.success === false)
+        return res.status(400).json({ success: false, message: logout.message });
     res.status(200).json({ success: true, message: "Logout time recorded" });
 })
 

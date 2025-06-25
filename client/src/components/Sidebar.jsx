@@ -5,7 +5,7 @@
 //     <--PUT YOUR CONTENT HERE--->
 //   </div>
 // </div>
-
+import api from '../api/axios'
 import React, { useState, useEffect } from 'react'
 import zuntraSquareLogo from "../assets/zuntra_square_no_text.png"
 import zuntraLogo from "../assets/zuntra.png"
@@ -51,7 +51,7 @@ useEffect(() => {
     {
       role: "EMP",
       label: "Project Management",
-      path: "/projects",
+      path: "/projects/overview",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="29" fill="none" viewBox="0 0 26 29">
           <path fill="currentColor" d="M13 8.598c.718 0 1.3-.57 1.3-1.273 0-.702-.582-1.272-1.3-1.272-.718 0-1.3.57-1.3 1.272 0 .703.582 1.273 1.3 1.273Zm-7.8 12.73h15.6v2.545H5.2v-2.545Zm5.2-6.58 3.63 3.556 5.111-5.009 1.659 1.669V9.873h-5.2l1.703 1.623-3.275 3.206-3.628-3.556-5.2 5.09 1.838 1.8 3.362-3.288Z" />
@@ -146,8 +146,14 @@ useEffect(() => {
     }
   };
 
-const handleItemClick = (index) => {
+const handleItemClick = async (index) => {
   const selectedItem = sidebarItems.filter(item => role === "HR" || item.role === "EMP")[index];
+  if(selectedItem.label === 'Logout'){
+    const time = new Date()
+    const pp = await api.post('/api/employee/logout', {
+      logoutTime: time
+    })
+  }
   navigate(selectedItem.path);
   if (isMobile) {
     setSidebar(0);
@@ -204,6 +210,7 @@ const handleItemClick = (index) => {
                 className={`website-sidebar-icon ${index === active ? "website-sidebar-icon-active" : ""}`}
                 key={index}
                 onClick={() => handleItemClick(index)}
+                
               >
                 <div className="website-icon-wrapper">{item.icon}</div>
                 <div className={`website-label-wrapper ${(sideBarStatus === 2 || sideBarStatus === 3) ? 'show' : 'hide'}`}>

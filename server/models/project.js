@@ -16,9 +16,6 @@ const projectSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
-    deadline: {
-        type: Date,
-    },
     teamName: {
         type: String,
         required: true,
@@ -37,6 +34,14 @@ const projectSchema = new mongoose.Schema({
         required: true,
         trim: true,
     },
+    startDate: {
+        type: Date,
+        default: Date.now()
+    },
+    endDate: {
+        type: Date,
+        required: true,
+    }
 });
 
 module.exports = mongoose.model("projectDetails", projectSchema);

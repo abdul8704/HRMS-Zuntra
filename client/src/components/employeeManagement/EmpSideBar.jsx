@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { Users, Mail, Phone, DollarSign, Edit3, Menu, X } from "lucide-react";
 import ZuntraLogo from "../../assets/Zuntra.svg"
+import EditProfileCard from "./EditProfilePopup";
 
 export default function ProfileSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showEditCard, setShowEditCard] = useState(false);
+  const handleEditProfile = () => {setShowEditCard(true);};
+
 
   useEffect(() => {
     const checkMobile = () => {
@@ -167,7 +171,9 @@ export default function ProfileSidebar() {
 
         {/* Edit Profile Button */}
         <div style={{ position: 'absolute', bottom: '24px', left: '24px', right: '24px' }}>
-          <button style={{
+          <button 
+          onClick={handleEditProfile}
+          style={{
             width: '100%',
             backgroundColor: 'white',
             padding: '12px 16px',
@@ -216,6 +222,29 @@ export default function ProfileSidebar() {
           </button>
         </div>
       )}
+      {showEditCard && (
+  <div style={{
+    position: 'fixed',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    zIndex: 1100,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    animation: 'fadeIn 0.3s ease-in-out'
+  }}>
+    <EditProfileCard onClose={() => setShowEditCard(false)} />
+    <style>
+      {`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `}
+    </style>
+  </div>
+)}
+
     </>
   );
 }
