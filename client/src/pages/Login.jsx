@@ -56,10 +56,12 @@ export const Login = () => {
           })
 
           if (res.status === 200) {
-            console.log("Attendace MArked buddy");
+            console.log("Attendace Marked buddy");
             navigate("/dashboard")
-          } else {
-            console.warn("Location not within geofence");
+          }
+          else if (res.status === 206) {
+            console.log("attendance not marked");
+            navigate("/dashboard");
           }
         },
         (error) => {
@@ -155,7 +157,7 @@ export const Login = () => {
           }
         }
       }
-    } 
+    }
     catch (error) {
       if (error.response.data.error === "Incorrect OTP")
         alert("Incorrect OTP")
@@ -170,7 +172,7 @@ export const Login = () => {
     e.preventDefault();
     const { email, otp, password, confirmPassword } = resetData;
 
-    try{
+    try {
       if (!otpSent) {
         if (!email) {
           alert("Please enter your email to receive OTP.");
@@ -241,7 +243,7 @@ export const Login = () => {
           return;
         }
       }
-    }catch(error){
+    } catch (error) {
       if (error.response.data.error === "Incorrect OTP")
         alert("Incorrect OTP")
       else {

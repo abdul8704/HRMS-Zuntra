@@ -1,4 +1,4 @@
-const userCredentials = require("../models/userCredentials");
+const UserCredentials = require("../models/userCredentials");
 
 const getAllUserDetails = async () => {
     const userData = await UserDetails.find({});
@@ -7,9 +7,11 @@ const getAllUserDetails = async () => {
 
 // @desc Get details of a user
 const getDetailsOfaUser = async (userid) => {
-    const userCreds = await userCredentials.findOne({ _id: userid});
+    const userCreds = await UserCredentials.findOne({ _id: userid });
     return userCreds;
 };
+
+
 
 module.exports = {
     getAllUserDetails,

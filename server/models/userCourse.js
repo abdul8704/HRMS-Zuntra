@@ -19,4 +19,4 @@ const userCourseSchema = new mongoose.Schema({
     }
 });
 
-mondule.exports = mongoose.model("UserCourse", userCourseSchema)
+module.exports = mongoose.model("UserCourse", userCourseSchema)

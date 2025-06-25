@@ -7,15 +7,12 @@ const userPersonal = new mongoose.Schema({
     },
     DOB: {
         type: Date,
-        required: true,
     },
     religion: {
         type: String,
-        required: true,
     },
     Address: {
         type: String,
-        required: true,
     },
     Salary: {
         type: Number,

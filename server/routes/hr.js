@@ -6,5 +6,7 @@ const router = express.Router();
 
 router.get('/', userController.getAllUsers);
 router.post("/new-campus", hrController.addNewCampusLocation);
+router.get("/pending", hrController.getPendingEmployees);
+router.post("/accept", hrController.acceptUser);
 
 module.exports = router;
