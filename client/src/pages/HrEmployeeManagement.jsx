@@ -58,8 +58,26 @@ export const HrEmployeeManagement = () => {
         <EmpNavbar />
 
         {navId === "all" && (
-          <EmployeeCard />
-        )} 
+  <div className="employee-card-wrapper">
+    {employees.map((emp, index) => (
+      <EmployeeCard
+  key={index}
+  name={emp.name}
+  email={emp.email}
+  phone={emp.phone}
+  image={emp.image}
+  role="UI/UX Designer"
+  inTime="09:02"
+  outTime="16:55"
+  workTime="09:02"
+  breakTime="16:55"
+  bgColor={bgColorList[index]} // 👈 use dynamic background
+/>
+
+    ))}
+  </div>
+)}
+ 
         {navId === "roles" && (
           <EmpRoleCard />
         )} 
@@ -94,6 +112,24 @@ export const HrEmployeeManagement = () => {
             overflow-y: auto;
             overflow-x: hidden;
           }
+          
+  .employee-card-wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    padding: 24px;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+  }
+
+  @media (max-width: 768px) {
+    .employee-card-wrapper {
+      grid-template-columns: 1fr;
+      padding: 16px;
+    }
+  }
+
+
         `}</style>
       </div>
     </div>
