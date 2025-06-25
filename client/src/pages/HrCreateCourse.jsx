@@ -1,33 +1,39 @@
 import React from "react";
 import { Sidebar } from "../components/Sidebar";
-import GoToLoomButton from "../components/coursemanagement/GoToLoomButton";
 import { CourseNavbar } from "../components/coursemanagement/CourseNavbar";
-import InstallLoomExtensionButton from "../components/coursemanagement/InstallLoomExtensionButton"
+import AddCourse from "../components/coursemanagement/AddCourse";
+import Module from "../components/coursemanagement/Module";
+import SubModule from "../components/coursemanagement/SubModule";
+import AssignmentModule from "../components/coursemanagement/AssignmentModule";
+import AddModuleButtons from "../components/coursemanagement/AddModuleButtons";
 
-export const HrCreateCourse = () => {
+const HrCreateCourse = () => {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen overflow-hidden">
       {/* Sidebar on the left */}
       <Sidebar />
 
       {/* Main content area */}
-      <div className="flex flex-col flex-grow">
+      <div className="flex flex-col flex-grow bg-[#D6D6D6] overflow-y-auto">
         {/* Top Navbar */}
         <div className="px-4 py-2">
           <CourseNavbar />
         </div>
 
-        {/* Page content */}
-        <div className="flex flex-col items-center justify-center flex-grow p-8">
-          <h1 className="text-4xl font-bold mb-10">Record with Loom</h1>
-
-          {/* Button container: stacked vertically */}
-          <div className="flex flex-col gap-6 w-full max-w-sm">
-            <GoToLoomButton />
-            <InstallLoomExtensionButton/>
-          </div>
+        {/* Page content with tighter spacing */}
+        <div className="flex flex-col items-center px-4 py-4 space-y-4 max-w-5xl mx-auto">
+          <AddCourse />
+          <Module />
+          <SubModule />
+          <AssignmentModule />
+          <AddModuleButtons />
         </div>
       </div>
     </div>
   );
 };
+
+export default HrCreateCourse;
+
+
+
