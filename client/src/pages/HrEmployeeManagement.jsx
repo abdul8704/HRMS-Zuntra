@@ -7,17 +7,20 @@ import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
 import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
 import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
+import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
 import { AddLocationForm } from '../components/employeeManagement/AddLocationForm'
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
   const [showPopup, setShowPopup] = useState(false);
+  const [showAssignPopup, setShowAssignPopup] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showLocationForm, setShowLocationForm] = useState(false);
 
   const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
 
   const employees = [
-    { name: "John Joseph", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
+    { name: "John Joseph aesctra srs terab aevy 4WTVtac  gestv 4wteeSVtr vging yt frytygincd frfdvbboyfr8d rdv56uurvibr rvub5oifdg ", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
     { name: "Nisha Mehra", email: "nisha@zuntra.com", phone: "+91 9123456780", date: "12-06-2025", image: "https://randomuser.me/api/portraits/women/68.jpg" },
     { name: "Ishita T", email: "ishita.t@zuntra.com", phone: "+91 9080706050", date: "10-06-2025", image: "https://randomuser.me/api/portraits/women/21.jpg" },
     { name: "Ravi Kumar", email: "ravi.kumar@zuntra.com", phone: "+91 8899776655", date: "13-06-2025", image: "https://randomuser.me/api/portraits/men/30.jpg" },
@@ -79,16 +82,23 @@ export const HrEmployeeManagement = () => {
     { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
     { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
     { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
-    { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-    { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
-    { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-    { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
-    { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
-    { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
-    { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
-    { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
-    { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
   ];
+
+  const handleApprove = (employee) => {
+    setSelectedEmployee(employee);
+    setShowAssignPopup(true);
+  };
+
+  const handleSaveAssignment = (data) => {
+    console.log("Saved assignment:", data);
+    setShowAssignPopup(false);
+    setSelectedEmployee(null);
+  };
+
+  const handleClosePopup = () => {
+    setShowAssignPopup(false);
+    setSelectedEmployee(null);
+  };
 
 
   return (
@@ -153,11 +163,25 @@ export const HrEmployeeManagement = () => {
                 date={emp.date}
                 image={emp.image}
                 color={bgColorList[index]}
+                onApprove={() => handleApprove(emp)}
               />
             ))}
           </div>
         )}
       </div>
+
+      {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
+
+      {showAssignPopup && selectedEmployee && (
+        <div className="popup-overlay">
+          <EmpAssignmentPopUp
+            employee={selectedEmployee}
+            isOpen={true}
+            onClose={handleClosePopup}
+            onSave={handleSaveAssignment}
+          />
+        </div>
+      )}
 
       <style>{`
         .emp-cards-container {
@@ -213,6 +237,19 @@ export const HrEmployeeManagement = () => {
         .plus-button:hover {
           transform: scale(1.1);
           background-color: #cbd5e1;
+        }
+
+        .popup-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background-color: rgba(0, 0, 0, 0.4);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 2000;
         }
       `}</style>
     </div>

@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import { EmpAssignmentPopUp } from "./EmpAssignmentPopUp";
 
-export const EmpCard = ({ name, email, phone, date, image, color}) => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+export const EmpCard = ({ name, email, phone, date, image, color, onApprove }) => {
   const [tooltip, setTooltip] = useState({ show: false, text: "", top: 0, left: 0 });
 
-  const handleApproveClick = () => setIsPopupOpen(true);
-  const handleClosePopup = () => setIsPopupOpen(false);
-  const handleSaveAssignment = (assignmentData) => {
-    console.log("Assignment Saved:", assignmentData);
-    setIsPopupOpen(false);
+  const handleApproveClick = () => {
+    if (typeof onApprove === "function") {
+      const employee = { name, email, phone, date, image };
+      onApprove(employee);
+    }
   };
 
   const showTooltip = (e, text) => {
@@ -26,8 +24,6 @@ export const EmpCard = ({ name, email, phone, date, image, color}) => {
     setTooltip({ show: false, text: "", top: 0, left: 0 });
   };
 
-  const employee = { name, email, phone, date, image };
-
   return (
     <>
       <div className="emp-card" style={{ backgroundColor: color }}>
@@ -43,53 +39,51 @@ export const EmpCard = ({ name, email, phone, date, image, color}) => {
           >
             {name}
           </h2>
-          <p
-  className="emp-email"
-  onClick={(e) => showTooltip(e, email)}
-  onMouseEnter={(e) => showTooltip(e, email)}
-  onMouseLeave={hideTooltip}
->
-  <span className="emp-icon" aria-hidden="true">
-    <svg
-      width="1rem"
-      height="1rem"
-      viewBox="0 0 24 24"
-      fill="black"
-      xmlns="http://www.w3.org/2000/svg"
-      style={{
-        marginRight: "0.15rem",
-        minWidth: "1rem",
-        flexShrink: 0,
-        verticalAlign: "middle"
-      }}
-    >
-      <path d="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
-    </svg>
-  </span>
-  <span className="emp-email-text">{email}</span>
-</p>
-
-
-
 
           <p
-  className="emp-phone"
-  onClick={(e) => showTooltip(e, phone)}
-  onMouseEnter={(e) => showTooltip(e, phone)}
-  onMouseLeave={hideTooltip}
->
-  📞 {phone}
-</p>
+            className="emp-email"
+            onClick={(e) => showTooltip(e, email)}
+            onMouseEnter={(e) => showTooltip(e, email)}
+            onMouseLeave={hideTooltip}
+          >
+            <span className="emp-icon" aria-hidden="true">
+              <svg
+                width="1rem"
+                height="1rem"
+                viewBox="0 0 24 24"
+                fill="black"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  marginRight: "0.15rem",
+                  minWidth: "1rem",
+                  flexShrink: 0,
+                  verticalAlign: "middle"
+                }}
+              >
+                <path d="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
+              </svg>
+            </span>
+            <span className="emp-email-text">{email}</span>
+          </p>
+
+          <p
+            className="emp-phone"
+            onClick={(e) => showTooltip(e, phone)}
+            onMouseEnter={(e) => showTooltip(e, phone)}
+            onMouseLeave={hideTooltip}
+          >
+            📞 {phone}
+          </p>
 
           <p className="emp-date">{date}</p>
         </div>
+
         <div className="emp-actions">
           <button className="emp-approve" onClick={handleApproveClick}>✓</button>
           <button className="emp-reject">✕</button>
         </div>
       </div>
 
-      {/* Tooltip */}
       {tooltip.show && (
         <div
           className="emp-tooltip"
@@ -99,7 +93,6 @@ export const EmpCard = ({ name, email, phone, date, image, color}) => {
         </div>
       )}
 
-      {/* Styles */}
       <style jsx>{`
         .emp-card {
           display: flex;
@@ -143,6 +136,7 @@ export const EmpCard = ({ name, email, phone, date, image, color}) => {
           overflow: hidden;
           text-overflow: ellipsis;
           cursor: pointer;
+          text-align: flex-start; 
         }
 
         .emp-email,
@@ -156,23 +150,23 @@ export const EmpCard = ({ name, email, phone, date, image, color}) => {
           max-width: 100%;
           cursor: pointer;
         }
+
         .emp-email {
-  display: flex;
-  align-items: center;
-  gap: 0.15rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
+          display: flex;
+          align-items: center;
+          gap: 0.15rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 100%;
+        }
 
-.emp-email-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-}
-
+        .emp-email-text {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          flex: 1;
+        }
 
         .emp-date {
           background-color: #ffffff;
@@ -186,14 +180,14 @@ export const EmpCard = ({ name, email, phone, date, image, color}) => {
         }
 
         .emp-actions {
-           position: absolute;
-  top: 0;
-  right: 0.8rem;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* ← Center vertically */
-  gap: 0.8rem;
+          position: absolute;
+          top: 0;
+          right: 0.8rem;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 0.8rem;
         }
 
         .emp-approve,
@@ -270,13 +264,6 @@ export const EmpCard = ({ name, email, phone, date, image, color}) => {
           }
         }
       `}</style>
-
-      <EmpAssignmentPopUp
-        employee={employee}
-        isOpen={isPopupOpen}
-        onClose={handleClosePopup}
-        onSave={handleSaveAssignment}
-      />
     </>
   );
 };
