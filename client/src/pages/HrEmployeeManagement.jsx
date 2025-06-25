@@ -50,24 +50,24 @@ export const HrEmployeeManagement = () => {
 
   const locations = [
     {
-      branchName: "Chennai",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+      branchName: "Perungudi",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.2300795125925!2d80.24268317484109!3d12.957124087356895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525d2313e5fa83%3A0x86751fde2142c085!2sZuntra%20Digital%20Private%20Limited!5e0!3m2!1sen!2sin!4v1750855923184!5m2!1sen!2sin"
     },
     {
-      branchName: "Bangalore",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+      branchName: "Selaiyur",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124440.7668226528!2d79.99512631640623!3d12.922244400000007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f6ed2136c9f%3A0x195a3558e9f5f39b!2sZUDIO%20-%20Selaiyur%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856070265!5m2!1sen!2sin"
     },
     {
-      branchName: "Hyderabad",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+      branchName: "Kodambakkam",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124374.89066981588!2d80.08488851640625!3d13.053783100000024!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52676cb6734ecb%3A0x29afa95d29fddde!2sZUDIO%20-%20Kodambakkam%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856107276!5m2!1sen!2sin"
     },
     {
-      branchName: "Coimbatore",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+      branchName: "Adyar",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124403.6466499826!2d80.11916441640622!3d12.996525300000012!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526700208c639b%3A0xe27864459a616099!2sZUDIO!5e0!3m2!1sen!2sin!4v1750856305753!5m2!1sen!2sin"
     },
     {
-      branchName: "Trichy",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15407206.952485017!2d71.69291105639869!3d19.476030190244764!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f719a5b4053%3A0x8f063ff3a60953f4!2sYaa%20Mohideen%20Restaurant!5e0!3m2!1sen!2sin!4v1750843407815!5m2!1sen!2sin"
+      branchName: "Avadi",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124344.53302174553!2d79.96295661640626!3d13.113963500000008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526369c5679e39%3A0xf15ed76fbd823a9c!2sZUDIO%20-%20Avadi%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856241763!5m2!1sen!2sin"
     }
   ];
 
@@ -161,7 +161,6 @@ export const HrEmployeeManagement = () => {
             onClose={() => setShowLocationForm(false)}
             onSubmit={(formData) => {
               console.log('Submitted:', formData);
-              // Handle submitted data here
             }}
           />
         )}
