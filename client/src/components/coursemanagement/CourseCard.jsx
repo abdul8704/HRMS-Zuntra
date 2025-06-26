@@ -44,7 +44,7 @@ const styles = {
     height: "auto",
     minHeight: "18.75rem",
     backgroundColor: "#D6D6D6",
-    borderRadius: "1.2rem",
+    borderRadius: "0.8rem",
     boxShadow: "0 0.25rem 0.75rem rgba(0, 0, 0, 0.1)",
     display: "flex",
     flexDirection: "column",
