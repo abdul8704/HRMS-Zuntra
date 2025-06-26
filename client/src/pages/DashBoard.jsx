@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { ProjectDeadline } from "../components/projectManagement/ProjectDeadline";
 import { UserGreetings } from "../components/projectManagement/UserGreetings";
-import { TimeCard } from "../components/projectManagement/TimeCard";
+import { TimeCard } from "../components/attendance/TimeCard";
 import { jwtDecode } from 'jwt-decode'
 import api from "../api/axios";
 
@@ -54,16 +54,16 @@ return (
             <UserGreetings name={userDetails.username} profileImageURL={userDetails.profilePicture} />
           </div>
           <div className='intime'>
-            <TimeCard icon="&#10145;" time="09:02" label="Today's in time" bgColor="#C1E8BD" />
+            <TimeCard state="in" time={"9:20"} />
           </div>
           <div className='worktime'>
-            <TimeCard icon="&#128188;" time="07:28" label="Total work time" bgColor="#C3E4EE" />
+            <TimeCard state="work" time={"9:20"} />
           </div>
           <div className='outtime'>
-            <TimeCard icon="&#11013;" time="18:02" label="Today's out time" bgColor="#E1BEC5" />
+            <TimeCard state="out" time={"9:20"} />
           </div>
           <div className='breaktime'>
-            <TimeCard icon="&#9749;" time="01:32" label="Total break time" bgColor="#DECEB9" />
+            <TimeCard state="break" time={"9:20"} />
           </div>
           <div className='remainder'>Remainder</div>
           <div className='workbreak'>Work Break Composition</div>
@@ -83,7 +83,6 @@ return (
       {`
           .dash-grid {
             display: grid;
-            border: 1rem;
             grid-template-columns: repeat(9, 1fr);
             grid-template-rows: repeat(9, 1fr);
             place-content: center;
@@ -151,10 +150,6 @@ return (
             border-radius: 20px;
           }
           .greetings,
-          .intime,
-          .outtime,
-          .worktime,
-          .breaktime,
           .remainder,
           .workbreak,
           .deadline,

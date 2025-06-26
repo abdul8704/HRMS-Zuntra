@@ -39,18 +39,13 @@ export const HrEmployeeDetail = () => {
             <WorkTime />
             <BreakTime />
           </div>
-
-          {/* 2nd position */}
           <div className="calendar-wrapper">
             <AttendanceCalendar />
           </div>
-
-          {/* 3rd position */}
           <div className="attendance-card-wrapper">
             <AttendanceCard />
           </div>
 
-          {/* 4th position */}
           <div className="progress-card-wrapper">
             <ProgressCard />
           </div>
