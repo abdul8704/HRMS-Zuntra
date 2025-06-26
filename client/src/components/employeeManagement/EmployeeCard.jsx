@@ -81,47 +81,54 @@ const darkenColor = (hex, percent = 10) => {
   return `hsl(${h}, ${s}%, ${l}%)`;
 };
 const styles = {
-  card: (bgColor) => ({
-    
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    backgroundColor: bgColor,
-    borderRadius: "16px",
-    padding: "16px",
-    gap: "16px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
-    width: "100%",
-    position: "relative",
-  }),
+card: (bgColor) => ({
+  display: "flex",
+  flexDirection: "row",
+  flexWrap: "wrap",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  backgroundColor: bgColor,
+  borderRadius: "16px",
+  padding: "12px",       // Reduced from 16px to 12px
+  gap: "12px",           // Reduced gap between content
+  boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+  width: "100%",
+  position: "relative",
+  maxWidth:"441px",
+}),
+
+
   cardContent: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: "16px",
-    width: "100%",
-  },
-  leftSection: {
-    display: "flex",
-    flexDirection: "row",
-    gap: "16px",
-    flex: 1,
-    minWidth: "240px",
-  },
-  imageContainer: {
-    width: "80px",
-    flexShrink: 0,
-  },
-  image: {
-    width: "80px",
-    height: "80px",
-    borderRadius: "50%",
-    objectFit: "cover",
-  },
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  width: "100%",
+},
+
+
+
+ leftSection: {
+  display: "flex",
+  flexDirection: "row",
+  gap: "12px",
+  flexShrink: 1,     // Prevent unnecessary stretching
+  flexGrow: 0,       // Don't expand to available space
+  minWidth: "auto",  // Let content decide width
+},
+
+
+ imageContainer: {
+  width: "60px",        // Reduced from 80px
+  flexShrink: 0,
+},
+image: {
+  width: "60px",
+  height: "60px",
+  borderRadius: "50%",
+  objectFit: "cover",
+},
+
+
   infoContainer: {
     display: "flex",
     flexDirection: "column",
@@ -131,71 +138,79 @@ const styles = {
     overflow: "hidden",
   },
   name: {
-    fontSize: "20px",
-    margin: 0,
-    cursor: "pointer",
-  },
-  row: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    fontSize: "14px",
-    color: "#333",
-    maxWidth: "100%",
-    cursor: "pointer",
-  },
+  fontSize: "18px",
+  margin: 0,
+  cursor: "pointer",
+},
+row: {
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  fontSize: "14px",
+  color: "#333",
+  maxWidth: "100%",
+  flexWrap: "nowrap", // Prevent wrapping
+  overflow: "hidden", // Hide overflow
+},
+
   icon: {
     fontSize: "16px",
     flexShrink: 0,
   },
-  text: {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    maxWidth: "180px",
-    display: "inline-block",
-  },
-  role: (bg) => ({
-    marginTop: "4px",
-    padding: "4px 8px",
-    backgroundColor: bg,
-    borderRadius: "12px",
-    width: "fit-content",
-    fontSize: "13px",
-    color: "black",
-  }),
-  timeContainer: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, 1fr)",
-    gap: "10px",
-    minWidth: "300px",
-    marginLeft: "auto",
-  },
+ text: {
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  maxWidth: "120px",  // You can tweak this to control truncation point
+  display: "inline-block",
+},
+
+ role: (bg) => ({
+  marginTop: "4px",
+  padding: "3px 6px",
+  backgroundColor: bg,
+  borderRadius: "10px",
+  width: "fit-content",
+  fontSize: "11px",
+  color: "black",
+}),
+
+ timeContainer: {
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 1fr)",
+  gap: "8px",            // Reduced spacing between boxes
+  minWidth: "200px",     // Reduced overall width
+  marginLeft: "20px",    // Small fixed margin to separate from left details
+},
+
+
+
   timeBox: (bg) => ({
-    backgroundColor: bg,
-    borderRadius: "12px",
-    padding: "10px 16px",
-    textAlign: "center",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    color: "#fff",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-    width: "100px",
-    height: "60px",
-    boxSizing: "border-box",
-  }),
+  backgroundColor: bg,
+  borderRadius: "10px",
+  padding: "6px 10px",
+  textAlign: "center",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "#fff",
+  boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+  width: "80px",
+  height: "50px",
+  boxSizing: "border-box",
+}),
+
   timeRow: {
     display: "flex",
     alignItems: "center",
     gap: "6px",
   },
   timeText: {
-    fontWeight: "bold",
-    fontSize: "18px",
-    color: "#777", 
-  },
+  fontWeight: "bold",
+  fontSize: "16px",
+  color: "#777",
+},
 };
 
 export const EmployeeCard = ({
