@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import {jwtDecode} from 'jwt-decode';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { NotFound } from './pages/NotFound';
@@ -16,9 +17,10 @@ import { GeoFencing } from './components/employeeManagement/GeoFencing';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
 import { Upskill } from './pages/Upskill';
 import { DashBoard } from './pages/DashBoard';
+import  useTrackSessionEnd  from "../src/hooks/endOfSession.js"
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [userid, setUserid] = useState('');
 
   return (
     <>
@@ -28,8 +30,8 @@ function App() {
         <Route path="/" element={<Login/>}></Route>
         <Route path="/newuser" element={<NewUser/>} />
         <Route path="/dashboard" element={<DashBoard/>}></Route>
-        <Route path="/projects" element={<HrProjectManagement/>}></Route>
-        <Route path="/project/:navId" element={<HrProjectDetails/>}></Route>
+        <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
+        <Route path="/project/:projectId/:navId" element={<HrProjectDetails/>}></Route>
         <Route path="/employee/:navId" element={<HrEmployeeManagement/>}></Route>
         <Route path="/employee/details"  element={<HrEmployeeDetail/>}></Route>
         <Route path="/courses/:navId" element={<HrCourseManagement/>}></Route>
