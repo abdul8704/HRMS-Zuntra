@@ -6,78 +6,80 @@ import { TimeCard } from "../components/projectManagement/TimeCard";
 import api from "../api/axios"; // make sure this exists or update the path
 
 export const DashBoard = () => {
-    const [projectDate, setProjectdate] = useState(new Date());
-    const [projects, setProjects] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [apiMessage, setApiMessage] = useState("");
-    const formatDateDDMMYYYY = (date) => {
-        const d = new Date(date);
-        const day = String(d.getDate()).padStart(2, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const year = d.getFullYear();
-        return `${day}${month}${year}`;
-    };
+  const [projectDate, setProjectdate] = useState(new Date());
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [apiMessage, setApiMessage] = useState("");
+  const formatDateDDMMYYYY = (date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}${month}${year}`;
+  };
 
-    useEffect(() => {
-        const fetchTasks = async () => {
-            setLoading(true);
-            try {
-                const formatted = formatDateDDMMYYYY(projectDate);
-                const res = await api.get(`/api/project/all/date/${formatted}`);
-                if (res.success) {
-                    setProjects(Array.isArray(res.data) ? res.data : []);
-                } else {
-                    setApiMessage(res.data.message || "Something went wrong.");
-                    setProjects([]);
-                }
-            } catch (error) {
-                setApiMessage("Error fetching projects.");
-                setProjects([]);
-            } finally {
-                setLoading(false);
-            }
-        };
+  useEffect(() => {
+    const fetchTasks = async () => {
+      setLoading(true);
+      try {
+        const formatted = formatDateDDMMYYYY(projectDate);
+        const res = await api.get(`/api/project/all/date/${formatted}`);
+        if (res.data.success) {
+          setProjects(Array.isArray(res.data.data) ? res.data.data : []);
+        } else {
+          setApiMessage(res.data.message || "Something went wrong.");
+          setProjects([]);
+        }
+      } catch (error) {
+        setApiMessage("Error fetching projects.");
+        setProjects([]);
+      }
+      finally {
+      setLoading(false);
+    }
+  };
 
-        fetchTasks();
-    }, [projectDate]);
-
-    return (
-        <>
-            <div className="website-container">
-                <Sidebar />
-                <div className="website-module">
-                    <div className='dash-grid'>
-                        <div className='greetings'>
-                            <UserGreetings />
-                        </div>
-                        <div className='intime'>
-                            <TimeCard icon="&#10145;" time="09:02" label="Today's in time" bgColor="#C1E8BD" />
-                        </div>
-                        <div className='worktime'>
-                            <TimeCard icon="&#128188;" time="07:28" label="Total work time" bgColor="#C3E4EE" />
-                        </div>
-                        <div className='outtime'>
-                            <TimeCard icon="&#11013;" time="18:02" label="Today's out time" bgColor="#E1BEC5" />
-                        </div>
-                        <div className='breaktime'>
-                            <TimeCard icon="&#9749;" time="01:32" label="Total break time" bgColor="#DECEB9" />
-                        </div>
-                        <div className='remainder'>Remainder</div>
-                        <div className='workbreak'>Work Break Composition</div>
-                        <div className='deadline'>
-                            <ProjectDeadline
-                                projects={projects}
-                                projectDate={projectDate}
-                                setProjectDate={setProjectdate}
-                            />
-                        </div>
-                        <div className='notification'>Notification</div>
-                        <div className='leave'>Employee on Leave</div>
-                    </div>
-                </div>
-            </div>
-      <style>
-        {`
+  fetchTasks();
+  console.log(projects)
+}, [projectDate]);
+console.log(params.user)
+return (
+  <>
+    <div className="website-container">
+      <Sidebar />
+      <div className="website-module">
+        <div className='dash-grid'>
+          <div className='greetings'>
+            <UserGreetings />
+          </div>
+          <div className='intime'>
+            <TimeCard icon="&#10145;" time="09:02" label="Today's in time" bgColor="#C1E8BD" />
+          </div>
+          <div className='worktime'>
+            <TimeCard icon="&#128188;" time="07:28" label="Total work time" bgColor="#C3E4EE" />
+          </div>
+          <div className='outtime'>
+            <TimeCard icon="&#11013;" time="18:02" label="Today's out time" bgColor="#E1BEC5" />
+          </div>
+          <div className='breaktime'>
+            <TimeCard icon="&#9749;" time="01:32" label="Total break time" bgColor="#DECEB9" />
+          </div>
+          <div className='remainder'>Remainder</div>
+          <div className='workbreak'>Work Break Composition</div>
+          <div className='deadline'>
+            <ProjectDeadline
+              projects={projects}
+              projectDate={projectDate}
+              setProjectDate={setProjectdate}
+            />
+          </div>
+          <div className='notification'>Notification</div>
+          <div className='leave'>Employee on Leave</div>
+        </div>
+      </div>
+    </div>
+    <style>
+      {`
           .dash-grid {
             display: grid;
             border: 1rem;
@@ -161,7 +163,7 @@ export const DashBoard = () => {
             padding: 1rem;
           }
         `}
-      </style>
-    </>
-  );
+    </style>
+  </>
+);
 };

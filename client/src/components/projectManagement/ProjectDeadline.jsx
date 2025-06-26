@@ -2,7 +2,6 @@ import React from 'react';
 
 export const ProjectDeadline = ({ projects, projectDate, setProjectDate }) => {
   const selectedDate = projectDate.toISOString().split('T')[0];
-
   return (
     <>
       <div className="project-deadline">
@@ -29,8 +28,8 @@ export const ProjectDeadline = ({ projects, projectDate, setProjectDate }) => {
           ) : (
             projects.map((project, index) => (
               <div key={index} className="project-item">
-                <span>{project.name}</span>
-                <span>{project.team}</span>
+                <span>{project.projectTitle}</span>
+                <span>{project.teamName}</span>
               </div>
             ))
           )}
