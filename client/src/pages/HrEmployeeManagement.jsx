@@ -153,10 +153,10 @@ export const HrEmployeeManagement = () => {
                 phone={emp.phone}
                 image={emp.image}
                 role="UI/UX Designer"
-                inTime="09:02"
-                outTime="16:55"
-                workTime="09:02"
-                breakTime="16:55"
+                inTime="10:00"
+                outTime="16:00"
+                workTime="10:01"
+                breakTime="12:00"
                 bgColor={bgColorList[index]}
               />
             ))}
