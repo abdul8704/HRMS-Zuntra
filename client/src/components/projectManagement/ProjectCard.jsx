@@ -4,7 +4,6 @@ import { EmpProfile } from "../employeeManagement/EmpProfile";
 import { useNavigate } from "react-router-dom";
 
 export const ProjectCard = ({ projectData }) => {
-  console.log(projectData);
   if (!projectData) return null;
 
   const navigate = useNavigate();
@@ -58,10 +57,14 @@ export const ProjectCard = ({ projectData }) => {
       width: "20rem",
       fontFamily: "'Segoe UI', sans-serif",
       position: "relative",
-      boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+      boxShadow: "0 0.125rem 0.625rem rgba(0,0,0,0.1)",
       marginTop: "1.25rem",
       cursor: "pointer",
       transition: "transform 0.2s",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      minHeight: "17.5rem",
     },
     icons: {
       position: "absolute",
@@ -76,16 +79,32 @@ export const ProjectCard = ({ projectData }) => {
       fontSize: "1.375rem",
       fontWeight: 700,
       margin: "0.3125rem 0 0.5rem 0",
+      display: "-webkit-box",
+      WebkitLineClamp: 2,
+      WebkitBoxOrient: "vertical",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
     },
     subtitle: {
       fontSize: "1.125rem",
       fontWeight: 600,
       margin: "0 0 0.5rem 0",
+      display: "-webkit-box",
+      WebkitLineClamp: 1,
+      WebkitBoxOrient: "vertical",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
     },
     description: {
       color: "#f0f0f0",
       fontSize: "0.875rem",
       marginBottom: "3rem",
+      display: "-webkit-box",
+      WebkitLineClamp: 2,
+      WebkitBoxOrient: "vertical",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      flexGrow: 1,
     },
     footer: {
       position: "absolute",
@@ -142,7 +161,7 @@ export const ProjectCard = ({ projectData }) => {
       fontSize: "1rem",
       width: "100%",
       resize: "vertical",
-      minHeight: "80px",
+      minHeight: "5rem",
     },
     addBtn: {
       marginTop: "0.5rem",
@@ -241,30 +260,44 @@ export const ProjectCard = ({ projectData }) => {
                 }
                 style={styles.input}
               />
-              <input
-                type="text"
-                placeholder="Team Lead"
-                value={formData.user.name}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    user: { ...formData.user, name: e.target.value },
-                  })
-                }
-                style={styles.input}
-              />
+              <div style={{ position: "relative", flex: 1 }}>
+                <input
+                  type="text"
+                  placeholder="Select Team Lead"
+                  value={formData.user.name}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      user: { ...formData.user, name: e.target.value },
+                    })
+                  }
+                  style={{ ...styles.input, cursor: "pointer" }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    right: "1rem",
+                    transform: "translateY(-50%)",
+                    pointerEvents: "none",
+                    fontSize: "1rem",
+                  }}
+                >
+                  ▼
+                </div>
+              </div>
             </div>
 
             <textarea
-              placeholder="Team Members..."
+              placeholder="Add team members..."
               value={formData.teamMembers}
               onChange={(e) =>
                 setFormData({ ...formData, teamMembers: e.target.value })
               }
-              style={styles.textarea}
+              style={{ ...styles.textarea, minHeight: "6rem" }}
             />
 
-            <div style={styles.addBtn}>＋</div>
+            <div style={{ ...styles.addBtn, fontSize: "1.25rem" }}>＋</div>
 
             <div style={styles.actions}>
               <button
