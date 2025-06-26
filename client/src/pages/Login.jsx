@@ -134,6 +134,8 @@ export const Login = () => {
           otp: otp
         })
 
+        console.log(verifyOtp)
+
         if (verifyOtp.status === 200) {
           const newUser = await api.post("/auth/signup/newuser", {
             username: name,
@@ -141,6 +143,7 @@ export const Login = () => {
             phoneNum: phone,
             password: password
           })
+          console.log(newUser)
 
           if (newUser.status === 200) {
             alert("success")
