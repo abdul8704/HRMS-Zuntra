@@ -1,6 +1,6 @@
 import React from "react";
 
-export const InTimeCard = ({ time = "09:02", label = "Today's in time" }) => {
+export const InTime = ({ time = "09:02", label = "Today's in time" }) => {
   return (
     <div className="in-card" role="group" aria-label={label}>
       <div className="in-card__icon" aria-hidden="true">
