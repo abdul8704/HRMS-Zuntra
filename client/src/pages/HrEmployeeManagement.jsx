@@ -207,8 +207,8 @@ export const HrEmployeeManagement = () => {
         )}
 
         {navId === "newusers" && (
-  <div className="emp-scroll-wrapper">
-    <div className="emp-cards-container">
+  <div className="newusers-scroll-wrapper">
+    <div className="newusers-container">
       {employees.map((emp, index) => (
         <EmpCard
           key={index}
@@ -253,20 +253,20 @@ export const HrEmployeeManagement = () => {
       )}
 
       <style>{`
-        .emp-scroll-wrapper {
+        .newusers-wrapper {
   height: calc(100vh - 7rem); /* Adjust based on navbar height */
   overflow-y: auto;
   padding: 1rem;
   scroll-behavior: smooth;
 }
 
-.emp-cards-container {
+.newusers-container {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
 }
 
-.emp-cards-container > * {
+.newusers-container > * {
   flex: 0 0 calc(33.33% - 1rem);
   max-width: calc(33.33% - 1rem);
 }
@@ -292,10 +292,38 @@ export const HrEmployeeManagement = () => {
           margin-top: 1.5rem;
         }
 
-        .emp-cards-container > * {
-  flex: 0 0 calc(33.33% - 1rem);
-  max-width: calc(33.33% - 1rem);
+        .employee-card-wrapper {
+  height: calc(100vh - 7rem); /* adjust based on navbar height */
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
+
+.employee-card-wrapper > * {
+  flex: 0 0 calc(50% - 1rem);
+  max-width: calc(50% - 1rem);
+}
+
+@media (max-width: 768px) {
+  .employee-card-wrapper > * {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+
+
+@media (max-width: 1024px) {
+  .employee-card-wrapper > * {
+    flex: 1 1 calc(50% - 1rem);
+  }
+}
+  
+body {
+  overflow: hidden;
+}
+
 
 .role-scroll-wrapper {
   flex: 1;
