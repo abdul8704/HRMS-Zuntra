@@ -25,7 +25,7 @@ const getAllOnGoingProjects = asyncHandler(async (req, res) => {
             const totalDaysLeft = diffArray[3].replace("Total days: ", "");
 
             return {
-                id: project._id.toString(),
+                _id: project._id,
                 clientName: project.clientName,
                 projectTitle: project.projectTitle,
                 projectDesc: project.projectDesc,
