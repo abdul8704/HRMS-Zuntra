@@ -1,86 +1,48 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { ProjectDeadline } from "../components/projectManagement/ProjectDeadline";
 import { UserGreetings } from "../components/projectManagement/UserGreetings";
 import { TimeCard } from "../components/attendance/TimeCard";
-import { jwtDecode } from 'jwt-decode'
-import api from "../api/axios";
+import { jwtDecode } from 'jwt-decode';
 
 export const DashBoard = () => {
-  const [projectDate, setProjectdate] = useState(new Date());
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [apiMessage, setApiMessage] = useState("");
   const token = localStorage.getItem('accessToken');
-  const userDetails=jwtDecode(token);
-  const formatDateDDMMYYYY = (date) => {
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day}${month}${year}`;
-  };
+  const userDetails = jwtDecode(token);
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      setLoading(true);
-      try {
-        const formatted = formatDateDDMMYYYY(projectDate);
-        const res = await api.get(`/api/project/all/date/${formatted}`);
-        if (res.data.success) {
-          setProjects(Array.isArray(res.data.data) ? res.data.data : []);
-        } else {
-          setApiMessage(res.data.message || "Something went wrong.");
-          setProjects([]);
-        }
-      } catch (error) {
-        setApiMessage("Error fetching projects.");
-        setProjects([]);
-      }
-      finally {
-      setLoading(false);
-    }
-  };
-
-  fetchTasks();
-}, [projectDate]);
-return (
-  <>
-    <div className="website-container">
-      <Sidebar />
-      <div className="website-module">
-        <div className='dash-grid'>
-          <div className='greetings'>
-            <UserGreetings name={userDetails.username} profileImageURL={userDetails.profilePicture} />
+  return (
+    <>
+      <div className="website-container">
+        <Sidebar />
+        <div className="website-module">
+          <div className='dash-grid'>
+            <div className='greetings'>
+              <UserGreetings name={userDetails.username} profileImageURL={userDetails.profilePicture} />
+            </div>
+            <div className='intime'>
+              <TimeCard state="in" time={"9:20"} />
+            </div>
+            <div className='worktime'>
+              <TimeCard state="work" time={"9:20"} />
+            </div>
+            <div className='outtime'>
+              <TimeCard state="out" time={"9:20"} />
+            </div>
+            <div className='breaktime'>
+              <TimeCard state="break" time={"9:20"} />
+            </div>
+            <div className='remainder'>Remainder</div>
+            <div className='workbreak'>Work Break Composition</div>
+            <div className='deadline'>
+              <ProjectDeadline />
+            </div>
+            <div className='notification'>Notification</div>
+            <div className='leave'>Employee on Leave</div>
           </div>
-          <div className='intime'>
-            <TimeCard state="in" time={"9:20"} />
-          </div>
-          <div className='worktime'>
-            <TimeCard state="work" time={"9:20"} />
-          </div>
-          <div className='outtime'>
-            <TimeCard state="out" time={"9:20"} />
-          </div>
-          <div className='breaktime'>
-            <TimeCard state="break" time={"9:20"} />
-          </div>
-          <div className='remainder'>Remainder</div>
-          <div className='workbreak'>Work Break Composition</div>
-          <div className='deadline'>
-            <ProjectDeadline
-              projects={projects}
-              projectDate={projectDate}
-              setProjectDate={setProjectdate}
-            />
-          </div>
-          <div className='notification'>Notification</div>
-          <div className='leave'>Employee on Leave</div>
         </div>
       </div>
-    </div>
-    <style>
-      {`
+
+      <style>
+        {`
           .dash-grid {
             display: grid;
             grid-template-columns: repeat(9, 1fr);
@@ -158,7 +120,7 @@ return (
             padding: 1rem;
           }
         `}
-    </style>
-  </>
-);
+      </style>
+    </>
+  );
 };

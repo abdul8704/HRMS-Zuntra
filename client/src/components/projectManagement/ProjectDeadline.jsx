@@ -1,7 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import api from '../../api/axios';
+import { jwtDecode } from 'jwt-decode';
 
-export const ProjectDeadline = ({ projects, projectDate, setProjectDate }) => {
+export const ProjectDeadline = () => {
+  const [projectDate, setProjectDate] = useState(new Date());
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [apiMessage, setApiMessage] = useState('');
+
+  const formatDateDDMMYYYY = (date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}${month}${year}`;
+  };
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      setLoading(true);
+      try {
+        const formatted = formatDateDDMMYYYY(projectDate);
+        const res = await api.get(`/api/project/all/date/${formatted}`);
+        if (res.data.success) {
+          setProjects(Array.isArray(res.data.data) ? res.data.data : []);
+        }
+      } catch (err) {
+        setApiMessage(res.data.message);
+        setProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, [projectDate]);
+
   const selectedDate = projectDate.toISOString().split('T')[0];
+
   return (
     <>
       <div className="project-deadline">
@@ -23,8 +59,10 @@ export const ProjectDeadline = ({ projects, projectDate, setProjectDate }) => {
         </div>
 
         <div className="project-list">
-          {projects.length === 0 ? (
-            <div className="no-projects">No projects for this date.</div>
+          {loading ? (
+            <div className="no-projects">Loading...</div>
+          ) : projects.length === 0 ? (
+            <div className="no-projects">{apiMessage || 'No projects for this date.'}</div>
           ) : (
             projects.map((project, index) => (
               <div key={index} className="project-item">
