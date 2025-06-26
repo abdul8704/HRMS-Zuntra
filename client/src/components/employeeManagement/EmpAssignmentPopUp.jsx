@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
-export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
+export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
   const roles = {
     'Software Engineer': '80000',
     'Senior Software Engineer': '120000',
@@ -32,7 +32,6 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
 
   const roleInputRef = useRef(null);
 
-  // Set default salary based on selected role (only if not manually edited)
   useEffect(() => {
     if (!manualSalary && roles[selectedRole]) {
       setSalary(roles[selectedRole]);
@@ -41,10 +40,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (
-        roleInputRef.current &&
-        !roleInputRef.current.contains(e.target)
-      ) {
+      if (roleInputRef.current && !roleInputRef.current.contains(e.target)) {
         setShowDropdown(false);
       }
     };
@@ -72,7 +68,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
   const handleSelectRole = (role) => {
     setSelectedRole(role);
     setShowDropdown(false);
-    setManualSalary(false); // Reset salary to default for selected role
+    setManualSalary(false);
   };
 
   const handleSalaryChange = (e) => {
@@ -89,17 +85,16 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
   return (
     <div className="popup-overlay">
       <div className="popup-container">
-        {/* Left Side */}
+        {/* Left */}
         <div className="popup-left">
           <img src={employee.image} alt="Profile" />
           <h3 className="emp-emp-name">{employee.name}</h3>
-<p className="emp-info emp-email-bg">{employee.email}</p>
-<p className="emp-info">{employee.phone}</p>
-<p className="emp-info">Applied on : {employee.date}</p>
-
+          <p className="emp-info emp-email-bg">{employee.email}</p>
+          <p className="emp-info">{employee.phone}</p>
+          <p className="emp-info">Applied on : {employee.date}</p>
         </div>
 
-        {/* Right Side Form */}
+        {/* Right */}
         <div className="popup-right">
           <label ref={roleInputRef}>
             Role:
@@ -130,44 +125,26 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
 
           <label>
             Shift:
-            <select
-  value={selectedShift}
-  onChange={(e) => setSelectedShift(e.target.value)}
-  required
->
-  <option value="" disabled hidden>
-    Select shift
-  </option>
-  {shifts.map((shift) => (
-    <option key={shift} value={shift}>
-      {shift}
-    </option>
-  ))}
-</select>
-
+            <select value={selectedShift} onChange={(e) => setSelectedShift(e.target.value)} required>
+              <option value="" disabled hidden>Select shift</option>
+              {shifts.map((shift) => (
+                <option key={shift} value={shift}>{shift}</option>
+              ))}
+            </select>
           </label>
 
           <label>
             Branch:
-            <select
-  value={selectedBranch}
-  onChange={(e) => setSelectedBranch(e.target.value)}
-  required
->
-  <option value="" disabled hidden>
-    Select branch
-  </option>
-  {branches.map((branch) => (
-    <option key={branch} value={branch}>
-      {branch}
-    </option>
-  ))}
-</select>
-
+            <select value={selectedBranch} onChange={(e) => setSelectedBranch(e.target.value)} required>
+              <option value="" disabled hidden>Select branch</option>
+              {branches.map((branch) => (
+                <option key={branch} value={branch}>{branch}</option>
+              ))}
+            </select>
           </label>
 
           <label>
-            Salary(per hour):
+            Salary (per hour):
             <input
               type="number"
               value={salary}
@@ -177,21 +154,13 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
           </label>
 
           <div className="popup-buttons">
-            <button className="cancel-btn" onClick={onClose}>
-              Cancel
-            </button>
-            <button
-              className="recruit-btn"
-              onClick={handleSubmit}
-              disabled={!isFormValid}
-            >
-              Recruit
-            </button>
+            <button className="cancel-btn" onClick={onClose}>Cancel</button>
+            <button className="recruit-btn" onClick={handleSubmit} disabled={!isFormValid}>Recruit</button>
           </div>
         </div>
       </div>
 
-      {/* CSS Styles */}
+      {/* Styles */}
       <style jsx>{`
         .popup-overlay {
           position: fixed;
@@ -207,17 +176,16 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
         }
 
         .popup-container {
-  background: white;
-  border-radius: 1rem;
-  display: flex;
-  flex-direction: row;
-  width: 90%;
-  max-width: 700px;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-  align-items: stretch; /* allow height to stretch equally */
-}
-
+          background: white;
+          border-radius: 1rem;
+          display: flex;
+          flex-direction: row;
+          width: 90%;
+          max-width: 43.75rem;
+          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+          overflow: hidden;
+          align-items: stretch;
+        }
 
         .popup-left {
           width: 35%;
@@ -239,52 +207,47 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
         }
 
         .emp-emp-name {
-  font-size: 1.5rem;
-  font-weight: normal;
-  margin: 0.5rem 0;
-  word-wrap: break-word;    /* ensures long words break */
-  white-space: normal;      /* allows text to wrap */
-  text-align: center;
-  width: 100%;              /* ensure it stays inside container */
-}
+          font-size: 1.5rem;
+          font-weight: normal;
+          margin: 0.5rem 0;
+          word-wrap: break-word;
+          white-space: normal;
+          text-align: center;
+          width: 100%;
+        }
 
+        .emp-info {
+          font-size: 0.85rem;
+          opacity: 0.7;
+          margin: 0.15rem 0;
+          word-wrap: break-word;
+          white-space: normal;
+          text-align: center;
+          width: 100%;
+        }
 
-.emp-info {
-  font-size: 0.85rem;
-  opacity: 0.7;
-  margin: 0.15rem 0;
-  word-wrap: break-word;
-  white-space: normal;
-  text-align: center;
-  width: 100%;
-}
-
-
-.emp-email-bg {
-  background-color: rgba(255, 255, 255, 0.8);
-  color: rgba(0, 0, 0, 0.7);
-  padding: 0.3rem 0.7rem;
-  border-radius: 9999px;
-  display: inline-block;
-  font-size: 0.85rem;
-  opacity: 0.9;
-  word-wrap: break-word;
-  white-space: normal;
-  text-align: center;
-  max-width: 100%;
-}
-
-
+        .emp-email-bg {
+          background-color: rgba(255, 255, 255, 0.8);
+          color: rgba(0, 0, 0, 0.7);
+          padding: 0.3rem 0.7rem;
+          border-radius: 9999px;
+          display: inline-block;
+          font-size: 0.85rem;
+          opacity: 0.9;
+          word-wrap: break-word;
+          white-space: normal;
+          text-align: center;
+          max-width: 100%;
+        }
 
         .popup-right {
-  flex: 1;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;  /* ✅ Vertically center content */
-  gap: 1rem;
-}
-
+          flex: 1;
+          padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 1rem;
+        }
 
         label {
           font-size: 0.9rem;
@@ -298,13 +261,13 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
           padding: 0.5rem;
           margin-top: 0.3rem;
           border-radius: 0.4rem;
-          border: 1px solid #ccc;
+          border: 0.0625rem solid #ccc;
           font-size: 0.95rem;
         }
 
         select:invalid {
-  color: rgba(0, 0, 0, 0.4);
-}
+          color: rgba(0, 0, 0, 0.4);
+        }
 
         .dropdown {
           position: absolute;
@@ -312,7 +275,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
           left: 0;
           right: 0;
           background: white;
-          border: 1px solid #ccc;
+          border: 0.0625rem solid #ccc;
           border-radius: 0.4rem;
           max-height: 8rem;
           overflow-y: auto;
@@ -353,43 +316,37 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave}) => {
         .cancel-btn {
           background-color: #f3f4f6;
           color: black;
-          font-weight:normal;
+          font-weight: normal;
         }
 
         .cancel-btn:hover {
-          background-color:red;
-          opacity:0.5;
-          color:white;
-          font-weight:normal;
+          background-color: red;
+          opacity: 0.5;
+          color: white;
+          font-weight: normal;
         }
 
         .recruit-btn {
-          background-color: rgba(140, 221, 132, 0.8); 
+          background-color: rgba(140, 221, 132, 0.8);
           color: white;
-          font-weight:normal;
+          font-weight: normal;
         }
 
         .recruit-btn:not(:disabled):hover {
-  background-color: green;
-  opacity: 0.7;
-  font-weight: normal;
-}
-
-.recruit-btn:disabled:hover {
-  background-color: #d1d5d6;
-  opacity: 1;
-  cursor: not-allowed;
-}
-
-
-        .recruit-btn:disabled {
-          background-color: #d1d5d6;
-          cursor: not-allowed;
-          font-weight:normal;
+          background-color: green;
+          opacity: 0.7;
+          font-weight: normal;
         }
 
-        
-        @media (max-width: 600px) {
+        .recruit-btn:disabled,
+        .recruit-btn:disabled:hover {
+          background-color: #d1d5d6;
+          opacity: 1;
+          cursor: not-allowed;
+          font-weight: normal;
+        }
+
+        @media (max-width: 37.5rem) {
           .popup-container {
             flex-direction: column;
             max-width: 95%;

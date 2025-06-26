@@ -5,6 +5,7 @@ import { EmpCard } from '../components/employeeManagement/EmpCard';
 import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
 import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
 import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
+import { EditRolePopup } from '../components/employeeManagement/EditRolePopup';
 import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
@@ -12,10 +13,25 @@ import { AddLocationForm } from '../components/employeeManagement/AddLocationFor
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
+
   const [showPopup, setShowPopup] = useState(false);
   const [showAssignPopup, setShowAssignPopup] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showLocationForm, setShowLocationForm] = useState(false);
+  const [editRoleData, setEditRoleData] = useState(null);
+
+  const handleEditRole = (roleData) => {
+    setEditRoleData(roleData);
+  };
+
+  const handleSaveEditedRole = (newData) => {
+    console.log("Updated Role:", newData);
+    setEditRoleData(null);
+  };
+
+  const handleCloseEdit = () => {
+    setEditRoleData(null);
+  };
 
   const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
 
@@ -81,6 +97,16 @@ export const HrEmployeeManagement = () => {
     { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
     { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
     { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+    { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+    { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+    { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+    { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
+    { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
+    { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
+    { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
+    { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
+    { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+    
   ];
 
   const handleApprove = (employee) => {
@@ -126,25 +152,34 @@ export const HrEmployeeManagement = () => {
         )}
 
         {navId === "roles" && (
-          <div className="emp-cards-container">
-            {roleData.map((role, idx) => (
-              <EmpRoleCard
-                key={idx}
-                role={role.role}
-                memberCount={role.memberCount}
-                bgColor={role.bgColor}
-                ibgcolor={role.ibgcolor}
-              />
-            ))}
-            <div className="plus-button" onClick={() => setShowPopup(true)}>
-              <span>
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
-                  <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
-                </svg>
-              </span>
-            </div>
-          </div>
-        )}
+  <div className="role-scroll-wrapper">
+    <div className="emp-cards-container">
+      {roleData.map((role, idx) => (
+        <EmpRoleCard
+          key={idx}
+          role={role.role}
+          memberCount={role.memberCount}
+          bgColor={role.bgColor}
+          ibgcolor={role.ibgcolor}
+          onEdit={() =>
+            handleEditRole({
+              role: role.role,
+              members: role.memberCount,
+              color: role.bgColor,
+            })
+          }
+        />
+      ))}
+      <div className="plus-button" onClick={() => setShowPopup(true)}>
+        <span>
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+            <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+          </svg>
+        </span>
+      </div>
+    </div>
+  </div>
+)}
 
         {navId === "geofencing" && (
           <div className="geo-cards-container">
@@ -157,16 +192,6 @@ export const HrEmployeeManagement = () => {
               </svg>
             </button>
           </div>
-        )}
-
-        {showLocationForm && (
-          <AddLocationForm
-            isOpen={showLocationForm}
-            onClose={() => setShowLocationForm(false)}
-            onSubmit={(formData) => {
-              console.log('Submitted:', formData);
-            }}
-          />
         )}
 
         {navId === "newusers" && (
@@ -189,16 +214,6 @@ export const HrEmployeeManagement = () => {
 
       {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
 
-      {showLocationForm && (
-        <AddLocationForm
-          isOpen={showLocationForm}
-          onClose={() => setShowLocationForm(false)}
-          onSubmit={(formData) => {
-            console.log('Submitted:', formData);
-          }}
-        />
-      )}
-
       {showAssignPopup && selectedEmployee && (
         <div className="popup-overlay">
           <EmpAssignmentPopUp
@@ -210,17 +225,24 @@ export const HrEmployeeManagement = () => {
         </div>
       )}
 
+      {editRoleData && (
+        <div className="popup-overlay">
+          <EditRolePopup
+            role={editRoleData.role}
+            members={editRoleData.members}
+            color={editRoleData.color}
+            onClose={handleCloseEdit}
+            onSave={handleSaveEditedRole}
+          />
+        </div>
+      )}
+
       <style>{`
         .emp-cards-container {
           display: flex;
           flex-wrap: wrap;
           gap: 1rem;
-          max-width: 100%;
-          align-items: stretch;
           margin-top: 1.5rem;
-          max-height: 100%;
-          overflow-y: auto;
-          overflow-x: hidden;
         }
         .employee-card-wrapper {
   display: grid;
@@ -244,30 +266,40 @@ export const HrEmployeeManagement = () => {
           display: flex;
           flex-direction: column;
           gap: 1rem;
-          max-width: 100%;
-          align-items: stretch;
           margin-top: 1.5rem;
-          max-height: 100%;
-          overflow-y: auto;
-          overflow-x: hidden;
         }
 
         .emp-cards-container > * {
-          flex: 1 1 100%;
-          max-width: 100%;
-        }
+  flex: 0 0 calc(33.33% - 1rem);
+  max-width: calc(33.33% - 1rem);
+}
 
-        @media (min-width: 48rem) {
+.role-scroll-wrapper {
+  flex: 1;
+  height: calc(100vh - 7rem); /* adjust based on your navbar height */
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+body {
+  overflow: hidden; /* disable full-page scroll */
+}
+
+.role-scroll-wrapper {
+  scroll-behavior: smooth;
+}
+
+
+
+        @media (min-width: 768px) {
           .emp-cards-container > * {
             flex: 1 1 calc(50% - 1rem);
-            max-width: calc(50% - 1rem);
           }
         }
 
-        @media (min-width: 64rem) {
+        @media (min-width: 1024px) {
           .emp-cards-container > * {
-            flex: 1 1 calc(33.333% - 1rem);
-            max-width: calc(33.333% - 1rem);
+            flex: 1 1 calc(33.33% - 1rem);
           }
         }
 
