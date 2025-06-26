@@ -111,22 +111,34 @@ card: (bgColor) => ({
   display: "flex",
   flexDirection: "row",
   gap: "12px",
-  flexShrink: 1,     // Prevent unnecessary stretching
-  flexGrow: 0,       // Don't expand to available space
-  minWidth: "auto",  // Let content decide width
+  alignItems: "center",         // Vertically center image + text block
+  justifyContent: "flex-start",
 },
 
 
- imageContainer: {
-  width: "60px",        // Reduced from 80px
-  flexShrink: 0,
-},
-image: {
+
+imageContainer: {
+  display: "flex",
+  alignItems: "center",       // Center vertically within the section
+  justifyContent: "flex-start", // Align image to the left inside the container
   width: "60px",
-  height: "60px",
-  borderRadius: "50%",
-  objectFit: "cover",
+  height: "100%",              // Full height of parent container
+  padding: 0,                  // Ensure no internal padding pushes image
 },
+
+image: {
+  width: "60px",               // Maintain fixed width
+  height: "80px",              // Or height as desired
+  objectFit: "contain",        // Prevent distortion
+  display: "block",
+  marginLeft: "0",             // Explicitly remove margin if exists
+},
+
+
+
+
+
+
 
 
   infoContainer: {
