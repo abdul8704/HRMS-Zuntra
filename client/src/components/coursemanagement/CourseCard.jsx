@@ -49,7 +49,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     overflow: "hidden",
-    "@media (max-width: 360px)": {
+    "@media (maxWidth: 360px)": {
       minWidth: "15rem",
       minHeight: "17.5rem",
     },
