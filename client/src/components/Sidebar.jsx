@@ -19,11 +19,11 @@ export const Sidebar = () => {
   const [active, setActive] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
-useEffect(() => {
-  const filteredItems = sidebarItems.filter(item => role === "HR" || item.role === "EMP");
-  const activeIndex = filteredItems.findIndex(item => location.pathname.startsWith(item.path));
-  setActive(activeIndex);
-}, [location.pathname, role]);
+  useEffect(() => {
+    const filteredItems = sidebarItems.filter(item => role === "HR" || item.role === "EMP");
+    const activeIndex = filteredItems.findIndex(item => location.pathname.startsWith(item.path));
+    setActive(activeIndex);
+  }, [location.pathname, role]);
 
 
   useEffect(() => {
@@ -146,19 +146,19 @@ useEffect(() => {
     }
   };
 
-const handleItemClick = async (index) => {
-  const selectedItem = sidebarItems.filter(item => role === "HR" || item.role === "EMP")[index];
-  if(selectedItem.label === 'Logout'){
-    const time = new Date()
-    const pp = await api.post('/api/employee/logout', {
-      logoutTime: time
-    })
-  }
-  navigate(selectedItem.path);
-  if (isMobile) {
-    setSidebar(0);
-  }
-};
+  const handleItemClick = async (index) => {
+    const selectedItem = sidebarItems.filter(item => role === "HR" || item.role === "EMP")[index];
+    if (selectedItem.label === 'Logout') {
+      const time = new Date()
+      await api.post('/api/employee/logout', {
+        logoutTime: time
+      })
+    }
+    navigate(selectedItem.path);
+    if (isMobile) {
+      setSidebar(0);
+    }
+  };
 
   return (
     <>
@@ -210,7 +210,7 @@ const handleItemClick = async (index) => {
                 className={`website-sidebar-icon ${index === active ? "website-sidebar-icon-active" : ""}`}
                 key={index}
                 onClick={() => handleItemClick(index)}
-                
+
               >
                 <div className="website-icon-wrapper">{item.icon}</div>
                 <div className={`website-label-wrapper ${(sideBarStatus === 2 || sideBarStatus === 3) ? 'show' : 'hide'}`}>
@@ -232,6 +232,6 @@ const handleItemClick = async (index) => {
           </div>
         )}
       </div>
-      </>
+    </>
   );
 }
