@@ -61,31 +61,48 @@ const styles = {
     position: "relative",
   }),
   cardContent: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: "16px",
-    width: "100%",
-  },
-  leftSection: {
-    display: "flex",
-    flexDirection: "row",
-    gap: "16px",
-    flex: 1,
-    minWidth: "240px",
-  },
-  imageContainer: {
-    width: "80px",
-    flexShrink: 0,
-  },
-  image: {
-    width: "80px",
-    height: "80px",
-    borderRadius: "50%",
-    objectFit: "cover",
-  },
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  width: "100%",
+},
+
+
+
+ leftSection: {
+  display: "flex",
+  flexDirection: "row",
+  gap: "12px",
+  alignItems: "center",         // Vertically center image + text block
+  justifyContent: "flex-start",
+},
+
+
+
+imageContainer: {
+  display: "flex",
+  alignItems: "center",       // Center vertically within the section
+  justifyContent: "flex-start", // Align image to the left inside the container
+  width: "60px",
+  height: "100%",              // Full height of parent container
+  padding: 0,                  // Ensure no internal padding pushes image
+},
+
+image: {
+  width: "60px",               // Maintain fixed width
+  height: "80px",              // Or height as desired
+  objectFit: "contain",        // Prevent distortion
+  display: "block",
+  marginLeft: "0",             // Explicitly remove margin if exists
+},
+
+
+
+
+
+
+
+
   infoContainer: {
     display: "flex",
     flexDirection: "column",
@@ -95,19 +112,21 @@ const styles = {
     overflow: "hidden",
   },
   name: {
-    fontSize: "20px",
-    margin: 0,
-    cursor: "pointer",
-  },
-  row: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    fontSize: "14px",
-    color: "#333",
-    maxWidth: "100%",
-    cursor: "pointer",
-  },
+  fontSize: "18px",
+  margin: 0,
+  cursor: "pointer",
+},
+row: {
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  fontSize: "14px",
+  color: "#333",
+  maxWidth: "100%",
+  flexWrap: "nowrap", // Prevent wrapping
+  overflow: "hidden", // Hide overflow
+},
+
   icon: {
     fontSize: "16px",
     flexShrink: 0,
