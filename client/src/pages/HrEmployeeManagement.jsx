@@ -165,7 +165,7 @@ export const HrEmployeeManagement = () => {
 
         {navId === "roles" && (
   <div className="role-scroll-wrapper">
-    <div className="emp-cards-container">
+    <div className="role-container">
       {roleData.map((role, idx) => (
         <EmpRoleCard
           key={idx}
@@ -253,11 +253,12 @@ export const HrEmployeeManagement = () => {
       )}
 
       <style>{`
-        .newusers-wrapper {
-  height: calc(100vh - 7rem); /* Adjust based on navbar height */
+        /* ⬇️ Add this wrapper to the EmpCard section */
+.newusers-scroll-wrapper {
+  height: calc(100vh - 7rem); /* adjust based on navbar height */
   overflow-y: auto;
-  padding: 1rem;
   scroll-behavior: smooth;
+  padding: 1rem;
 }
 
 .newusers-container {
@@ -267,30 +268,32 @@ export const HrEmployeeManagement = () => {
 }
 
 .newusers-container > * {
-  flex: 0 0 calc(33.33% - 1rem);
+  flex: 1 1 calc(33.33% - 1rem);
   max-width: calc(33.33% - 1rem);
 }
 
 @media (max-width: 1024px) {
-  .emp-cards-container > * {
+  .newusers-container > * {
     flex: 1 1 calc(50% - 1rem);
   }
 }
 
 @media (max-width: 768px) {
-  .emp-cards-container > * {
+  .newusers-container > * {
     flex: 1 1 100%;
   }
 }
 
 
-
-        .geo-cards-container {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-          margin-top: 1.5rem;
-        }
+/* ⬇️ Scroll only for GeoFencing page */
+.geo-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: calc(100vh - 7rem);
+  overflow-y: auto;
+  padding: 1rem;
+}
 
         .employee-card-wrapper {
   height: calc(100vh - 7rem); /* adjust based on navbar height */
@@ -319,7 +322,7 @@ export const HrEmployeeManagement = () => {
     flex: 1 1 calc(50% - 1rem);
   }
 }
-  
+
 body {
   overflow: hidden;
 }
@@ -332,27 +335,31 @@ body {
   padding: 1rem;
 }
 
-body {
-  overflow: hidden; /* disable full-page scroll */
+.role-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-.role-scroll-wrapper {
-  scroll-behavior: smooth;
+.role-container > * {
+  flex: 1 1 calc(33.33% - 1rem);
+  max-width: calc(33.33% - 1rem);
 }
 
+@media (max-width: 1024px) {
+  .role-container > * {
+    flex: 1 1 calc(50% - 1rem);
+    max-width: calc(50% - 1rem);
+  }
+}
 
+@media (max-width: 768px) {
+  .role-container > * {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
 
-        @media (min-width: 768px) {
-          .emp-cards-container > * {
-            flex: 1 1 calc(50% - 1rem);
-          }
-        }
-
-        @media (min-width: 1024px) {
-          .emp-cards-container > * {
-            flex: 1 1 calc(33.33% - 1rem);
-          }
-        }
 
         .plus-button {
           position: fixed;
