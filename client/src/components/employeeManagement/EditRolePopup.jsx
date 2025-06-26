@@ -1,30 +1,24 @@
 import React, { useState } from "react";
 
+const generateLightColors = () => {
+  const colors = [];
+  for (let i = 0; i < 50; i++) {
+    const hue = Math.floor((i * 360) / 50);
+    colors.push(`hsl(${hue}, 80%, 85%)`);
+  }
+  return colors;
+};
+
 export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
   const [editRole, setEditRole] = useState(role);
-  const [editMembers, setEditMembers] = useState(members);
   const [editColor, setEditColor] = useState(color);
-  const [showAllColors, setShowAllColors] = useState(false);
-
-  const colorOptions = [
-    "#ffe0dc", "#ffd8be", "#ffe29a", "#e8f1d4", "#d9f8f5",
-    "#d0e2ff", "#e0d6ff", "#f3d1f4", "#e2e2e2", "#fdf5e6",
-    "#fce4ec", "#e3f2fd", "#f0f4c3", "#dcedc8", "#c8e6c9",
-    "#b2ebf2", "#b2dfdb", "#d1c4e9", "#f8bbd0", "#ffccbc",
-    "#ffe0b2", "#fff9c4", "#f0f4c3", "#f1f8e9", "#e8f5e9",
-    "#e0f7fa", "#e0f2f1", "#ede7f6", "#f3e5f5", "#fce4ec",
-    "#ffebee", "#fafafa", "#e6f7ff", "#f9fbe7", "#f3f3f3",
-    "#ebf5fb", "#d4efdf", "#f6ddcc", "#fdebd0", "#f9e79f",
-    "#f5cba7", "#aed6f1", "#a9dfbf", "#f5b7b1", "#f8c471",
-    "#d7bde2", "#aed6f1", "#abebc6", "#f9e79f", "#fadbd8",
-  ];
-
-  const visibleColors = showAllColors ? colorOptions : colorOptions.slice(0, 5);
+  const [showColors, setShowColors] = useState(false);
+  const colors = generateLightColors();
 
   const handleSave = () => {
     onSave({
       role: editRole,
-      members: editMembers,
+      members,
       color: editColor,
     });
     onClose();
@@ -34,38 +28,45 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
     <>
       <div className="edit-popup-overlay">
         <div className="edit-popup">
-          <button className="close-btn" onClick={onClose}>×</button>
-          <div className="edit-content">
-            <label>Role:</label>
+          <div className="role-color-row">
             <input
               type="text"
               value={editRole}
               onChange={(e) => setEditRole(e.target.value)}
+              className="role-input"
+              placeholder="Edit role"
             />
+            <div
+              className="main-circle"
+              style={{ backgroundColor: editColor }}
+              onClick={() => setShowColors(!showColors)}
+            ></div>
+          </div>
 
-            <label>Color:</label>
-            <div className="color-grid">
-              {visibleColors.map((clr, idx) => (
+          {showColors && (
+            <div className="color-circles-container">
+              {colors.map((clr, idx) => (
                 <div
                   key={idx}
-                  className={`color-swatch ${editColor === clr ? 'selected' : ''}`}
+                  className="color-circle"
                   style={{ backgroundColor: clr }}
-                  onClick={() => setEditColor(clr)}
+                  onClick={() => {
+                    setEditColor(clr);
+                    setShowColors(false);
+                  }}
                 />
               ))}
             </div>
-            {!showAllColors ? (
-  <button className="show-btn" onClick={() => setShowAllColors(true)}>
-    Show more
-  </button>
-) : (
-  <button className="show-btn" onClick={() => setShowAllColors(false)}>
-    Show less
-  </button>
-)}
+          )}
 
+          <div className="course-box">
+            <span className="box-title">Ongoing courses...</span>
+            <span className="plus-circle">+</span>
+          </div>
 
-            <button className="change-btn" onClick={handleSave}>Change</button>
+          <div className="button-row">
+            <button className="cancel-btn" onClick={onClose}>Cancel</button>
+            <button className="add-btn" onClick={handleSave}>Change</button>
           </div>
         </div>
       </div>
@@ -73,105 +74,127 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
       <style>{`
         .edit-popup-overlay {
           position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          background-color: rgba(0, 0, 0, 0.4);
+          inset: 0;
+          background: rgba(0, 0, 0, 0.2);
           display: flex;
-          justify-content: center;
           align-items: center;
-          z-index: 1001;
+          justify-content: center;
+          z-index: 2000;
         }
 
         .edit-popup {
-          background: #fff;
+          background: white;
           border-radius: 1rem;
           padding: 2rem;
-          width: 20rem;
+          width: 95%;
+          max-width: 350px;
+          box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
           display: flex;
           flex-direction: column;
-          position: relative;
-          box-shadow: 0 0 0.625rem rgba(0, 0, 0, 0.3);
+          gap: 1.2rem;
         }
 
-        .close-btn {
-          position: absolute;
-          top: 0.5rem;
-          right: 0.75rem;
-          font-size: 1.5rem;
-          background: none;
-          border: none;
+        .role-color-row {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+        }
+
+        .role-input {
+          flex: 1;
+          padding: 0.6rem 1rem;
+          border-radius: 8px;
+          border: 1px solid #ccc;
+          font-size: 1rem;
+          outline: none;
+        }
+
+        .main-circle {
+          width: 1.5rem;
+          height: 1.5rem;
+          border-radius: 50%;
+          border: 2px solid #999;
           cursor: pointer;
         }
 
-        .edit-content {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .edit-content label {
-          font-weight: 600;
-        }
-
-        .edit-content input[type="text"],
-        .edit-content input[type="number"] {
-          padding: 0.5rem;
-          border-radius: 0.5rem;
-          border: 1px solid #ccc;
-          font-size: 1rem;
-        }
-
-        .color-grid {
+        .color-circles-container {
           display: flex;
           flex-wrap: wrap;
           gap: 0.5rem;
         }
 
-        .color-swatch {
+        .color-circle {
           width: 1.5rem;
           height: 1.5rem;
           border-radius: 50%;
           cursor: pointer;
           border: 2px solid transparent;
-          transition: transform 0.2s ease;
         }
 
-        .color-swatch:hover {
-          transform: scale(1.1);
-        }
-
-        .color-swatch.selected {
-          border-color: rgb(0,0,0,0.5);
-        }
-
-        .show-btn {
-          margin-top: 0.5rem;
-          background: none;
-          border: none;
-          color: #0077cc;
-          font-weight: normal;
-          cursor: pointer;
-          align-self: flex-start;
-          font-size:0.75rem;
-        }
-
-        .change-btn {
+        .course-box {
+          background-color: #d9d9d9;
+          border-radius: 10px;
+          height: 7rem;
+          position: relative;
           padding: 0.5rem 1rem;
-          background-color:  rgba(140, 221, 132, 0.8);
-          color: black;
-          border: none;
-          border-radius: 0.5rem;
-          font-weight: normal;
-          cursor: pointer;
-          align-self: center;
         }
 
-        .change-btn:hover{
+        .box-title {
+          position: absolute;
+          top: 0.8rem;
+          left: 1rem;
+          font-size: 1rem;
+          color: #555;
+        }
+
+        .plus-circle {
+          position: absolute;
+          bottom: 0.8rem;
+          right: 1rem;
+          background: rgba(0, 128, 128, 0.15);
+          border-radius: 50%;
+          padding: 0.3rem 0.6rem;
+          font-size: 1rem;
+          color: #333;
+          cursor: pointer;
+        }
+
+        .button-row {
+          display: flex;
+          justify-content: center;
+          gap: 1rem;
+        }
+
+        .cancel-btn,
+        .add-btn {
+          padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          border: none;
+          font-size: 0.9rem;
+          cursor: pointer;
+        }
+
+         .cancel-btn {
+          background-color: #f3f4f6;
+          color: black;
+          font-weight: normal;
+        }
+
+        .cancel-btn:hover {
+          background-color: red;
+          opacity: 0.5;
+          color: white;
+          font-weight: normal;
+        }
+
+        .add-btn {
+          background-color: rgba(140, 221, 132, 0.8);
+          color: black;
+        }
+
+        .add-btn:hover {
           background-color: green;
-          opacity:0.7;
-          color:white;
+          color: white;
         }
       `}</style>
     </>
