@@ -182,6 +182,25 @@ const deleteCourseController = asyncHandler(async (req, res) => {
   });
 });
 
+const courseEnrollController = asyncHandler(async (req, res) => {
+  const {userid} = req.user;
+  const courseId = req.params.id;
+
+  if (!userid || !courseId) {
+    res.status(400);
+    throw new Error("userId and courseId are required");
+  }
+
+  const result = await courseService.userCourseEnroll(userid, courseId);
+  console.log(result)
+
+  res.status(200).json({
+    success: true,
+    data: result
+  });
+});
+
+
 module.exports = { 
   createCourseIntroController, 
   createCourseContentController, 
@@ -190,5 +209,6 @@ module.exports = {
   getCourseIntroIdController,
   editCourseIntroController,
   editCourseContentController,
-  deleteCourseController
+  deleteCourseController,
+  courseEnrollController
 };
