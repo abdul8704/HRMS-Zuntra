@@ -5,6 +5,7 @@ import { EmpCard } from '../components/employeeManagement/EmpCard';
 import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
 import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
 import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
+import { EditRolePopup } from '../components/employeeManagement/EditRolePopup';
 import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
@@ -12,15 +13,42 @@ import { AddLocationForm } from '../components/employeeManagement/AddLocationFor
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
+
   const [showPopup, setShowPopup] = useState(false);
   const [showAssignPopup, setShowAssignPopup] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showLocationForm, setShowLocationForm] = useState(false);
+  const [editRoleData, setEditRoleData] = useState(null);
+
+  const handleEditRole = (roleData) => {
+    setEditRoleData(roleData);
+  };
+
+  const handleSaveEditedRole = (newData) => {
+    console.log("Updated Role:", newData);
+    setEditRoleData(null);
+  };
+
+  const handleCloseEdit = () => {
+    setEditRoleData(null);
+  };
 
   const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
 
   const employees = [
     { name: "John Joseph", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
+    { name: "Nisha Mehra", email: "nisha@zuntra.com", phone: "+91 9123456780", date: "12-06-2025", image: "https://randomuser.me/api/portraits/women/68.jpg" },
+    { name: "Ishita T", email: "ishita.t@zuntra.com", phone: "+91 9080706050", date: "10-06-2025", image: "https://randomuser.me/api/portraits/women/21.jpg" },
+    { name: "Ravi Kumar", email: "ravi.kumar@zuntra.com", phone: "+91 8899776655", date: "13-06-2025", image: "https://randomuser.me/api/portraits/men/30.jpg" },
+    { name: "Sneha Reddy", email: "sneha.r@zuntra.com", phone: "+91 7776665554", date: "14-06-2025", image: "https://randomuser.me/api/portraits/women/44.jpg" },
+    { name: "Karan J", email: "karan.j@zuntra.com", phone: "+91 9871234560", date: "06-06-2025", image: "https://randomuser.me/api/portraits/men/54.jpg" },
+    { name: "Ananya D", email: "ananya.d@zuntra.com", phone: "+91 9988123456", date: "07-06-2025", image: "https://randomuser.me/api/portraits/women/90.jpg" },
+    { name: "Siddharth P", email: "sid.p@zuntra.com", phone: "+91 9612347850", date: "15-06-2025", image: "https://randomuser.me/api/portraits/men/39.jpg" },
+    { name: "Meera V", email: "meera.v@zuntra.com", phone: "+91 9765432100", date: "16-06-2025", image: "https://randomuser.me/api/portraits/women/65.jpg" },
+    { name: "Rajeev S", email: "rajeev.s@zuntra.com", phone: "+91 8123456789", date: "17-06-2025", image: "https://randomuser.me/api/portraits/men/47.jpg" },
+    { name: "Harsha K", email: "harsha.k@zuntra.com", phone: "+91 9345678901", date: "18-06-2025", image: "https://randomuser.me/api/portraits/women/50.jpg" },
+    { name: "Avinash T", email: "avinash.t@zuntra.com", phone: "+91 7890654321", date: "19-06-2025", image: "https://randomuser.me/api/portraits/men/15.jpg" },
+     { name: "John Joseph", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
     { name: "Nisha Mehra", email: "nisha@zuntra.com", phone: "+91 9123456780", date: "12-06-2025", image: "https://randomuser.me/api/portraits/women/68.jpg" },
     { name: "Ishita T", email: "ishita.t@zuntra.com", phone: "+91 9080706050", date: "10-06-2025", image: "https://randomuser.me/api/portraits/women/21.jpg" },
     { name: "Ravi Kumar", email: "ravi.kumar@zuntra.com", phone: "+91 8899776655", date: "13-06-2025", image: "https://randomuser.me/api/portraits/men/30.jpg" },
@@ -81,6 +109,16 @@ export const HrEmployeeManagement = () => {
     { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
     { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
     { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+    { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+    { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+    { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
+    { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
+    { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
+    { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
+    { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
+    { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
+    { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
+    
   ];
 
   const handleApprove = (employee) => {
@@ -126,25 +164,34 @@ export const HrEmployeeManagement = () => {
         )}
 
         {navId === "roles" && (
-          <div className="emp-cards-container">
-            {roleData.map((role, idx) => (
-              <EmpRoleCard
-                key={idx}
-                role={role.role}
-                memberCount={role.memberCount}
-                bgColor={role.bgColor}
-                ibgcolor={role.ibgcolor}
-              />
-            ))}
-            <div className="plus-button" onClick={() => setShowPopup(true)}>
-              <span>
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
-                  <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
-                </svg>
-              </span>
-            </div>
-          </div>
-        )}
+  <div className="role-scroll-wrapper">
+    <div className="emp-cards-container">
+      {roleData.map((role, idx) => (
+        <EmpRoleCard
+          key={idx}
+          role={role.role}
+          memberCount={role.memberCount}
+          bgColor={role.bgColor}
+          ibgcolor={role.ibgcolor}
+          onEdit={() =>
+            handleEditRole({
+              role: role.role,
+              members: role.memberCount,
+              color: role.bgColor,
+            })
+          }
+        />
+      ))}
+      <div className="plus-button" onClick={() => setShowPopup(true)}>
+        <span>
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+            <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+          </svg>
+        </span>
+      </div>
+    </div>
+  </div>
+)}
 
         {navId === "geofencing" && (
           <div className="geo-cards-container">
@@ -159,45 +206,28 @@ export const HrEmployeeManagement = () => {
           </div>
         )}
 
-        {showLocationForm && (
-          <AddLocationForm
-            isOpen={showLocationForm}
-            onClose={() => setShowLocationForm(false)}
-            onSubmit={(formData) => {
-              console.log('Submitted:', formData);
-            }}
-          />
-        )}
-
         {navId === "newusers" && (
-          <div className="emp-cards-container">
-            {employees.map((emp, index) => (
-              <EmpCard
-                key={index}
-                name={emp.name}
-                email={emp.email}
-                phone={emp.phone}
-                date={emp.date}
-                image={emp.image}
-                color={bgColorList[index]}
-                onApprove={() => handleApprove(emp)}
-              />
-            ))}
-          </div>
-        )}
+  <div className="newusers-scroll-wrapper">
+    <div className="newusers-container">
+      {employees.map((emp, index) => (
+        <EmpCard
+          key={index}
+          name={emp.name}
+          email={emp.email}
+          phone={emp.phone}
+          date={emp.date}
+          image={emp.image}
+          color={bgColorList[index]}
+          onApprove={() => handleApprove(emp)}
+        />
+      ))}
+    </div>
+  </div>
+)}
+
       </div>
 
       {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
-
-      {showLocationForm && (
-        <AddLocationForm
-          isOpen={showLocationForm}
-          onClose={() => setShowLocationForm(false)}
-          onSubmit={(formData) => {
-            console.log('Submitted:', formData);
-          }}
-        />
-      )}
 
       {showAssignPopup && selectedEmployee && (
         <div className="popup-overlay">
@@ -210,47 +240,117 @@ export const HrEmployeeManagement = () => {
         </div>
       )}
 
+      {editRoleData && (
+        <div className="popup-overlay">
+          <EditRolePopup
+            role={editRoleData.role}
+            members={editRoleData.members}
+            color={editRoleData.color}
+            onClose={handleCloseEdit}
+            onSave={handleSaveEditedRole}
+          />
+        </div>
+      )}
+
       <style>{`
-        .emp-cards-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-          max-width: 100%;
-          align-items: stretch;
-          margin-top: 1.5rem;
-          max-height: 100%;
-          overflow-y: auto;
-          overflow-x: hidden;
-        }
+        .newusers-wrapper {
+  height: calc(100vh - 7rem); /* Adjust based on navbar height */
+  overflow-y: auto;
+  padding: 1rem;
+  scroll-behavior: smooth;
+}
+
+.newusers-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.newusers-container > * {
+  flex: 0 0 calc(33.33% - 1rem);
+  max-width: calc(33.33% - 1rem);
+}
+
+@media (max-width: 1024px) {
+  .emp-cards-container > * {
+    flex: 1 1 calc(50% - 1rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .emp-cards-container > * {
+    flex: 1 1 100%;
+  }
+}
+
+
 
         .geo-cards-container {
           display: flex;
           flex-direction: column;
           gap: 1rem;
-          max-width: 100%;
-          align-items: stretch;
           margin-top: 1.5rem;
-          max-height: 100%;
-          overflow-y: auto;
-          overflow-x: hidden;
         }
 
-        .emp-cards-container > * {
-          flex: 1 1 100%;
-          max-width: 100%;
-        }
+        .employee-card-wrapper {
+  height: calc(100vh - 7rem); /* adjust based on navbar height */
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
 
-        @media (min-width: 48rem) {
+.employee-card-wrapper > * {
+  flex: 0 0 calc(50% - 1rem);
+  max-width: calc(50% - 1rem);
+}
+
+@media (max-width: 768px) {
+  .employee-card-wrapper > * {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+
+
+@media (max-width: 1024px) {
+  .employee-card-wrapper > * {
+    flex: 1 1 calc(50% - 1rem);
+  }
+}
+  
+body {
+  overflow: hidden;
+}
+
+
+.role-scroll-wrapper {
+  flex: 1;
+  height: calc(100vh - 7rem); /* adjust based on your navbar height */
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+body {
+  overflow: hidden; /* disable full-page scroll */
+}
+
+.role-scroll-wrapper {
+  scroll-behavior: smooth;
+}
+
+
+
+        @media (min-width: 768px) {
           .emp-cards-container > * {
             flex: 1 1 calc(50% - 1rem);
-            max-width: calc(50% - 1rem);
           }
         }
 
-        @media (min-width: 64rem) {
+        @media (min-width: 1024px) {
           .emp-cards-container > * {
-            flex: 1 1 calc(33.333% - 1rem);
-            max-width: calc(33.333% - 1rem);
+            flex: 1 1 calc(33.33% - 1rem);
           }
         }
 
