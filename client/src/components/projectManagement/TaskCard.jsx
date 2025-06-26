@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Edit2, Trash2, Check, X } from "lucide-react";
 import { EmpProfile } from "../employeeManagement/EmpProfile";
 
-export const TaskCard = ({ taskData, taskStatus}) => {
+export const TaskCard = ({ 
+  taskData, 
+  taskStatus, 
+  isHR = false //  Pass this from parent to control role
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(taskData);
   const [screenSize, setScreenSize] = useState({
@@ -11,21 +15,20 @@ export const TaskCard = ({ taskData, taskStatus}) => {
   });
 
   useEffect(() => {
-    const handleResize = () => {
-      setScreenSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
+    const handleResize = () =>
+      setScreenSize({ width: window.innerWidth, height: window.innerHeight });
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const isMobile = screenSize.width <= 768;
-  const isTablet = screenSize.width > 768 && screenSize.width <= 1024;
 
-  const styles = {
-    "task-card": {
+  //  State mapping
+  const stateMap = ["todo", "inprogress", "inreview", "completed"];
+  const stateNumber = stateMap.indexOf(taskStatus) + 1;
+
+  const styles = { 
+     "task-card": {
       backgroundColor: "#cceec7",
       borderRadius: "1rem",
       padding: isMobile ? "1rem" : "1.25rem",
@@ -54,7 +57,7 @@ export const TaskCard = ({ taskData, taskStatus}) => {
       margin: 0,
       color: "#333",
     },
-    "task-icons": {
+     "task-icons": {
       display: "flex",
       gap: isMobile ? "0.5rem" : "0.75rem",
       color: "#666",
@@ -184,94 +187,92 @@ export const TaskCard = ({ taskData, taskStatus}) => {
       backgroundColor: "#f3f4f6",
       color: "#374151",
     },
-    "modal-button-save": {
+     "modal-button-save": {
       backgroundColor: "#3b82f6",
       color: "white",
     },
-  };
+
+   };
 
   const openModal = () => {
     setFormData(taskData);
     setIsEditing(true);
   };
-
-  const handleSave = () => {
-    // In a real app, you would update the parent component's state here
-    setIsEditing(false);
+  const handleSave = () => setIsEditing(false);
+  const handleAccept = () => {
+    console.log("Accepted:", taskData.title);
+    // Call parent callback for accept action
   };
-
-  const handleApprove = () => {
-    // Handle task approval logic
-    console.log("Task approved:", taskData.title);
-  };
-
   const handleReject = () => {
-    // Handle task rejection logic
-    console.log("Task rejected:", taskData.title);
+    console.log("Rejected:", taskData.title);
+    // Call parent callback for reject action
   };
-
+  
   const renderFooterContent = () => {
-    switch (taskStatus) {
-      case "todo":
-        return <div style={styles["task-badge"]}>{taskData.timeLeft}</div>;
-      
-      case "review":
-        return (
+    return (
+      <>
+        <div style={styles["task-badge"]}>
+          State: {stateNumber}
+        </div>
+        {taskStatus === "todo" && !isHR && (
+          <Check
+            style={styles["task-icon"]}
+            title="Accept Task"
+            onClick={handleAccept}
+            onMouseEnter={(e) => (e.target.style.color = "#16a34a")}
+            onMouseLeave={(e) => (e.target.style.color = "#666")}
+          />
+        )}
+        {taskStatus === "inreview" && isHR && (
           <div style={styles["review-buttons"]}>
-            <button
-              style={{...styles["review-button"], ...styles["approve-button"]}}
-              onClick={handleApprove}
-              onMouseEnter={(e) => (e.target.style.transform = "scale(1.1)")}
-              onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
-              title="Approve Task"
-            >
-              <Check size={16} />
-            </button>
-            <button
-              style={{...styles["review-button"], ...styles["reject-button"]}}
-              onClick={handleReject}
-              onMouseEnter={(e) => (e.target.style.transform = "scale(1.1)")}
-              onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
+            <Check
+              style={{ ...styles["review-button"], ...styles["approve-button"] }}
+              title="Accept Task"
+              onClick={handleAccept}
+            />
+            <X
+              style={{ ...styles["review-button"], ...styles["reject-button"] }}
               title="Reject Task"
-            >
-              <X size={16} />
-            </button>
+              onClick={handleReject}
+            />
           </div>
-        );
-      
-      case "completed":
-        return (
+        )}
+        {taskStatus === "completed" && (
           <div style={styles["completion-badge"]}>
-            Completed: {taskData.completionDate || "Today"}
+            Completed on: {taskData.completionDate || "N/A"}
+            {/* Pass and display the actual `completionDate` from `taskData` */}
           </div>
-        );
-      
-      default:
-        return <div style={styles["task-badge"]}>{taskData.timeLeft}</div>;
-    }
+        )}
+      </>
+    );
   };
 
   return (
     <>
-      <div style={styles["task-card"]}>
+      <div style={{ ...styles["task-card"], backgroundColor: cardColor || styles["task-card"].backgroundColor }}>
         <div style={styles["task-header"]}>
           <div style={styles["task-title"]}>{taskData.title}</div>
-          <div style={styles["task-icons"]}>
-            <Edit2
-              style={styles["task-icon"]}
-              onClick={openModal}
-              onMouseEnter={(e) => (e.target.style.color = "#3b82f6")}
-              onMouseLeave={(e) => (e.target.style.color = "#666")}
-            />
-            <Trash2
-              style={styles["task-icon"]}
-              onMouseEnter={(e) => (e.target.style.color = "#ef4444")}
-              onMouseLeave={(e) => (e.target.style.color = "#666")}
-            />
-          </div>
+          
+          {/*  Edit/Delete Buttons only if isHR is true */}
+          {isHR && (
+            <div style={styles["task-icons"]}>
+              <Edit2
+                style={styles["task-icon"]}
+                onClick={openModal}
+                title="Edit Task"
+              />
+              <Trash2
+                style={styles["task-icon"]}
+                title="Delete Task"
+              />
+            </div>
+          )}
         </div>
 
-        <p style={styles["task-description"]}>{taskData.description}</p>
+        <p style={styles["task-description"]}>
+          {taskData.description}
+          {/*  This is where you pass the actual task description */}
+        </p>
 
         <div style={styles["task-footer"]}>
           <EmpProfile
@@ -279,7 +280,9 @@ export const TaskCard = ({ taskData, taskStatus}) => {
             role={taskData.user.role}
             avatar={taskData.user.avatar}
             tl={true}
+            /* Pass actual employee details (`user.name`, `user.role`, `user.avatar`) from `taskData` */
           />
+          
           {renderFooterContent()}
         </div>
       </div>
@@ -398,43 +401,3 @@ export const TaskCard = ({ taskData, taskStatus}) => {
     </>
   );
 };
-
-// Example usage for different task statuses:
-// 
-// For Todo tasks:
-// const todoTaskData = {
-//   title: "Design Homepage Layout",
-//   description: "Create wireframes and mockups for the new homepage design...",
-//   user: {
-//     name: "John Doe",
-//     role: "UI/UX Designer",
-//     avatar: "https://picsum.photos/40/40?random=1"
-//   },
-//   timeLeft: "3 Months left"
-// };
-// <TaskCard taskData={todoTaskData} taskStatus="todo" />
-//
-// For Review tasks:
-// const reviewTaskData = {
-//   title: "API Integration Complete",
-//   description: "Finished integrating payment gateway API with frontend...",
-//   user: {
-//     name: "Jane Smith",
-//     role: "Full Stack Developer", 
-//     avatar: "https://picsum.photos/40/40?random=2"
-//   }
-// };
-// <TaskCard taskData={reviewTaskData} taskStatus="review" />
-//
-// For Completed tasks:
-// const completedTaskData = {
-//   title: "Database Migration",
-//   description: "Successfully migrated all user data to new database schema...",
-//   user: {
-//     name: "Mike Johnson",
-//     role: "Backend Developer",
-//     avatar: "https://picsum.photos/40/40?random=3"
-//   },
-//   completionDate: "Dec 15, 2024"
-// };
-// <TaskCard taskData={completedTaskData} taskStatus="completed" />
