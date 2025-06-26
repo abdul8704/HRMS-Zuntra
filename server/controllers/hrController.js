@@ -2,9 +2,8 @@ const asyncHandler = require("express-async-handler");
 const GeoService = require("../services/geoLocationService");
 const ApiError = require("../errors/ApiError");
 const authService = require("../services/authService")
-const UserCreds = require('../models/userCredentials')
-const UserPersonal = require('../models/userPersonal')
-const UserCourse = require('../models/userCourse')
+
+const HrService = require('../services/hrServices')
 
 const addNewCampusLocation = asyncHandler(async (req, res) => {
     const { campusName, latitude, longitude , radius} = req.body;
@@ -16,13 +15,25 @@ const addNewCampusLocation = asyncHandler(async (req, res) => {
 })
 
 const acceptUser = asyncHandler(async (req, res) => {
-    const { email, shiftStart, shiftEnd, campus } = req.body;
+    const { email, shiftStart, shiftEnd, campus, role } = req.body;
     
     const userData = await authService.getUserByEmail(email);
-    
+    if(!userData)
+        return res.status(404).json( {success:false, message:"User not found, this error should never ever never ever occur" })
 
+    await HrService.updateUserData(email, shiftStart, shiftEnd, campus, role);
+    await HrService.creatUserPersonal(userData._id);
+    await HrService.createUserCourse(userData._id);
+    return res.status(201).json({ success: true, message: "User updated successfully" });
+})
+
+const getPendingEmployees = asyncHandler(async (req, res) => {
+    const pendingEmployees = await HrService.getPendingUsers();
+    res.status(200).json({ success: true, data: pendingEmployees });
 })
 
 module.exports = {
-    addNewCampusLocation
-}
+    addNewCampusLocation,
+    acceptUser,
+    getPendingEmployees,
+};

@@ -1,15 +1,29 @@
 import React, { useState } from "react";
 import { AddRolePopup } from "./AddRolePopup";
+import { EditRolePopup } from "./EditRolePopup";
 
 export const EmpRoleCard = ({ role, memberCount, bgColor, ibgcolor }) => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isAddPopupOpen, setAddPopupOpen] = useState(false);
+  const [isEditPopupOpen, setEditPopupOpen] = useState(false);
 
-  const handlePlusClick = () => setIsPopupOpen(true);
-  const handleClosePopup = () => setIsPopupOpen(false);
+  const [roleData, setRoleData] = useState({
+    role,
+    members: memberCount,
+    color: bgColor,
+  });
+
+  const handleEditClick = () => setEditPopupOpen(true);
+  const handleCloseEdit = () => setEditPopupOpen(false);
+  const handlePlusClick = () => setAddPopupOpen(true);
+  const handleCloseAdd = () => setAddPopupOpen(false);
+
+  const handleEditSave = (newData) => {
+    setRoleData(newData);
+  };
 
   return (
     <>
-      <div className="role-card" style={{ backgroundColor: bgColor }}>
+      <div className="role-card" style={{ backgroundColor: roleData.color }}>
         <div className="role-card-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +37,7 @@ export const EmpRoleCard = ({ role, memberCount, bgColor, ibgcolor }) => {
         </div>
 
         <div className="role-card-info">
-          <span className="edit-icon">
+          <span className="edit-icon" onClick={handleEditClick}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="1rem"
@@ -38,16 +52,21 @@ export const EmpRoleCard = ({ role, memberCount, bgColor, ibgcolor }) => {
               />
             </svg>
           </span>
-          <p className="role-title">{role}</p>
-          <p className="member-text">No. of members: {memberCount}</p>
+          <p className="role-title">{roleData.role}</p>
+          <p className="member-text">No. of members: {roleData.members}</p>
         </div>
       </div>
 
-      <div className="plus-button" onClick={handlePlusClick}>
-        <span>+</span>
-      </div>
-
-      {isPopupOpen && <AddRolePopup onClose={handleClosePopup} />}
+      {isAddPopupOpen && <AddRolePopup onClose={handleCloseAdd} />}
+      {isEditPopupOpen && (
+        <EditRolePopup
+          role={roleData.role}
+          members={roleData.members}
+          color={roleData.color}
+          onClose={handleCloseEdit}
+          onSave={handleEditSave}
+        />
+      )}
 
       <style>{`
         .role-card {
@@ -55,11 +74,14 @@ export const EmpRoleCard = ({ role, memberCount, bgColor, ibgcolor }) => {
           align-items: center;
           border-radius: 0.5rem;
           padding: 1rem;
-          width: 20rem;
+          width: 100%;
+          max-width: 20rem;
           height: 7rem;
           box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
           font-family: Arial, sans-serif;
+          margin: auto;
         }
+
         .role-card-icon {
           display: flex;
           align-items: center;
@@ -67,6 +89,7 @@ export const EmpRoleCard = ({ role, memberCount, bgColor, ibgcolor }) => {
           width: 4rem;
           height: 100%;
         }
+
         .role-card-info {
           display: flex;
           flex-direction: column;
@@ -75,44 +98,25 @@ export const EmpRoleCard = ({ role, memberCount, bgColor, ibgcolor }) => {
           margin-left: 1rem;
           position: relative;
         }
+
         .edit-icon {
           position: absolute;
           top: -0.75rem;
           right: 0;
           cursor: pointer;
         }
+
         .role-title {
           margin: 0;
           font-size: 1rem;
           font-weight: bold;
           color: #333;
         }
+
         .member-text {
           margin: 0;
           font-size: 0.875rem;
           color: black;
-        }
-        .plus-button {
-          position: fixed;
-          bottom: 2rem;
-          right: 5rem;
-          width: 3.5rem;
-          height: 3.5rem;
-          border-radius: 50%;
-          background-color: #BBD3CC;
-          color: #6c6c6c;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 2rem;
-          font-weight: bold;
-          cursor: pointer;
-          transition: transform 0.2s ease;
-          z-index: 1000;
-        }
-        .plus-button:hover {
-          transform: scale(1.1);
-          background-color: #cbd5e1;
         }
       `}</style>
     </>

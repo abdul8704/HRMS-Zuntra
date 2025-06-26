@@ -13,7 +13,7 @@ const getAllFinishedProjects = async () => {
     return projectsList;
 };
 
-// @desc Get a finished projects
+// @desc Get a details of a projects
 const getAProject = async (id) => {
     const projectsList = await Project.findById(id);
     return projectsList;

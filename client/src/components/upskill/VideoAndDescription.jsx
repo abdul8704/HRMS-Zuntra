@@ -1,11 +1,22 @@
 import React from "react";
 
-export const IntroductionCard = () => {
+export const VideoAndDescriptionContainer = () => {
   return (
-    <div className="intro-wrapper">
-      {/*<h2 className="title">Introduction to course</h2>
-      <p className="instructor">by Prof. Dr. Diwakar</p>*/}
+    <div className="video-desc-wrapper">
+      {/* Video */}
+      <video
+        controls
+        className="video-element"
+        poster="https://via.placeholder.com/800x450.png?text=Course+Thumbnail"
+      >
+        <source
+          src="https://videos.pexels.com/video-files/3129424/3129424-uhd_2560_1440_24fps.mp4"
+          type="video/mp4"
+        />
+        Your browser does not support the video tag.
+      </video>
 
+      {/* Description */}
       <div className="description-box">
         <h3 className="desc-title">Description</h3>
         <p className="desc-text">
@@ -17,9 +28,7 @@ export const IntroductionCard = () => {
           real-world problems with confidence. Covering essential concepts,
           tools, and techniques, the course integrates interactive lectures,
           hands-on projects, and real-world case studies to ensure deep
-          understanding and application. Learners will engage in structured
-          modules that promote critical thinking, problem-solving, and technical
-          proficiency.
+          understanding and application.
           <br /><br />
           Topics include software engineering, database systems, web development,
           machine learning basics, UI/UX, deployment strategies, and cloud
@@ -40,58 +49,52 @@ export const IntroductionCard = () => {
       </div>
 
       <style>{`
-        .intro-wrapper {
+        .video-desc-wrapper {
           width: 100%;
-          height: 320px;
-          background: #ffffff;
+          height: 900px;
+          background-color: #ffffff;
           border-radius: 12px;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          padding: 2px;
-          box-sizing: border-box;
+          overflow-y: auto;
           display: flex;
           flex-direction: column;
+          padding: 20px;
+          gap: 20px;
         }
 
-        .title {
-          font-size: 22px;
-          font-weight: 600;
-          color: #111827;
-          margin-bottom: 4px;
-        }
-
-        .instructor {
-          font-size: 14px;
-          color: #6b7280;
-          margin-bottom: 16px;
+        .video-element {
+          width: 100%;
+          height: 90%;
+          object-fit: cover;
+          border-radius: 12px;
         }
 
         .description-box {
-          flex: 1;
+          height: 50%;
+          padding: 16px;
           background: #f9fafb;
           border-radius: 8px;
-          padding: 16px;
-          overflow-y: auto;
         }
 
         .desc-title {
-          font-size: 16px;
+          font-size: 18px;
           font-weight: 600;
-          margin-bottom: 8px;
           color: #111827;
+          margin-bottom: 8px;
         }
 
         .desc-text {
           font-size: 14px;
-          color: #374151;
           line-height: 1.6;
+          color: #374151;
         }
 
-        .description-box::-webkit-scrollbar {
-          width: 6px;
+        .video-desc-wrapper::-webkit-scrollbar {
+          width: 8px;
         }
 
-        .description-box::-webkit-scrollbar-thumb {
-          background-color: #d1d5db;
+        .video-desc-wrapper::-webkit-scrollbar-thumb {
+          background-color: #cbd5e1;
           border-radius: 6px;
         }
       `}</style>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Edit2, Trash2, Check, X } from "lucide-react";
 import { EmpProfile } from "../employeeManagement/EmpProfile";
 
-export const TaskCard = ({ taskData, taskStatus = "todo" }) => {
+export const TaskCard = ({ taskData, taskStatus}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(taskData);
   const [screenSize, setScreenSize] = useState({
