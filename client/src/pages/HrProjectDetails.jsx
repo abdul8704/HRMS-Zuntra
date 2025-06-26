@@ -1,14 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from "../components/Sidebar";
-import { ProjectCard } from '../components/projectManagement/ProjectCard';
-import { ProjectNavbar } from '../components/projectManagement/ProjectNavbar';
 import { TaskCard } from '../components/projectManagement/TaskCard';
 import { TaskNavbar } from '../components/projectManagement/TaskNavbar';
 import { ProjectPopup } from '../components/projectManagement/ProjectPopup';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export const HrProjectDetails = () => {
   const { navId } = useParams();
+  const navigate = useNavigate();
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const projectId = "685be94f58890382fc68b610";
+
+  useEffect(() => {
+    const validTabs = ["overview", "todo", "inprogress", "review", "completed"];
+    if (!validTabs.includes(navId)) {
+      navigate("/404");
+      return;
+    }
+
+    if (navId === "overview") return;
+
+    const fetchTasks = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/task/${projectId}/${navId}`,
+          {
+            headers: {
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkphaSBBdGl0aHlhIEEiLCJ1c2VyaWQiOiI2ODVjYzYwMzE5NWEyOGVmNTAyMGU1MjUiLCJyb2xlIjoidW5hc3NpZ25lZCIsImlhdCI6MTc1MDkxNTE0NiwiZXhwIjoxNzUxMDAxNTQ2fQ.m2O3qAfk7a4hq9eWDGmeAbgY-5-DUjOf7TiQUndDo2g",
+            },
+          }
+        );
+        setTasks(res.data);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        setTasks([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, [navId, navigate]);
 
   return (
     <div className="relative">
@@ -47,7 +83,7 @@ export const HrProjectDetails = () => {
                   style={{
                     fontSize: "5rem",
                     fontWeight: "700",
-                    color: "rgb(153, 153, 153) ",
+                    color: "rgb(153, 153, 153)",
                     textShadow: "0 0 10px #BBD3CC, 0 0 20px #BBD3CC",
                     animation: "pulse 2s infinite ease-in-out",
                     margin: 0,
@@ -58,7 +94,11 @@ export const HrProjectDetails = () => {
               </div>
             )}
 
-            {/* {navId === "todo" && <TaskCard />} */}
+            {!loading && navId !== "overview" && tasks.map((task, i) => (
+              <TaskCard key={i} taskStatus={navId} taskData={task} />
+            ))}
+
+            {loading && <p>Loading tasks...</p>}
           </div>
         </div>
       </div>

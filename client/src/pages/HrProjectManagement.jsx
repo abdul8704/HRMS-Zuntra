@@ -1,11 +1,11 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
 import { ProjectCard } from "../components/projectManagement/ProjectCard";
 import { ProjectNavbar } from "../components/projectManagement/ProjectNavbar";
-import { useParams, useNavigate } from "react-router-dom";
 import { ProjectPopup } from "../components/projectManagement/ProjectPopup";
 import { Loading } from "../components/Loading";
+import api from "../api/axios";
 
 export const HrProjectManagement = () => {
   const { navId } = useParams();
@@ -14,39 +14,39 @@ export const HrProjectManagement = () => {
   const [loading, setLoading] = useState(true);
   const [apiMessage, setApiMessage] = useState("");
 
-  useEffect(() => {
-    const validTabs = ["overview", "ongoing", "finished"];
-    if (!validTabs.includes(navId)) {
-      navigate("/404");
-      return;
-    }
+ useEffect(() => {
+  const validTabs = ["overview", "ongoing", "finished"];
+  if (!validTabs.includes(navId)) {
+    navigate("/404");
+    return;
+  }
 
-    if (navId === "overview") return;
+  if (navId === "overview") return;
 
+  const fetchProjects = async () => {
     setLoading(true);
     setApiMessage("");
 
-    axios
-      .get(`http://localhost:5000/api/project/all/${navId}`, {
-        headers: {
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFib29kb29vbCIsInVzZXJpZCI6IjY4NTQzNjI3OTM4YmRjNTFlMzYwYTkxOSIsInJvbGUiOiJ1bmFzc2lnbmVkIiwiaWF0IjoxNzUwODI0MjUwLCJleHAiOjE3NTA5MTA2NTB9.XVFJUxW5ahwKNG3OOENb3Nznn6NTEWqK-ZQ7b9250nU",
-        },
-      })
-      .then((res) => {
-        if (res.data.success) {
-          setProjects(Array.isArray(res.data.data) ? res.data.data : []);
-        } else {
-          setApiMessage(res.data.message || "Something went wrong.");
-          setProjects([]);
-        }
-      })
-      .catch(() => {
-        setApiMessage("Error fetching projects.");
+    try {
+      const res = await api.get(`/api/project/all/${navId}`);
+      if (res.data.success) {
+        setProjects(Array.isArray(res.data.data) ? res.data.data : []);
+      } else {
+        setApiMessage(res.data.message || "Something went wrong.");
         setProjects([]);
-      })
-      .finally(() => setLoading(false));
-  }, [navId, navigate]);
+      }
+    } catch (error) {
+      setApiMessage("Error fetching projects.");
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProjects();
+
+}, [navId, navigate]);
+
 
   return (
     <div className="relative">
@@ -110,6 +110,7 @@ export const HrProjectManagement = () => {
                   <ProjectCard
                     key={index}
                     projectData={{
+                      _id: project._id,
                       title: project.projectTitle,
                       subtitle: project.teamName,
                       description: project.projectDesc,

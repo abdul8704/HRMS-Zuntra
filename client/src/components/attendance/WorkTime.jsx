@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function WorkTime({ time = "09:02", label = "Today's work time" }) {
+export const WorkTime = ({ time = "09:02", label = "Today's work time" }) => {
   return (
     <div className="work-card" role="group" aria-label={label}>
       <div className="work-card__icon" aria-hidden="true">

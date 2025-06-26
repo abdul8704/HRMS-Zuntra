@@ -4,6 +4,7 @@ import { EmpProfile } from "../employeeManagement/EmpProfile";
 import { useNavigate } from "react-router-dom";
 
 export const ProjectCard = ({ projectData }) => {
+  console.log(projectData);
   if (!projectData) return null;
 
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export const ProjectCard = ({ projectData }) => {
   });
 
   const handleCardClick = () => {
-    navigate("/project/overview");
+    navigate(`/project/${projectData._id}/overview`);
   };
 
   const openModal = () => {

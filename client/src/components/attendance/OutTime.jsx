@@ -6,7 +6,7 @@ import React from 'react';
  *   • time  – string, the main time to display (default "09:02")
  *   • label – string, subtitle below the time (default "Today's in time")
  */
-export default function OutTime({ time = "09:02", label = "Today's out time" }) {
+export const OutTime = ({ time = "09:02", label = "Today's out time" }) => {
   return (
     <div className="out-card" role="group" aria-label={label}>
       <div className="out-card__icon" aria-hidden="true">

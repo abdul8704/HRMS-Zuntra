@@ -25,7 +25,7 @@ const getAllOnGoingProjects = asyncHandler(async (req, res) => {
             const totalDaysLeft = diffArray[3].replace("Total days: ", "");
 
             return {
-                id: project._id.toString(),
+                _id: project._id,
                 clientName: project.clientName,
                 projectTitle: project.projectTitle,
                 projectDesc: project.projectDesc,
@@ -63,7 +63,7 @@ const getAllFinishedProjects = asyncHandler(async (req, res) => {
             const roleColor = roleDetail?.color || "#000000";
 
             return {
-                id: project._id.toString(),
+                id: project._id,
                 clientName: project.clientName,
                 projectTitle: project.projectTitle,
                 projectDesc: project.projectDesc,
@@ -79,6 +79,34 @@ const getAllFinishedProjects = asyncHandler(async (req, res) => {
     );
 
     return res.status(200).json({
+        success: true,
+        data: formattedResult,
+    });
+});
+
+// @desc Get all projects based on date
+// @route GET /api/project/all/date/:date 30072025
+const getAllProjectsOnDate = asyncHandler(async (req, res) => {
+    const input = req.params.date; 
+    const day = input.substring(0, 2);
+    const month = input.substring(2, 4);
+    const year = input.substring(4, 8);
+
+    const startOfDay = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
+    const endOfDay = new Date(`${year}-${month}-${day}T23:59:59.999Z`);
+
+    const projectsList = await projectService.getAllProjectsOnDate(startOfDay, endOfDay);
+    if (!projectsList.length) {
+        throw new ApiError(404, "No Projects Available");
+    }
+
+    const formattedResult = projectsList.map((project) => ({
+        id: project._id,
+        projectTitle: project.projectTitle,
+        teamName: project.teamName,
+    }));
+
+    res.status(200).json({
         success: true,
         data: formattedResult,
     });
@@ -141,4 +169,4 @@ const createNewProject = asyncHandler( async(req,res) => {
 })
 
 
-module.exports = { getAllOnGoingProjects, getAllFinishedProjects, createNewProject, getAProject, };
+module.exports = { getAllOnGoingProjects, getAllFinishedProjects, createNewProject, getAProject, getAllProjectsOnDate, };

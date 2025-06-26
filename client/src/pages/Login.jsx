@@ -144,7 +144,8 @@ export const Login = () => {
 
           if (newUser.status === 200) {
             alert("success")
-            console.log("User created successfully");
+            localStorage.setItem("accessToken", newUser.data.accessToken)
+            
             setIsSignup(false);
             setOtpPhase(false);
             setSignupData({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });
