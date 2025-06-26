@@ -43,13 +43,6 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
               onChange={(e) => setEditRole(e.target.value)}
             />
 
-            <label>No. of Members:</label>
-            <input
-              type="number"
-              value={editMembers}
-              onChange={(e) => setEditMembers(e.target.value)}
-            />
-
             <label>Color:</label>
             <div className="color-grid">
               {visibleColors.map((clr, idx) => (
@@ -62,11 +55,11 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
               ))}
             </div>
             {!showAllColors ? (
-  <button className="show-more-btn" onClick={() => setShowAllColors(true)}>
+  <button className="show-btn" onClick={() => setShowAllColors(true)}>
     Show more
   </button>
 ) : (
-  <button className="show-more-btn" onClick={() => setShowAllColors(false)}>
+  <button className="show-btn" onClick={() => setShowAllColors(false)}>
     Show less
   </button>
 )}
@@ -153,7 +146,7 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
           border-color: rgb(0,0,0,0.5);
         }
 
-        .show-more-btn {
+        .show-btn {
           margin-top: 0.5rem;
           background: none;
           border: none;
@@ -166,13 +159,19 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
 
         .change-btn {
           padding: 0.5rem 1rem;
-          background-color: #40916c;
-          color: white;
+          background-color:  rgba(140, 221, 132, 0.8);
+          color: black;
           border: none;
           border-radius: 0.5rem;
-          font-weight: bold;
+          font-weight: normal;
           cursor: pointer;
-          align-self: flex-end;
+          align-self: center;
+        }
+
+        .change-btn:hover{
+          background-color: green;
+          opacity:0.7;
+          color:white;
         }
       `}</style>
     </>
