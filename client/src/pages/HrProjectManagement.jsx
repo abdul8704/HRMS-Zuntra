@@ -14,34 +14,39 @@ export const HrProjectManagement = () => {
   const [loading, setLoading] = useState(true);
   const [apiMessage, setApiMessage] = useState("");
 
-  useEffect(() => {
-    const validTabs = ["overview", "ongoing", "finished"];
-    if (!validTabs.includes(navId)) {
-      navigate("/404");
-      return;
-    }
+ useEffect(() => {
+  const validTabs = ["overview", "ongoing", "finished"];
+  if (!validTabs.includes(navId)) {
+    navigate("/404");
+    return;
+  }
 
-    if (navId === "overview") return;
+  if (navId === "overview") return;
 
+  const fetchProjects = async () => {
     setLoading(true);
     setApiMessage("");
 
-    api
-      .get(`/api/project/all/${navId}`)
-      .then((res) => {
-        if (res.data.success) {
-          setProjects(Array.isArray(res.data.data) ? res.data.data : []);
-        } else {
-          setApiMessage(res.data.message || "Something went wrong.");
-          setProjects([]);
-        }
-      })
-      .catch(() => {
-        setApiMessage("Error fetching projects.");
+    try {
+      const res = await api.get(`/api/project/all/${navId}`);
+      if (res.data.success) {
+        setProjects(Array.isArray(res.data.data) ? res.data.data : []);
+      } else {
+        setApiMessage(res.data.message || "Something went wrong.");
         setProjects([]);
-      })
-      .finally(() => setLoading(false));
-  }, [navId, navigate]);
+      }
+    } catch (error) {
+      setApiMessage("Error fetching projects.");
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProjects();
+
+}, [navId, navigate]);
+
 
   return (
     <div className="relative">
