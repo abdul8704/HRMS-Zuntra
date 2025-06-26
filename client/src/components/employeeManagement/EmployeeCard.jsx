@@ -66,7 +66,11 @@ const styles = {
   alignItems: "center",
   width: "100%",
 },
-
+timeCardWrapper: {
+    width: "100%", 
+    display: "flex",
+    containerType: "inline-size",
+},
 
 
  leftSection: {
@@ -154,10 +158,6 @@ row: {
     minWidth: "300px",
     marginLeft: "auto",
   },
-  timeCardWrapper: {
-    width: "100%", 
-    display: "flex",
-},
 
 };
 
@@ -218,10 +218,10 @@ export const EmployeeCard = ({
           </div>
 
           <div className="time-container" style={styles.timeContainer}>
-            <div className="time-card-wrapper"><TimeCard state="in" time={inTime} /></div>
-            <div className="time-card-wrapper"><TimeCard state="out" time={outTime} /></div>
-            <div className="time-card-wrapper"><TimeCard state="break" time={breakTime} /></div>
-            <div className="time-card-wrapper"><TimeCard state="work" time={workTime} /></div>
+            <div style={styles.timeCardWrapper}><TimeCard state="in" time={inTime} /></div>
+            <div style={styles.timeCardWrapper}><TimeCard state="out" time={outTime} /></div>
+            <div style={styles.timeCardWrapper}><TimeCard state="break" time={breakTime} /></div>
+            <div style={styles.timeCardWrapper}><TimeCard state="work" time={workTime} /></div>
           </div>
         </div>
       </div>
