@@ -210,53 +210,45 @@ export const TaskCard = ({ taskData, taskStatus = "todo" }) => {
     console.log("Task rejected:", taskData.title);
   };
 
-  const taskStates = [
-    {
-      status: "todo",
-      render: () => <div style={styles["task-badge"]}>{taskData.timeLeft}</div>
-    },
-    {
-      status: "inprogress",
-      render: () => <div style={styles["task-badge"]}>{taskData.timeLeft}</div>
-    },
-    {
-      status: "review",
-      render: () => (
-        <div style={styles["review-buttons"]}>
-          <button
-            style={{...styles["review-button"], ...styles["approve-button"]}}
-            onClick={handleApprove}
-            onMouseEnter={(e) => (e.target.style.transform = "scale(1.1)")}
-            onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
-            title="Approve Task"
-          >
-            <Check size={16} />
-          </button>
-          <button
-            style={{...styles["review-button"], ...styles["reject-button"]}}
-            onClick={handleReject}
-            onMouseEnter={(e) => (e.target.style.transform = "scale(1.1)")}
-            onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
-            title="Reject Task"
-          >
-            <X size={16} />
-          </button>
-        </div>
-      )
-    },
-    {
-      status: "completed",
-      render: () => (
-        <div style={styles["completion-badge"]}>
-          Completed: {taskData.completionDate || "Today"}
-        </div>
-      )
-    }
-  ];
-
   const renderFooterContent = () => {
-    const currentState = taskStates.find(state => state.status === taskStatus);
-    return currentState ? currentState.render() : <div style={styles["task-badge"]}>{taskData.timeLeft}</div>;
+    switch (taskStatus) {
+      case "todo":
+        return <div style={styles["task-badge"]}>{taskData.timeLeft}</div>;
+      
+      case "review":
+        return (
+          <div style={styles["review-buttons"]}>
+            <button
+              style={{...styles["review-button"], ...styles["approve-button"]}}
+              onClick={handleApprove}
+              onMouseEnter={(e) => (e.target.style.transform = "scale(1.1)")}
+              onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
+              title="Approve Task"
+            >
+              <Check size={16} />
+            </button>
+            <button
+              style={{...styles["review-button"], ...styles["reject-button"]}}
+              onClick={handleReject}
+              onMouseEnter={(e) => (e.target.style.transform = "scale(1.1)")}
+              onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
+              title="Reject Task"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        );
+      
+      case "completed":
+        return (
+          <div style={styles["completion-badge"]}>
+            Completed: {taskData.completionDate || "Today"}
+          </div>
+        );
+      
+      default:
+        return <div style={styles["task-badge"]}>{taskData.timeLeft}</div>;
+    }
   };
 
   return (
@@ -352,7 +344,7 @@ export const TaskCard = ({ taskData, taskStatus = "todo" }) => {
               />
             </label>
 
-            {(taskStatus === "todo" || taskStatus === "inprogress") && (
+            {taskStatus === "todo" && (
               <label>
                 <div style={styles["modal-label"]}>Time Left</div>
                 <input
@@ -406,3 +398,43 @@ export const TaskCard = ({ taskData, taskStatus = "todo" }) => {
     </>
   );
 };
+
+// Example usage for different task statuses:
+// 
+// For Todo tasks:
+// const todoTaskData = {
+//   title: "Design Homepage Layout",
+//   description: "Create wireframes and mockups for the new homepage design...",
+//   user: {
+//     name: "John Doe",
+//     role: "UI/UX Designer",
+//     avatar: "https://picsum.photos/40/40?random=1"
+//   },
+//   timeLeft: "3 Months left"
+// };
+// <TaskCard taskData={todoTaskData} taskStatus="todo" />
+//
+// For Review tasks:
+// const reviewTaskData = {
+//   title: "API Integration Complete",
+//   description: "Finished integrating payment gateway API with frontend...",
+//   user: {
+//     name: "Jane Smith",
+//     role: "Full Stack Developer", 
+//     avatar: "https://picsum.photos/40/40?random=2"
+//   }
+// };
+// <TaskCard taskData={reviewTaskData} taskStatus="review" />
+//
+// For Completed tasks:
+// const completedTaskData = {
+//   title: "Database Migration",
+//   description: "Successfully migrated all user data to new database schema...",
+//   user: {
+//     name: "Mike Johnson",
+//     role: "Backend Developer",
+//     avatar: "https://picsum.photos/40/40?random=3"
+//   },
+//   completionDate: "Dec 15, 2024"
+// };
+// <TaskCard taskData={completedTaskData} taskStatus="completed" />
