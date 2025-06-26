@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { EmpProfile } from "../employeeManagement/EmpProfile";
+import { useNavigate } from "react-router-dom";
 
 export const ProjectCard = ({ projectData }) => {
+  console.log(projectData);
   if (!projectData) return null;
 
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+
   const [formData, setFormData] = useState({
     title: projectData.title || "",
     subtitle: projectData.subtitle || "",
@@ -20,16 +24,44 @@ export const ProjectCard = ({ projectData }) => {
     },
   });
 
+  const handleCardClick = () => {
+    navigate(`/project/${projectData._id}/overview`);
+  };
+
+  const openModal = () => {
+    setFormData({
+      title: projectData.title || "",
+      subtitle: projectData.subtitle || "",
+      description: projectData.description || "",
+      date: projectData.date || "",
+      teamName: projectData.teamName || "",
+      teamMembers: projectData.teamMembers || "",
+      user: {
+        name: projectData.user?.name || "",
+        role: projectData.user?.role || "",
+        avatar: projectData.user?.avatar || "",
+      },
+    });
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    console.log("Updated Data:", formData);
+    setIsEditing(false);
+  };
+
   const styles = {
     card: {
-      backgroundColor: "#f4b6b6",
+      backgroundColor: projectData.color || "#f4b6b6",
       borderRadius: "1rem",
       padding: "1.25rem",
-      width: "22.5rem",
+      width: "20rem",
       fontFamily: "'Segoe UI', sans-serif",
       position: "relative",
       boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
       marginTop: "1.25rem",
+      cursor: "pointer",
+      transition: "transform 0.2s",
     },
     icons: {
       position: "absolute",
@@ -37,8 +69,8 @@ export const ProjectCard = ({ projectData }) => {
       right: "0.75rem",
       display: "flex",
       gap: "0.625rem",
-      color: "#444",
       cursor: "pointer",
+      zIndex: 2,
     },
     title: {
       fontSize: "1.375rem",
@@ -51,7 +83,7 @@ export const ProjectCard = ({ projectData }) => {
       margin: "0 0 0.5rem 0",
     },
     description: {
-      color: "#4f4f4f",
+      color: "#f0f0f0",
       fontSize: "0.875rem",
       marginBottom: "3rem",
     },
@@ -65,12 +97,11 @@ export const ProjectCard = ({ projectData }) => {
       alignItems: "center",
     },
     badge: {
-      backgroundColor: "#f7caca",
+      backgroundColor: "rgba(255, 255, 255, 0.3)",
       padding: "0.375rem 1rem",
       borderRadius: "62.5rem",
       fontWeight: 600,
       fontSize: "0.875rem",
-      color: "#5b5b5b",
     },
     modalOverlay: {
       position: "fixed",
@@ -134,35 +165,24 @@ export const ProjectCard = ({ projectData }) => {
     },
   };
 
-  const openModal = () => {
-    setFormData({
-      title: projectData.title || "",
-      subtitle: projectData.subtitle || "",
-      description: projectData.description || "",
-      date: projectData.date || "",
-      teamName: projectData.teamName || "",
-      teamMembers: projectData.teamMembers || "",
-      user: {
-        name: projectData.user?.name || "",
-        role: projectData.user?.role || "",
-        avatar: projectData.user?.avatar || "",
-      },
-    });
-    setIsEditing(true);
-  };
-
-  const handleSave = () => {
-    console.log("Updated Data:", formData);
-    setIsEditing(false);
-  };
-
   return (
     <>
-      <div style={styles.card}>
+      <div
+        style={styles.card}
+        onClick={handleCardClick}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+      >
         <div style={styles.icons}>
-          <FaPen onClick={(e) => { e.stopPropagation(); openModal(); }} />
-          <FaTrash />
+          <FaPen
+            onClick={(e) => {
+              e.stopPropagation();
+              openModal();
+            }}
+          />
+          <FaTrash onClick={(e) => e.stopPropagation()} />
         </div>
+
         <h2 style={styles.title}>{projectData.title}</h2>
         <h3 style={styles.subtitle}>{projectData.subtitle}</h3>
         <p style={styles.description}>{projectData.description}</p>

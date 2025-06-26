@@ -7,10 +7,15 @@ import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
 import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
 import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
+import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
+import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
   const [showPopup, setShowPopup] = useState(false);
+  const [showAssignPopup, setShowAssignPopup] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [showLocationForm, setShowLocationForm] = useState(false);
 
   const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
 
@@ -44,8 +49,26 @@ export const HrEmployeeManagement = () => {
   const bgColorList = getGridBgColors(employees.length, columns, bgClasses);
 
   const locations = [
-    { lat: 12.9795, lng: 80.2263, title: "Map1" },
-    { lat: 12.9715, lng: 77.5945, title: "Map2" },
+    {
+      branchName: "Perungudi",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.2300795125925!2d80.24268317484109!3d12.957124087356895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525d2313e5fa83%3A0x86751fde2142c085!2sZuntra%20Digital%20Private%20Limited!5e0!3m2!1sen!2sin!4v1750855923184!5m2!1sen!2sin"
+    },
+    {
+      branchName: "Selaiyur",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124440.7668226528!2d79.99512631640623!3d12.922244400000007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f6ed2136c9f%3A0x195a3558e9f5f39b!2sZUDIO%20-%20Selaiyur%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856070265!5m2!1sen!2sin"
+    },
+    {
+      branchName: "Kodambakkam",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124374.89066981588!2d80.08488851640625!3d13.053783100000024!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52676cb6734ecb%3A0x29afa95d29fddde!2sZUDIO%20-%20Kodambakkam%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856107276!5m2!1sen!2sin"
+    },
+    {
+      branchName: "Adyar",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124403.6466499826!2d80.11916441640622!3d12.996525300000012!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526700208c639b%3A0xe27864459a616099!2sZUDIO!5e0!3m2!1sen!2sin!4v1750856305753!5m2!1sen!2sin"
+    },
+    {
+      branchName: "Avadi",
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124344.53302174553!2d79.96295661640626!3d13.113963500000008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526369c5679e39%3A0xf15ed76fbd823a9c!2sZUDIO%20-%20Avadi%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856241763!5m2!1sen!2sin"
+    }
   ];
 
   const roleData = [
@@ -58,16 +81,23 @@ export const HrEmployeeManagement = () => {
     { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
     { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
     { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
-    { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-    { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
-    { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-    { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
-    { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
-    { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
-    { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
-    { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
-    { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
   ];
+
+  const handleApprove = (employee) => {
+    setSelectedEmployee(employee);
+    setShowAssignPopup(true);
+  };
+
+  const handleSaveAssignment = (data) => {
+    console.log("Saved assignment:", data);
+    setShowAssignPopup(false);
+    setSelectedEmployee(null);
+  };
+
+  const handleClosePopup = () => {
+    setShowAssignPopup(false);
+    setSelectedEmployee(null);
+  };
 
   return (
     <div className="website-container">
@@ -75,10 +105,28 @@ export const HrEmployeeManagement = () => {
       <div className="website-module">
         <EmpNavbar />
 
-        {navId === "all" && <EmployeeCard />}
+        {navId === "all" && (
+          <div className="employee-card-wrapper">
+            {employees.map((emp, index) => (
+              <EmployeeCard
+                key={index}
+                name={emp.name}
+                email={emp.email}
+                phone={emp.phone}
+                image={emp.image}
+                role="UI/UX Designer"
+                inTime="09:02"
+                outTime="16:55"
+                workTime="09:02"
+                breakTime="16:55"
+                bgColor={bgColorList[index]}
+              />
+            ))}
+          </div>
+        )}
 
         {navId === "roles" && (
-          <div className="project-cards-container">
+          <div className="emp-cards-container">
             {roleData.map((role, idx) => (
               <EmpRoleCard
                 key={idx}
@@ -89,19 +137,40 @@ export const HrEmployeeManagement = () => {
               />
             ))}
             <div className="plus-button" onClick={() => setShowPopup(true)}>
-              <span>+</span>
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                  <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+                </svg>
+              </span>
             </div>
           </div>
         )}
 
         {navId === "geofencing" && (
-          <div className="project-cards-container">
-            <GeoFencing locations={locations} />
+          <div className="geo-cards-container">
+            {locations.map((loc, index) => (
+              <GeoFencing key={index} embedUrl={loc.embedUrl} branchName={loc.branchName} />
+            ))}
+            <button className="plus-button" onClick={() => setShowLocationForm(true)}>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+              </svg>
+            </button>
           </div>
         )}
 
+        {showLocationForm && (
+          <AddLocationForm
+            isOpen={showLocationForm}
+            onClose={() => setShowLocationForm(false)}
+            onSubmit={(formData) => {
+              console.log('Submitted:', formData);
+            }}
+          />
+        )}
+
         {navId === "newusers" && (
-          <div className="project-cards-container">
+          <div className="emp-cards-container">
             {employees.map((emp, index) => (
               <EmpCard
                 key={index}
@@ -111,6 +180,7 @@ export const HrEmployeeManagement = () => {
                 date={emp.date}
                 image={emp.image}
                 color={bgColorList[index]}
+                onApprove={() => handleApprove(emp)}
               />
             ))}
           </div>
@@ -119,12 +189,33 @@ export const HrEmployeeManagement = () => {
 
       {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
 
+      {showLocationForm && (
+        <AddLocationForm
+          isOpen={showLocationForm}
+          onClose={() => setShowLocationForm(false)}
+          onSubmit={(formData) => {
+            console.log('Submitted:', formData);
+          }}
+        />
+      )}
+
+      {showAssignPopup && selectedEmployee && (
+        <div className="popup-overlay">
+          <EmpAssignmentPopUp
+            employee={selectedEmployee}
+            isOpen={true}
+            onClose={handleClosePopup}
+            onSave={handleSaveAssignment}
+          />
+        </div>
+      )}
+
       <style>{`
-        .project-cards-container {
+        .emp-cards-container {
           display: flex;
           flex-wrap: wrap;
           gap: 1rem;
-          justify-content: center;
+          max-width: 100%;
           align-items: stretch;
           margin-top: 1.5rem;
           max-height: 100%;
@@ -132,20 +223,32 @@ export const HrEmployeeManagement = () => {
           overflow-x: hidden;
         }
 
-        .project-cards-container > * {
+        .geo-cards-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          max-width: 100%;
+          align-items: stretch;
+          margin-top: 1.5rem;
+          max-height: 100%;
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        .emp-cards-container > * {
           flex: 1 1 100%;
           max-width: 100%;
         }
 
         @media (min-width: 48rem) {
-          .project-cards-container > * {
+          .emp-cards-container > * {
             flex: 1 1 calc(50% - 1rem);
             max-width: calc(50% - 1rem);
           }
         }
 
         @media (min-width: 64rem) {
-          .project-cards-container > * {
+          .emp-cards-container > * {
             flex: 1 1 calc(33.333% - 1rem);
             max-width: calc(33.333% - 1rem);
           }
@@ -172,7 +275,20 @@ export const HrEmployeeManagement = () => {
 
         .plus-button:hover {
           transform: scale(1.1);
-          background-color: #cbd5e1;
+          background-color: #A6C4BA;
+        }
+
+        .popup-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background-color: rgba(0, 0, 0, 0.4);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 2000;
         }
       `}</style>
     </div>

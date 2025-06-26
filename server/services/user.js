@@ -7,7 +7,7 @@ const getAllUserDetails = async () => {
 
 // @desc Get details of a user
 const getDetailsOfaUser = async (userid) => {
-    const userCreds = await UserCredentials.findOne({ _id: userid });
+    const userCreds = await UserCredentials.findById(userid);
     return userCreds;
 };
 
