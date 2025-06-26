@@ -222,6 +222,23 @@ export const HrEmployeeManagement = () => {
           overflow-y: auto;
           overflow-x: hidden;
         }
+        .employee-card-wrapper {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
+}
+     
+
+@media (max-width: 768px) {
+  .employee-card-wrapper {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+}
+
 
         .geo-cards-container {
           display: flex;
