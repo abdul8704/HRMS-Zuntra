@@ -69,12 +69,12 @@ export const AddRolePopup = ({ onClose }) => {
           gap: 1rem;
           padding: 1rem 1.5rem;
           border-radius: 1rem;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+          box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.1);
         }
 
         .close-btn {
           position: absolute;
-          top: 0.05rem;
+          top: 0.0625rem;
           right: 0.5rem;
           background: none;
           border: none;
@@ -101,7 +101,7 @@ export const AddRolePopup = ({ onClose }) => {
           height: 2rem;
           border-radius: 50%;
           cursor: pointer;
-          border: 2px solid #ccc;
+          border: 0.125rem solid #ccc;
         }
 
         .color-input {
@@ -120,7 +120,7 @@ export const AddRolePopup = ({ onClose }) => {
         .add-btn {
           padding: 0.5rem 1rem;
           border-radius: 1rem;
-          border: 1px solid #9ea5a0;
+          border: 0.0625rem solid #9ea5a0;
           background: transparent;
           cursor: pointer;
           font-size: 1rem;
@@ -130,7 +130,6 @@ export const AddRolePopup = ({ onClose }) => {
         .add-btn:hover {
           background-color: #f0f0f0;
         }
-
       `}</style>
     </>
   );
