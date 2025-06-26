@@ -3,13 +3,16 @@ import { Sidebar } from "../components/Sidebar";
 import { ProjectDeadline } from "../components/projectManagement/ProjectDeadline";
 import { UserGreetings } from "../components/projectManagement/UserGreetings";
 import { TimeCard } from "../components/projectManagement/TimeCard";
-import api from "../api/axios"; // make sure this exists or update the path
+import { jwtDecode } from 'jwt-decode'
+import api from "../api/axios";
 
 export const DashBoard = () => {
   const [projectDate, setProjectdate] = useState(new Date());
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [apiMessage, setApiMessage] = useState("");
+  const token = localStorage.getItem('accessToken');
+  const userDetails=jwtDecode(token);
   const formatDateDDMMYYYY = (date) => {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
@@ -40,9 +43,7 @@ export const DashBoard = () => {
   };
 
   fetchTasks();
-  console.log(projects)
 }, [projectDate]);
-console.log(params.user)
 return (
   <>
     <div className="website-container">
@@ -50,7 +51,7 @@ return (
       <div className="website-module">
         <div className='dash-grid'>
           <div className='greetings'>
-            <UserGreetings />
+            <UserGreetings name={userDetails.username} profileImageURL={userDetails.profilePicture} />
           </div>
           <div className='intime'>
             <TimeCard icon="&#10145;" time="09:02" label="Today's in time" bgColor="#C1E8BD" />
@@ -93,7 +94,6 @@ return (
           .greetings {
             grid-column: 1/5;
             grid-row: 1/2;
-            background-color: #FFFFFF;
             border-radius: 20px;
           }
           .intime {
