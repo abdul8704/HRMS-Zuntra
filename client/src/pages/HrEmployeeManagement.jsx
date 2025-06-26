@@ -9,7 +9,6 @@ import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
 import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
-import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
@@ -22,13 +21,6 @@ export const HrEmployeeManagement = () => {
 
   const employees = [
     { name: "John Joseph", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
-    {
-      name: "John Joseph aesctra srs terab aevy 4WTVtac  gestv 4wteeSVtr vging yt frytygincd frfdvbboyfr8d rdv56uurvibr rvub5oifdg",
-      email: "john@zuntra.com",
-      phone: "+91 1234567890",
-      date: "10-06-2025",
-      image: "https://randomuser.me/api/portraits/men/75.jpg"
-    },
     { name: "Nisha Mehra", email: "nisha@zuntra.com", phone: "+91 9123456780", date: "12-06-2025", image: "https://randomuser.me/api/portraits/women/68.jpg" },
     { name: "Ishita T", email: "ishita.t@zuntra.com", phone: "+91 9080706050", date: "10-06-2025", image: "https://randomuser.me/api/portraits/women/21.jpg" },
     { name: "Ravi Kumar", email: "ravi.kumar@zuntra.com", phone: "+91 8899776655", date: "13-06-2025", image: "https://randomuser.me/api/portraits/men/30.jpg" },
@@ -57,11 +49,6 @@ export const HrEmployeeManagement = () => {
   const bgColorList = getGridBgColors(employees.length, columns, bgClasses);
 
   const locations = [
-    { branchName: "Chennai", embedUrl: "https://www.google.com/maps/embed?pb=..." },
-    { branchName: "Bangalore", embedUrl: "https://www.google.com/maps/embed?pb=..." },
-    { branchName: "Hyderabad", embedUrl: "https://www.google.com/maps/embed?pb=..." },
-    { branchName: "Coimbatore", embedUrl: "https://www.google.com/maps/embed?pb=..." },
-    { branchName: "Trichy", embedUrl: "https://www.google.com/maps/embed?pb=..." }
     {
       branchName: "Perungudi",
       embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.2300795125925!2d80.24268317484109!3d12.957124087356895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525d2313e5fa83%3A0x86751fde2142c085!2sZuntra%20Digital%20Private%20Limited!5e0!3m2!1sen!2sin!4v1750855923184!5m2!1sen!2sin"
@@ -135,22 +122,6 @@ export const HrEmployeeManagement = () => {
                 bgColor={bgColorList[index]}
               />
             ))}
-          <div className="employee-card-wrapper">
-            {employees.map((emp, index) => (
-              <EmployeeCard
-                key={index}
-                name={emp.name}
-                email={emp.email}
-                phone={emp.phone}
-                image={emp.image}
-                role="UI/UX Designer"
-                inTime="09:02"
-                outTime="16:55"
-                workTime="09:02"
-                breakTime="16:55"
-                bgColor={bgColorList[index]}
-              />
-            ))}
           </div>
         )}
 
@@ -171,11 +142,6 @@ export const HrEmployeeManagement = () => {
                   <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
                 </svg>
               </span>
-              <span>
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
-                  <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
-                </svg>
-              </span>
             </div>
           </div>
         )}
@@ -190,15 +156,8 @@ export const HrEmployeeManagement = () => {
                 <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
               </svg>
             </button>
-            <button className="plus-button" onClick={() => setShowLocationForm(true)}>
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
-                <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
-              </svg>
-            </button>
           </div>
         )}
-
-        {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
 
         {showLocationForm && (
           <AddLocationForm
@@ -251,23 +210,6 @@ export const HrEmployeeManagement = () => {
         </div>
       )}
 
-      <style>{`
-        .employee-card-wrapper {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 24px;
-          padding: 24px;
-          overflow-y: auto;
-          max-height: calc(100vh - 120px);
-        }
-
-        @media (max-width: 768px) {
-          .employee-card-wrapper {
-            grid-template-columns: 1fr;
-            padding: 16px;
-          }
-        }
-      `}</style>
       <style>{`
         .emp-cards-container {
           display: flex;
