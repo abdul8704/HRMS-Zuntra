@@ -8,9 +8,9 @@ export const CourseCard = ({ image, title, instructor, duration, rating }) => {
   const badgeStyle = {
     backgroundColor: badgeColor,
     color: badgeTextColor,
-    padding: "4px 8px",
-    borderRadius: "12px",
-    fontSize: "clamp(10px, 2.5vw, 12px)",
+    padding: "0.25rem 0.5rem",
+    borderRadius: "0.75rem",
+    fontSize: "clamp(0.625rem, 2.5vw, 0.75rem)", 
     fontWeight: "500",
     whiteSpace: "nowrap",
   };
@@ -37,79 +37,87 @@ export const CourseCard = ({ image, title, instructor, duration, rating }) => {
 
 const styles = {
   card: {
-    flex: "1 1 280px",
-    minWidth: "260px", // Reduced for mobile
-    maxWidth: "350px",
-    width: "100%", // Fill available space
-    height: "auto", // Changed from fixed 45vh
-    minHeight: "300px", // Minimum height instead
+    flex: "1 1 17.5rem",
+    minWidth: "16.25rem",
+    maxWidth: "21.875rem",
+    width: "100%",
+    height: "auto",
+    minHeight: "18.75rem",
     backgroundColor: "#D6D6D6",
-    borderRadius: "5px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+    borderRadius: "1.2rem",
+    boxShadow: "0 0.25rem 0.75rem rgba(0, 0, 0, 0.1)",
     display: "flex",
     flexDirection: "column",
     overflow: "hidden",
-    // Mobile-specific adjustments
     "@media (max-width: 360px)": {
-      minWidth: "240px",
-      minHeight: "280px",
-    }
+      minWidth: "15rem",
+      minHeight: "17.5rem",
+    },
   },
+
   image: {
     width: "100%",
-    height: "clamp(140px, 40vw, 180px)", // Responsive image height
+    height: "clamp(8.75rem, 40vw, 11.25rem)", // 140px–180px
     objectFit: "cover",
     backgroundColor: "#f0f0f0",
   },
+
   content: {
-    padding: "clamp(8px, 2vw, 12px)", // Responsive padding
+    padding: "clamp(0.5rem, 2vw, 0.75rem)", // 8px–12px
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
     flex: 1,
   },
+
   infoSection: {
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
-    marginBottom: "clamp(8px, 2vw, 12px)", // Responsive margin
+    marginBottom: "clamp(0.5rem, 2vw, 0.75rem)", // 8px–12px
   },
+
   title: {
-    fontSize: "clamp(13px, 3.5vw, 16px)",
+    fontSize: "clamp(0.8125rem, 3.5vw, 1rem)", // 13px–16px
     fontWeight: "600",
-    marginBottom: "4px",
+    marginBottom: "0.25rem", // 4px
     textAlign: "left",
     width: "100%",
     lineHeight: "1.3",
-    margin: "0 0 4px 0", // Remove default margins
+    margin: "0 0 0.25rem 0", // 4px
   },
+
   instructor: {
-    fontSize: "clamp(11px, 3vw, 13px)",
+    fontSize: "clamp(0.6875rem, 3vw, 0.8125rem)", // 11px–13px
     color: "#666",
     textAlign: "left",
     width: "100%",
     lineHeight: "1.2",
-    margin: "0", // Remove default margins
+    margin: "0",
   },
+
   footer: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     flexWrap: "wrap",
-    gap: "clamp(4px, 1vw, 8px)", // Responsive gap
+    gap: "clamp(0.25rem, 1vw, 0.5rem)", // 4px–8px
   },
+
   rating: {
     display: "flex",
     alignItems: "center",
-    gap: "4px",
+    gap: "0.25rem", // 4px
   },
+
   ratingNumber: {
-    fontSize: "clamp(11px, 2.5vw, 13px)",
+    fontSize: "clamp(0.6875rem, 2.5vw, 0.8125rem)", // 11px–13px
     fontWeight: "bold",
     color: "#000",
   },
+
   star: {
-    fontSize: "clamp(16px, 4vw, 22px)", // Smaller star for mobile
+    fontSize: "clamp(1rem, 4vw, 1.375rem)", // 16px–22px
     color: "#f4b400",
   },
 };
