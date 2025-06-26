@@ -60,7 +60,7 @@ const navItems = [
 
 export const TaskNavbar = () => {
   const navigate = useNavigate();
-  const { navId } = useParams();
+  const { projectId, navId } = useParams();
   const [activeNavId, setActiveNavId] = useState(navId || navItems[0].path);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -71,7 +71,7 @@ export const TaskNavbar = () => {
 
   const handleNavigation = (path) => {
     setActiveNavId(path);
-    navigate(`/project/${encodeURIComponent(path)}`);
+    navigate(`/project/${projectId}/${encodeURIComponent(path)}`);
     setIsDropdownOpen(false);
   };
 
