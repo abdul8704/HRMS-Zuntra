@@ -106,6 +106,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
       console.log("Employee assigned successfully");
       onSave();
       onClose();
+      window.location.reload();
     }
     catch(err){
       console.error("Error assigning employee:", err);
