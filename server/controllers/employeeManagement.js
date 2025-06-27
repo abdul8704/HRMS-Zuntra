@@ -37,7 +37,13 @@ const getAttendanceData = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, attendanceData });
 });
 
+const fetchAllEmployees = asyncHandler(async (req, res) => {
+    const employees = await employeeService.getAllEmployees();
+    res.status(200).json({ success: true, employees });
+});
+
 module.exports = {
     handleLogout,
     getAttendanceData,
+    fetchAllEmployees,
 };

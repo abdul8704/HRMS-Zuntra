@@ -14,6 +14,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
       return roleData;
     } 
     catch (error) {
+      alert("Error fetching roles. Please try again later.");
       console.error("Error fetching roles:", error);
       return [];
     }
@@ -26,6 +27,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
       return response.data;
     } 
     catch (error) {
+      alert("Error fetching shifts. Please try again later.");
       console.error("Error fetching shifts:", error);
       return [];
     }
@@ -34,11 +36,11 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
   const getBranches = async () => {
     try {
       const response = await api.get('/api/branch');
-      console.log(response.data);
       const branches = response.data.map(branch => branch.campusName);
       return branches;
     } 
     catch (error) {
+      alert("Error fetching branches. Please try again later.");
       console.error("Error fetching branches:", error);
       return [];
     }
@@ -49,10 +51,6 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
       const roles = await getRoles();
       const shifts = await getShifts();
       const branches = await getBranches();
-
-      console.log("Roles:", roles);
-      console.log("Shifts:", shifts);
-      console.log("Branches:", branches);
 
       setRoles(roles);
       setShifts(shifts);
@@ -103,12 +101,13 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
           campus: selectedBranch,
           role: selectedRole,
       });
-      console.log("Employee assigned successfully");
+      alert("Employee assigned successfully");
       onSave();
       onClose();
+      window.location.reload();
     }
     catch(err){
-      console.error("Error assigning employee:", err);
+      alert("Error assigning employee:", err);
     }
   };
   }
