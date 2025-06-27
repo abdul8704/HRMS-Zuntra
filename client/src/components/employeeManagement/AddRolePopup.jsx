@@ -57,7 +57,6 @@ export const AddRolePopup = ({ onClose }) => {
     <>
       <div className="popup-overlay">
         <div className="popup-container">
-          {/* Role input and color selector */}
           <div className="role-color-row">
             <input
               type="text"
@@ -73,7 +72,6 @@ export const AddRolePopup = ({ onClose }) => {
             />
           </div>
 
-          {/* Color picker circles */}
           {showColors && (
             <div className="color-circles-container">
               {colors.map((color, idx) => (
@@ -90,45 +88,35 @@ export const AddRolePopup = ({ onClose }) => {
             </div>
           )}
 
-          {/* Add course input + dropdown + selected cards */}
-          <div className="add-course-container">
-            <div className="input-plus-wrapper">
-              <input
-                type="text"
-                className="course-input"
-                placeholder="Add course"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onFocus={() => setShowDropdown(true)}
-              />
-              <div className="plus-wrapper">
-                <div className="plus-circle" onClick={() => setShowDropdown(!showDropdown)}>+</div>
-                {showDropdown && (
-                  <div className="dropdown-course-list">
-                    <input
-                      type="text"
-                      placeholder="Search courses..."
-                      className="search-input"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    {availableCourses.map((course) => (
-                      <div key={course.id} className="dropdown-item" onClick={() => handleAddCourse(course)}>
-                        <EmpCourseCard
-                          courseName={course.courseName}
-                          authorName={course.authorName}
-                          imageUrl={course.imageUrl}
-                          onRemove={null}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+          {/* Exact same as EditRolePopup course box */}
+          <div className="course-box">
+            <span className="box-title">Ongoing courses...</span>
 
-            {/* Render selected course cards inside the container */}
-            <div className="course-list-inside">
+            {showDropdown && (
+              <div className="dropdown-course-list">
+                <input
+                  type="text"
+                  placeholder="Search courses..."
+                  className="search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <div className="dropdown-items-scroll">
+                  {availableCourses.map((course) => (
+                    <div key={course.id} className="dropdown-item" onClick={() => handleAddCourse(course)}>
+                      <EmpCourseCard
+                        courseName={course.courseName}
+                        authorName={course.authorName}
+                        imageUrl={course.imageUrl}
+                        onRemove={null}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="course-list-wrapper">
               {courseCards.map((course) => (
                 <EmpCourseCard
                   key={course.id}
@@ -139,9 +127,10 @@ export const AddRolePopup = ({ onClose }) => {
                 />
               ))}
             </div>
+
+            <span className="plus-circle" onClick={() => setShowDropdown(!showDropdown)}>+</span>
           </div>
 
-          {/* Buttons */}
           <div className="button-row">
             <button className="cancel-btn" onClick={onClose}>Cancel</button>
             <button className="add-btn" onClick={handleSubmit}>Add</button>
@@ -195,70 +184,76 @@ export const AddRolePopup = ({ onClose }) => {
           cursor: pointer;
         }
 
-        .add-course-container {
+        .color-circles-container {
           display: flex;
-          flex-direction: column;
+          flex-wrap: wrap;
           gap: 0.5rem;
+        }
+
+        .color-circle {
+          width: 1.5rem;
+          height: 1.5rem;
+          border-radius: 50%;
+          cursor: pointer;
+          border: 2px solid transparent;
+        }
+
+        .course-box {
+          background-color: #d9d9d9;
+          border-radius: 10px;
+          height: 18rem;
           width: 100%;
-        }
-
-        .input-plus-wrapper {
-          display: flex;
-          gap: 0.8rem;
-          align-items: center;
-        }
-
-        .course-input {
-          flex: 1;
-          padding: 0.6rem 1rem;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          font-size: 1rem;
-          outline: none;
-        }
-
-        .plus-wrapper {
           position: relative;
+          padding: 2.5rem 1rem 2rem 1rem;
+          overflow-y: auto;
+        }
+
+        .box-title {
+          position: absolute;
+          top: 0.8rem;
+          left: 1rem;
+          font-size: 1rem;
+          color: #555;
         }
 
         .plus-circle {
-          width: 1.8rem;
-          height: 1.8rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background-color: white;
-          border: 1px solid black;
+          position: absolute;
+          bottom: 0.8rem;
+          right: 1rem;
+          background: rgba(0, 128, 128, 0.15);
           border-radius: 50%;
-          font-size: 1.2rem;
+          padding: 0.3rem 0.6rem;
+          font-size: 1rem;
           color: #333;
           cursor: pointer;
         }
 
-        .dropdown-course-list {
-          position: absolute;
-          top: calc(100% + 0.4rem);
-          right: 0;
-          background: white;
-          border-radius: 0.8rem;
-          max-height: 12rem;
-          overflow-y: auto;
-          overflow-x: hidden;
-          width: 230px;
-          padding: 0.5rem;
-          box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-          z-index: 1000;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
+        .course-list-wrapper {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          align-items: flex-start;
+          gap: 0.75rem;
+          margin-top: 2.5rem;
         }
 
-        .dropdown-course-list::-webkit-scrollbar {
-          display: none;
+        .dropdown-course-list {
+          position: absolute;
+          bottom: 3rem;
+          right: 1rem;
+          width: 230px;
+          background: white;
+          border-radius: 0.8rem;
+          box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          padding: 0.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
         }
 
         .search-input {
           width: 100%;
-          margin-bottom: 0.5rem;
           padding: 0.4rem;
           border: none;
           outline: none;
@@ -267,24 +262,19 @@ export const AddRolePopup = ({ onClose }) => {
           background-color: white;
         }
 
-        .dropdown-item {
-          margin: 0;
-          padding: 0.2rem 0;
-          width: 100%;
-          cursor: pointer;
-        }
-
-        .dropdown-item:hover {
-          background-color: transparent !important;
-        }
-
-        .course-list-inside {
+        .dropdown-items-scroll {
+          max-height: 8rem;
+          overflow-y: auto;
+          overflow-x: hidden;
           display: flex;
-          flex-wrap: wrap;
-          justify-content: flex-start;
-          align-items: flex-start;
-          gap: 0.75rem;
-          padding-left: 0.5rem;
+          flex-direction: column;
+          gap: 0;
+          padding-left: 0.3rem;
+        }
+
+        .dropdown-item {
+          cursor: pointer;
+          margin-bottom: 2px;
         }
 
         .button-row {
@@ -320,20 +310,6 @@ export const AddRolePopup = ({ onClose }) => {
         .add-btn:hover {
           background-color: green;
           color: white;
-        }
-
-        .color-circles-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-        }
-
-        .color-circle {
-          width: 1.5rem;
-          height: 1.5rem;
-          border-radius: 50%;
-          cursor: pointer;
-          border: 2px solid transparent;
         }
       `}</style>
     </>
