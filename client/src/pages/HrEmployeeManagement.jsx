@@ -10,6 +10,8 @@ import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
 import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
+import { useEffect } from 'react';
+import api from '../api/axios'; 
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
@@ -19,6 +21,21 @@ export const HrEmployeeManagement = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showLocationForm, setShowLocationForm] = useState(false);
   const [editRoleData, setEditRoleData] = useState(null);
+  const [pendingEmployees, setPendingEmployees] = useState([]);
+
+  useEffect(() => {
+    const fetchPendingEmployees = async () => {
+      try {
+        const response = await api.get('/api/hr/pending');
+        console.log('Pending Employees:', response.data);
+        setPendingEmployees(response.data.data);
+      } catch (error) {
+        console.error('Error fetching pending employees:', error);
+      }
+    };
+
+    fetchPendingEmployees();
+  }, []); 
 
   const handleEditRole = (roleData) => {
     setEditRoleData(roleData);
@@ -79,7 +96,7 @@ export const HrEmployeeManagement = () => {
   const locations = [
     {
       branchName: "Perungudi",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.2300795125925!2d80.24268317484109!3d12.957124087356895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525d2313e5fa83%3A0x86751fde2142c085!2sZuntra%20Digital%20Private%20Limited!5e0!3m2!1sen!2sin!4v1750855923184!5m2!1sen!2sin"
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.230079512601!2d80.24268317507622!3d12.95712408735691!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525d2313e5fa83%3A0x86751fde2142c085!2sZuntra%20Digital%20Private%20Limited!5e0!3m2!1sen!2sin!4v1751014087167!5m2!1sen!2sin"
     },
     {
       branchName: "Selaiyur",
@@ -219,7 +236,7 @@ export const HrEmployeeManagement = () => {
         {navId === "newusers" && (
           <div className="newusers-scroll-wrapper">
             <div className="newusers-container">
-              {employees.map((emp, index) => (
+              {pendingEmployees.map((emp, index) => (
                 <EmpCard
                   key={index}
                   name={emp.name}
