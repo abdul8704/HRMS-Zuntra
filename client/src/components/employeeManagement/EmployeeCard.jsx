@@ -22,15 +22,9 @@ const darkenColor = (hex, percent = 10) => {
       const d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
       switch (max) {
-        case r:
-          h = (g - b) / d + (g < b ? 6 : 0);
-          break;
-        case g:
-          h = (b - r) / d + 2;
-          break;
-        case b:
-          h = (r - g) / d + 4;
-          break;
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
       }
       h /= 6;
     }
@@ -61,53 +55,36 @@ const styles = {
     position: "relative",
   }),
   cardContent: {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  width: "100%",
-},
-timeCardWrapper: {
-    width: "100%",
-    height: "50%", 
     display: "flex",
-    containerType: "inline-size",
-},
-
-
- leftSection: {
-  display: "flex",
-  flexDirection: "row",
-  gap: "12px",
-  alignItems: "center",         // Vertically center image + text block
-  justifyContent: "flex-start",
-},
-
-
-
-imageContainer: {
-  display: "flex",
-  alignItems: "center",       // Center vertically within the section
-  justifyContent: "flex-start", // Align image to the left inside the container
-  width: "60px",
-  height: "100%",              // Full height of parent container
-  padding: 0,                  // Ensure no internal padding pushes image
-},
-
-image: {
-  width: "60px",               // Maintain fixed width
-  height: "80px",              // Or height as desired
-  objectFit: "contain",        // Prevent distortion
-  display: "block",
-  marginLeft: "0",             // Explicitly remove margin if exists
-},
-
-
-
-
-
-
-
-
+    flexDirection: "row",
+    alignItems: "stretch",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    width: "100%",
+    gap: "1rem",
+  },
+  leftSection: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "stretch",
+    flex: "1 1 55%",
+    minWidth: "260px",
+    gap: "1rem",
+  },
+  imageContainer: {
+    display: "flex",
+    alignItems: "stretch",
+    justifyContent: "flex-start",
+    height: "100%",
+    width: "5rem",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
+    borderRadius: "0.5rem",
+  },
   infoContainer: {
     display: "flex",
     flexDirection: "column",
@@ -117,21 +94,20 @@ image: {
     overflow: "hidden",
   },
   name: {
-  fontSize: "18px",
-  margin: 0,
-  cursor: "pointer",
-},
-row: {
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-  fontSize: "14px",
-  color: "#333",
-  maxWidth: "100%",
-  flexWrap: "nowrap", // Prevent wrapping
-  overflow: "hidden", // Hide overflow
-},
-
+    fontSize: "18px",
+    margin: 0,
+    cursor: "pointer",
+  },
+  row: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    fontSize: "14px",
+    color: "#333",
+    maxWidth: "100%",
+    flexWrap: "nowrap",
+    overflow: "hidden",
+  },
   icon: {
     fontSize: "16px",
     flexShrink: 0,
@@ -153,12 +129,22 @@ row: {
     color: "black",
   }),
   timeContainer: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, 1fr)",
-    gap: "10px",
-    minWidth: "300px",
-    marginLeft: "auto",
-  },
+  display: "flex",
+  flexWrap: "wrap",
+  justifyContent: "flex-end",
+  gap: "0.8rem",
+  flex: "1 1 40%",
+  minWidth: "200px",
+},
+
+TimeCardWrapper: {
+  flex: "0 1 calc(50% - 0.4rem)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  minWidth: "7rem",     // ✅ ensures no overlap or squeeze
+},
+
 
 };
 
@@ -219,10 +205,18 @@ export const EmployeeCard = ({
           </div>
 
           <div className="time-container" style={styles.timeContainer}>
-            <div style={styles.timeCardWrapper}><TimeCard state="out" time="09:12" label="Checked In" color={true} /></div>
-            <div style={styles.timeCardWrapper}><TimeCard state="out" time={outTime} color={false} label={false} /></div>
-            <div style={styles.timeCardWrapper}><TimeCard state="break" time={breakTime} color={false} label={false} /></div>
-            <div style={styles.timeCardWrapper}><TimeCard state="work" time={workTime} color={false} label={false} /></div>
+            <div style={styles.TimeCardWrapper}>
+              <TimeCard state="in" time={inTime} label={false} color={false} />
+            </div>
+            <div style={styles.TimeCardWrapper}>
+              <TimeCard state="out" time={outTime} color={false} label={false} />
+            </div>
+            <div style={styles.TimeCardWrapper}>
+              <TimeCard state="break" time={breakTime} color={false} label={false} />
+            </div>
+            <div style={styles.TimeCardWrapper}>
+              <TimeCard state="work" time={workTime} color={false} label={false} />
+            </div>
           </div>
         </div>
       </div>
