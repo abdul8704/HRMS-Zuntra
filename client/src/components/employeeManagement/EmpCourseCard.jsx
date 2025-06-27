@@ -3,8 +3,6 @@ import React from "react";
 export const EmpCourseCard = ({ courseName, authorName, imageUrl, onRemove }) => {
   return (
     <div className="emp-course-card">
-      <div className="remove-icon" onClick={onRemove}>×</div>
-
       <img src={imageUrl} alt="course" className="course-image" />
 
       <div className="course-text">
@@ -18,68 +16,77 @@ export const EmpCourseCard = ({ courseName, authorName, imageUrl, onRemove }) =>
         </div>
       </div>
 
+      {onRemove && <div className="remove-icon" onClick={onRemove}>×</div>}
+
       <style>{`
         .emp-course-card {
-          display: flex;
-          align-items: center;
-          background-color: #c3dad7;
-          border-radius: 999rem;
-          padding: 0.1rem 0.6rem 0.1rem 0.3rem; /* Tight padding */
-          max-width: 11.25rem;
-          position: relative;
-          gap: 0.4rem;
-          font-family: sans-serif;
-        }
+  display: flex;
+  align-items: center;
+  background-color: white;
+  padding: 0.5rem 1rem;
+  gap: 0.6rem;
+  font-family: sans-serif;
+  width: 90%; /* ✅ reduce width to fit nicely */
+  max-width: 11rem; /* ✅ constrain width */
+  box-sizing: border-box;
+  position: relative;
+  margin: 0 auto; /* ✅ center the card inside the container */
+  width: 100%; /* ✅ Fill full width of dropdown */
+  border-radius: 0;
+}
 
-        .remove-icon {
-          position: absolute;
-          top: 0.1rem;
-          right: 0.5rem;
-          font-size: 0.75rem;
-          font-weight: bold;
-          color: #333;
-          cursor: pointer;
-          z-index: 10;
-        }
 
         .course-image {
-          width: 1.4rem;
-          height: 1.4rem;
+          width: clamp(1.4rem, 4vw, 2rem);
+          height: clamp(1.4rem, 4vw, 2rem);
           border-radius: 50%;
           object-fit: cover;
+          flex-shrink: 0;
+          align-item:flex-start;
         }
 
         .course-text {
           display: flex;
           flex-direction: column;
-          gap: 0.05rem; /* Reduced gap */
-          max-width: 8.5rem;
-          line-height: 1.1;
+          gap: 0.2rem;
+          flex: 1;
+          min-width: 0;
+          align-items: flex-start; /* 🔽 Align text to left */
         }
 
         .tooltip-wrapper {
           position: relative;
-          display: inline-block;
+          width: 100%;
         }
 
         .text {
-          display: inline-block;
-          max-width: 100%;
+          display: block;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          font-size: clamp(0.6rem, 1vw, 0.85rem);
         }
 
         .course-title {
           font-weight: 600;
-          font-size: 0.75rem;
           color: #111;
         }
 
         .course-author {
-          font-size: 0.65rem;
           color: #555;
         }
+
+        .remove-icon {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.4rem;
+  font-size: clamp(0.75rem, 1vw, 1rem);
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  z-index: 5;
+}
+
 
         .tooltip {
           visibility: hidden;
@@ -102,6 +109,13 @@ export const EmpCourseCard = ({ courseName, authorName, imageUrl, onRemove }) =>
         .tooltip-wrapper:hover .tooltip {
           visibility: visible;
           opacity: 1;
+        }
+
+        @media (max-width: 480px) {
+          .emp-course-card {
+            padding: 0.4rem 0.6rem;
+            border-radius: 1.5rem;
+          }
         }
       `}</style>
     </div>
