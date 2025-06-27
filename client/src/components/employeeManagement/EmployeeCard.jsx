@@ -13,8 +13,7 @@ const darkenColor = (hex, percent = 10) => {
     r /= 255;
     g /= 255;
     b /= 255;
-    const max = Math.max(r, g, b),
-      min = Math.min(r, g, b);
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
     let h, s, l = (max + min) / 2;
     if (max === min) {
       h = s = 0;
@@ -47,10 +46,10 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "flex-start",
     backgroundColor: bgColor,
-    borderRadius: "16px",
-    padding: "16px",
-    gap: "16px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+    borderRadius: "1rem",
+    padding: "1rem",
+    gap: "1rem",
+    boxShadow: "0 0.125rem 0.625rem rgba(0,0,0,0.2)",
     width: "100%",
     position: "relative",
   }),
@@ -68,7 +67,7 @@ const styles = {
     flexDirection: "row",
     alignItems: "stretch",
     flex: "1 1 55%",
-    minWidth: "260px",
+    minWidth: "16.25rem", // 260px
     gap: "1rem",
   },
   imageContainer: {
@@ -88,64 +87,61 @@ const styles = {
   infoContainer: {
     display: "flex",
     flexDirection: "column",
-    gap: "6px",
+    gap: "0.375rem", // 6px
     flex: 1,
     minWidth: 0,
     overflow: "hidden",
   },
   name: {
-    fontSize: "18px",
+    fontSize: "1.125rem",
     margin: 0,
     cursor: "pointer",
   },
   row: {
     display: "flex",
     alignItems: "center",
-    gap: "8px",
-    fontSize: "14px",
+    gap: "0.5rem",
+    fontSize: "0.875rem",
     color: "#333",
     maxWidth: "100%",
     flexWrap: "nowrap",
     overflow: "hidden",
   },
   icon: {
-    fontSize: "16px",
+    fontSize: "1rem",
     flexShrink: 0,
   },
   text: {
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
-    maxWidth: "180px",
+    maxWidth: "100%",
     display: "inline-block",
   },
   role: (bg) => ({
-    marginTop: "4px",
-    padding: "4px 8px",
+    marginTop: "0.25rem",
+    padding: "0.25rem 0.5rem",
     backgroundColor: bg,
-    borderRadius: "12px",
+    borderRadius: "0.75rem",
     width: "fit-content",
-    fontSize: "13px",
+    fontSize: "0.8125rem",
     color: "black",
   }),
   timeContainer: {
-  display: "flex",
-  flexWrap: "wrap",
-  justifyContent: "flex-end",
-  gap: "0.8rem",
-  flex: "1 1 40%",
-  minWidth: "200px",
-},
-
-TimeCardWrapper: {
-  flex: "0 1 calc(50% - 0.4rem)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  minWidth: "7rem",     // ✅ ensures no overlap or squeeze
-},
-
-
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "flex-end",
+    gap: "0.8rem",
+    flex: "1 1 40%",
+    minWidth: "12.5rem",
+  },
+  TimeCardWrapper: {
+    flex: "0 1 calc(50% - 0.4rem)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minWidth: "7rem",
+  },
 };
 
 export const EmployeeCard = ({
@@ -165,14 +161,14 @@ export const EmployeeCard = ({
   const lightAccentColor = darkenColor(bgColor, 6);
 
   const showTooltip = (e, text) => {
-    const rect = e.target.getBoundingClientRect();
-    setTooltip({
-      show: true,
-      text,
-      top: rect.top + window.scrollY - 40,
-      left: rect.left + window.scrollX,
-    });
-  };
+  setTooltip({
+    show: true,
+    text,
+    top: e.clientY + window.scrollY - 40,
+    left: e.clientX + window.scrollX + 10,
+  });
+};
+
 
   const hideTooltip = () => setTooltip({ show: false, text: "", top: 0, left: 0 });
 
@@ -184,21 +180,21 @@ export const EmployeeCard = ({
             <div style={styles.imageContainer}>
               <img src={image} alt="Profile" style={styles.image} />
             </div>
-            <div style={styles.infoContainer}>
+            <div className="infoContainer" style={styles.infoContainer}>
               <h2
                 style={styles.name}
                 onMouseEnter={(e) => showTooltip(e, name)}
                 onMouseLeave={hideTooltip}
               >
-                <span style={styles.text}>{name}</span>
+                <span className="text" style={styles.text}>{name}</span>
               </h2>
               <div style={styles.row} onMouseEnter={(e) => showTooltip(e, email)} onMouseLeave={hideTooltip}>
                 <span style={styles.icon}>📧</span>
-                <span style={styles.text}>{email}</span>
+                <span className="text" style={styles.text}>{email}</span>
               </div>
               <div style={styles.row} onMouseEnter={(e) => showTooltip(e, phone)} onMouseLeave={hideTooltip}>
                 <span style={styles.icon}>📞</span>
-                <span style={styles.text}>{phone}</span>
+                <span className="text" style={styles.text}>{phone}</span>
               </div>
               <div style={styles.role(lightAccentColor)}>{role}</div>
             </div>
@@ -229,17 +225,55 @@ export const EmployeeCard = ({
             left: `${tooltip.left}px`,
             backgroundColor: "#333",
             color: "#fff",
-            padding: "6px 12px",
-            borderRadius: "6px",
-            fontSize: "14px",
+            padding: "0.375rem 0.75rem",
+            borderRadius: "0.375rem",
+            fontSize: "0.875rem",
             whiteSpace: "nowrap",
             zIndex: 9999,
-            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+            boxShadow: "0 0.125rem 0.375rem rgba(0,0,0,0.2)",
           }}
         >
           {tooltip.text}
         </div>
       )}
+
+      <style jsx>{`
+        @media (max-width: 25rem) {
+          .employee-card {
+            padding: 1rem !important;
+          }
+
+          .card-content {
+            flex-direction: column;
+            gap: 1rem;
+          }
+
+          .left-section {
+            flex-direction: column;
+            align-items: center !important;
+            gap: 0.8rem !important;
+          }
+
+          .infoContainer {
+            align-items: center !important;
+            text-align: center;
+          }
+
+          .time-container {
+            justify-content: center !important;
+          }
+
+          .employee-card h2 {
+            font-size: 1rem !important;
+          }
+
+          .employee-card .text {
+            max-width: 100% !important;
+            word-break: break-word !important;
+            white-space: normal !important;
+          }
+        }
+      `}</style>
     </>
   );
 };

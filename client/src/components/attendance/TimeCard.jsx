@@ -46,15 +46,15 @@ export const TimeCard = ({ state, time = "09:00", label, color = true }) => {
   const displayLabel = label === false ? null : label || defaultLabel;
 
   return (
-    <div className="card-time" style={{ backgroundColor: appliedBg }}>
-      <div className="icon">{icon}</div>
-      <div className="text">
-        <span className="time">{time}</span>
-        {displayLabel && <span className="label">{displayLabel}</span>}
+    <div className="tcard-card-time" style={{ backgroundColor: appliedBg }}>
+      <div className="tcard-icon">{icon}</div>
+      <div className="tcard-text">
+        <span className="tcard-time">{time}</span>
+        {displayLabel && <span className="tcard-label">{displayLabel}</span>}
       </div>
 
       <style jsx>{`
-        .card-time {
+        .tcard-card-time {
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -64,7 +64,7 @@ export const TimeCard = ({ state, time = "09:00", label, color = true }) => {
           justify-content: center;
         }
 
-        .icon {
+        .tcard-icon {
 display: flex;
   justify-content: center;
   align-items: center;
@@ -73,7 +73,7 @@ display: flex;
   border-radius: 0.5rem;
 }
 
-        .text {
+        .tcard-text {
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -82,13 +82,13 @@ display: flex;
           overflow: hidden;
         }
 
-        .time {
+        .tcard-time {
           font-size: clamp(1rem, 2.5vw, 1.3rem);
           font-weight: 600;
           white-space: nowrap;
         }
 
-        .label {
+        .tcard-label {
           font-size: clamp(0.65rem, 1vw, 0.8rem);
           opacity: 0.85;
           color: #333;
