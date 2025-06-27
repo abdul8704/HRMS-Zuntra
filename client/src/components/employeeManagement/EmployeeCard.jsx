@@ -67,7 +67,7 @@ const styles = {
   width: "100%",
 },
 timeCardWrapper: {
-    width: "100%", 
+    width: "50%",
     display: "flex",
     containerType: "inline-size",
 },
@@ -217,7 +217,7 @@ export const EmployeeCard = ({
             </div>
           </div>
 
-          <div className="time-container" style={styles.timeContainer}>
+          <div style={styles.timeContainer}>
             <div style={styles.timeCardWrapper}><TimeCard state="in" time={inTime} /></div>
             <div style={styles.timeCardWrapper}><TimeCard state="out" time={outTime} /></div>
             <div style={styles.timeCardWrapper}><TimeCard state="break" time={breakTime} /></div>
