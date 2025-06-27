@@ -22,15 +22,9 @@ const darkenColor = (hex, percent = 10) => {
       const d = max - min;
       s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
       switch (max) {
-        case r:
-          h = (g - b) / d + (g < b ? 6 : 0);
-          break;
-        case g:
-          h = (b - r) / d + 2;
-          break;
-        case b:
-          h = (r - g) / d + 4;
-          break;
+        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+        case g: h = (b - r) / d + 2; break;
+        case b: h = (r - g) / d + 4; break;
       }
       h /= 6;
     }
@@ -112,21 +106,20 @@ image: {
     overflow: "hidden",
   },
   name: {
-  fontSize: "18px",
-  margin: 0,
-  cursor: "pointer",
-},
-row: {
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-  fontSize: "14px",
-  color: "#333",
-  maxWidth: "100%",
-  flexWrap: "nowrap", // Prevent wrapping
-  overflow: "hidden", // Hide overflow
-},
-
+    fontSize: "18px",
+    margin: 0,
+    cursor: "pointer",
+  },
+  row: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    fontSize: "14px",
+    color: "#333",
+    maxWidth: "100%",
+    flexWrap: "nowrap",
+    overflow: "hidden",
+  },
   icon: {
     fontSize: "16px",
     flexShrink: 0,
