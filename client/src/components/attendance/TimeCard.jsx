@@ -1,13 +1,13 @@
 import React from "react";
-                                                              
-export const TimeCard = ({ state, time = "09:02", label }) => {
+
+export const TimeCard = ({ state, time = "09:02", label, color = true }) => {
   const config = {
     in: {
       bg: "#c5e7b2",
       defaultLabel: "Today's in time",
-      className: "in-card", 
+      className: "in-card",
       svg: (
-        <svg width="100%" height="100%" viewBox="0 0 39 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="100%" height="1.2rem" viewBox="0 0 39 37" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
           <path d="M32.083 0.5H36.667C37.142 0.500087 37.5977 0.688589 37.9336 1.02441C38.2696 1.36042 38.458 1.81681 38.458 2.29199V34.375C38.458 34.8501 38.2695 35.3056 37.9336 35.6416C37.5977 35.9775 37.1421 36.1669 36.667 36.167H32.083C31.6079 36.1669 31.1523 35.9775 30.8164 35.6416C30.4805 35.3056 30.292 34.8501 30.292 34.375C30.292 33.8999 30.4805 33.4444 30.8164 33.1084C31.1523 32.7725 31.6079 32.5831 32.083 32.583H34.875V4.08301H32.083C31.6079 4.08292 31.1523 3.89452 30.8164 3.55859C30.4805 3.22267 30.2921 2.76705 30.292 2.29199C30.292 1.81681 30.4804 1.36042 30.8164 1.02441C31.1523 0.688591 31.608 0.500086 32.083 0.5ZM18.5869 7.39258C18.9984 7.45139 19.3747 7.6515 19.6533 7.95508L19.7666 8.0918L26.6875 17.3047C26.9092 17.6105 27.0293 17.9786 27.0293 18.3564C27.0293 18.7364 26.9077 19.1063 26.6836 19.4131L26.6787 19.4199L20.2178 28.585C20.0529 28.8165 19.8354 29.0059 19.583 29.1367C19.3307 29.2675 19.0508 29.3366 18.7666 29.3379H18.7646C18.3933 29.3406 18.0301 29.2272 17.7256 29.0146C17.5323 28.879 17.3676 28.7064 17.2412 28.5068C17.1146 28.307 17.0292 28.0837 16.9893 27.8506C16.9493 27.6175 16.9551 27.3789 17.0078 27.1484C17.0606 26.9178 17.1594 26.6994 17.2969 26.5068L17.2979 26.5049L21.2402 20.9131L21.7959 20.125H2.29199C1.81681 20.125 1.36042 19.9366 1.02441 19.6006C0.688411 19.2646 0.5 18.8082 0.5 18.333C0.500086 17.858 0.68859 17.4023 1.02441 17.0664C1.36042 16.7304 1.81681 16.542 2.29199 16.542H21.625L21.0254 15.7412L16.9004 10.2412C16.6153 9.86109 16.4924 9.38345 16.5596 8.91309C16.6268 8.44275 16.8787 8.01847 17.2588 7.7334C17.6389 7.44843 18.1166 7.32539 18.5869 7.39258Z" fill="black" stroke="black"/>
         </svg>
       ),
@@ -17,7 +17,7 @@ export const TimeCard = ({ state, time = "09:02", label }) => {
       defaultLabel: "Today's out time",
       className: "out-card",
       svg: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" viewBox="0 0 39 37">
+        <svg width="100%" height="1.2rem" viewBox="0 0 39 37" xmlns="http://www.w3.org/2000/svg">
           <path fill="#000" d="M32.086 4.584a2.291 2.291 0 0 1 0-4.584h4.583a2.291 2.291 0 0 1 2.291 2.292v32.086a2.292 2.292 0 0 1-2.291 2.292h-4.583a2.291 2.291 0 0 1 0-4.584h2.291V4.584h-2.291ZM.419 17.006 6.88 7.838a2.291 2.291 0 1 1 3.736 2.659l-3.942 5.546h18.538a2.291 2.291 0 0 1 0 4.584H6.88l4.125 5.5a2.293 2.293 0 0 1-2.858 3.425 2.29 2.29 0 0 1-.808-.674L.465 19.71a2.292 2.292 0 0 1-.046-2.704Z"/>
         </svg>
       ),
@@ -27,7 +27,7 @@ export const TimeCard = ({ state, time = "09:02", label }) => {
       defaultLabel: "Today's break time",
       className: "break-card",
       svg: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" viewBox="0 0 38 38">
+        <svg width="100%" height="1.2rem" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">
           <path fill="#000" d="M27.313 9.333c.321 0 .6-.132.835-.396A1.36 1.36 0 0 0 28.5 8c0-.32.087-.604.26-.854a2.51 2.51 0 0 1 .612-.625c.433-.333.872-.667 1.317-1 .446-.333.866-.695 1.262-1.083.396-.39.705-.84.928-1.355.223-.514.346-1.097.371-1.75 0-.36-.117-.673-.352-.937C32.662.132 32.383 0 32.062 0c-.321 0-.6.132-.834.396a1.363 1.363 0 0 0-.353.937c0 .32-.087.605-.26.855a2.49 2.49 0 0 1-.612.624c-.42.334-.86.667-1.317 1a10.21 10.21 0 0 0-1.262 1.084c-.384.389-.693.84-.928 1.354-.235.514-.359 1.097-.371 1.75 0 .361.117.674.352.938.236.263.514.395.835.395Zm-8.313 0c.322 0 .6-.132.835-.396A1.36 1.36 0 0 0 20.187 8c0-.32.087-.604.26-.854.173-.25.378-.458.613-.625.433-.333.872-.667 1.317-1a12.53 12.53 0 0 0 1.262-1.083c.396-.39.705-.84.927-1.355.223-.514.347-1.097.372-1.75 0-.36-.118-.673-.353-.937S24.072 0 24.75 0c-.322 0-.6.132-.835.396a1.363 1.363 0 0 0-.352.937c0 .32-.087.605-.26.855-.173.25-.378.458-.613.624-.42.334-.86.667-1.317 1a10.21 10.21 0 0 0-1.262 1.084c-.383.389-.692.84-.927 1.354-.235.514-.36 1.097-.372 1.75 0 .361.118.674.353.938.235.263.513.395.835.395Zm-8.313 0c.322 0 .6-.132.836-.396A1.36 1.36 0 0 0 11.875 8c0-.32.087-.604.26-.854a2.51 2.51 0 0 1 .612-.625c.433-.333.872-.667 1.318-1a12.52 12.52 0 0 0 1.261-1.083c.396-.39.705-.84.928-1.355.223-.514.346-1.097.371-1.75 0-.36-.117-.673-.352-.937C16.037.132 15.759 0 15.438 0c-.322 0-.6.132-.836.396a1.363 1.363 0 0 0-.352.937c0 .32-.087.605-.26.855a2.49 2.49 0 0 1-.612.624c-.42.334-.86.667-1.318 1a10.21 10.21 0 0 0-1.26 1.084c-.384.389-.693.84-.928 1.354-.235.514-.359 1.097-.371 1.75 0 .361.118.674.353.938.235.263.513.395.835.395ZM8.22 24.667c.408 1.041.915 2 1.521 2.875A18.414 18.414 0 0 0 11.782 30h-8.22v2.667c0 .625.087 1.25.26 1.875.173.625.42 1.194.742 1.708s.724.93 1.207 1.25c.482.32 1.032.486 1.65.5h26.72c.618 0 1.162-.16 1.632-.48a4.34 4.34 0 0 0 1.206-1.25 6.1 6.1 0 0 0 .761-1.708c.173-.624.26-1.256.26-1.895V30h-7.032a15.534 15.534 0 0 0 3.414-4.98c.816-1.888 1.23-3.93 1.243-6.124v-7.563H5.845c-.817 0-1.577.174-2.282.521a5.894 5.894 0 0 0-1.856 1.438 6.765 6.765 0 0 0-1.243 2.125A7.716 7.716 0 0 0 0 18c0 .903.148 1.757.445 2.563a6.765 6.765 0 0 0 1.243 2.125 5.894 5.894 0 0 0 1.856 1.437 5.344 5.344 0 0 0 2.3.542H8.22ZM7.125 14c0 .583-.006 1.167-.019 1.75a83.528 83.528 0 0 0-.018 1.77c0 .765.018 1.522.056 2.272.037.75.136 1.486.296 2.208H5.845a3.01 3.01 0 0 1-1.355-.313c-.42-.208-.791-.5-1.113-.875a3.83 3.83 0 0 1-.724-1.27A5.525 5.525 0 0 1 2.375 18c0-.542.087-1.056.26-1.542.173-.486.42-.91.742-1.27a3.733 3.733 0 0 1 1.095-.855c.408-.208.866-.32 1.373-.333h1.28Zm.297 21.333a.89.89 0 0 1-.668-.291 2.56 2.56 0 0 1-.464-.688 3.208 3.208 0 0 1-.26-.875 8.56 8.56 0 0 1-.093-.812h29.688c0 .236-.025.507-.074.812-.05.306-.143.59-.279.854a3.9 3.9 0 0 1-.463.709.774.774 0 0 1-.668.291H7.42Z"/>
         </svg>
       ),
@@ -37,7 +37,7 @@ export const TimeCard = ({ state, time = "09:02", label }) => {
       defaultLabel: "Today's work time",
       className: "work-card",
       svg: (
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="none" viewBox="0 0 39 37">
+        <svg width="100%" height="1.2rem" viewBox="0 0 39 37" xmlns="http://www.w3.org/2000/svg">
           <path fill="#000" d="M15.584 0h7.792a3.92 3.92 0 0 1 2.755 1.13 3.842 3.842 0 0 1 1.141 2.73v3.86h7.792a3.92 3.92 0 0 1 2.755 1.13 3.842 3.842 0 0 1 1.141 2.73v21.23c0 1.024-.41 2.005-1.141 2.73a3.915 3.915 0 0 1-2.755 1.13H3.896a3.914 3.914 0 0 1-2.755-1.13A3.842 3.842 0 0 1 0 32.81V11.58c0-2.142 1.734-3.86 3.896-3.86h7.792V3.86c0-2.142 1.734-3.86 3.896-3.86Zm7.792 7.72V3.86h-7.792v3.86h7.792Z"/>
         </svg>
       ),
@@ -45,27 +45,33 @@ export const TimeCard = ({ state, time = "09:02", label }) => {
   };
 
   const { bg, defaultLabel, className, svg } = config[state] || config.in;
+  const appliedBg = color === false ? "rgba(255, 255, 255, 0.5)" : bg;
+  const showLabel = label !== false;
 
   return (
-    <div className={className} role="group" aria-label={label || defaultLabel}>
+    <div className={className} role="group" aria-label={showLabel ? label || defaultLabel : "Time Card"}>
       <div className={`${className}__icon`} aria-hidden="true">
         {svg}
       </div>
       <div className={`${className}__text`}>
         <span className={`${className}__time`}>{time}</span>
-        <span className={`${className}__label`}>{label || defaultLabel}</span>
+        {showLabel && (
+          <span className={`${className}__label`}>{label || defaultLabel}</span>
+        )}
       </div>
 
       <style>{`
         .${className} {
-          background: ${bg};
+          background: ${appliedBg};
           width: 100%;
           height: 100%;
-          min-height: 4rem;
-          gap: 0.75rem;
+          gap: 1rem;
           padding: 1rem;
           display: flex;
+          flex-direction: row;
           align-items: center;
+          justify-content: flex-start;
+
           border-radius: 0.8rem;
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
           box-sizing: border-box;
@@ -74,12 +80,8 @@ export const TimeCard = ({ state, time = "09:02", label }) => {
 
         .${className}__icon {
           flex-shrink: 0;
-          width: 8cqw;
-          height: 8cqw;
-          min-width: 1.2rem;
-          min-height: 1.2rem;
-          max-width: 3rem;
-          max-height: 3rem;
+          width: 1.2rem;
+          height: 1.2rem;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -89,13 +91,14 @@ export const TimeCard = ({ state, time = "09:02", label }) => {
           display: flex;
           flex-direction: column;
           justify-content: center;
+          text-align: center;
           flex: 1;
           min-width: 0;
           overflow: hidden;
         }
 
         .${className}__time {
-          font-size: 12cqw;
+          font-size: clamp(0.9rem, 2vw, 1.4rem);
           font-weight: 600;
           opacity: 0.5;
           line-height: 1;
@@ -105,98 +108,26 @@ export const TimeCard = ({ state, time = "09:02", label }) => {
         }
 
         .${className}__label {
-          font-size: 4cqw;
+          font-size: clamp(0.65rem, 1vw, 0.65rem);
           color: rgb(86, 107, 92);
           opacity: 0.85;
-          margin-top: 0.1rem;
-          line-height: 1.2;
+          margin-top: 0.2rem;
+          line-height: 1;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
-        /* Container query for better responsiveness */
-        @container (max-width: 200px) {
-          .${className} {
-            flex-direction: column;
-            text-align: center;
-            gap: 0.5rem;
-            padding: 0.75rem;
-          }
-          
-          .${className}__icon {
-            width: 15cqw;
-            height: 15cqw;
-          }
-          
-          .${className}__time {
-            font-size: 20cqw;
-          }
-          
-          .${className}__label {
-            font-size: 8cqw;
-          }
-        }
-
-        @container (max-height: 60px) {
-          .${className} {
-            padding: 0.5rem;
-          }
-          
-          .${className}__icon {
-            width: 6cqw;
-            height: 6cqw;
-          }
-          
-          .${className}__time {
-            font-size: 10cqw;
-          }
-          
-          .${className}__label {
-            font-size: 3.5cqw;
-            margin-top: 0.05rem;
-          }
-        }
-
-        /* Fallback for browsers without container query support */
-        @supports not (width: 1cqw) {
-          .${className}__icon {
-            width: min(8vw, 2.5rem);
-            height: min(8vw, 2.5rem);
-          }
-          
-          .${className}__time {
-            font-size: min(12vw, 2rem);
-          }
-          
-          .${className}__label {
-            font-size: min(4vw, 0.7rem);
-          }
-        }
-
-        /* Media queries for smaller screens */
         @media (max-width: 480px) {
           .${className} {
             min-height: 3rem;
             gap: 0.5rem;
             padding: 0.75rem;
           }
-        }
 
-        @media (prefers-color-scheme: dark) {
-          .${className} {
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.25);
-          }
-        }
-
-        /* Support for containers without container queries */
-        @supports not (container-type: inline-size) {
-          @media (max-width: 300px) {
-            .${className} {
-              flex-direction: column;
-              text-align: center;
-              gap: 0.5rem;
-            }
+          .${className}__icon {
+            width: 0.6rem;
+            height: 0.6rem;
           }
         }
       `}</style>
