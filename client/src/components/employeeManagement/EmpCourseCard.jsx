@@ -2,66 +2,106 @@ import React from "react";
 
 export const EmpCourseCard = ({ courseName, authorName, imageUrl, onRemove }) => {
   return (
-    <div className="course-card">
-      <div className="remove-btn" onClick={onRemove}>×</div>
-      <div className="image-wrapper">
-        <img src={imageUrl} alt={courseName} />
-      </div>
-      <div className="text-wrapper">
-        <div className="course-name">{courseName}</div>
-        <div className="author-name">{authorName}</div>
+    <div className="emp-course-card">
+      <div className="remove-icon" onClick={onRemove}>×</div>
+
+      <img src={imageUrl} alt="course" className="course-image" />
+
+      <div className="course-text">
+        <div className="tooltip-wrapper">
+          <span className="text course-title">{courseName}</span>
+          <span className="tooltip">{courseName}</span>
+        </div>
+        <div className="tooltip-wrapper">
+          <span className="text course-author">{authorName}</span>
+          <span className="tooltip">{authorName}</span>
+        </div>
       </div>
 
       <style>{`
-        .course-card {
-          position: relative;
+        .emp-course-card {
           display: flex;
           align-items: center;
           background-color: #c3dad7;
-          border-radius: 999px;
-          padding: 0.5rem 1rem;
-          gap: 0.8rem;
-          width: fit-content;
+          border-radius: 999rem;
+          padding: 0.1rem 0.6rem 0.1rem 0.3rem; /* Tight padding */
+          max-width: 11.25rem;
+          position: relative;
+          gap: 0.4rem;
+          font-family: sans-serif;
         }
 
-        .remove-btn {
+        .remove-icon {
           position: absolute;
-          top: -6px;
-          right: -6px;
-          background: #ff4d4d;
-          color: white;
-          border-radius: 50%;
-          width: 20px;
-          height: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 14px;
+          top: 0.1rem;
+          right: 0.5rem;
+          font-size: 0.75rem;
           font-weight: bold;
+          color: #333;
           cursor: pointer;
+          z-index: 10;
         }
 
-        .image-wrapper img {
-          width: 35px;
-          height: 35px;
+        .course-image {
+          width: 1.4rem;
+          height: 1.4rem;
           border-radius: 50%;
           object-fit: cover;
         }
 
-        .text-wrapper {
+        .course-text {
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          gap: 0.05rem; /* Reduced gap */
+          max-width: 8.5rem;
+          line-height: 1.1;
         }
 
-        .course-name {
-          font-weight: bold;
-          font-size: 0.95rem;
+        .tooltip-wrapper {
+          position: relative;
+          display: inline-block;
         }
 
-        .author-name {
-          font-size: 0.8rem;
+        .text {
+          display: inline-block;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .course-title {
+          font-weight: 600;
+          font-size: 0.75rem;
+          color: #111;
+        }
+
+        .course-author {
+          font-size: 0.65rem;
           color: #555;
+        }
+
+        .tooltip {
+          visibility: hidden;
+          opacity: 0;
+          background-color: #000;
+          color: #fff;
+          padding: 0.25rem 0.5rem;
+          border-radius: 5px;
+          font-size: 0.65rem;
+          white-space: nowrap;
+          position: absolute;
+          bottom: 120%;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 50;
+          transition: opacity 0.2s ease;
+          pointer-events: none;
+        }
+
+        .tooltip-wrapper:hover .tooltip {
+          visibility: visible;
+          opacity: 1;
         }
       `}</style>
     </div>
