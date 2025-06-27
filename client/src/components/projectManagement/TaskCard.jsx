@@ -213,43 +213,54 @@ export const TaskCard = ({
   };
   
   const renderFooterContent = () => {
-    return (
-      <>
+  return (
+    <>
+      {taskStatus === "todo" && (
+        <div style={styles["task-badge"]}>
+           {taskData.timeLeft || "N/A"}
+        </div>
+      )}
+
+      {taskStatus !== "todo" && taskStatus !== "completed" && (
         <div style={styles["task-badge"]}>
           State: {stateNumber}
         </div>
-        {taskStatus === "todo" && !isHR && (
+      )}
+
+      {taskStatus === "todo" && !isHR && (
+        <Check
+          style={styles["task-icon"]}
+          title="Accept Task"
+          onClick={handleAccept}
+          onMouseEnter={(e) => (e.target.style.color = "#16a34a")}
+          onMouseLeave={(e) => (e.target.style.color = "#666")}
+        />
+      )}
+
+      {taskStatus === "inreview" && isHR && (
+        <div style={styles["review-buttons"]}>
           <Check
-            style={styles["task-icon"]}
+            style={{ ...styles["review-button"], ...styles["approve-button"] }}
             title="Accept Task"
             onClick={handleAccept}
-            onMouseEnter={(e) => (e.target.style.color = "#16a34a")}
-            onMouseLeave={(e) => (e.target.style.color = "#666")}
           />
-        )}
-        {taskStatus === "inreview" && isHR && (
-          <div style={styles["review-buttons"]}>
-            <Check
-              style={{ ...styles["review-button"], ...styles["approve-button"] }}
-              title="Accept Task"
-              onClick={handleAccept}
-            />
-            <X
-              style={{ ...styles["review-button"], ...styles["reject-button"] }}
-              title="Reject Task"
-              onClick={handleReject}
-            />
-          </div>
-        )}
-        {taskStatus === "completed" && (
-          <div style={styles["completion-badge"]}>
-            Completed on: {taskData.completionDate || "N/A"}
-            {/* Pass and display the actual `completionDate` from `taskData` */}
-          </div>
-        )}
-      </>
-    );
-  };
+          <X
+            style={{ ...styles["review-button"], ...styles["reject-button"] }}
+            title="Reject Task"
+            onClick={handleReject}
+          />
+        </div>
+      )}
+
+      {taskStatus === "completed" && (
+        <div style={styles["completion-badge"]}>
+           Completed on: {taskData.completionDate || "N/A"}
+        </div>
+      )}
+    </>
+  );
+};
+
 
   return (
     <>

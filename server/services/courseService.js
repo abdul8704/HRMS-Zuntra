@@ -5,7 +5,18 @@ const ApiError = require("../errors/ApiError");
 
 const getAllCourseDetails = async () => {
     try {
-        const courseData = await courseDetails.find();
+        const courseData = await courseDetails.find({},
+            {
+                _id: 1,
+                courseId: 1,
+                courseName: 1,
+                courseRating: 1,
+                courseInstructor: 1,
+                courseImage: 1,
+                deadline: 1,
+                deadlineUnits: 1
+            }
+        );
         return courseData;
     }
     catch (err) {
@@ -113,7 +124,7 @@ const deleteCourse = async (courseId) => {
 
 const userCourseEnroll = async (userId, courseId) => {
     try {
-        const ucourse = await userCourse.findOne({_id: userId});
+        const ucourse = await userCourse.findOne({ _id: userId });
         if (!ucourse) {
             throw new ApiError(404, "User not found");
         }
