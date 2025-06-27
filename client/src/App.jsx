@@ -26,6 +26,7 @@ function App() {
     <>
     <BrowserRouter>
       <Routes>
+        {/* <Route path="*" element={<NotFound />} /> */}
         <Route path="/" element={<Login/>}></Route>
         {/* <Route path="/hrupskill" element={<HrUpskillLearn/>}></Route> */}
         <Route path="/newuser" element={<NewUser/>} />

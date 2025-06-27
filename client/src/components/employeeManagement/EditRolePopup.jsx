@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { EmpCourseCard } from "./EmpCourseCard";
 
 const generateLightColors = () => {
   const colors = [];
@@ -9,18 +10,47 @@ const generateLightColors = () => {
   return colors;
 };
 
+const predefinedCourses = [
+  { id: 1, courseName: "React Fundamentals", authorName: "John Doe", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 2, courseName: "Advanced Node.js", authorName: "Jane Smith", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 3, courseName: "MongoDB Mastery", authorName: "Kevin Li", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 4, courseName: "Python for Data Science", authorName: "Emily Stone", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 5, courseName: "Machine Learning Basics", authorName: "Michael Ray", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 6, courseName: "Fullstack with MERN", authorName: "Rachel Green", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 7, courseName: "Cloud Computing 101", authorName: "Thomas Blake", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 8, courseName: "Cybersecurity Essentials", authorName: "Sophia Reed", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 9, courseName: "Kubernetes Crash Course", authorName: "James Hunt", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 10, courseName: "Next.js Deep Dive", authorName: "Lily Carter", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
+];
+
 export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
   const [editRole, setEditRole] = useState(role);
   const [editColor, setEditColor] = useState(color);
   const [showColors, setShowColors] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCourses, setSelectedCourses] = useState([]);
+
   const colors = generateLightColors();
 
+  const availableCourses = predefinedCourses.filter(
+    (course) =>
+      !selectedCourses.find((c) => c.id === course.id) &&
+      course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleAddCourse = (course) => {
+    setSelectedCourses([...selectedCourses, course]);
+    setSearchTerm("");
+    setDropdownOpen(false);
+  };
+
+  const handleRemoveCourse = (id) => {
+    setSelectedCourses(selectedCourses.filter((c) => c.id !== id));
+  };
+
   const handleSave = () => {
-    onSave({
-      role: editRole,
-      members,
-      color: editColor,
-    });
+    onSave({ role: editRole, members, color: editColor });
     onClose();
   };
 
@@ -61,7 +91,44 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
 
           <div className="course-box">
             <span className="box-title">Ongoing courses...</span>
-            <span className="plus-circle">+</span>
+
+            {dropdownOpen && (
+              <div className="dropdown-course-list">
+                <input
+                  type="text"
+                  placeholder="Search courses..."
+                  className="search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <div className="dropdown-items-scroll">
+                  {availableCourses.map((course) => (
+                    <div key={course.id} className="dropdown-item" onClick={() => handleAddCourse(course)}>
+                      <EmpCourseCard
+                        courseName={course.courseName}
+                        authorName={course.authorName}
+                        imageUrl={course.imageUrl}
+                        onRemove={null}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="course-list-wrapper">
+              {selectedCourses.map((course) => (
+                <EmpCourseCard
+                  key={course.id}
+                  courseName={course.courseName}
+                  authorName={course.authorName}
+                  imageUrl={course.imageUrl}
+                  onRemove={() => handleRemoveCourse(course.id)}
+                />
+              ))}
+            </div>
+
+            <span className="plus-circle" onClick={() => setDropdownOpen(!dropdownOpen)}>+</span>
           </div>
 
           <div className="button-row">
@@ -87,7 +154,7 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
           border-radius: 1rem;
           padding: 2rem;
           width: 95%;
-          max-width: 350px;
+          max-width: 700px;
           box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
           display: flex;
           flex-direction: column;
@@ -134,9 +201,11 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
         .course-box {
           background-color: #d9d9d9;
           border-radius: 10px;
-          height: 7rem;
+          height: 18rem;
+          width: 100%;
           position: relative;
-          padding: 0.5rem 1rem;
+          padding: 2.5rem 1rem 2rem 1rem;
+          overflow-y: auto;
         }
 
         .box-title {
@@ -145,6 +214,15 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
           left: 1rem;
           font-size: 1rem;
           color: #555;
+        }
+
+        .course-list-wrapper {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          align-items: flex-start;
+          gap: 1rem;
+          margin-top: 2.5rem;
         }
 
         .plus-circle {
@@ -159,14 +237,69 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
           cursor: pointer;
         }
 
+        .dropdown-course-list {
+          position: absolute;
+          bottom: 3rem;
+          right: 1rem;
+          width: 200px;
+          background: white;
+          border-radius: 0.8rem;
+          box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          padding: 0.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .search-input {
+          width: 100%;
+          padding: 0.4rem;
+          border: none;
+          outline: none;
+          border-radius: 0.4rem;
+          font-size: 0.9rem;
+          background-color: white;
+        }
+
+        .dropdown-items-scroll {
+  max-height: 8rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 0.3rem; /* ✅ slight left shift */
+}
+
+
+
+        .dropdown-items-scroll::-webkit-scrollbar {
+          width: 4px;
+        }
+
+        .dropdown-items-scroll::-webkit-scrollbar-thumb {
+          background: #ccc;
+          border-radius: 2px;
+        }
+
+        .dropdown-item {
+  cursor: pointer;
+  margin-left: -1rem; /* ✅ shifts card slightly to the left */
+}
+
+
+        .dropdown-item:hover {
+          background-color: transparent;
+        }
+
         .button-row {
           display: flex;
           justify-content: center;
           gap: 1rem;
         }
 
-        .cancel-btn,
-        .add-btn {
+        .cancel-btn, .add-btn {
           padding: 0.5rem 1rem;
           border-radius: 0.5rem;
           border: none;
@@ -174,17 +307,15 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
           cursor: pointer;
         }
 
-         .cancel-btn {
+        .cancel-btn {
           background-color: #f3f4f6;
           color: black;
-          font-weight: normal;
         }
 
         .cancel-btn:hover {
           background-color: red;
-          opacity: 0.5;
           color: white;
-          font-weight: normal;
+          opacity: 0.6;
         }
 
         .add-btn {

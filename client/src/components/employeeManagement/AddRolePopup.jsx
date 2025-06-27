@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { EmpCourseCard } from "./EmpCourseCard";
 
 const generateLightColors = () => {
   const colors = [];
@@ -9,15 +10,47 @@ const generateLightColors = () => {
   return colors;
 };
 
+const predefinedCourses = [
+  { id: 1, courseName: "React Fundamentals", authorName: "John Doe", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 2, courseName: "Advanced Node.js", authorName: "Jane Smith", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 3, courseName: "MongoDB Mastery", authorName: "Kevin Li", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 4, courseName: "Python for Data Science", authorName: "Emily Stone", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 5, courseName: "Machine Learning Basics", authorName: "Michael Ray", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 6, courseName: "Fullstack with MERN", authorName: "Rachel Green", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 7, courseName: "Cloud Computing 101", authorName: "Thomas Blake", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 8, courseName: "Cybersecurity Essentials", authorName: "Sophia Reed", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 9, courseName: "Kubernetes Crash Course", authorName: "James Hunt", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 10, courseName: "Next.js Deep Dive", authorName: "Lily Carter", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
+];
+
 export const AddRolePopup = ({ onClose }) => {
   const [roleName, setRoleName] = useState("");
   const [roleColor, setRoleColor] = useState("#f5f5f5");
   const [showColors, setShowColors] = useState(false);
+  const [courseCards, setCourseCards] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const colors = generateLightColors();
+
+  const availableCourses = predefinedCourses.filter(
+    (course) =>
+      !courseCards.find((c) => c.id === course.id) &&
+      course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleSubmit = () => {
     console.log("Role:", roleName, "Color:", roleColor);
     onClose();
+  };
+
+  const handleAddCourse = (course) => {
+    setCourseCards([...courseCards, course]);
+    setShowDropdown(false);
+    setSearchTerm("");
+  };
+
+  const handleRemoveCourse = (id) => {
+    setCourseCards(courseCards.filter((c) => c.id !== id));
   };
 
   return (
@@ -36,7 +69,7 @@ export const AddRolePopup = ({ onClose }) => {
               className="main-circle"
               style={{ backgroundColor: roleColor }}
               onClick={() => setShowColors(!showColors)}
-            ></div>
+            />
           </div>
 
           {showColors && (
@@ -55,9 +88,47 @@ export const AddRolePopup = ({ onClose }) => {
             </div>
           )}
 
+          {/* Exact same as EditRolePopup course box */}
           <div className="course-box">
             <span className="box-title">Ongoing courses...</span>
-            <span className="plus-circle">+</span>
+
+            {showDropdown && (
+              <div className="dropdown-course-list">
+                <input
+                  type="text"
+                  placeholder="Search courses..."
+                  className="search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <div className="dropdown-items-scroll">
+                  {availableCourses.map((course) => (
+                    <div key={course.id} className="dropdown-item" onClick={() => handleAddCourse(course)}>
+                      <EmpCourseCard
+                        courseName={course.courseName}
+                        authorName={course.authorName}
+                        imageUrl={course.imageUrl}
+                        onRemove={null}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="course-list-wrapper">
+              {courseCards.map((course) => (
+                <EmpCourseCard
+                  key={course.id}
+                  courseName={course.courseName}
+                  authorName={course.authorName}
+                  imageUrl={course.imageUrl}
+                  onRemove={() => handleRemoveCourse(course.id)}
+                />
+              ))}
+            </div>
+
+            <span className="plus-circle" onClick={() => setShowDropdown(!showDropdown)}>+</span>
           </div>
 
           <div className="button-row">
@@ -83,7 +154,7 @@ export const AddRolePopup = ({ onClose }) => {
           border-radius: 1rem;
           padding: 2rem;
           width: 95%;
-          max-width: 350px;
+          max-width: 700px;
           box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
           display: flex;
           flex-direction: column;
@@ -98,7 +169,7 @@ export const AddRolePopup = ({ onClose }) => {
 
         .role-input {
           flex: 1;
-          padding: 0.6rem 1rem;
+          padding: 0.5rem 1rem;
           border-radius: 8px;
           border: 1px solid #ccc;
           font-size: 1rem;
@@ -130,9 +201,11 @@ export const AddRolePopup = ({ onClose }) => {
         .course-box {
           background-color: #d9d9d9;
           border-radius: 10px;
-          height: 7rem;
+          height: 18rem;
+          width: 100%;
           position: relative;
-          padding: 0.5rem 1rem;
+          padding: 2.5rem 1rem 2rem 1rem;
+          overflow-y: auto;
         }
 
         .box-title {
@@ -155,14 +228,62 @@ export const AddRolePopup = ({ onClose }) => {
           cursor: pointer;
         }
 
+        .course-list-wrapper {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          align-items: flex-start;
+          gap: 0.75rem;
+          margin-top: 2.5rem;
+        }
+
+        .dropdown-course-list {
+          position: absolute;
+          bottom: 3rem;
+          right: 1rem;
+          width: 230px;
+          background: white;
+          border-radius: 0.8rem;
+          box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          padding: 0.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+        }
+
+        .search-input {
+          width: 100%;
+          padding: 0.4rem;
+          border: none;
+          outline: none;
+          border-radius: 0.4rem;
+          font-size: 0.9rem;
+          background-color: white;
+        }
+
+        .dropdown-items-scroll {
+          max-height: 8rem;
+          overflow-y: auto;
+          overflow-x: hidden;
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+          padding-left: 0.3rem;
+        }
+
+        .dropdown-item {
+          cursor: pointer;
+          margin-bottom: 2px;
+        }
+
         .button-row {
           display: flex;
           justify-content: center;
           gap: 1rem;
         }
 
-        .cancel-btn,
-        .add-btn {
+        .cancel-btn, .add-btn {
           padding: 0.5rem 1rem;
           border-radius: 0.5rem;
           border: none;
@@ -170,17 +291,15 @@ export const AddRolePopup = ({ onClose }) => {
           cursor: pointer;
         }
 
-         .cancel-btn {
+        .cancel-btn {
           background-color: #f3f4f6;
           color: black;
-          font-weight: normal;
         }
 
         .cancel-btn:hover {
           background-color: red;
-          opacity: 0.5;
           color: white;
-          font-weight: normal;
+          opacity: 0.6;
         }
 
         .add-btn {

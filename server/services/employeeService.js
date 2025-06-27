@@ -1,7 +1,7 @@
 const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
-const attendanceHelper = require("../utils/attendanceHelper.js")
+const attendanceHelper = require("../utils/attendanceHelper.js");
 const asyncHandler = require("express-async-handler");
 
 const getAttendanceDataByUserId = async (
@@ -91,7 +91,7 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
 
         const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart);
         const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
-        
+
         const now = new Date();
 
         let attendance = await Attendance.findOne({ userid, date: today });
@@ -112,7 +112,7 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
                 ],
                 workingMinutes: 0,
                 breakMinutes: 0,
-                status: (mode === "remote") ? "remote": "present", 
+                status: mode === "remote" ? "remote" : "present",
             });
 
             await attendance.save();
@@ -122,7 +122,7 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
                 message: "Attendance marked (first login of the day)",
             };
         }
- 
+
         // ✅ If status was remote and new mode is present, update status
         if (attendance.status === "remote" && mode === "onsite") {
             attendance.status = "onsite";
@@ -176,9 +176,8 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
     }
 });
 
-
 const markEndOfSession = async (userid, logoutTime) => {
-    try{
+    try {
         const today = attendanceHelper.normalizeToUTCDate(new Date());
         const attendance = await Attendance.findOne({ userid, date: today });
 
@@ -190,7 +189,7 @@ const markEndOfSession = async (userid, logoutTime) => {
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
-        
+
         if (lastSession && !lastSession.logoutTime) {
             const logout = new Date(logoutTime);
             lastSession.logoutTime = logout;
@@ -216,13 +215,22 @@ const markEndOfSession = async (userid, logoutTime) => {
             success: false,
             message: "No active session to log out from",
         };
-    } catch(error){
+    } catch (error) {
         throw new ApiError(500, "Failed to mark end of session", error.message);
     }
+};
+
+const getAllEmployees = async () => {
+    const employees = await User.find(
+        { role: { $ne: "unassigned" } },
+        { username: 1, email: 1, role: 1, shiftStart: 1, shiftEnd: 1, phoneNumber: 1, campus: 1, profilePicture: 1 }
+    );
+    return employees;
 };
 
 module.exports = {
     getAttendanceDataByUserId,
     markAttendanceOnLogin,
     markEndOfSession,
+    getAllEmployees,
 };
