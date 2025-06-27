@@ -26,8 +26,8 @@ export const ProjectDeadline = () => {
           setProjects(Array.isArray(res.data.data) ? res.data.data : []);
         }
       } catch (err) {
-        setApiMessage(res.data.message);
         setProjects([]);
+        setApiMessage(err?.response?.data?.message || 'No projects for this date.');
       } finally {
         setLoading(false);
       }
