@@ -23,13 +23,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
     try {
       const response = await api.get('/api/shifts');
 
-      let shiftData = [];
-
-      response.data.forEach(shift => {
-        shiftData.push(shift.shiftName + " (" + shift.startTime + " - " + shift.endTime + ")");
-      });
-
-      return shiftData;
+      return response.data;
     } 
     catch (error) {
       console.error("Error fetching shifts:", error);
@@ -68,9 +62,6 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
     fetchData();
   }, []);
 
-  // const branches = ['Chennai', 'Bangalore', 'Hyderabad', 'Mumbai'];
-  // const branchData = await api.get('/api/branch');
-  // console.log(branchData)
   const [roles, setRoles] = useState([]);
   const [shifts, setShifts] = useState([]);
   const [branches, setBranches] = useState([]);
@@ -103,16 +94,24 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
 
   const handleSubmit = async () => {
     if (isFormValid) {
-
-      await api.post('/api/hr/accept', {
-        email: employee.email,
-        shiftStart: selectedShift.split(" (")[0],
-        shiftEnd: selectedShift.split(" - ")[1].slice(0, -1),
-        campus: selectedBranch,
-        role: selectedRole,
+      const selectedShiftData = shifts.find(shift => shift.shiftName === selectedShift);
+      try{
+        await api.post('/api/hr/accept', {
+          email: employee.email,
+          shiftStart: selectedShiftData.startTime,
+          shiftEnd: selectedShiftData.endTime,
+          campus: selectedBranch,
+          role: selectedRole,
       });
+      console.log("Employee assigned successfully");
+      onSave();
+      onClose();
+    }
+    catch(err){
+      console.error("Error assigning employee:", err);
     }
   };
+  }
 
   const filteredRoles = Object.keys(roles).filter((role) =>
     role.toLowerCase().includes(selectedRole.toLowerCase())
@@ -129,9 +128,12 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
     setManualSalary(true);
   };
 
+  const formatTime = (time) => {
+    return new Date(time).toLocaleTimeString();
+  }
+
   const isFormValid =
     selectedRole.trim() &&
-    selectedShift.trim() &&
     selectedBranch.trim() &&
     salary.toString().trim();
 
@@ -181,7 +183,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
             <select value={selectedShift} onChange={(e) => setSelectedShift(e.target.value)} required>
               <option value="" disabled hidden>Select shift</option>
               {shifts.map((shift) => (
-                <option key={shift} value={shift}>{shift}</option>
+                <option key={shift.shiftName} value={shift.shiftName}>{shift.shiftName + " (" + formatTime(shift.startTime) + " - " + formatTime(shift.endTime) + ")"}</option>
               ))}
             </select>
           </label>

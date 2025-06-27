@@ -16,6 +16,10 @@ const geoLocationSchema = new mongoose.Schema({
     radius: {
         type: Number,
         required: true
+    },
+    embedUrl:{
+        type: String,
+        required: true
     }
 });
 
