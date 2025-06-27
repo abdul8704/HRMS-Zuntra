@@ -13,6 +13,7 @@ const verifyLogin = async (email, password) => {
                 _id: 1,
                 username: 1,
                 role: 1,
+                profilePicture: 1,
                 passwordHash: 1,
             }
         );
@@ -21,7 +22,6 @@ const verifyLogin = async (email, password) => {
         const verify = await bcrypt.compare(password, userData.passwordHash);
 
         if (!verify) return { success: false, message: "Wrong Password" };
-
         return {
             success: true,
             message: "credentials matched.",
@@ -29,6 +29,7 @@ const verifyLogin = async (email, password) => {
                 username: userData.username,
                 userid: userData._id,
                 role: userData.role,
+                profilePicture: userData.profilePicture,
             },
         };
     } catch (err) {

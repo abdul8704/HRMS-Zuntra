@@ -1,15 +1,13 @@
 import React from 'react';
 
-export const UserGreetings = () => {
-  const userName = "Harini";  // Later, replace with dynamic user data
-  const profileImageURL = "https://via.placeholder.com/60";  // Replace with actual image URL
+export const UserGreetings = ({name, profileImageURL}) => {
 
   return (
     <>
       <div className="greetings-container">
         <div className="greetings-top">
           <div className="greetings-text">
-            <h2>Welcome, {userName}! 👋</h2>
+            <h2>Greetings, {name}! 👋</h2>
             <p>Wishing you a productive day!</p>
           </div>
           <img src={profileImageURL} alt="Profile" className="profile-pic" />
@@ -19,7 +17,6 @@ export const UserGreetings = () => {
       <style>
         {`
           .greetings-container {
-            background-color: #ffffff;
             border-radius: 20px;
             height: 100%;
             width: 100%;

@@ -48,7 +48,7 @@ export const HrEmployeeManagement = () => {
     { name: "Rajeev S", email: "rajeev.s@zuntra.com", phone: "+91 8123456789", date: "17-06-2025", image: "https://randomuser.me/api/portraits/men/47.jpg" },
     { name: "Harsha K", email: "harsha.k@zuntra.com", phone: "+91 9345678901", date: "18-06-2025", image: "https://randomuser.me/api/portraits/women/50.jpg" },
     { name: "Avinash T", email: "avinash.t@zuntra.com", phone: "+91 7890654321", date: "19-06-2025", image: "https://randomuser.me/api/portraits/men/15.jpg" },
-     { name: "John Joseph", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
+    { name: "John Joseph", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
     { name: "Nisha Mehra", email: "nisha@zuntra.com", phone: "+91 9123456780", date: "12-06-2025", image: "https://randomuser.me/api/portraits/women/68.jpg" },
     { name: "Ishita T", email: "ishita.t@zuntra.com", phone: "+91 9080706050", date: "10-06-2025", image: "https://randomuser.me/api/portraits/women/21.jpg" },
     { name: "Ravi Kumar", email: "ravi.kumar@zuntra.com", phone: "+91 8899776655", date: "13-06-2025", image: "https://randomuser.me/api/portraits/men/30.jpg" },
@@ -118,7 +118,7 @@ export const HrEmployeeManagement = () => {
     { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
     { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
     { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
-    
+
   ];
 
   const handleApprove = (employee) => {
@@ -153,10 +153,10 @@ export const HrEmployeeManagement = () => {
                 phone={emp.phone}
                 image={emp.image}
                 role="UI/UX Designer"
-                inTime="09:02"
-                outTime="16:55"
-                workTime="09:02"
-                breakTime="16:55"
+                inTime="10:00"
+                outTime="16:00"
+                workTime="10:01"
+                breakTime="12:00"
                 bgColor={bgColorList[index]}
               />
             ))}
@@ -164,34 +164,34 @@ export const HrEmployeeManagement = () => {
         )}
 
         {navId === "roles" && (
-  <div className="role-scroll-wrapper">
-    <div className="role-container">
-      {roleData.map((role, idx) => (
-        <EmpRoleCard
-          key={idx}
-          role={role.role}
-          memberCount={role.memberCount}
-          bgColor={role.bgColor}
-          ibgcolor={role.ibgcolor}
-          onEdit={() =>
-            handleEditRole({
-              role: role.role,
-              members: role.memberCount,
-              color: role.bgColor,
-            })
-          }
-        />
-      ))}
-      <div className="plus-button" onClick={() => setShowPopup(true)}>
-        <span>
-          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
-            <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
-          </svg>
-        </span>
-      </div>
-    </div>
-  </div>
-)}
+          <div className="role-scroll-wrapper">
+            <div className="role-container">
+              {roleData.map((role, idx) => (
+                <EmpRoleCard
+                  key={idx}
+                  role={role.role}
+                  memberCount={role.memberCount}
+                  bgColor={role.bgColor}
+                  ibgcolor={role.ibgcolor}
+                  onEdit={() =>
+                    handleEditRole({
+                      role: role.role,
+                      members: role.memberCount,
+                      color: role.bgColor,
+                    })
+                  }
+                />
+              ))}
+              <div className="plus-button" onClick={() => setShowPopup(true)}>
+                <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" height="2rem" viewBox="0 -960 960 960" width="2rem" fill="#000000">
+                    <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {navId === "geofencing" && (
           <div className="geo-cards-container">
@@ -199,31 +199,41 @@ export const HrEmployeeManagement = () => {
               <GeoFencing key={index} embedUrl={loc.embedUrl} branchName={loc.branchName} />
             ))}
             <button className="plus-button" onClick={() => setShowLocationForm(true)}>
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+              <svg xmlns="http://www.w3.org/2000/svg" height="2rem" viewBox="0 -960 960 960" width="2rem" fill="#000000">
                 <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
               </svg>
             </button>
           </div>
         )}
 
+        {showLocationForm && (
+          <AddLocationForm
+            isOpen={showLocationForm}
+            onClose={() => setShowLocationForm(false)}
+            onSubmit={(formData) => {
+              console.log('Submitted:', formData);
+            }}
+          />
+        )}
+
         {navId === "newusers" && (
-  <div className="newusers-scroll-wrapper">
-    <div className="newusers-container">
-      {employees.map((emp, index) => (
-        <EmpCard
-          key={index}
-          name={emp.name}
-          email={emp.email}
-          phone={emp.phone}
-          date={emp.date}
-          image={emp.image}
-          color={bgColorList[index]}
-          onApprove={() => handleApprove(emp)}
-        />
-      ))}
-    </div>
-  </div>
-)}
+          <div className="newusers-scroll-wrapper">
+            <div className="newusers-container">
+              {employees.map((emp, index) => (
+                <EmpCard
+                  key={index}
+                  name={emp.name}
+                  email={emp.email}
+                  phone={emp.phone}
+                  date={emp.date}
+                  image={emp.image}
+                  color={bgColorList[index]}
+                  onApprove={() => handleApprove(emp)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
 

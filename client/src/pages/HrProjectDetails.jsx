@@ -45,6 +45,13 @@ export const HrProjectDetails = () => {
 
     fetchTasks();
   }, [navId, navigate]);
+  const aadhi={
+    title:"medical survey",
+    description: "Conduct a survey on 200 people from different families and generate a report on blood sugar levels in adults",
+    name: "Ezhil",
+    role: "researcher",
+    timeLeft: "36 hours"
+  }
 
   return (
     <div className="relative">
@@ -95,7 +102,7 @@ export const HrProjectDetails = () => {
             )}
 
             {!loading && navId !== "overview" && tasks.map((task, i) => (
-              <TaskCard key={i} taskStatus={navId} taskData={task} />
+              <TaskCard key={i} taskData={aadhi} taskStatus={navId} isHR={true} cardColor={"  #cceec7"} />
             ))}
 
             {loading && <p>Loading tasks...</p>}

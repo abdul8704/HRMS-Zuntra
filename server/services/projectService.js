@@ -21,7 +21,6 @@ const getAProject = async (id) => {
 
 // @desc Get a details of a projects based on date
 const getAllProjectsOnDate = async (startOfDay, endOfDay) => {
-    console.log(startOfDay, endOfDay)
     const projectsList = await Project.find({ endDate: { $gte: startOfDay, $lte: endOfDay}});
     return projectsList;
 };
