@@ -11,7 +11,7 @@ import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
 import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
 import { useEffect } from 'react';
-import api from '../api/axios'; 
+import api from '../api/axios';
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
@@ -21,21 +21,33 @@ export const HrEmployeeManagement = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showLocationForm, setShowLocationForm] = useState(false);
   const [editRoleData, setEditRoleData] = useState(null);
+
   const [pendingEmployees, setPendingEmployees] = useState([]);
+  const [employeees, setEmployeees] = useState([]);
 
   useEffect(() => {
-    const fetchPendingEmployees = async () => {
-      try {
+    try {
+      const fetchPendingEmployees = async () => {
         const response = await api.get('/api/hr/pending');
         console.log('Pending Employees:', response.data);
-        setPendingEmployees(response.data.data);
-      } catch (error) {
-        console.error('Error fetching pending employees:', error);
-      }
-    };
 
-    fetchPendingEmployees();
-  }, []); 
+        setPendingEmployees(response.data.data);
+      };
+
+      const fetchEmployees = async () => {
+        const response = await api.get('/api/employee');
+        console.log('All Employees:', response.data);
+
+        setEmployeees(response.data.employees);
+      }
+
+      fetchPendingEmployees();
+      fetchEmployees();
+    }
+    catch (err) {
+      console.error("Error fetching employees:", err);
+    }
+  }, []);
 
   const handleEditRole = (roleData) => {
     setEditRoleData(roleData);
@@ -162,14 +174,14 @@ export const HrEmployeeManagement = () => {
 
         {navId === "all" && (
           <div className="employee-card-wrapper">
-            {employees.map((emp, index) => (
+            {employeees.map((emp, index) => (
               <EmployeeCard
                 key={index}
-                name={emp.name}
+                name={emp.username}
                 email={emp.email}
-                phone={emp.phone}
-                image={emp.image}
-                role="UI/UX Designer"
+                phone={emp.phoneNumber}
+                image={emp.profilePicture}
+                role= {emp.role}
                 inTime="10:00"
                 outTime="16:00"
                 workTime="10:01"
