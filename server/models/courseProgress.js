@@ -14,7 +14,7 @@ const courseProgressSchema = new mongoose.Schema({
         required: true,
     },
     percentComplete: {
-        // no of true/ mat.length * mat[0].length
+        // no of true/ mat.length * mat[0].lengthn
         type: Number,
         required: true,
     },

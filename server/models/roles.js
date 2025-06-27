@@ -7,7 +7,7 @@ const rolesDetail = new mongoose.Schema({
     },
     onboarddingCourses:{
         type: [String],
-        default: ['cs101']
+        required: true
     },
     color: {
         type: String,

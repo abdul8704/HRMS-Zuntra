@@ -1,14 +1,23 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import zuntraLogo from '../assets/zuntra.png';
 
-export const NotFound = () => {
+export const NotFound = ({ redirectTo = "/dashboard" }) => {
+  const navigate = useNavigate();
+
+  const handleRedirect = () => {
+    navigate(redirectTo);
+  };
+
   return (
     <div className="notfound-container">
       <img src={zuntraLogo} alt="Zuntra Logo" className="notfound-logo" />
       <main className="notfound-content">
         <h1 className="notfound-title">404</h1>
         <p className="notfound-message">Oops! The page you're looking for doesn't exist.</p>
-        <a href="/" className="notfound-link">Go back home</a>
+        <button onClick={handleRedirect} className="notfound-link">
+          Go back
+        </button>
       </main>
 
       <style>{`
@@ -68,6 +77,7 @@ export const NotFound = () => {
           font-weight: 500;
           box-shadow: 0 0 0 rgba(0, 0, 0, 0);
           transition: all 0.3s ease;
+          border: none;
         }
 
         .notfound-link:hover {

@@ -4,7 +4,6 @@ const GeoUtils = require('../utils/geoFencing')
 const isWithinGeofence = async (latitude, longitude, campusName) => {
     const geofence = await GeoLocation.findOne({ campusName: campusName });
     const distance = GeoUtils.getDistanceFromLatLon(latitude, longitude, geofence.latitude, geofence.longitude);
-    
     return distance <= geofence.radius;
 };
 

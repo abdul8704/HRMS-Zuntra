@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function BreakTime({ time = "09:02", label = "Today's Break time" }) {
+export const BreakTime = ({ time = "09:02", label = "Today's Break time" }) => {
   return (
     <div className="break-card" role="group" aria-label={label}>
       <div className="break-card__icon" aria-hidden="true">

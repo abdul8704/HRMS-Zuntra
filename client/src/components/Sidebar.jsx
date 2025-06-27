@@ -5,7 +5,7 @@
 //     <--PUT YOUR CONTENT HERE--->
 //   </div>
 // </div>
-
+import api from '../api/axios'
 import React, { useState, useEffect } from 'react'
 import zuntraSquareLogo from "../assets/zuntra_square_no_text.png"
 import zuntraLogo from "../assets/zuntra.png"
@@ -19,11 +19,11 @@ export const Sidebar = () => {
   const [active, setActive] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
-useEffect(() => {
-  const filteredItems = sidebarItems.filter(item => role === "HR" || item.role === "EMP");
-  const activeIndex = filteredItems.findIndex(item => location.pathname.startsWith(item.path));
-  setActive(activeIndex);
-}, [location.pathname, role]);
+  useEffect(() => {
+    const filteredItems = sidebarItems.filter(item => role === "HR" || item.role === "EMP");
+    const activeIndex = filteredItems.findIndex(item => location.pathname.startsWith(item.path));
+    setActive(activeIndex);
+  }, [location.pathname, role]);
 
 
   useEffect(() => {
@@ -51,7 +51,7 @@ useEffect(() => {
     {
       role: "EMP",
       label: "Project Management",
-      path: "/projects",
+      path: "/projects/overview",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="26" height="29" fill="none" viewBox="0 0 26 29">
           <path fill="currentColor" d="M13 8.598c.718 0 1.3-.57 1.3-1.273 0-.702-.582-1.272-1.3-1.272-.718 0-1.3.57-1.3 1.272 0 .703.582 1.273 1.3 1.273Zm-7.8 12.73h15.6v2.545H5.2v-2.545Zm5.2-6.58 3.63 3.556 5.111-5.009 1.659 1.669V9.873h-5.2l1.703 1.623-3.275 3.206-3.628-3.556-5.2 5.09 1.838 1.8 3.362-3.288Z" />
@@ -72,7 +72,7 @@ useEffect(() => {
     {
       role: "HR",
       label: "Course Management",
-      path: "/courses/overview",
+      path: "/courses/all",
       icon: (
         <svg xmlns="http://www.w3.org/2000/svg" width="27" height="20" fill="none" viewBox="0 0 27 20">
           <path fill="currentColor" d="M11.465.42a4.158 4.158 0 0 1 3.64 0l10.56 5.131c.184.09.34.23.449.406a1.132 1.132 0 0 1 .01 1.18c-.107.178-.26.322-.442.414l-10.508 5.347a4.16 4.16 0 0 1-3.778 0L2.452 8.347v4.986c0 .295-.114.578-.317.786a1.07 1.07 0 0 1-.766.325 1.07 1.07 0 0 1-.766-.325 1.126 1.126 0 0 1-.317-.786V6.611a1.13 1.13 0 0 1 .153-.626c.11-.189.272-.34.466-.434l10.56-5.13ZM4.62 11.931v3.625a1.136 1.136 0 0 0 .318.786l.005.007.05.047.13.124c.108.104.265.242.47.416.405.34.99.788 1.72 1.24 1.451.89 3.54 1.824 5.973 1.824s4.524-.933 5.973-1.824a14.55 14.55 0 0 0 2.193-1.656l.13-.124.034-.036.013-.013.003-.003.004-.002a1.115 1.115 0 0 0 .316-.786v-3.627l-5.815 2.96a6.281 6.281 0 0 1-2.851.686 6.28 6.28 0 0 1-2.851-.686L4.62 11.931Z" />
@@ -146,13 +146,19 @@ useEffect(() => {
     }
   };
 
-const handleItemClick = (index) => {
-  const selectedItem = sidebarItems.filter(item => role === "HR" || item.role === "EMP")[index];
-  navigate(selectedItem.path);
-  if (isMobile) {
-    setSidebar(0);
-  }
-};
+  const handleItemClick = async (index) => {
+    const selectedItem = sidebarItems.filter(item => role === "HR" || item.role === "EMP")[index];
+    if (selectedItem.label === 'Logout') {
+      const time = new Date()
+      await api.post('/api/employee/logout', {
+        logoutTime: time
+      })
+    }
+    navigate(selectedItem.path);
+    if (isMobile) {
+      setSidebar(0);
+    }
+  };
 
   return (
     <>
@@ -204,6 +210,7 @@ const handleItemClick = (index) => {
                 className={`website-sidebar-icon ${index === active ? "website-sidebar-icon-active" : ""}`}
                 key={index}
                 onClick={() => handleItemClick(index)}
+
               >
                 <div className="website-icon-wrapper">{item.icon}</div>
                 <div className={`website-label-wrapper ${(sideBarStatus === 2 || sideBarStatus === 3) ? 'show' : 'hide'}`}>
@@ -225,6 +232,6 @@ const handleItemClick = (index) => {
           </div>
         )}
       </div>
-      </>
+    </>
   );
 }

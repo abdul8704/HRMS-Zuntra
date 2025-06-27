@@ -1,298 +1,312 @@
-import React, { useState, useEffect } from "react";
-import { Edit2, Trash2 } from "lucide-react";
-import { EmpProfile } from "../employeeManagement/EmpProfile"
+import React, { useState } from "react";
+import { FaPen, FaTrash } from "react-icons/fa";
+import { EmpProfile } from "../employeeManagement/EmpProfile";
+import { useNavigate } from "react-router-dom";
 
-export const ProjectCard = ({projectData}) => {
+export const ProjectCard = ({ projectData }) => {
+  if (!projectData) return null;
+
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(projectData);
-  const [screenSize, setScreenSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
+
+  const [formData, setFormData] = useState({
+    title: projectData.title || "",
+    subtitle: projectData.subtitle || "",
+    description: projectData.description || "",
+    date: projectData.date || "",
+    teamName: projectData.teamName || "",
+    teamMembers: projectData.teamMembers || "",
+    user: {
+      name: projectData.user?.name || "",
+      role: projectData.user?.role || "",
+      avatar: projectData.user?.avatar || "",
+    },
   });
 
-  useEffect(() => {
-    const handleResize = () => {
-      setScreenSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const handleCardClick = () => {
+    navigate(`/project/${projectData._id}/overview`);
+  };
 
-  const isMobile = screenSize.width <= 768;
-  const isTablet = screenSize.width > 768 && screenSize.width <= 1024;
+  const openModal = () => {
+    setFormData({
+      title: projectData.title || "",
+      subtitle: projectData.subtitle || "",
+      description: projectData.description || "",
+      date: projectData.date || "",
+      teamName: projectData.teamName || "",
+      teamMembers: projectData.teamMembers || "",
+      user: {
+        name: projectData.user?.name || "",
+        role: projectData.user?.role || "",
+        avatar: projectData.user?.avatar || "",
+      },
+    });
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    console.log("Updated Data:", formData);
+    setIsEditing(false);
+  };
 
   const styles = {
-    "project-card": {
-      backgroundColor: "#f4b6b6",
+    card: {
+      backgroundColor: projectData.color || "#f4b6b6",
       borderRadius: "1rem",
-      padding: isMobile ? "1rem" : "1.25rem",
-      width: isMobile ? "100%" : isTablet ? "48%" : "30%",
-      minWidth: isMobile ? "280px" : "300px",
-      maxWidth: isMobile ? "100%" : "400px",
+      padding: "1.25rem",
+      width: "20rem",
       fontFamily: "'Segoe UI', sans-serif",
       position: "relative",
       boxShadow: "0 0.125rem 0.625rem rgba(0,0,0,0.1)",
-      textAlign: "left",
-      margin: isMobile ? "0.5rem 0" : "0.5rem",
-      boxSizing: "border-box",
+      marginTop: "1.25rem",
+      cursor: "pointer",
+      transition: "transform 0.2s",
       display: "flex",
       flexDirection: "column",
-      gap: "0.75rem",
-    },
-    "project-header": {
-      display: "flex",
       justifyContent: "space-between",
-      alignItems: "flex-start",
-      marginBottom: "0.5rem",
+      minHeight: "17.5rem",
     },
-    "project-projectId": {
-      fontSize: isMobile ? "1.25rem" : "1.5rem",
-      fontWeight: 700,
-      margin: 0,
-      color: "#333",
-    },
-    "project-icons": {
+    icons: {
+      position: "absolute",
+      top: "0.75rem",
+      right: "0.75rem",
       display: "flex",
-      gap: isMobile ? "0.5rem" : "0.75rem",
-      color: "#666",
-      fontSize: isMobile ? "1rem" : "1.125rem",
-    },
-    "project-icon": {
+      gap: "0.625rem",
       cursor: "pointer",
-      transition: "color 0.2s ease",
-      padding: "0.25rem",
+      zIndex: 2,
     },
-    "project-projectTitle": {
-      fontSize: isMobile ? "1.125rem" : "1.25rem",
-      fontWeight: 600,
-      color: "#333",
-      marginBottom: "0.5rem",
-    },
-    "project-description": {
-      color: "#666",
-      fontSize: isMobile ? "0.875rem" : "0.9375rem",
-      lineHeight: "1.5",
+    title: {
+      fontSize: "1.375rem",
+      fontWeight: 700,
+      margin: "0.3125rem 0 0.5rem 0",
       display: "-webkit-box",
-      WebkitLineClamp: 4,
+      WebkitLineClamp: 2,
       WebkitBoxOrient: "vertical",
       overflow: "hidden",
+      textOverflow: "ellipsis",
     },
-    "project-footer": {
+    subtitle: {
+      fontSize: "1.125rem",
+      fontWeight: 600,
+      margin: "0 0 0.5rem 0",
+      display: "-webkit-box",
+      WebkitLineClamp: 1,
+      WebkitBoxOrient: "vertical",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+    },
+    description: {
+      color: "#f0f0f0",
+      fontSize: "0.875rem",
+      marginBottom: "3rem",
+      display: "-webkit-box",
+      WebkitLineClamp: 2,
+      WebkitBoxOrient: "vertical",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      flexGrow: 1,
+    },
+    footer: {
+      position: "absolute",
+      bottom: "1rem",
+      left: "1.25rem",
+      right: "1.25rem",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      flexDirection: isMobile ? "column" : "row",
-      gap: "0.75rem",
-      marginTop: "auto",
     },
-    "project-badge": {
-      backgroundColor: "#f7caca",
-      padding: isMobile ? "0.375rem 0.875rem" : "0.5rem 1rem",
-      borderRadius: "62.4375rem",
+    badge: {
+      backgroundColor: "rgba(255, 255, 255, 0.3)",
+      padding: "0.375rem 1rem",
+      borderRadius: "62.5rem",
       fontWeight: 600,
-      fontSize: isMobile ? "0.75rem" : "0.875rem",
-      color: "#5b5b5b",
-      whiteSpace: "nowrap",
+      fontSize: "0.875rem",
     },
-    "modal-overlay": {
+    modalOverlay: {
       position: "fixed",
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      backgroundColor: "rgba(0,0,0,0.5)",
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      zIndex: 1000,
-      padding: "1rem",
+      zIndex: 9999,
     },
-    "modal-content": {
-      backgroundColor: "white",
-      borderRadius: "0.5rem",
-      padding: isMobile ? "1.5rem" : "2rem",
-      width: "100%",
-      maxWidth: "500px",
-      maxHeight: "90vh",
-      overflowY: "auto",
-    },
-    "modal-label": {
-      fontSize: "0.875rem",
-      fontWeight: 600,
-      color: "#333",
-      marginBottom: "0.5rem",
-      display: "block",
-    },
-    "modal-input": {
-      width: "100%",
-      padding: "0.75rem",
-      borderRadius: "0.375rem",
-      border: "1px solid #d1d5db",
-      fontSize: "0.875rem",
-      marginBottom: "1rem",
-      resize: "vertical",
-    },
-    "modal-buttons": {
+    modal: {
+      backgroundColor: "#fff",
+      padding: "1.5rem",
+      borderRadius: "1rem",
+      width: "38rem",
       display: "flex",
-      gap: "0.75rem",
-      justifyContent: "flex-end",
-      marginTop: "1.5rem",
+      flexDirection: "column",
+      gap: "1rem",
     },
-    "modal-button": {
-      padding: "0.75rem 1.5rem",
-      borderRadius: "0.375rem",
-      fontSize: "0.875rem",
-      fontWeight: 600,
+    inputRow: {
+      display: "flex",
+      gap: "1rem",
+    },
+    input: {
+      flex: 1,
+      padding: "0.75rem",
+      borderRadius: "0.5rem",
+      border: "1px solid #ccc",
+      fontSize: "1rem",
+    },
+    textarea: {
+      padding: "0.75rem",
+      borderRadius: "0.5rem",
+      border: "1px solid #ccc",
+      fontSize: "1rem",
+      width: "100%",
+      resize: "vertical",
+      minHeight: "5rem",
+    },
+    addBtn: {
+      marginTop: "0.5rem",
+      alignSelf: "flex-end",
+      fontSize: "1.1rem",
       cursor: "pointer",
-      border: "none",
     },
-    "modal-button-cancel": {
-      backgroundColor: "#f3f4f6",
-      color: "#374151",
+    actions: {
+      display: "flex",
+      justifyContent: "center",
+      marginTop: "1rem",
     },
-    "modal-button-save": {
-      backgroundColor: "#3b82f6",
-      color: "white",
+    actionBtn: {
+      padding: "0.5rem 1.25rem",
+      fontSize: "1rem",
+      borderRadius: "0.5rem",
+      border: "1px solid #ccc",
+      cursor: "pointer",
+      margin: "0 0.5rem",
     },
-  };
-
-  const openModal = () => {
-    setFormData(projectData);
-    setIsEditing(true);
-  };
-
-  const handleSave = () => {
-    setProjectData(formData);
-    setIsEditing(false);
   };
 
   return (
     <>
-      <div style={styles["project-card"]}>
-        <div style={styles["project-header"]}>
-          <div style={styles["project-projectId"]}>{projectData.title}</div>
-          <div style={styles["project-icons"]}>
-            <Edit2
-              style={styles["project-icon"]}
-              onClick={openModal}
-              onMouseEnter={(e) => (e.target.style.color = "#3b82f6")}
-              onMouseLeave={(e) => (e.target.style.color = "#666")}
-            />
-            <Trash2
-              style={styles["project-icon"]}
-              onMouseEnter={(e) => (e.target.style.color = "#ef4444")}
-              onMouseLeave={(e) => (e.target.style.color = "#666")}
-            />
-          </div>
+      <div
+        style={styles.card}
+        onClick={handleCardClick}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.03)")}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+      >
+        <div style={styles.icons}>
+          <FaPen
+            onClick={(e) => {
+              e.stopPropagation();
+              openModal();
+            }}
+          />
+          <FaTrash onClick={(e) => e.stopPropagation()} />
         </div>
 
-        <div style={styles["project-projectTitle"]}>{projectData.subtitle}</div>
+        <h2 style={styles.title}>{projectData.title}</h2>
+        <h3 style={styles.subtitle}>{projectData.subtitle}</h3>
+        <p style={styles.description}>{projectData.description}</p>
 
-        <p style={styles["project-description"]}>{projectData.description}</p>
-
-        <div style={styles["project-footer"]}>
+        <div style={styles.footer}>
           <EmpProfile
-            name={projectData.user.name}
-            role={projectData.user.role}
-            avatar={projectData.user.avatar}
+            name={projectData.user?.name}
+            role={projectData.user?.role}
+            avatar={projectData.user?.avatar}
             tl={true}
           />
-          <div style={styles["project-badge"]}>2 weeks left</div>
+          <div style={styles.badge}>2 weeks left</div>
         </div>
       </div>
 
       {isEditing && (
-        <div style={styles["modal-overlay"]} onClick={() => setIsEditing(false)}>
-          <div
-            style={styles["modal-content"]}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <label>
-              <div style={styles["modal-label"]}>Title</div>
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <div style={styles.inputRow}>
               <input
                 type="text"
+                placeholder="Project Title..."
                 value={formData.title}
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
                 }
-                style={styles["modal-input"]}
+                style={styles.input}
               />
-            </label>
-
-            <label>
-              <div style={styles["modal-label"]}>Subtitle</div>
               <input
                 type="text"
-                value={formData.subtitle}
+                placeholder="dd-mm-yyyy"
+                value={formData.date}
                 onChange={(e) =>
-                  setFormData({ ...formData, subtitle: e.target.value })
+                  setFormData({ ...formData, date: e.target.value })
                 }
-                style={styles["modal-input"]}
+                style={styles.input}
               />
-            </label>
+            </div>
 
-            <label>
-              <div style={styles["modal-label"]}>Description</div>
-              <textarea
-                rows={isMobile ? 3 : 4}
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                style={styles["modal-input"]}
-              />
-            </label>
+            <textarea
+              placeholder="Project Description..."
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              style={styles.textarea}
+            />
 
-            <label>
-              <div style={styles["modal-label"]}>Employee Name</div>
+            <div style={styles.inputRow}>
               <input
                 type="text"
-                value={formData.user.name}
+                placeholder="Team Name..."
+                value={formData.teamName}
                 onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    user: { ...formData.user, name: e.target.value },
-                  })
+                  setFormData({ ...formData, teamName: e.target.value })
                 }
-                style={styles["modal-input"]}
+                style={styles.input}
               />
-            </label>
+              <div style={{ position: "relative", flex: 1 }}>
+                <input
+                  type="text"
+                  placeholder="Select Team Lead"
+                  value={formData.user.name}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      user: { ...formData.user, name: e.target.value },
+                    })
+                  }
+                  style={{ ...styles.input, cursor: "pointer" }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    right: "1rem",
+                    transform: "translateY(-50%)",
+                    pointerEvents: "none",
+                    fontSize: "1rem",
+                  }}
+                >
+                  ▼
+                </div>
+              </div>
+            </div>
 
-            <label>
-              <div style={styles["modal-label"]}>Role</div>
-              <input
-                type="text"
-                value={formData.user.role}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    user: { ...formData.user, role: e.target.value },
-                  })
-                }
-                style={styles["modal-input"]}
-              />
-            </label>
+            <textarea
+              placeholder="Add team members..."
+              value={formData.teamMembers}
+              onChange={(e) =>
+                setFormData({ ...formData, teamMembers: e.target.value })
+              }
+              style={{ ...styles.textarea, minHeight: "6rem" }}
+            />
 
-            <div style={styles["modal-buttons"]}>
+            <div style={{ ...styles.addBtn, fontSize: "1.25rem" }}>＋</div>
+
+            <div style={styles.actions}>
               <button
                 onClick={() => setIsEditing(false)}
-                style={{
-                  ...styles["modal-button"],
-                  ...styles["modal-button-cancel"],
-                }}
+                style={styles.actionBtn}
               >
                 Cancel
               </button>
-              <button
-                onClick={handleSave}
-                style={{
-                  ...styles["modal-button"],
-                  ...styles["modal-button-save"],
-                }}
-              >
+              <button onClick={handleSave} style={styles.actionBtn}>
                 Save
               </button>
             </div>

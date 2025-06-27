@@ -1,6 +1,8 @@
 const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
+const attendanceHelper = require("../utils/attendanceHelper.js")
+const asyncHandler = require("express-async-handler");
 
 const getAttendanceDataByUserId = async (
     userid,
@@ -9,11 +11,11 @@ const getAttendanceDataByUserId = async (
     holidays = []
 ) => {
     try {
-        const start = new Date(startDate);
-        start.setHours(0, 0, 0, 0);
+        const start = attendanceHelper.normalizeToUTCDate(startDate);
+        start.setUTCHours(0, 0, 0, 0);
 
-        const end = new Date(endDate);
-        end.setHours(23, 59, 59, 999);
+        const end = attendanceHelper.normalizeToUTCDate(endDate);
+        end.setUTCHours(23, 59, 59, 999);
 
         // Fetch attendance records within the date range
         const attendanceRecords = await Attendance.find({
@@ -79,19 +81,22 @@ const getAttendanceDataByUserId = async (
     }
 };
 
-const markAttendanceOnLogin = async (userid, mode) => {
-    const now = new Date();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
+    const today = attendanceHelper.normalizeToUTCDate(new Date());
 
     try {
         const shiftData = await User.findById(userid);
         const shiftStart = new Date(shiftData.shiftStart);
         const shiftEnd = new Date(shiftData.shiftEnd);
 
+        const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart);
+        const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
+        
+        const now = new Date();
+
         let attendance = await Attendance.findOne({ userid, date: today });
 
-        // 🧾 FIRST LOGIN OF THE DAY
+        // FIRST LOGIN OF THE DAY
         if (!attendance) {
             attendance = new Attendance({
                 userid,
@@ -100,26 +105,27 @@ const markAttendanceOnLogin = async (userid, mode) => {
                     {
                         loginTime: now,
                         mode:
-                            now >= shiftStart && now <= shiftEnd
+                            now >= shiftStartTime && now <= shiftEndTime
                                 ? mode
                                 : "extra",
                     },
                 ],
                 workingMinutes: 0,
                 breakMinutes: 0,
-                status: mode, // status can't be extra
+                status: (mode === "remote") ? "remote": "present", 
             });
 
             await attendance.save();
+
             return {
                 success: true,
                 message: "Attendance marked (first login of the day)",
             };
         }
-
+ 
         // ✅ If status was remote and new mode is present, update status
-        if (attendance.status === "remote" && mode === "present") {
-            attendance.status = "present";
+        if (attendance.status === "remote" && mode === "onsite") {
+            attendance.status = "onsite";
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
@@ -138,7 +144,7 @@ const markAttendanceOnLogin = async (userid, mode) => {
             const breakDurationMs = now - new Date(lastSession.logoutTime);
             const breakDurationMinutes = breakDurationMs / (1000 * 60);
 
-            const isWithinShift = now >= shiftStart && now <= shiftEnd;
+            const isWithinShift = now >= shiftStartTime && now <= shiftEndTime;
 
             attendance.sessions.push({
                 loginTime: now,
@@ -168,14 +174,12 @@ const markAttendanceOnLogin = async (userid, mode) => {
             error.message
         );
     }
-};
+});
 
 
 const markEndOfSession = async (userid, logoutTime) => {
     try{
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
+        const today = attendanceHelper.normalizeToUTCDate(new Date());
         const attendance = await Attendance.findOne({ userid, date: today });
 
         if (!attendance) {
@@ -186,7 +190,7 @@ const markEndOfSession = async (userid, logoutTime) => {
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
-
+        
         if (lastSession && !lastSession.logoutTime) {
             const logout = new Date(logoutTime);
             lastSession.logoutTime = logout;

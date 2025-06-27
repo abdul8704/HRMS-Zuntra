@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import zuntraLogo from "../assets/zuntra.png";
 import api from "../api/axios";
-
+import { useNavigate } from "react-router-dom"
 
 
 export const Login = () => {
@@ -9,6 +9,8 @@ export const Login = () => {
   const [showReset, setShowReset] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
+  const [otpPhase, setOtpPhase] = useState(false);
+  const navigate = useNavigate();
 
 
   const [loginData, setLoginData] = useState({ email: '', password: '' });
@@ -30,99 +32,228 @@ export const Login = () => {
       alert("Please enter both email and password.");
       return;
     }
-    try{
+    try {
       const response = await api.post("/auth/login", loginData);
-      if(response.status === 200){
-        const token = response.data.accessToken;
-        localStorage.setItem("accessToken", token);
-
-        if (!navigator.geolocation) {
-          console.error("Geolocation is not supported by your browser");
-          return;
-        }
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const { latitude, longitude } = position.coords;
-
-            try {
-              const res = await api.post("/auth/geofence", {
-                latitude: latitude,
-                longitude: longitude,
-                email: loginData.email
-              })
-              if (res.status === 200) {
-                console.log("Attendace MArked buddy");
-              } else {
-                console.warn("Location not within geofence");
-              }
-            } catch (error) {
-              console.error("Failed to send location", error);
-            }
-          },
-          (error) => {
-            console.error("Error getting location:", error);
-          }
-        );
-        
+      if (response.status !== 200) {
+        alert("Something went wrong")
       }
+      const token = response.data.accessToken;
+      localStorage.setItem("accessToken", token);
+
+      if (!navigator.geolocation) {
+        console.error("Geolocation is not supported by your browser");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+
+          const res = await api.post("/auth/geofence", {
+            latitude: latitude,
+            longitude: longitude,
+            email: loginData.email
+          })
+
+          if (res.status === 200) {
+            console.log("Attendace Marked buddy");
+            navigate("/dashboard")
+          }
+          else if (res.status === 206) {
+            console.log("attendance not marked");
+            navigate("/dashboard");
+          }
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        }
+      );
     }
-    catch(err){
-      if(err.status === 401){
-        if(err.response.data.data.message === "Wrong Password"){
+    catch (err) {
+      if (err.status === 401) {
+        if (err.response.data.data.message === "Wrong Password") {
           alert("Wrong Password!!")
         }
-        else if (err.response.data.data.message === 'User not found'){
+        else if (err.response.data.data.message === 'User not found') {
           alert("User not found!!")
         }
         console.log(err.response.data);
-        
+
       }
     }
-    
+
   };
 
-  const handleSignupSubmit = (e) => {
+  const handleSignupSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, phone, password, confirmPassword } = signupData;
-    if (!name || !email || !phone || !password || !confirmPassword) {
-      alert("All fields are required.");
-      return;
+
+    const { name, email, phone, password, confirmPassword, otp } = signupData;
+
+    try {
+      if (!otpPhase) {
+        if (!name || !email || !phone || !password || !confirmPassword) {
+          alert("All fields are required.");
+          return;
+        }
+        if (password !== confirmPassword) {
+          alert("Passwords do not match.");
+          return;
+        }
+
+        const userExist = await api.post("/auth/check", {
+          email: email
+        })
+
+        if (userExist.data.exists === true) {
+          alert("User already exists");
+          return;
+        }
+        const sendotp = await api.post("/auth/signup/send-otp", {
+          useremail: email
+        })
+
+        if (sendotp.status === 200) {
+          setOtpPhase(true);
+          alert("OTP sent to your email/phone.");
+          return;
+        }
+        else {
+          alert("Failed to send OTP");
+          return;
+        }
+
+      }
+      else {
+        if (!otp) {
+          alert("Please enter the OTP.");
+          return;
+        }
+
+        const verifyOtp = await api.post("/auth/signup/verify-otp", {
+          useremail: email,
+          otp: otp
+        })
+
+        console.log(verifyOtp)
+
+        if (verifyOtp.status === 200) {
+          const newUser = await api.post("/auth/signup/newuser", {
+            username: name,
+            email: email,
+            phoneNum: phone,
+            password: password
+          })
+          console.log(newUser)
+
+          if (newUser.status === 200) {
+            alert("success")
+            localStorage.setItem("accessToken", newUser.data.accessToken)
+            
+            setIsSignup(false);
+            setOtpPhase(false);
+            setSignupData({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });
+            alert("Signup successful!");
+            navigate("/dashboard")
+          }
+          else {
+            alert("Failed to create user");
+            return;
+          }
+        }
+      }
     }
-    if (password !== confirmPassword) {
-      alert("Passwords do not match.");
-      return;
+    catch (error) {
+      if (error.response.data.error === "Incorrect OTP")
+        alert("Incorrect OTP")
+      else {
+        alert("Something went wrong")
+        console.log(error.response)
+      }
     }
-    console.log('Signup Data:', signupData);
   };
 
-  const handleResetSubmit = (e) => {
+  const handleResetSubmit = async (e) => {
     e.preventDefault();
     const { email, otp, password, confirmPassword } = resetData;
 
-    if (!otpSent) {
-      if (!email) {
-        alert("Please enter your email to receive OTP.");
-        return;
+    try {
+      if (!otpSent) {
+        if (!email) {
+          alert("Please enter your email to receive OTP.");
+          return;
+        }
+        const userExist = await api.post("/auth/check", {
+          email: email
+        })
+
+        if (userExist.data.exists === false) {
+          alert("We couldn't find a user with this email");
+          return;
+        }
+
+        const sendotp = await api.post("/auth/signup/send-otp", {
+          useremail: email
+        })
+
+        if (sendotp.status === 200) {
+          setOtpSent(true);
+          alert("OTP sent to your email/phone.");
+          return;
+        }
+        else {
+          alert("Failed to send OTP");
+          return;
+        }
       }
-      setOtpSent(true);
-      console.log('OTP sent to:', email);
-    } else if (!otpVerified) {
-      if (!otp) {
-        alert("Please enter the OTP.");
-        return;
+      else if (!otpVerified) {
+        if (!otp) {
+          alert("Please enter the OTP.");
+          return;
+        }
+
+        const verifyOtp = await api.post("/auth/signup/verify-otp", {
+          useremail: email,
+          otp: otp
+        })
+
+        if (verifyOtp.status !== 200) {
+          alert("Something went wrong")
+          return
+        }
+        setOtpVerified(true);
+
+
       }
-      setOtpVerified(true);
-      console.log('OTP verified:', otp);
-    } else {
-      if (!password || !confirmPassword) {
-        alert("Please fill all password fields.");
-        return;
+      else {
+        if (!password || !confirmPassword) {
+          alert("Please fill all password fields.");
+          return;
+        }
+        if (password !== confirmPassword) {
+          alert("Passwords do not match.");
+          return;
+        }
+        const resetPass = await api.post("/auth/reset-password", {
+          email: email,
+          password: password
+        })
+
+        if (resetPass) {
+          alert("Password Changed Successfully")
+          setShowReset(false);
+          setOtpSent(false);
+          setOtpVerified(false);
+          setResetData({ email: '', otp: '', password: '', confirmPassword: '' });
+          return;
+        }
       }
-      if (password !== confirmPassword) {
-        alert("Passwords do not match.");
-        return;
+    } catch (error) {
+      if (error.response.data.error === "Incorrect OTP")
+        alert("Incorrect OTP")
+      else {
+        alert("Something went wrong")
+        console.log(error.response)
       }
-      console.log('Reset confirmed:', { email, password, confirmPassword });
     }
   };
 
@@ -151,10 +282,18 @@ export const Login = () => {
                     <input name="name" value={signupData.name} onChange={handleSignupChange} className="login-input" type="text" placeholder="Name" />
                     <input name="email" value={signupData.email} onChange={handleSignupChange} className="login-input" type="email" placeholder="Email" />
                     <input name="phone" value={signupData.phone} onChange={handleSignupChange} className="login-input" type="tel" placeholder="Phone Number" />
-                    <input name="password" value={signupData.password} onChange={handleSignupChange} className="login-input" type="password" placeholder="Password" />
-                    <input name="confirmPassword" value={signupData.confirmPassword} onChange={handleSignupChange} className="login-input" type="password" placeholder="Confirm Password" />
+
+                    {!otpPhase ? (
+                      <>
+                        <input name="password" value={signupData.password} onChange={handleSignupChange} className="login-input" type="password" placeholder="Password" />
+                        <input name="confirmPassword" value={signupData.confirmPassword} onChange={handleSignupChange} className="login-input" type="password" placeholder="Confirm Password" />
+                      </>
+                    ) : (
+                      <input name="otp" value={signupData.otp} onChange={handleSignupChange} className="login-input" type="text" placeholder="Enter OTP" />
+                    )}
+
                     <div className="login-forgot"></div>
-                    <button type="submit" className="login-button">Sign Up</button>
+                    <button type="submit" className="login-button">{otpPhase ? "Submit" : "Sign Up"}</button>
                   </form>
                   {renderGoogleButton()}
                 </>

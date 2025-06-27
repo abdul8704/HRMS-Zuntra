@@ -1,194 +1,176 @@
 import React from "react";
 
-export const TableOfContents = () => {
+export const TableOfContents = ({progress, enrolled}) => {
+  const modules = [
+    {
+      title: "Module 1 Name",
+      submodules: ["Sub Module 1 Name", "Sub Module 2 Name", "Sub Module 3 Name", "Sub Module 4 Name"]
+    },
+    {
+      title: "Module 2",
+      submodules: ["Sub Module 1 Name", "Sub Module 2 Name", "Sub Module 3 Name"]
+    },
+    {
+      title: "Module 3",
+      submodules: ["Sub Module 1 Name", "Sub Module 2 Name", "Sub Module 3 Name", "Sub Module 4 Name", "Sub Module 5 Name"]
+    },
+    {
+      title: "Module 4",
+      submodules: ["Sub Module 1 Name", "Sub Module 2 Name", "Sub Module 3 Name", "Sub Module 4 Name", "Sub Module 5 Name"]
+    },
+    {
+      title: "Module 5",
+      submodules: ["Sub Module 1 Name", "Sub Module 2 Name", "Sub Module 3 Name", "Sub Module 4 Name", "Sub Module 5 Name"]
+    },
+  ];
+
   return (
-    <div className="toc-container">
-      <h3 className="toc-heading">Table of contents</h3>
-
-      {/* Scrollable Modules */}
-      <div className="toc-scroll">
-        <div className="module">
-          <div className="module-title active">
-            <span className="bar active-bar"></span>
-            <span>Module 1 Name</span>
-          </div>
-          <ul className="submodules">
-            <li><span className="dash active-dash"></span>Sub Module 1 Name</li>
-            <li><span className="dash active-dash"></span>Sub Module 2 Name</li>
-            <li><span className="dash active-dash"></span>Sub Module 3 Name</li>
-            <li><span className="dash active-dash"></span>Sub Module 4 Name</li>
-          </ul>
-        </div>
-
-        <div className="module">
-          <div className="module-title inactive">
-            <span className="bar inactive-bar"></span>
-            <span>Module 2</span>
-          </div>
-          <ul className="submodules">
-            <li><span className="dash active-dash"></span>Sub Module 1 Name</li>
-            <li><span className="dash inactive-dash"></span>Sub Module 2 Name</li>
-            <li><span className="dash inactive-dash"></span>Sub Module 3 Name</li>
-          </ul>
-        </div>
-
-        <div className="module">
-          <div className="module-title inactive">
-            <span className="bar inactive-bar"></span>
-            <span>Module 3</span>
-          </div>
-          <ul className="submodules">
-            <li><span className="dash inactive-dash"></span>Sub Module 1 Name</li>
-            <li><span className="dash inactive-dash"></span>Sub Module 2 Name</li>
-            <li><span className="dash inactive-dash"></span>Sub Module 3 Name</li>
-            <li><span className="dash inactive-dash"></span>Sub Module 4 Name</li>
-            <li><span className="dash inactive-dash"></span>Sub Module 5 Name</li>
-          </ul>
+    <div className="toc-wrapper">
+      <div className="toc-box">
+        <h3 className="toc-heading">Table of contents</h3>
+        <div className="toc-scroll">
+          {modules.map((module, moduleIndex) => (
+            <div className="module" key={moduleIndex}>
+              <div className="module-title">
+                <span className="bar"></span>
+                <span className="module-text">{module.title}</span>
+              </div>
+              <ul className="submodules">
+                {module.submodules.map((sub, subIndex) => (
+                  <li key={subIndex}>
+                    <span className="line">|</span>
+                    <span>{sub}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
-
-      {/* Continue Button */}
-      <div className="button-wrapper">
-        <button className="continue-btn">Continue Learning</button>
-        <div className="progress-bar">
-          <div className="progress-filled" style={{ width: '75%' }}></div>
-        </div>
-      </div>
+      { enrolled ? (<button className="continue-btn">Continue Learning</button> ):(<button className="enroll-btn">Enroll Now</button>)}
+      
 
       <style>{`
-        .toc-container {
-          background: #e5e5e5;
-          padding: 16px;
-          width: 270px;
-          height: 550px;
-          border-radius: 8px;
-          font-family: sans-serif;
+        .toc-wrapper {
+          width: 100%;
           display: flex;
           flex-direction: column;
+          gap: 1rem;
+          height:100%;
+          
+        }
+
+        .toc-box {
+          background: #e5e5e5;
+          padding: 16px;
+          border-radius: 12px;
+          font-family: sans-serif;
+          height: auto;
+          overflow-y: auto;
         }
 
         .toc-heading {
-          font-size: 18px;
-          font-weight: bold;
+          font-size: 20px;
+          font-weight: 700;
+          margin-bottom: 16px;
           color: #111;
-          margin-bottom: 12px;
-        }
-
-        .toc-scroll {
-          flex: 1;
-          overflow-y: scroll;
-          margin-bottom: 12px;
-          padding-right: 4px;
-        }
-
-        .toc-scroll::-webkit-scrollbar {
-          width: 6px;
-        }
-
-        .toc-scroll::-webkit-scrollbar-thumb {
-          background-color: #999;
-          border-radius: 4px;
-        }
-
-        .toc-scroll {
-          scrollbar-width: thin;
-          scrollbar-color: #999 transparent;
         }
 
         .module {
-          margin-bottom: 16px;
+          margin-bottom: 20px;
         }
 
         .module-title {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-weight: 600;
-          font-size: 14px;
-          margin-bottom: 6px;
+          font-size: 16px;
+          font-weight: 700;
+          color: #111;
         }
 
-        .bar {
+        .bar-incomplete {
           width: 4px;
           height: 24px;
+          background-color: #00cfd1;
+          border-radius: 2px;
+        }
+        .bar-completed{
+          width: 4px;
+          height: 24px;
+          background-color: #00cfd1;
           border-radius: 2px;
         }
 
-        .active-bar {
-          background-color: #00cfd1;
-        }
-
-        .inactive-bar {
-          background-color: #a3a3a3;
+        .module-text {
+          display: inline-block;
         }
 
         .submodules {
           list-style: none;
-          padding-left: 16px;
-          margin: 0;
+          padding-left: 20px;
+          margin-top: 6px;
         }
 
         .submodules li {
+          font-size: 14px;
+          color: #111;
+          margin: 6px 0;
           display: flex;
           align-items: center;
           gap: 8px;
-          font-size: 13px;
-          color: #111;
-          margin: 4px 0;
         }
 
-        .dash {
-          width: 4px;
-          height: 12px;
-          border-left: 2px dashed;
-        }
-
-        .active-dash {
-          border-color: #00cfd1;
-        }
-
-        .inactive-dash {
-          border-color: #a3a3a3;
-        }
-
-        .button-wrapper {
-          padding-top: 8px;
+        .line {
+          color: #00cfd1;
+          font-weight: bold;
         }
 
         .continue-btn {
-          width: 100%;
-          padding: 10px 16px;
-          background-color: #d1fae5;
-          color: #000;
-          font-weight: 600;
-          font-size: 14px;
+          background: linear-gradient(to right, #bbd3cc  ${progress}, #e5e5e5 30%);
+          font-weight: bold;
+          font-size: 18px;
+          padding: 14px 24px;
           border: none;
-          border-radius: 6px;
-          cursor: pointer;
-          transition: background 0.2s ease;
-        }
-
-        .continue-btn:hover {
-          background-color: #a7f3d0;
-        }
-
-        .progress-bar {
+          border-radius: 12px;
           width: 100%;
-          height: 12px;
-          background-color: #d4d4d4;
-          border-radius: 999px;
-          margin-top: 10px;
+          max-width: 100%;
+          text-align: center;
+          color: #000;
+          cursor: pointer;
+        }
+        .enroll-btn {
+          background: #e5e5e5;
+          font-weight: bold;
+          font-size: 18px;
+          padding: 14px 24px;
+          border: none;
+          border-radius: 12px;
+          width: 100%;
+          max-width: 100%;
+          text-align: center;
+          color: #000;
+          cursor: pointer;
         }
 
-        .progress-filled {
-          height: 100%;
-          background-color: #00cfd1;
-          border-radius: 999px;
-          transition: width 0.3s ease;
+       @media (max-width: 768px) {
+  .toc-wrapper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .toc-box {
+    height: auto;
+    max-height: none;
+  }
+
+  .continue-btn {
+    width: 100%;
+  }
+}
+
         }
       `}</style>
     </div>
   );
 };
-
-
