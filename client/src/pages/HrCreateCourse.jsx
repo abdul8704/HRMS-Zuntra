@@ -135,8 +135,11 @@ const HrCreateCourse = () => {
 
   return (
     <div className="flex min-h-screen overflow-hidden">
+
       <Sidebar />
+
       <div className="flex flex-col flex-grow bg-[#D6D6D6] overflow-y-auto">
+
         <div className="px-4 py-2">
           <CourseNavbar />
         </div>

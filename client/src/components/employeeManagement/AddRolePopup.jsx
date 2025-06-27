@@ -1,15 +1,19 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
+
+const generateLightColors = () => {
+  const colors = [];
+  for (let i = 0; i < 50; i++) {
+    const hue = Math.floor((i * 360) / 50);
+    colors.push(`hsl(${hue}, 80%, 85%)`);
+  }
+  return colors;
+};
 
 export const AddRolePopup = ({ onClose }) => {
   const [roleName, setRoleName] = useState("");
-  const [roleColor, setRoleColor] = useState("#000000");
-  const colorInputRef = useRef(null);
-
-  const handleColorCircleClick = () => {
-    if (colorInputRef.current) {
-      colorInputRef.current.click();
-    }
-  };
+  const [roleColor, setRoleColor] = useState("#f5f5f5");
+  const [showColors, setShowColors] = useState(false);
+  const colors = generateLightColors();
 
   const handleSubmit = () => {
     console.log("Role:", roleName, "Color:", roleColor);
@@ -20,33 +24,46 @@ export const AddRolePopup = ({ onClose }) => {
     <>
       <div className="popup-overlay">
         <div className="popup-container">
-          <button className="close-btn" onClick={onClose}>×</button>
-
-          <input
-            type="text"
-            className="role-input"
-            placeholder="Enter role"
-            value={roleName}
-            onChange={(e) => setRoleName(e.target.value)}
-          />
-
-          <div className="color-picker-wrapper">
-            <div
-              className="color-circle"
-              style={{ backgroundColor: roleColor }}
-              onClick={handleColorCircleClick}
-            ></div>
-
+          <div className="role-color-row">
             <input
-              type="color"
-              ref={colorInputRef}
-              className="color-input"
-              value={roleColor}
-              onChange={(e) => setRoleColor(e.target.value)}
+              type="text"
+              className="role-input"
+              placeholder="Enter role"
+              value={roleName}
+              onChange={(e) => setRoleName(e.target.value)}
             />
+            <div
+              className="main-circle"
+              style={{ backgroundColor: roleColor }}
+              onClick={() => setShowColors(!showColors)}
+            ></div>
           </div>
 
-          <button className="add-btn" onClick={handleSubmit}>Add</button>
+          {showColors && (
+            <div className="color-circles-container">
+              {colors.map((color, idx) => (
+                <div
+                  key={idx}
+                  className="color-circle"
+                  style={{ backgroundColor: color }}
+                  onClick={() => {
+                    setRoleColor(color);
+                    setShowColors(false);
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          <div className="course-box">
+            <span className="box-title">Ongoing courses...</span>
+            <span className="plus-circle">+</span>
+          </div>
+
+          <div className="button-row">
+            <button className="cancel-btn" onClick={onClose}>Cancel</button>
+            <button className="add-btn" onClick={handleSubmit}>Add</button>
+          </div>
         </div>
       </div>
 
@@ -54,7 +71,7 @@ export const AddRolePopup = ({ onClose }) => {
         .popup-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(0, 0, 0, 0.15);
+          background: rgba(0, 0, 0, 0.2);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -62,75 +79,119 @@ export const AddRolePopup = ({ onClose }) => {
         }
 
         .popup-container {
-          position: relative;
           background: white;
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding: 1rem 1.5rem;
           border-radius: 1rem;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+          padding: 2rem;
+          width: 95%;
+          max-width: 350px;
+          box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+          display: flex;
+          flex-direction: column;
+          gap: 1.2rem;
         }
 
-        .close-btn {
-          position: absolute;
-          top: 0.05rem;
-          right: 0.5rem;
-          background: none;
-          border: none;
-          font-size: 1.5rem;
-          cursor: pointer;
+        .role-color-row {
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
         }
 
         .role-input {
-          padding: 0.5rem 1rem;
-          border-radius: 1rem;
-          border: none;
-          background: #e2e2e2;
-          color: #333;
-          outline: none;
+          flex: 1;
+          padding: 0.6rem 1rem;
+          border-radius: 8px;
+          border: 1px solid #ccc;
           font-size: 1rem;
+          outline: none;
         }
 
-        .color-picker-wrapper {
-          position: relative;
+        .main-circle {
+          width: 1.5rem;
+          height: 1.5rem;
+          border-radius: 50%;
+          border: 2px solid #999;
+          cursor: pointer;
+        }
+
+        .color-circles-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
         }
 
         .color-circle {
-          width: 2rem;
-          height: 2rem;
+          width: 1.5rem;
+          height: 1.5rem;
           border-radius: 50%;
           cursor: pointer;
-          border: 2px solid #ccc;
+          border: 2px solid transparent;
         }
 
-        .color-input {
+        .course-box {
+          background-color: #d9d9d9;
+          border-radius: 10px;
+          height: 7rem;
+          position: relative;
+          padding: 0.5rem 1rem;
+        }
+
+        .box-title {
           position: absolute;
-          top: 2.5rem;
-          left: 0;
-          opacity: 0;
-          pointer-events: none;
+          top: 0.8rem;
+          left: 1rem;
+          font-size: 1rem;
+          color: #555;
         }
 
-        .color-input:focus {
-          opacity: 1;
-          pointer-events: all;
+        .plus-circle {
+          position: absolute;
+          bottom: 0.8rem;
+          right: 1rem;
+          background: rgba(0, 128, 128, 0.15);
+          border-radius: 50%;
+          padding: 0.3rem 0.6rem;
+          font-size: 1rem;
+          color: #333;
+          cursor: pointer;
+        }
+
+        .button-row {
+          display: flex;
+          justify-content: center;
+          gap: 1rem;
+        }
+
+        .cancel-btn,
+        .add-btn {
+          padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          border: none;
+          font-size: 0.9rem;
+          cursor: pointer;
+        }
+
+         .cancel-btn {
+          background-color: #f3f4f6;
+          color: black;
+          font-weight: normal;
+        }
+
+        .cancel-btn:hover {
+          background-color: red;
+          opacity: 0.5;
+          color: white;
+          font-weight: normal;
         }
 
         .add-btn {
-          padding: 0.5rem 1rem;
-          border-radius: 1rem;
-          border: 1px solid #9ea5a0;
-          background: transparent;
-          cursor: pointer;
-          font-size: 1rem;
-          color: #333;
+          background-color: rgba(140, 221, 132, 0.8);
+          color: black;
         }
 
         .add-btn:hover {
-          background-color: #f0f0f0;
+          background-color: green;
+          color: white;
         }
-
       `}</style>
     </>
   );

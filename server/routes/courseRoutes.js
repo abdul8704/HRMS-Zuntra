@@ -10,6 +10,7 @@ router.get("/content/:id",CourseController.getCourseContentIdController)
 router.patch("/details/:id/edit",CourseController.editCourseIntroController)
 router.patch("/content/:id/edit",CourseController.editCourseContentController)
 router.delete("/:id/delete",CourseController.deleteCourseController)
-// router.patch("/content/:id/edit/delete",CourseController.deleteCourseModulesController)
+
+router.post("/:id/enroll",CourseController.courseEnrollController)
 
 module.exports = router;

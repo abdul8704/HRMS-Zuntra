@@ -1,29 +1,17 @@
-import React, { useState } from "react";
-import { AddRolePopup } from "./AddRolePopup";
-import { EditRolePopup } from "./EditRolePopup";
+import React from "react";
 
-export const EmpRoleCard = ({ role, memberCount, bgColor, ibgcolor }) => {
-  const [isAddPopupOpen, setAddPopupOpen] = useState(false);
-  const [isEditPopupOpen, setEditPopupOpen] = useState(false);
-
-  const [roleData, setRoleData] = useState({
-    role,
-    members: memberCount,
-    color: bgColor,
-  });
-
-  const handleEditClick = () => setEditPopupOpen(true);
-  const handleCloseEdit = () => setEditPopupOpen(false);
-  const handlePlusClick = () => setAddPopupOpen(true);
-  const handleCloseAdd = () => setAddPopupOpen(false);
-
-  const handleEditSave = (newData) => {
-    setRoleData(newData);
+export const EmpRoleCard = ({ role, memberCount, bgColor, ibgcolor, onEdit }) => {
+  const handleEditClick = () => {
+    onEdit({
+      role,
+      memberCount,
+      color: bgColor,
+    });
   };
 
   return (
     <>
-      <div className="role-card" style={{ backgroundColor: roleData.color }}>
+      <div className="role-card" style={{ backgroundColor: bgColor }}>
         <div className="role-card-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -52,21 +40,10 @@ export const EmpRoleCard = ({ role, memberCount, bgColor, ibgcolor }) => {
               />
             </svg>
           </span>
-          <p className="role-title">{roleData.role}</p>
-          <p className="member-text">No. of members: {roleData.members}</p>
+          <p className="role-title">{role}</p>
+          <p className="member-text">No. of members: {memberCount}</p>
         </div>
       </div>
-
-      {isAddPopupOpen && <AddRolePopup onClose={handleCloseAdd} />}
-      {isEditPopupOpen && (
-        <EditRolePopup
-          role={roleData.role}
-          members={roleData.members}
-          color={roleData.color}
-          onClose={handleCloseEdit}
-          onSave={handleEditSave}
-        />
-      )}
 
       <style>{`
         .role-card {

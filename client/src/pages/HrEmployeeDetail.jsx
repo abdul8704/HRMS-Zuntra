@@ -2,10 +2,10 @@ import React from "react";
 import ProfileSidebar from "../components/employeeManagement/EmpSideBar";
 import AttendanceCalendar from "../components/attendance/AttendanceCalendar";
 import AttendanceCard from "../components/attendance/AttendanceCard";
-import InTime from "../components/attendance/InTime";
-import OutTime from "../components/attendance/OutTime";
-import WorkTime from "../components/attendance/WorkTime";
-import BreakTime from "../components/attendance/BreakTime";
+import {InTime} from "../components/attendance/InTime";
+import {OutTime} from "../components/attendance/OutTime";
+import {WorkTime} from "../components/attendance/WorkTime";
+import {BreakTime} from "../components/attendance/BreakTime";
 import ProgressCard from "../components/attendance/ProgressCard";
 import TabNavigationCard from "../components/attendance/TabNavigationCard";
 // import ProgressCard from "../components/attendance/ProgressCard";
@@ -39,18 +39,13 @@ export const HrEmployeeDetail = () => {
             <WorkTime />
             <BreakTime />
           </div>
-
-          {/* 2nd position */}
           <div className="calendar-wrapper">
             <AttendanceCalendar />
           </div>
-
-          {/* 3rd position */}
           <div className="attendance-card-wrapper">
             <AttendanceCard />
           </div>
 
-          {/* 4th position */}
           <div className="progress-card-wrapper">
             <ProgressCard />
           </div>
