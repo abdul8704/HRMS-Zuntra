@@ -43,6 +43,8 @@ const createUserCourse = async (userid) => {
     await userCourse.save();
 }
 
+
+
 module.exports = {
     updateUserData,
     getPendingUsers,
