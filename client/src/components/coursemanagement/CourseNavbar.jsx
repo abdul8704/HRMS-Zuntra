@@ -34,11 +34,12 @@ const navItems = [
 export const CourseNavbar = () => {
   const navigate = useNavigate();
   const { navId } = useParams();
-  const [activeNavId, setActiveNavId] = useState(navId);
+  const [activeNavId, setActiveNavId] = useState(navId || navItems[0].path);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const navRefs = useRef([]);
   const sliderRef = useRef(null);
+  const tabContainerRef = useRef(null);
 
   const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];
 
@@ -48,26 +49,44 @@ export const CourseNavbar = () => {
     setIsDropdownOpen(false);
   };
 
-  useEffect(() => {
+  const updateSlider = () => {
     const activeIndex = navItems.findIndex(item => item.path === activeNavId);
     const tab = navRefs.current[activeIndex];
     if (tab && sliderRef.current) {
       sliderRef.current.style.width = `${tab.offsetWidth}px`;
       sliderRef.current.style.left = `${tab.offsetLeft}px`;
     }
+  };
+
+  useEffect(() => {
+    updateSlider();
+
+    const handleResize = () => updateSlider();
+    window.addEventListener('resize', handleResize);
+
+    const observer = new ResizeObserver(handleResize);
+    if (tabContainerRef.current) {
+      observer.observe(tabContainerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (tabContainerRef.current) {
+        observer.unobserve(tabContainerRef.current);
+      }
+    };
   }, [activeNavId]);
 
   return (
     <>
       <div className="project-navbar">
-        {/* Desktop Navigation with sliding highlight */}
-        <ul className="desktop-nav">
+        <ul className="desktop-nav" ref={tabContainerRef}>
           <div className="nav-slider" ref={sliderRef}></div>
           {navItems.map((item, index) => (
             <li
               key={item.path}
               ref={(el) => (navRefs.current[index] = el)}
-              className={navId === item.path ? 'active' : ''}
+              className={item.path === activeNavId ? 'active' : ''}
               onClick={() => handleNavigation(item.path)}
             >
               <span className="project-icon">{item.icon}</span>
@@ -76,7 +95,6 @@ export const CourseNavbar = () => {
           ))}
         </ul>
 
-        {/* Mobile Dropdown */}
         <div className="mobile-nav">
           <div className="dropdown-container">
             <button className="dropdown-trigger" onClick={() => setIsDropdownOpen(!isDropdownOpen)}>

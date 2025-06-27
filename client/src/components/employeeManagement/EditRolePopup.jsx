@@ -83,16 +83,17 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
         }
 
         .edit-popup {
-          background: white;
-          border-radius: 1rem;
-          padding: 2rem;
-          width: 95%;
-          max-width: 350px;
-          box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
-          display: flex;
-          flex-direction: column;
-          gap: 1.2rem;
-        }
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 95%;
+  max-width: 700px; /* Increased width */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
 
         .role-color-row {
           display: flex;
@@ -132,12 +133,13 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
         }
 
         .course-box {
-          background-color: #d9d9d9;
-          border-radius: 10px;
-          height: 7rem;
-          position: relative;
-          padding: 0.5rem 1rem;
-        }
+    background-color: #d9d9d9;
+    border-radius: 10px;
+    height: 18rem;  /* Increased height */
+    width: 100%;    /* Full width of popup */
+    position: relative;
+    padding: 0.5rem 1rem;
+  }
 
         .box-title {
           position: absolute;
