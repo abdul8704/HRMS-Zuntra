@@ -18,7 +18,13 @@ const addNewCampusLocation = async (campusName, latitude, longitude, radius) => 
     return newLocation;
 };
 
+const getAllCampusLocations = async () => {
+    const locations = await GeoLocation.find({});
+    return locations;
+};
+
 module.exports = { 
     isWithinGeofence, 
-    addNewCampusLocation 
+    addNewCampusLocation,
+    getAllCampusLocations
 };

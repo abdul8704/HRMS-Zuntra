@@ -26,7 +26,7 @@ function App() {
     <>
     <BrowserRouter>
       <Routes>
-        <Route path="*" element={<NotFound />} />
+        {/* <Route path="*" element={<NotFound />} /> */}
         <Route path="/" element={<Login/>}></Route>
         <Route path="/newuser" element={<NewUser/>} />
         <Route path="/dashboard" element={<DashBoard/>}></Route>

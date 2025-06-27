@@ -242,6 +242,7 @@ export const HrEmployeeManagement = () => {
       {showAssignPopup && selectedEmployee && (
         <div className="popup-overlay">
           <EmpAssignmentPopUp
+            email={selectedEmployee.email}
             employee={selectedEmployee}
             isOpen={true}
             onClose={handleClosePopup}
