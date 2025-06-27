@@ -1,79 +1,104 @@
 import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Sidebar } from "../components/Sidebar";
 import { CourseNavbar } from "../components/coursemanagement/CourseNavbar";
 import { CourseCard } from "../components/coursemanagement/CourseCard";
 import { CreateCourse } from "../components/courseManagement/CreateCourse";
+import api from '../api/axios';
 
-const courseList = [
-  {
-    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
-    title: "Introduction to Git & GitHub",
-    instructor: "Mr. Jai Atithya A",
-    duration: "In 2 months",
-    badgeColor: "#FFD9D9",
-    rating: 3.5,
-  },
-  {
-    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
-    title: "MongoDB - Advanced",
-    instructor: "Mr. Abdul Aziz M A",
-    duration: "at your own pace",
-    badgeColor: "#C7F3D0",
-    rating: 3.5,
-  },
-  {
-    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
-    title: "Introduction to Data Science",
-    instructor: "Ms. Harini S",
-    duration: "in 3 months",
-    badgeColor: "#FFEFB2",
-    rating: 3.5,
-  },
-  {
-    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
-    title: "A Complete Guide to your DL",
-    instructor: "Mr. Joseph Daniel H",
-    duration: "In 2 months",
-    badgeColor: "#FFD9D9",
-    rating: 3.5,
-  },
-  // Duplicate entries for demo
-  {
-    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
-    title: "Introduction to Git & GitHub",
-    instructor: "Mr. Jai Atithya A",
-    duration: "In 2 months",
-    badgeColor: "#FFD9D9",
-    rating: 3.5,
-  },
-  {
-    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
-    title: "MongoDB - Advanced",
-    instructor: "Mr. Abdul Aziz M A",
-    duration: "at your own pace",
-    badgeColor: "#C7F3D0",
-    rating: 3.5,
-  },
-  {
-    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
-    title: "Introduction to Data Science",
-    instructor: "Ms. Harini S",
-    duration: "in 3 months",
-    badgeColor: "#FFEFB2",
-    rating: 3.5,
-  },
-  {
-    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
-    title: "A Complete Guide to your DL",
-    instructor: "Mr. Joseph Daniel H",
-    duration: "In 2 months",
-    badgeColor: "#FFD9D9",
-    rating: 3.5,
-  }
-];
+// const courseList = [
+//   {
+//     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+//     title: "Introduction to Git & GitHub",
+//     instructor: "Mr. Jai Atithya A",
+//     duration: "In 2 months",
+//     badgeColor: "#FFD9D9",
+//     rating: 3.5,
+//   },
+//   {
+//     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+//     title: "MongoDB - Advanced",
+//     instructor: "Mr. Abdul Aziz M A",
+//     duration: "at your own pace",
+//     badgeColor: "#C7F3D0",
+//     rating: 3.5,
+//   },
+//   {
+//     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+//     title: "Introduction to Data Science",
+//     instructor: "Ms. Harini S",
+//     duration: "in 3 months",
+//     badgeColor: "#FFEFB2",
+//     rating: 3.5,
+//   },
+//   {
+//     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+//     title: "A Complete Guide to your DL",
+//     instructor: "Mr. Joseph Daniel H",
+//     duration: "In 2 months",
+//     badgeColor: "#FFD9D9",
+//     rating: 3.5,
+//   },
+//   // Duplicate entries for demo
+//   {
+//     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+//     title: "Introduction to Git & GitHub",
+//     instructor: "Mr. Jai Atithya A",
+//     duration: "In 2 months",
+//     badgeColor: "#FFD9D9",
+//     rating: 3.5,
+//   },
+//   {
+//     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+//     title: "MongoDB - Advanced",
+//     instructor: "Mr. Abdul Aziz M A",
+//     duration: "at your own pace",
+//     badgeColor: "#C7F3D0",
+//     rating: 3.5,
+//   },
+//   {
+//     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+//     title: "Introduction to Data Science",
+//     instructor: "Ms. Harini S",
+//     duration: "in 3 months",
+//     badgeColor: "#FFEFB2",
+//     rating: 3.5,
+//   },
+//   {
+//     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+//     title: "A Complete Guide to your DL",
+//     instructor: "Mr. Joseph Daniel H",
+//     duration: "In 2 months",
+//     badgeColor: "#FFD9D9",
+//     rating: 3.5,
+//   }
+// ];
 
 export const HrCourseManagement = () => {
   const { navId } = useParams();
+  const [courseList, setcourseList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+  const fetchCourses = async () => {
+    try {
+      const res = await api.get(`/api/course`);
+      if (res.data.success) {
+        setcourseList(Array.isArray(res.data.data) ? res.data.data : []);
+      } else {
+        setApiMessage(res.data?.message || "Something went wrong."); // Fix here
+        setcourseList([]);
+      }
+    } catch (error) {
+      setApiMessage(error?.response?.data?.message || "Error fetching projects."); // Fix here
+      setcourseList([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCourses();
+}, []);
+console.log(courseList)
 
   return (
     <div
