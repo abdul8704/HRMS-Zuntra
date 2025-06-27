@@ -61,8 +61,6 @@ export const TimeCard = ({ state, time = "09:00", label, color = true }) => {
           padding: 0.8rem;
           border-radius: 1rem;
           gap: 0.6rem;
-          height: 100%;
-          width: 100%;
           justify-content: center;
         }
 
@@ -97,17 +95,6 @@ display: flex;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-        }
-           @media (max-width: 480px) {
-          .card-time {
-            flex-direction: column;
-            gap: 0.4rem;
-            text-align: center;
-          }
-
-          .text {
-            align-items: center;
-          }
         }
       `}</style>
     </div>

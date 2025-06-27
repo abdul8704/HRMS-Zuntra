@@ -131,19 +131,20 @@ const styles = {
   timeContainer: {
   display: "flex",
   flexWrap: "wrap",
+  justifyContent: "flex-end",
   gap: "0.8rem",
-  justifyContent: "center",
-  width: "100%",
-  maxWidth: "14rem", // Adjust as needed for tighter control
-  alignSelf: "center",
+  flex: "1 1 40%",
+  minWidth: "200px",
 },
 
 TimeCardWrapper: {
-  width: "calc(50% - 0.4rem)", // Ensures two cards per row
+  flex: "0 1 calc(50% - 0.4rem)",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  minWidth: "7rem",     // ✅ ensures no overlap or squeeze
 },
+
 
 };
 
@@ -205,7 +206,7 @@ export const EmployeeCard = ({
 
           <div className="time-container" style={styles.timeContainer}>
             <div style={styles.TimeCardWrapper}>
-              <TimeCard state="in" time={inTime} label="Checked In" color={true} />
+              <TimeCard state="in" time={inTime} label={false} color={false} />
             </div>
             <div style={styles.TimeCardWrapper}>
               <TimeCard state="out" time={outTime} color={false} label={false} />
@@ -224,8 +225,8 @@ export const EmployeeCard = ({
         <div
           style={{
             position: "absolute",
-            top: tooltip.top,
-            left: tooltip.left,
+            top: `${tooltip.top}px`,
+            left: `${tooltip.left}px`,
             backgroundColor: "#333",
             color: "#fff",
             padding: "6px 12px",
