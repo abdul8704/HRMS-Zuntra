@@ -5,5 +5,6 @@ const employeeController = require("../controllers/employeeManagement")
 
 router.post("/logout", employeeController.handleLogout);
 router.get("/attendance", employeeController.getAttendanceData);
+router.get("/", employeeController.fetchAllEmployees);
 
 module.exports = router;
