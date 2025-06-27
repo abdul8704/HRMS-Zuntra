@@ -64,6 +64,7 @@ const handleLogin = asyncHandler(async (req, res) => {
 const geoFenceLogin = asyncHandler(async (req, res) => {
     const { latitude, longitude, email } = req.body;
     const user = await authService.getUserByEmail(email)
+    
     if(user.role === "unassigned"){
         return res.status(206).json({ success: true, message: "No attendance for you" })
     }

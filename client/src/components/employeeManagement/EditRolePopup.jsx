@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { EmpCourseCard } from "./EmpCourseCard";
 
 const generateLightColors = () => {
   const colors = [];
@@ -13,6 +14,7 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
   const [editRole, setEditRole] = useState(role);
   const [editColor, setEditColor] = useState(color);
   const [showColors, setShowColors] = useState(false);
+  const [courseCard, setCourseCard] = useState(false);
   const colors = generateLightColors();
 
   const handleSave = () => {
@@ -61,7 +63,18 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
 
           <div className="course-box">
             <span className="box-title">Ongoing courses...</span>
-            <span className="plus-circle">+</span>
+            <span className="plus-circle" onClick={() => setCourseCard(true)}>+</span>
+
+            {courseCard && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <EmpCourseCard
+                  courseName="React Fundamentals"
+                  authorName="John Doe"
+                  imageUrl="https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png"
+                  onRemove={() => setCourseCard(false)}
+                />
+              </div>
+            )}
           </div>
 
           <div className="button-row">
@@ -87,7 +100,7 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
           border-radius: 1rem;
           padding: 2rem;
           width: 95%;
-          max-width: 350px;
+          max-width: 700px;
           box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
           display: flex;
           flex-direction: column;
@@ -134,9 +147,11 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
         .course-box {
           background-color: #d9d9d9;
           border-radius: 10px;
-          height: 7rem;
+          height: 18rem;
+          width: 100%;
           position: relative;
           padding: 0.5rem 1rem;
+          overflow-y: auto;
         }
 
         .box-title {
@@ -174,7 +189,7 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
           cursor: pointer;
         }
 
-         .cancel-btn {
+        .cancel-btn {
           background-color: #f3f4f6;
           color: black;
           font-weight: normal;

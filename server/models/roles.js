@@ -5,13 +5,17 @@ const rolesDetail = new mongoose.Schema({
         type: String,
         required: true
     },
-    onboarddingCourses:{
+    onboardingCourses:{
         type: [String],
         required: true
     },
     color: {
         type: String,
         required: true
+    },
+    baseSalary: {
+        type: Number,
+        default: 0
     }
 })
 

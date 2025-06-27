@@ -55,36 +55,48 @@ const styles = {
     position: "relative",
   }),
   cardContent: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "stretch",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-    width: "100%",
-    gap: "1rem",
-  },
-  leftSection: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "stretch",
-    flex: "1 1 55%",
-    minWidth: "260px",
-    gap: "1rem",
-  },
-  imageContainer: {
-    display: "flex",
-    alignItems: "stretch",
-    justifyContent: "flex-start",
-    height: "100%",
-    width: "5rem",
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    display: "block",
-    borderRadius: "0.5rem",
-  },
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  width: "100%",
+},
+
+
+
+ leftSection: {
+  display: "flex",
+  flexDirection: "row",
+  gap: "12px",
+  alignItems: "center",         // Vertically center image + text block
+  justifyContent: "flex-start",
+},
+
+
+
+imageContainer: {
+  display: "flex",
+  alignItems: "center",       // Center vertically within the section
+  justifyContent: "flex-start", // Align image to the left inside the container
+  width: "60px",
+  height: "100%",              // Full height of parent container
+  padding: 0,                  // Ensure no internal padding pushes image
+},
+
+image: {
+  width: "60px",               // Maintain fixed width
+  height: "80px",              // Or height as desired
+  objectFit: "contain",        // Prevent distortion
+  display: "block",
+  marginLeft: "0",             // Explicitly remove margin if exists
+},
+
+
+
+
+
+
+
+
   infoContainer: {
     display: "flex",
     flexDirection: "column",
@@ -129,22 +141,16 @@ const styles = {
     color: "black",
   }),
   timeContainer: {
-  display: "flex",
-  flexWrap: "wrap",
-  justifyContent: "flex-end",
-  gap: "0.8rem",
-  flex: "1 1 40%",
-  minWidth: "200px",
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: "10px",
+    minWidth: "300px",
+    marginLeft: "auto",
+  },
+  timeCardWrapper: {
+    width: "100%", 
+    display: "flex",
 },
-
-TimeCardWrapper: {
-  flex: "0 1 calc(50% - 0.4rem)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  minWidth: "7rem",     // ✅ ensures no overlap or squeeze
-},
-
 
 };
 
@@ -205,18 +211,10 @@ export const EmployeeCard = ({
           </div>
 
           <div className="time-container" style={styles.timeContainer}>
-            <div style={styles.TimeCardWrapper}>
-              <TimeCard state="in" time={inTime} label={false} color={false} />
-            </div>
-            <div style={styles.TimeCardWrapper}>
-              <TimeCard state="out" time={outTime} color={false} label={false} />
-            </div>
-            <div style={styles.TimeCardWrapper}>
-              <TimeCard state="break" time={breakTime} color={false} label={false} />
-            </div>
-            <div style={styles.TimeCardWrapper}>
-              <TimeCard state="work" time={workTime} color={false} label={false} />
-            </div>
+            <div className="time-card-wrapper"><TimeCard state="in" time={inTime} /></div>
+            <div className="time-card-wrapper"><TimeCard state="out" time={outTime} /></div>
+            <div className="time-card-wrapper"><TimeCard state="break" time={breakTime} /></div>
+            <div className="time-card-wrapper"><TimeCard state="work" time={workTime} /></div>
           </div>
         </div>
       </div>
