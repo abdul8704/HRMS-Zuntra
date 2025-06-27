@@ -32,6 +32,8 @@ const getPendingEmployees = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, data: pendingEmployees });
 })
 
+
+
 module.exports = {
     addNewCampusLocation,
     acceptUser,

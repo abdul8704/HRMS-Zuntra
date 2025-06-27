@@ -53,6 +53,7 @@ export const UpskillNavbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navRefs = useRef([]);
   const sliderRef = useRef(null);
+  const tabContainerRef = useRef(null);
 
   const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];
 
@@ -62,19 +63,38 @@ export const UpskillNavbar = () => {
     setIsDropdownOpen(false);
   };
 
-  useEffect(() => {
+  const updateSlider = () => {
     const activeIndex = navItems.findIndex(item => item.path === activeNavId);
     const tab = navRefs.current[activeIndex];
     if (tab && sliderRef.current) {
       sliderRef.current.style.width = `${tab.offsetWidth}px`;
       sliderRef.current.style.transform = `translateX(${tab.offsetLeft}px)`;
     }
+  };
+
+  useEffect(() => {
+    updateSlider();
+
+    const update = () => updateSlider();
+    window.addEventListener('resize', update);
+
+    const observer = new ResizeObserver(update);
+    if (tabContainerRef.current) {
+      observer.observe(tabContainerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', update);
+      if (tabContainerRef.current) {
+        observer.unobserve(tabContainerRef.current);
+      }
+    };
   }, [activeNavId]);
 
   return (
     <>
       <div className="project-navbar">
-        <ul className="desktop-nav">
+        <ul className="desktop-nav" ref={tabContainerRef}>
           <div className="nav-slider" ref={sliderRef}></div>
           {navItems.map((item, index) => (
             <li

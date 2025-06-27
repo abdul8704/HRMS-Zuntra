@@ -1,28 +1,79 @@
 import React, { useState, useEffect, useRef } from "react";
+import api from '../../api/axios'
 
 export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
-  const roles = {
-    'Software Engineer': '80000',
-    'Senior Software Engineer': '120000',
-    'Team Lead': '150000',
-    'Project Manager': '180000',
-    'HR Executive': '600000',
-    'Business Analyst': '100000',
-    'UI/UX Designer': '750000',
-    'QA Engineer': '605000',
-    'DevOps Engineer': '110000',
-    'Data Analyst': '900000',
+  const getRoles = async () => {
+    try {
+      const response = await api.get('/api/roles');
+      const roleData = {};
+
+      response.data.forEach(role => {
+        roleData[role.role] = role.baseSalary;
+      });
+
+      return roleData;
+    } 
+    catch (error) {
+      console.error("Error fetching roles:", error);
+      return [];
+    }
   };
 
-  const shifts = [
-    'Morning (9:00 AM - 6:00 PM)',
-    'Evening (2:00 PM - 11:00 PM)',
-    'Night (10:00 PM - 7:00 AM)',
-    'Flexible',
-  ];
+  const getShifts = async () => {
+    try {
+      const response = await api.get('/api/shifts');
 
-  const branches = ['Chennai', 'Bangalore', 'Hyderabad', 'Mumbai'];
+      let shiftData = [];
 
+      response.data.forEach(shift => {
+        shiftData.push(shift.shiftName + " (" + shift.startTime + " - " + shift.endTime + ")");
+      });
+
+      return shiftData;
+    } 
+    catch (error) {
+      console.error("Error fetching shifts:", error);
+      return [];
+    }
+  };
+
+  const getBranches = async () => {
+    try {
+      const response = await api.get('/api/branch');
+      console.log(response.data);
+      const branches = response.data.map(branch => branch.campusName);
+      return branches;
+    } 
+    catch (error) {
+      console.error("Error fetching branches:", error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const roles = await getRoles();
+      const shifts = await getShifts();
+      const branches = await getBranches();
+
+      console.log("Roles:", roles);
+      console.log("Shifts:", shifts);
+      console.log("Branches:", branches);
+
+      setRoles(roles);
+      setShifts(shifts);
+      setBranches(branches);
+    };
+
+    fetchData();
+  }, []);
+
+  // const branches = ['Chennai', 'Bangalore', 'Hyderabad', 'Mumbai'];
+  // const branchData = await api.get('/api/branch');
+  // console.log(branchData)
+  const [roles, setRoles] = useState([]);
+  const [shifts, setShifts] = useState([]);
+  const [branches, setBranches] = useState([]);
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedShift, setSelectedShift] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
@@ -50,13 +101,15 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (isFormValid) {
-      onSave({
+
+      await api.post('/api/hr/accept', {
+        email: employee.email,
+        shiftStart: selectedShift.split(" (")[0],
+        shiftEnd: selectedShift.split(" - ")[1].slice(0, -1),
+        campus: selectedBranch,
         role: selectedRole,
-        shift: selectedShift,
-        branch: selectedBranch,
-        salary,
       });
     }
   };
