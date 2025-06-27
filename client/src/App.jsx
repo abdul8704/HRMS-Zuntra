@@ -11,13 +11,13 @@ import { HrEmployeeDetail } from './pages/HrEmployeeDetail';
 import  HrCreateCourse  from './pages/HrCreateCourse';
 import { HrOverviewLearning } from './pages/Hroverviewlearn';
 import { NewUser } from "./pages/NewUser";
-import './App.css'
-import './index.css'
 import { GeoFencing } from './components/employeeManagement/GeoFencing';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
 import { Upskill } from './pages/Upskill';
 import { DashBoard } from './pages/DashBoard';
-import  useTrackSessionEnd  from "../src/hooks/endOfSession.js"
+import { HrUpskillSideBar } from './pages/HrUpskillSideBar';
+import './App.css'
+import './index.css'
 
 function App() {
   const [userid, setUserid] = useState('');
@@ -26,8 +26,8 @@ function App() {
     <>
     <BrowserRouter>
       <Routes>
-        <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Login/>}></Route>
+        {/* <Route path="/hrupskill" element={<HrUpskillLearn/>}></Route> */}
         <Route path="/newuser" element={<NewUser/>} />
         <Route path="/dashboard" element={<DashBoard/>}></Route>
         <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
@@ -39,6 +39,8 @@ function App() {
         <Route path="/upskill/:navId" element={<Upskill/>}></Route>
         <Route path="/createcourse" element={<HrCreateCourse/>}></Route>
         <Route path="/overviewlearning" element={<HrOverviewLearning/>}></Route>
+        <Route path="/hrupskillsidebar" element={<HrUpskillSideBar/>}></Route>
+        {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
     </BrowserRouter>
     </>
