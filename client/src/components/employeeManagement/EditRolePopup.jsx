@@ -10,19 +10,47 @@ const generateLightColors = () => {
   return colors;
 };
 
+const predefinedCourses = [
+  { id: 1, courseName: "React Fundamentals", authorName: "John Doe", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 2, courseName: "Advanced Node.js", authorName: "Jane Smith", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 3, courseName: "MongoDB Mastery", authorName: "Kevin Li", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 4, courseName: "Python for Data Science", authorName: "Emily Stone", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 5, courseName: "Machine Learning Basics", authorName: "Michael Ray", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 6, courseName: "Fullstack with MERN", authorName: "Rachel Green", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 7, courseName: "Cloud Computing 101", authorName: "Thomas Blake", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 8, courseName: "Cybersecurity Essentials", authorName: "Sophia Reed", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 9, courseName: "Kubernetes Crash Course", authorName: "James Hunt", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 10, courseName: "Next.js Deep Dive", authorName: "Lily Carter", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
+];
+
 export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
   const [editRole, setEditRole] = useState(role);
   const [editColor, setEditColor] = useState(color);
   const [showColors, setShowColors] = useState(false);
-  const [courseCard, setCourseCard] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCourses, setSelectedCourses] = useState([]);
+
   const colors = generateLightColors();
 
+  const availableCourses = predefinedCourses.filter(
+    (course) =>
+      !selectedCourses.find((c) => c.id === course.id) &&
+      course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleAddCourse = (course) => {
+    setSelectedCourses([...selectedCourses, course]);
+    setSearchTerm("");
+    setDropdownOpen(false);
+  };
+
+  const handleRemoveCourse = (id) => {
+    setSelectedCourses(selectedCourses.filter((c) => c.id !== id));
+  };
+
   const handleSave = () => {
-    onSave({
-      role: editRole,
-      members,
-      color: editColor,
-    });
+    onSave({ role: editRole, members, color: editColor });
     onClose();
   };
 
@@ -63,18 +91,42 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
 
           <div className="course-box">
             <span className="box-title">Ongoing courses...</span>
-            <span className="plus-circle" onClick={() => setCourseCard(true)}>+</span>
 
-            {courseCard && (
-              <div style={{ marginTop: "2.5rem" }}>
-                <EmpCourseCard
-                  courseName="React Fundamentals"
-                  authorName="John Doe"
-                  imageUrl="https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png"
-                  onRemove={() => setCourseCard(false)}
+            {dropdownOpen && (
+              <div className="dropdown-course-list">
+                <input
+                  type="text"
+                  placeholder="Search courses..."
+                  className="search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
+                {availableCourses.map((course) => (
+                  <div key={course.id} className="dropdown-item" onClick={() => handleAddCourse(course)}>
+                    <EmpCourseCard
+                      courseName={course.courseName}
+                      authorName={course.authorName}
+                      imageUrl={course.imageUrl}
+                      onRemove={null}
+                    />
+                  </div>
+                ))}
               </div>
             )}
+
+            <div className="course-list-wrapper">
+              {selectedCourses.map((course) => (
+                <EmpCourseCard
+                  key={course.id}
+                  courseName={course.courseName}
+                  authorName={course.authorName}
+                  imageUrl={course.imageUrl}
+                  onRemove={() => handleRemoveCourse(course.id)}
+                />
+              ))}
+            </div>
+
+            <span className="plus-circle" onClick={() => setDropdownOpen(!dropdownOpen)}>+</span>
           </div>
 
           <div className="button-row">
@@ -150,7 +202,7 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
           height: 18rem;
           width: 100%;
           position: relative;
-          padding: 0.5rem 1rem;
+          padding: 2.5rem 1rem 2rem 1rem;
           overflow-y: auto;
         }
 
@@ -161,6 +213,19 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
           font-size: 1rem;
           color: #555;
         }
+
+        .course-list-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 1rem; /* ✅ ensures vertical and horizontal spacing */
+  margin-top: 2.5rem;
+}
+
+
+
+
 
         .plus-circle {
           position: absolute;
@@ -174,14 +239,55 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
           cursor: pointer;
         }
 
+        .dropdown-course-list {
+          position: absolute;
+          bottom: 3rem;
+          right: 1rem;
+          width: 230px;
+          background: white;
+          border-radius: 0.8rem;
+          box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          padding: 0.5rem;
+          max-height: 12rem;
+          overflow-y: auto;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+        }
+
+        .dropdown-course-list::-webkit-scrollbar {
+          display: none;
+        }
+
+        .search-input {
+          width: 100%;
+          margin-bottom: 0.5rem;
+          padding: 0.4rem;
+          border: none;
+          outline: none;
+          border-radius: 0.4rem;
+          font-size: 0.9rem;
+          background-color: white;
+        }
+
+        .dropdown-item {
+          margin: 0;
+          padding: 0.2rem 0;
+          width: 100%;
+          cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+          background-color: transparent !important;
+        }
+
         .button-row {
           display: flex;
           justify-content: center;
           gap: 1rem;
         }
 
-        .cancel-btn,
-        .add-btn {
+        .cancel-btn, .add-btn {
           padding: 0.5rem 1rem;
           border-radius: 0.5rem;
           border: none;
@@ -192,14 +298,12 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
         .cancel-btn {
           background-color: #f3f4f6;
           color: black;
-          font-weight: normal;
         }
 
         .cancel-btn:hover {
           background-color: red;
-          opacity: 0.5;
           color: white;
-          font-weight: normal;
+          opacity: 0.6;
         }
 
         .add-btn {

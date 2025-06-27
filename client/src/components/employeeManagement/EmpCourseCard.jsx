@@ -22,18 +22,18 @@ export const EmpCourseCard = ({ courseName, authorName, imageUrl, onRemove }) =>
         .emp-course-card {
   display: flex;
   align-items: center;
-  background-color: white;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   padding: 0.5rem 1rem;
   gap: 0.6rem;
   font-family: sans-serif;
-  width: 90%; /* ✅ reduce width to fit nicely */
-  max-width: 11rem; /* ✅ constrain width */
+  max-width: 11rem;
+  flex: 1 1 11rem; /* Allows wrap and spacing */
   box-sizing: border-box;
   position: relative;
-  margin: 0 auto; /* ✅ center the card inside the container */
-  width: 100%; /* ✅ Fill full width of dropdown */
-  border-radius: 0;
+  border-radius: 0.5rem;
 }
+
+
 
 
         .course-image {
