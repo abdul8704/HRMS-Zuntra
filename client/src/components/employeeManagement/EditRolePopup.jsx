@@ -101,16 +101,18 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                {availableCourses.map((course) => (
-                  <div key={course.id} className="dropdown-item" onClick={() => handleAddCourse(course)}>
-                    <EmpCourseCard
-                      courseName={course.courseName}
-                      authorName={course.authorName}
-                      imageUrl={course.imageUrl}
-                      onRemove={null}
-                    />
-                  </div>
-                ))}
+                <div className="dropdown-items-scroll">
+                  {availableCourses.map((course) => (
+                    <div key={course.id} className="dropdown-item" onClick={() => handleAddCourse(course)}>
+                      <EmpCourseCard
+                        courseName={course.courseName}
+                        authorName={course.authorName}
+                        imageUrl={course.imageUrl}
+                        onRemove={null}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -215,17 +217,13 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
         }
 
         .course-list-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 1rem; /* ✅ ensures vertical and horizontal spacing */
-  margin-top: 2.5rem;
-}
-
-
-
-
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          align-items: flex-start;
+          gap: 1rem;
+          margin-top: 2.5rem;
+        }
 
         .plus-circle {
           position: absolute;
@@ -243,25 +241,19 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
           position: absolute;
           bottom: 3rem;
           right: 1rem;
-          width: 230px;
+          width: 200px;
           background: white;
           border-radius: 0.8rem;
           box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
           z-index: 1000;
           padding: 0.5rem;
-          max-height: 12rem;
-          overflow-y: auto;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-
-        .dropdown-course-list::-webkit-scrollbar {
-          display: none;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
         }
 
         .search-input {
           width: 100%;
-          margin-bottom: 0.5rem;
           padding: 0.4rem;
           border: none;
           outline: none;
@@ -270,15 +262,35 @@ export const EditRolePopup = ({ role, members, color, onClose, onSave }) => {
           background-color: white;
         }
 
-        .dropdown-item {
-          margin: 0;
-          padding: 0.2rem 0;
-          width: 100%;
-          cursor: pointer;
+        .dropdown-items-scroll {
+  max-height: 8rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: 0.3rem; /* ✅ slight left shift */
+}
+
+
+
+        .dropdown-items-scroll::-webkit-scrollbar {
+          width: 4px;
         }
 
+        .dropdown-items-scroll::-webkit-scrollbar-thumb {
+          background: #ccc;
+          border-radius: 2px;
+        }
+
+        .dropdown-item {
+  cursor: pointer;
+  margin-left: -1rem; /* ✅ shifts card slightly to the left */
+}
+
+
         .dropdown-item:hover {
-          background-color: transparent !important;
+          background-color: transparent;
         }
 
         .button-row {
