@@ -135,6 +135,11 @@ const styles = {
     flex: "1 1 40%",
     minWidth: "12.5rem",
   },
+  timecardrow: {
+      display: "flex",
+          gap: "0.6rem",
+
+  },
   TimeCardWrapper: {
     flex: "0 1 calc(50% - 0.4rem)",
     display: "flex",
@@ -161,13 +166,13 @@ export const EmployeeCard = ({
   const lightAccentColor = darkenColor(bgColor, 6);
 
   const showTooltip = (e, text) => {
-  setTooltip({
-    show: true,
-    text,
-    top: e.clientY + window.scrollY - 40,
-    left: e.clientX + window.scrollX + 10,
-  });
-};
+    setTooltip({
+      show: true,
+      text,
+      top: e.clientY + window.scrollY - 40,
+      left: e.clientX + window.scrollX + 10,
+    });
+  };
 
 
   const hideTooltip = () => setTooltip({ show: false, text: "", top: 0, left: 0 });
@@ -201,17 +206,21 @@ export const EmployeeCard = ({
           </div>
 
           <div className="time-container" style={styles.timeContainer}>
-            <div style={styles.TimeCardWrapper}>
-              <TimeCard state="in" time={inTime} label={false} color={false} />
+            <div style={styles.timecardrow}>
+              <div style={styles.TimeCardWrapper}>
+                <TimeCard state="in" time={inTime} label={false} color={false} />
+              </div>
+              <div style={styles.TimeCardWrapper}>
+                <TimeCard state="out" time={outTime} color={false} label={false} />
+              </div>
             </div>
-            <div style={styles.TimeCardWrapper}>
-              <TimeCard state="out" time={outTime} color={false} label={false} />
-            </div>
-            <div style={styles.TimeCardWrapper}>
-              <TimeCard state="break" time={breakTime} color={false} label={false} />
-            </div>
-            <div style={styles.TimeCardWrapper}>
-              <TimeCard state="work" time={workTime} color={false} label={false} />
+            <div style={styles.timecardrow}>
+              <div style={styles.TimeCardWrapper}>
+                <TimeCard state="break" time={breakTime} color={false} label={false} />
+              </div>
+              <div style={styles.TimeCardWrapper}>
+                <TimeCard state="work" time={workTime} color={false} label={false} />
+              </div>
             </div>
           </div>
         </div>

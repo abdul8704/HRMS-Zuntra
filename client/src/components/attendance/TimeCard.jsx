@@ -42,7 +42,7 @@ export const TimeCard = ({ state, time = "09:00", label, color = true }) => {
 
 
   const { bg, label: defaultLabel, icon } = config[state] || config.in;
-  const appliedBg = color === false ? "#f8f8f8" : bg;
+  const appliedBg = color === false ? "rgba(255,255,255,0.2)" : bg;
   const displayLabel = label === false ? null : label || defaultLabel;
 
   return (
@@ -54,49 +54,62 @@ export const TimeCard = ({ state, time = "09:00", label, color = true }) => {
       </div>
 
       <style jsx>{`
-        .tcard-card-time {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          padding: 0.8rem;
-          border-radius: 1rem;
-          gap: 0.6rem;
-          justify-content: center;
-        }
+  .tcard-card-time {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.8rem;
+    border-radius: 1rem;
+    gap: 0.6rem;
+    justify-content: center;
+    max-width: 100%;
+    flex-wrap: wrap; /* Allow wrap if space is tight */
+  }
 
-        .tcard-icon {
-display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.4rem;
-  flex-shrink: 0;
-  border-radius: 0.5rem;
-}
+  .tcard-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(1.1rem, 3vw, 1.4rem); /* responsive */
+    flex-shrink: 0;
+    border-radius: 0.5rem;
+  }
 
-        .tcard-text {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          overflow: hidden;
-        }
+  .tcard-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: visible;
+    flex-shrink: 1;
+    min-width: 0;
+  }
 
-        .tcard-time {
-          font-size: clamp(1rem, 2.5vw, 1.3rem);
-          font-weight: 600;
-          white-space: nowrap;
-        }
+  .tcard-time {
+    font-size: clamp(0.85rem, 3vw, 1.3rem); /* responsive */
+    font-weight: 600;
+    white-space: nowrap;
+  }
 
-        .tcard-label {
-          font-size: clamp(0.65rem, 1vw, 0.8rem);
-          opacity: 0.85;
-          color: #333;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-      `}</style>
+  .tcard-label {
+    font-size: clamp(0.6rem, 2.5vw, 0.8rem); /* responsive */
+    opacity: 0.85;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  @media (max-width: 380px) {
+    .tcard-card-time {
+      gap: 0.3rem;
+      padding: 0.5rem;
+    }
+  }
+`}</style>
+
     </div>
   );
 };
