@@ -238,42 +238,51 @@ export const EmployeeCard = ({
       )}
 
       <style jsx>{`
-        @media (max-width: 25rem) {
-          .employee-card {
-            padding: 1rem !important;
-          }
+  @media (max-width: 25rem) {
+    .employee-card {
+      padding: 1rem !important;
+    }
 
-          .card-content {
-            flex-direction: column;
-            gap: 1rem;
-          }
+    .card-content {
+      flex-direction: column !important;
+      gap: 1rem !important;
+    }
 
-          .left-section {
-            flex-direction: column;
-            align-items: center !important;
-            gap: 0.8rem !important;
-          }
+    .left-section {
+      flex-direction: column !important;
+      align-items: center !important;
+      flex: 1 1 100% !important;
+      min-width: 0 !important;
+    }
 
-          .infoContainer {
-            align-items: center !important;
-            text-align: center;
-          }
+    .infoContainer {
+      align-items: center !important;
+      text-align: center !important;
+    }
 
-          .time-container {
-            justify-content: center !important;
-          }
+    .time-container {
+      justify-content: center !important;
+      flex: 1 1 100% !important;
+      min-width: 0 !important;
+    }
 
-          .employee-card h2 {
-            font-size: 1rem !important;
-          }
+    .employee-card h2 {
+      font-size: 1rem !important;
+    }
 
-          .employee-card .text {
-            max-width: 100% !important;
-            word-break: break-word !important;
-            white-space: normal !important;
-          }
-        }
-      `}</style>
+    .employee-card .text {
+      max-width: 100% !important;
+      word-break: break-word !important;
+      white-space: normal !important;
+    }
+
+    .time-container > div {
+      flex: 1 1 100% !important;
+      min-width: 6rem !important;
+    }
+  }
+`}</style>
+
     </>
   );
 };
