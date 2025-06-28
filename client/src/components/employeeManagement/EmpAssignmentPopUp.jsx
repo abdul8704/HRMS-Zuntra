@@ -14,6 +14,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
       return roleData;
     } 
     catch (error) {
+      alert("Error fetching roles. Please try again later.");
       console.error("Error fetching roles:", error);
       return [];
     }
@@ -23,15 +24,10 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
     try {
       const response = await api.get('/api/shifts');
 
-      let shiftData = [];
-
-      response.data.forEach(shift => {
-        shiftData.push(shift.shiftName + " (" + shift.startTime + " - " + shift.endTime + ")");
-      });
-
-      return shiftData;
+      return response.data;
     } 
     catch (error) {
+      alert("Error fetching shifts. Please try again later.");
       console.error("Error fetching shifts:", error);
       return [];
     }
@@ -40,11 +36,11 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
   const getBranches = async () => {
     try {
       const response = await api.get('/api/branch');
-      console.log(response.data);
       const branches = response.data.map(branch => branch.campusName);
       return branches;
     } 
     catch (error) {
+      alert("Error fetching branches. Please try again later.");
       console.error("Error fetching branches:", error);
       return [];
     }
@@ -56,10 +52,6 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
       const shifts = await getShifts();
       const branches = await getBranches();
 
-      console.log("Roles:", roles);
-      console.log("Shifts:", shifts);
-      console.log("Branches:", branches);
-
       setRoles(roles);
       setShifts(shifts);
       setBranches(branches);
@@ -68,9 +60,6 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
     fetchData();
   }, []);
 
-  // const branches = ['Chennai', 'Bangalore', 'Hyderabad', 'Mumbai'];
-  // const branchData = await api.get('/api/branch');
-  // console.log(branchData)
   const [roles, setRoles] = useState([]);
   const [shifts, setShifts] = useState([]);
   const [branches, setBranches] = useState([]);
@@ -103,16 +92,25 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
 
   const handleSubmit = async () => {
     if (isFormValid) {
-
-      await api.post('/api/hr/accept', {
-        email: employee.email,
-        shiftStart: selectedShift.split(" (")[0],
-        shiftEnd: selectedShift.split(" - ")[1].slice(0, -1),
-        campus: selectedBranch,
-        role: selectedRole,
+      const selectedShiftData = shifts.find(shift => shift.shiftName === selectedShift);
+      try{
+        await api.post('/api/hr/accept', {
+          email: employee.email,
+          shiftStart: selectedShiftData.startTime,
+          shiftEnd: selectedShiftData.endTime,
+          campus: selectedBranch,
+          role: selectedRole,
       });
+      alert("Employee assigned successfully");
+      onSave();
+      onClose();
+      window.location.reload();
+    }
+    catch(err){
+      alert("Error assigning employee:", err);
     }
   };
+  }
 
   const filteredRoles = Object.keys(roles).filter((role) =>
     role.toLowerCase().includes(selectedRole.toLowerCase())
@@ -129,9 +127,12 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
     setManualSalary(true);
   };
 
+  const formatTime = (time) => {
+    return new Date(time).toLocaleTimeString();
+  }
+
   const isFormValid =
     selectedRole.trim() &&
-    selectedShift.trim() &&
     selectedBranch.trim() &&
     salary.toString().trim();
 
@@ -181,7 +182,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
             <select value={selectedShift} onChange={(e) => setSelectedShift(e.target.value)} required>
               <option value="" disabled hidden>Select shift</option>
               {shifts.map((shift) => (
-                <option key={shift} value={shift}>{shift}</option>
+                <option key={shift.shiftName} value={shift.shiftName}>{shift.shiftName + " (" + formatTime(shift.startTime) + " - " + formatTime(shift.endTime) + ")"}</option>
               ))}
             </select>
           </label>

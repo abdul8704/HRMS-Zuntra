@@ -24,39 +24,40 @@ export const HrOverviewLearning = () => {
 
       <style>{`
         .content-wrapper {
-          height: 75vh;
-          display: flex;
-          gap: 24px;
-        }
+  height: 75vh;
+  display: flex;
+  gap: 1.5rem;
+}
 
-        .left-side {
-          flex: 7;
-          display: flex;
-          flex-direction: column;
-        }
+.left-side {
+  flex: 7;
+  display: flex;
+  flex-direction: column;
+}
 
-        .right-side {
-          flex: 3;
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-        }
+.right-side {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
-        @media (max-width: 768px) {
-          .content-wrapper {
-            flex-direction: column;
-          }
+@media (max-width: 48rem) {
+  .content-wrapper {
+    flex-direction: column;
+  }
 
-          .left-side,
-          .right-side {
-            width: 100%;
-          }
+  .left-side,
+  .right-side {
+    width: 100%;
+  }
 
-          .right-side {
-            justify-content: center;
-            margin-top: 16px;
-          }
-        }
+  .right-side {
+    justify-content: center;
+    margin-top: 1rem;
+  }
+}
+
       `}</style>
     </div>
   );

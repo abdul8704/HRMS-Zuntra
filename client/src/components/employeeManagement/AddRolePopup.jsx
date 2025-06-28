@@ -1,4 +1,3 @@
-// --- AddRolePopup.jsx ---
 import React, { useState } from "react";
 import { EmpCourseCard } from "./EmpCourseCard";
 
@@ -14,7 +13,14 @@ const generateLightColors = () => {
 const predefinedCourses = [
   { id: 1, courseName: "React Fundamentals", authorName: "John Doe", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
   { id: 2, courseName: "Advanced Node.js", authorName: "Jane Smith", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 3, courseName: "MongoDB Mastery", authorName: "Kevin Li", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
+  { id: 3, courseName: "MongoDB Mastery", authorName: "Kevin Li", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 4, courseName: "Python for Data Science", authorName: "Emily Stone", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 5, courseName: "Machine Learning Basics", authorName: "Michael Ray", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 6, courseName: "Fullstack with MERN", authorName: "Rachel Green", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 7, courseName: "Cloud Computing 101", authorName: "Thomas Blake", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 8, courseName: "Cybersecurity Essentials", authorName: "Sophia Reed", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 9, courseName: "Kubernetes Crash Course", authorName: "James Hunt", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 10, courseName: "Next.js Deep Dive", authorName: "Lily Carter", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
 ];
 
 export const AddRolePopup = ({ onClose }) => {
@@ -27,7 +33,8 @@ export const AddRolePopup = ({ onClose }) => {
   const colors = generateLightColors();
 
   const availableCourses = predefinedCourses.filter(
-    (course) => !courseCards.find((c) => c.id === course.id) &&
+    (course) =>
+      !courseCards.find((c) => c.id === course.id) &&
       course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -51,54 +58,77 @@ export const AddRolePopup = ({ onClose }) => {
       <div className="popup-overlay">
         <div className="popup-container">
           <div className="role-color-row">
-            <input type="text" className="role-input" placeholder="Enter role" value={roleName} onChange={(e) => setRoleName(e.target.value)} />
-            <div className="main-circle" style={{ backgroundColor: roleColor }} onClick={() => setShowColors(!showColors)}></div>
+            <input
+              type="text"
+              className="role-input"
+              placeholder="Enter role"
+              value={roleName}
+              onChange={(e) => setRoleName(e.target.value)}
+            />
+            <div
+              className="main-circle"
+              style={{ backgroundColor: roleColor }}
+              onClick={() => setShowColors(!showColors)}
+            />
           </div>
 
           {showColors && (
             <div className="color-circles-container">
               {colors.map((color, idx) => (
-                <div key={idx} className="color-circle" style={{ backgroundColor: color }} onClick={() => {
-                  setRoleColor(color);
-                  setShowColors(false);
-                }} />
+                <div
+                  key={idx}
+                  className="color-circle"
+                  style={{ backgroundColor: color }}
+                  onClick={() => {
+                    setRoleColor(color);
+                    setShowColors(false);
+                  }}
+                />
               ))}
             </div>
           )}
 
-          {/* 🔽 Add Course Row */}
-          <div className="add-course-row">
-  <input
-    type="text"
-    className="course-input"
-    placeholder="Add course"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    onFocus={() => setShowDropdown(true)}
-  />
-  <div className="plus-circle" onClick={() => setShowDropdown(!showDropdown)}>+</div>
-</div>
+          {/* Exact same as EditRolePopup course box */}
+          <div className="course-box">
+            <span className="box-title">Ongoing courses...</span>
 
-
-
-
-          {/* 🔽 Dropdown */}
-          {showDropdown && (
-            <div className="dropdown-course-list">
-              <input type="text" placeholder="Search courses..." className="search-input" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-              {availableCourses.map((course) => (
-                <div key={course.id} className="dropdown-item" onClick={() => handleAddCourse(course)}>
-                  <EmpCourseCard courseName={course.courseName} authorName={course.authorName} imageUrl={course.imageUrl} onRemove={null} />
+            {showDropdown && (
+              <div className="dropdown-course-list">
+                <input
+                  type="text"
+                  placeholder="Search courses..."
+                  className="search-input"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <div className="dropdown-items-scroll">
+                  {availableCourses.map((course) => (
+                    <div key={course.id} className="dropdown-item" onClick={() => handleAddCourse(course)}>
+                      <EmpCourseCard
+                        courseName={course.courseName}
+                        authorName={course.authorName}
+                        imageUrl={course.imageUrl}
+                        onRemove={null}
+                      />
+                    </div>
+                  ))}
                 </div>
+              </div>
+            )}
+
+            <div className="course-list-wrapper">
+              {courseCards.map((course) => (
+                <EmpCourseCard
+                  key={course.id}
+                  courseName={course.courseName}
+                  authorName={course.authorName}
+                  imageUrl={course.imageUrl}
+                  onRemove={() => handleRemoveCourse(course.id)}
+                />
               ))}
             </div>
-          )}
 
-          {/* 🔽 Course cards below the row */}
-          <div className="course-list">
-            {courseCards.map((course) => (
-              <EmpCourseCard key={course.id} courseName={course.courseName} authorName={course.authorName} imageUrl={course.imageUrl} onRemove={() => handleRemoveCourse(course.id)} />
-            ))}
+            <span className="plus-circle" onClick={() => setShowDropdown(!showDropdown)}>+</span>
           </div>
 
           <div className="button-row">
@@ -110,116 +140,120 @@ export const AddRolePopup = ({ onClose }) => {
 
       <style>{`
         .popup-overlay {
-          position: fixed; inset: 0;
-          background: rgba(0,0,0,0.2);
-          display: flex; align-items: center; justify-content: center;
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.2);
+          display: flex;
+          align-items: center;
+          justify-content: center;
           z-index: 2000;
         }
 
         .popup-container {
-          background: white; border-radius: 1rem; padding: 2rem;
-          width: 95%; max-width: 700px;
-          box-shadow: 0 0 15px rgba(0,0,0,0.15);
-          display: flex; flex-direction: column; gap: 1.2rem;
+          background: white;
+          border-radius: 1rem;
+          padding: 2rem;
+          width: 95%;
+          max-width: 700px;
+          box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+          display: flex;
+          flex-direction: column;
+          gap: 1.2rem;
         }
 
         .role-color-row {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  background: transparent;
-  border-radius: 10px;
-  padding: 0; /* ✅ Remove padding to avoid misalignment */
-  position: relative;
-}
-
-
-   .add-course-row {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  background: transparent;
-  padding: 0;
-  width: 100%;
-}
-
-.course-input {
-  flex: 1;
-  padding: 0.6rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  outline: none;
-}
-
-
-
+          display: flex;
+          align-items: center;
+          gap: 0.8rem;
+        }
 
         .role-input {
-  flex: 1;
-  padding: 0.5rem 1rem; /* ✅ Inner padding like add-course-row */
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  outline: none;
-}
+          flex: 1;
+          padding: 0.5rem 1rem;
+          border-radius: 8px;
+          border: 1px solid #ccc;
+          font-size: 1rem;
+          outline: none;
+        }
 
         .main-circle {
-          width: 1.5rem; height: 1.5rem;
+          width: 1.5rem;
+          height: 1.5rem;
           border-radius: 50%;
           border: 2px solid #999;
           cursor: pointer;
         }
 
+        .color-circles-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+
+        .color-circle {
+          width: 1.5rem;
+          height: 1.5rem;
+          border-radius: 50%;
+          cursor: pointer;
+          border: 2px solid transparent;
+        }
+
+        .course-box {
+          background-color: #d9d9d9;
+          border-radius: 10px;
+          height: 18rem;
+          width: 100%;
+          position: relative;
+          padding: 2.5rem 1rem 2rem 1rem;
+          overflow-y: auto;
+        }
+
         .box-title {
+          position: absolute;
+          top: 0.8rem;
+          left: 1rem;
           font-size: 1rem;
           color: #555;
         }
 
         .plus-circle {
-  width: 1.8rem;
-  height: 1.8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  color: #333;
-  cursor: pointer;
-  transition: background 0.2s;
-}
+          position: absolute;
+          bottom: 0.8rem;
+          right: 1rem;
+          background: rgba(0, 128, 128, 0.15);
+          border-radius: 50%;
+          padding: 0.3rem 0.6rem;
+          font-size: 1rem;
+          color: #333;
+          cursor: pointer;
+        }
 
-
-
+        .course-list-wrapper {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          align-items: flex-start;
+          gap: 0.75rem;
+          margin-top: 2.5rem;
+        }
 
         .dropdown-course-list {
-  background: #ffffff;
-  border-radius: 0.8rem;
-  max-height: 12rem;
-  overflow-y: auto;
-  overflow-x: hidden;
-  width: 30%;                  /* ✅ reduce from 100% */
-  max-width: 400px;            /* ✅ optional fixed max width */
-  padding: 0.5rem;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-  position: relative;
-
-  /* Hide scrollbar */
-  scrollbar-width: none;        /* Firefox */
-  -ms-overflow-style: none;     /* IE and Edge */
-}
-
-.dropdown-course-list::-webkit-scrollbar {
-  display: none;                /* Chrome, Safari */
-}
-
-
+          position: absolute;
+          bottom: 3rem;
+          right: 1rem;
+          width: 230px;
+          background: white;
+          border-radius: 0.8rem;
+          box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          padding: 0.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+        }
 
         .search-input {
           width: 100%;
-          margin-bottom: 0.5rem;
           padding: 0.4rem;
           border: none;
           outline: none;
@@ -228,17 +262,19 @@ export const AddRolePopup = ({ onClose }) => {
           background-color: white;
         }
 
-        .dropdown-item {
-          margin: 0;
-          padding: 0;
-          width: 100%;
-          cursor: pointer;
+        .dropdown-items-scroll {
+          max-height: 8rem;
+          overflow-y: auto;
+          overflow-x: hidden;
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+          padding-left: 0.3rem;
         }
 
-        .course-list {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
-          gap: 0;
+        .dropdown-item {
+          cursor: pointer;
+          margin-bottom: 2px;
         }
 
         .button-row {
@@ -262,8 +298,8 @@ export const AddRolePopup = ({ onClose }) => {
 
         .cancel-btn:hover {
           background-color: red;
-          opacity: 0.5;
           color: white;
+          opacity: 0.6;
         }
 
         .add-btn {
@@ -274,20 +310,6 @@ export const AddRolePopup = ({ onClose }) => {
         .add-btn:hover {
           background-color: green;
           color: white;
-        }
-
-        .color-circles-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-        }
-
-        .color-circle {
-          width: 1.5rem;
-          height: 1.5rem;
-          border-radius: 50%;
-          cursor: pointer;
-          border: 2px solid transparent;
         }
       `}</style>
     </>
