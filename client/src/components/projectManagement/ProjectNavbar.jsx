@@ -18,7 +18,7 @@ const navItems = [
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="none" viewBox="0 0 18 24">
         <path fill="#000" fillOpacity=".5" fillRule="evenodd" d="m8.545 23.113-.012.002-.07.035-.02.004-.014-.004-.07-.036c-.011-.002-.02 0-.024.006l-.004.01-.017.426.005.02.01.012.103.074.015.004.012-.004.103-.073.012-.016.004-.017-.017-.425c-.002-.01-.008-.016-.016-.018Zm.263-.112-.014.002-.183.092-.01.01-.003.011.018.428.005.012.008.008.2.091c.012.003.022 0 .029-.008l.004-.014-.034-.61c-.004-.013-.01-.02-.02-.022Zm-.711.002a.02.02 0 0 0-.027.006l-.006.014-.034.61c0 .012.007.02.017.024l.015-.002.2-.092.01-.008.003-.011.018-.428-.003-.012-.01-.01-.183-.091Z" clipRule="evenodd"/>
         <path fill="#000" fillRule="evenodd" d="M0 3.07c0-.553.21-1.084.582-1.476A1.942 1.942 0 0 1 1.99.982h11.93c.527 0 1.033.22 1.406.612s.582.923.582 1.477v6.264H13.92V3.07H1.989v16.704H6.96v2.088H1.99c-.528 0-1.034-.22-1.407-.611A2.142 2.142 0 0 1 0 19.775V3.071Zm3.977 4.177c0-.277.105-.543.292-.739a.97.97 0 0 1 .703-.305h5.966c.263 0 .516.11.703.305.186.196.29.462.29.739 0 .277-.104.542-.29.738a.971.971 0 0 1-.703.306H4.972a.97.97 0 0 1-.703-.306 1.071 1.071 0 0 1-.292-.738Zm0 4.176c0-.277.105-.543.292-.738a.97.97 0 0 1 .703-.306h.994a.97.97 0 0 1 .703.306c.187.195.291.461.291.738 0 .277-.104.542-.29.738a.97.97 0 0 1-.704.306h-.994a.97.97 0 0 1-.703-.306 1.071 1.071 0 0 1-.292-.738Zm8.95 2.088c-.792 0-1.55.33-2.11.917a3.214 3.214 0 0 0-.874 2.215c0 .83.315 1.627.874 2.215.56.587 1.318.917 2.11.917.79 0 1.55-.33 2.109-.917a3.216 3.216 0 0 0 .873-2.215c0-.83-.314-1.627-.873-2.215a2.913 2.913 0 0 0-2.11-.917Zm-4.972 3.132c0-1.384.523-2.712 1.456-3.691a4.855 4.855 0 0 1 3.515-1.53c1.319 0 2.583.55 3.516 1.53a5.356 5.356 0 0 1 1.456 3.691 5.356 5.356 0 0 1-1.456 3.691 4.855 4.855 0 0 1-3.516 1.53 4.855 4.855 0 0 1-3.515-1.53 5.356 5.356 0 0 1-1.456-3.69Zm4.971-2.61c.264 0 .517.11.703.306.187.196.292.461.292.738v.522c.263 0 .516.11.703.306.186.196.29.461.29.738 0 .277-.104.543-.29.738a.971.971 0 0 1-.703.306h-.995a.971.971 0 0 1-.703-.306 1.071 1.071 0 0 1-.291-.738v-1.566c0-.277.105-.542.291-.738a.971.971 0 0 1 .703-.306Z" clipRule="evenodd"/>
-      </svg>
+      </svg>
     ),
     path: 'ongoing',
   },
@@ -26,8 +26,8 @@ const navItems = [
     label: 'Finished Projects',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="23" height="21" fill="none" viewBox="0 0 23 21">
-        <path fill="#000" fillOpacity=".5" d="m16.082 10.086 4.871-8.42 1.988 1.148-6.008 10.397-7.479-4.308-5.48 9.477h19.001v2.297H0V0h2.297v16.703l6.319-10.96 7.466 4.343Z" />
-      </svg>
+        <path fill="#000" fillOpacity=".5" d="m16.082 10.086 4.871-8.42 1.988 1.148-6.008 10.397-7.479-4.308-5.48 9.477h19.001v2.297H0V0h2.297v16.703l6.319-10.96 7.466 4.343Z" />
+      </svg>
     ),
     path: 'finished',
   },
@@ -41,6 +41,7 @@ export const ProjectNavbar = () => {
 
   const navRefs = useRef([]);
   const sliderRef = useRef(null);
+  const tabContainerRef = useRef(null); // ⬅️ NEW
 
   const activeItem = navItems.find((item) => item.path === activeNavId) || navItems[0];
 
@@ -50,19 +51,41 @@ export const ProjectNavbar = () => {
     setIsDropdownOpen(false);
   };
 
-  useEffect(() => {
+  const updateSlider = () => {
     const index = navItems.findIndex((item) => item.path === activeNavId);
     const currentTab = navRefs.current[index];
     if (currentTab && sliderRef.current) {
       sliderRef.current.style.width = `${currentTab.offsetWidth}px`;
       sliderRef.current.style.left = `${currentTab.offsetLeft}px`;
     }
+  };
+
+  useEffect(() => {
+    updateSlider();
+  }, [activeNavId]);
+
+  useEffect(() => {
+    const handleResize = () => updateSlider();
+
+    window.addEventListener("resize", handleResize);
+
+    const observer = new ResizeObserver(handleResize);
+    if (tabContainerRef.current) {
+      observer.observe(tabContainerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (tabContainerRef.current) {
+        observer.unobserve(tabContainerRef.current);
+      }
+    };
   }, [activeNavId]);
 
   return (
     <>
       <div className="project-navbar">
-        <ul className="desktop-nav">
+        <ul className="desktop-nav" ref={tabContainerRef}>
           <div className="nav-slider" ref={sliderRef}></div>
           {navItems.map((item, index) => (
             <li
@@ -135,11 +158,6 @@ export const ProjectNavbar = () => {
           background-color: rgba(0, 0, 0, 0.05);
           border-radius: 0.75rem;
         }
-          
-        // .project-navbar li.active {
-        //   background-color: rgba(0, 0, 0, 0.05);
-        //   border-radius: 0.75rem;
-        // }
 
         .project-icon {
           margin-right: 0.5rem;
@@ -170,12 +188,6 @@ export const ProjectNavbar = () => {
 
         .desktop-nav li.active {
           color: #111;
-        }
-
-        .project-icon {
-          margin-right: 0.5rem;
-          display: flex;
-          align-items: center;
         }
 
         .mobile-nav {

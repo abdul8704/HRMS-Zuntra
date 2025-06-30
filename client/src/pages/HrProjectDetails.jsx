@@ -47,7 +47,7 @@ export const HrProjectDetails = () => {
   }, [navId, navigate]);
   const aadhi={
     title:"medical survey",
-    desc: "Conduct a survey on 200 people from different families and generate a report on blood sugar levels in adults",
+    description: "Conduct a survey on 200 people from different families and generate a report on blood sugar levels in adults",
     name: "Ezhil",
     role: "researcher",
     timeLeft: "36 hours"
