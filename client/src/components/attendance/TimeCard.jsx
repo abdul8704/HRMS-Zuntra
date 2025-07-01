@@ -53,7 +53,7 @@ export const TimeCard = ({ state, time = "09:00", label, color = true }) => {
         {displayLabel && <span className="tcard-label">{displayLabel}</span>}
       </div>
 
-      <style jsx>{`
+      <style>{`
   .tcard-card-time {
     display: flex;
     flex-direction: row;

@@ -1,22 +1,23 @@
 const mongoose = require('mongoose')
 
 const rolesDetail = new mongoose.Schema({
-    role:{
+    role: {
         type: String,
-        required: true
+        required: true,
     },
-    onboardingCourses:{
-        type: [String],
-        required: true
+    onboardingCourses: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "CourseDetails",
+        required: true,
     },
     color: {
         type: String,
-        required: true
+        required: true,
     },
     baseSalary: {
         type: Number,
-        default: 0
-    }
-})
+        default: 0,
+    },
+});
 
 module.exports = mongoose.model('rolesDetails', rolesDetail)

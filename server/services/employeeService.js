@@ -85,9 +85,12 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
     const today = attendanceHelper.normalizeToUTCDate(new Date());
 
     try {
-        const shiftData = await User.findById(userid);
-        const shiftStart = new Date(shiftData.shiftStart);
-        const shiftEnd = new Date(shiftData.shiftEnd);
+        const shiftData = await User.findById(userid).populate(
+            "shift",
+            "startTime endTime"
+        );
+        const shiftStart = new Date(shiftData.shift.shiftStart);
+        const shiftEnd = new Date(shiftData.shift.shiftEnd);
 
         const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart);
         const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
@@ -221,12 +224,24 @@ const markEndOfSession = async (userid, logoutTime) => {
 };
 
 const getAllEmployees = async () => {
-    const employees = await User.find(
-        { role: { $ne: "unassigned" } },
-        { username: 1, email: 1, role: 1, shiftStart: 1, shiftEnd: 1, phoneNumber: 1, campus: 1, profilePicture: 1 }
-    );
+    const employees = await User.find({ role: { $exists: true } })
+        .select("username email role shift phoneNumber campus profilePicture")
+        .populate({
+            path: "shift",
+            select: "startTime endTime shiftName",
+        })
+        .populate({
+            path: "role",
+            select: "role", // Assuming role schema has a 'role' field
+        })
+        .populate({
+            path: "campus",
+            select: "locationName", // Adjust based on your GeoLocation schema
+        });
+
     return employees;
 };
+  
 
 module.exports = {
     getAttendanceDataByUserId,

@@ -246,7 +246,7 @@ export const EmployeeCard = ({
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
   @media (max-width: 25rem) {
     .employee-card {
       padding: 1rem !important;

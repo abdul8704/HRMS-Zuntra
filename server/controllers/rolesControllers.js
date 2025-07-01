@@ -9,6 +9,16 @@ const getAllroles = asyncHandler(async (req, res) => {
         throw new ApiError(404, 'No roles found');
 
     return res.status(200).json(roles);
+
+    // const roleSalary = {};
+    // const roleId = {};
+
+    // roles.forEach((role) => {
+    //     roleSalary[role.role] = role.baseSalary;
+    //     roleId[role.role] = role._id;
+    // });
+
+    // return res.status(200).json({ role: roleId, salary: roleSalary });
 });
 
 const getRoleDetails = asyncHandler(async (req, res) => {

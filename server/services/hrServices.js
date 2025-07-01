@@ -3,18 +3,15 @@ const UserPersonal = require('../models/userPersonal')
 const UserCourse = require('../models/userCourse')
 const attendanceHelper = require('../utils/attendanceHelper')
 
-const updateUserData = async (email, shiftStart, shiftEnd, campus, role) => {
-    const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart)
-    const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
+const updateUserData = async (email, shiftId, campusId, roleId) => {    
     
     const update = await UserCredentials.updateOne(
         { email: email },
         {
             $set: {
-                shiftStart: shiftStartTime,
-                shiftEnd: shiftEndTime,
-                campus: campus,
-                role: role,
+                shift: shiftId,
+                campus: campusId,
+                role: roleId,
             },
         }
     );
@@ -23,7 +20,7 @@ const updateUserData = async (email, shiftStart, shiftEnd, campus, role) => {
 };
 
 const getPendingUsers = async () => {
-    const users = await UserCredentials.find({ role: "unassigned" });
+    const users = await UserCredentials.find({ role: { $exists: false } });
     return users;
 }
 

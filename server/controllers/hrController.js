@@ -15,13 +15,15 @@ const addNewCampusLocation = asyncHandler(async (req, res) => {
 })
 
 const acceptUser = asyncHandler(async (req, res) => {
-    const { email, shiftStart, shiftEnd, campus, role } = req.body;
-    console.log("Accepting user with data:", req.body);
+    const { email, shiftId, campusId, roleId } = req.body;
     const userData = await authService.getUserByEmail(email);
+
     if(!userData)
         return res.status(404).json( {success:false, message:"User not found, this error should never ever never ever occur" })
 
-    await HrService.updateUserData(email, shiftStart, shiftEnd, campus, role);
+    if(!shiftId || !campusId || !roleId)
+            throw new Error("give me full data. shift, campus, role")
+    await HrService.updateUserData(email, shiftId, campusId, roleId);
     await HrService.creatUserPersonal(userData._id);
     await HrService.createUserCourse(userData._id);
     return res.status(201).json({ success: true, message: "User updated successfully" });

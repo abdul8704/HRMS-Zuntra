@@ -16,29 +16,29 @@ const userCredentialsSchema = new mongoose.Schema({
     },
     profilePicture: {
         type: String,
-        default: "https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png",
+        default:
+            "https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png",
     },
     role: {
-        type: String,
-        default: "unassigned"
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "rolesDetails",
     },
     phoneNumber: {
         type: String,
-        required: true
+        required: true,
     },
     dateJoined: {
         type: Date,
-        default: Date.now()
+        default: Date.now(),
     },
-    shiftStart: {
-        type: Date,
-    },
-    shiftEnd: {
-        type: Date,
+    shift: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Shift",
     },
     campus: {
-        type: String
-    }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "GeoLocation",
+    },
 });
 
 module.exports =
