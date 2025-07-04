@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Project = require("../models/project");
+const ApiError = require("../errors/ApiError");
 
 // @desc Get all ongoing projects
 const getAllOnGoingProjects = async () => {
@@ -7,7 +8,7 @@ const getAllOnGoingProjects = async () => {
         const projectsList = await Project.find({ status: { $eq: "Ongoing" } });
         return projectsList;
     } catch (error) {
-        throw new Error(`Failed to fetch ongoing projects:`, error.message);
+        throw new ApiError(`Failed to fetch ongoing projects:`, error.message);
     }
 };
 
@@ -19,7 +20,7 @@ const getAllFinishedProjects = async () => {
         });
         return projectsList;
     } catch (error) {
-        throw new Error(`Failed to fetch finished projects:`, error.message);
+        throw new ApiError(`Failed to fetch finished projects:`, error.message);
     }
 };
 
@@ -29,7 +30,7 @@ const getAProject = async (id) => {
         const project = await Project.findById(id);
         return project;
     } catch (error) {
-        throw new Error(`Failed to fetch project details:`, error.message);
+        throw new ApiError(`Failed to fetch project details:`, error.message);
     }
 };
 
@@ -41,7 +42,7 @@ const getAllProjectsOnDate = async (startOfDay, endOfDay) => {
         });
         return projectsList;
     } catch (error) {
-        throw new Error(`Failed to fetch projects on date:`, error.message);
+        throw new ApiError(`Failed to fetch projects on date:`, error.message);
     }
 };
 
@@ -51,7 +52,7 @@ const createNewProject = async (data) => {
         const projectData = await Project.create(data);
         return projectData;
     } catch (error) {
-        throw new Error(`Failed to create new project:`, error.message);
+        throw new ApiError(`Failed to create new project:`, error.message);
     }
 };
 

@@ -1,5 +1,6 @@
 const GeoUtils = require("../utils/geoFencing");
 const GeoLocation = require("../models/geoLocations");
+const ApiError = require("../errors/ApiError");
 
 const isWithinGeofence = async (latitude, longitude, campusId) => {
     try {
