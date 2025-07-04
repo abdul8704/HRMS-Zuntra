@@ -1,42 +1,58 @@
 const Shift = require("../models/shift");
 
 const getAllShiftsData = async () => {
-    const shiftsData = await Shift.find({});
-    return shiftsData;
+    try {
+        const shiftsData = await Shift.find({});
+        return shiftsData;
+    } catch (error) {
+        throw new Error(`Failed to fetch shifts data:`, error.message);
+    }
 };
 
 const createNewShift = async (shiftData) => {
-    await Shift.create(shiftData);
-    return { success: true, message: "Shift created successfully" };
+    try {
+        await Shift.create(shiftData);
+        return { success: true, message: "Shift created successfully" };
+    } catch (error) {
+        throw new Error(`Failed to create new shift:`, error.message);
+    }
 };
 
 const editShift = async (shiftName, updatedData) => {
-    const updatedShift = await Shift.findOneAndUpdate(
-        { shiftName: shiftName },
-        { $set: updatedData },
-        { new: true }
-    );
-
-
-    if (!updatedShift)
-        return { success: false, message: "Shift not found" };
- 
-    return { success: true, message: "Shift updated successfully", updatedShift };
+    try {
+        const updatedShift = await Shift.findOneAndUpdate(
+            { shiftName: shiftName },
+            { $set: updatedData },
+            { new: true }
+        );
+        return {
+            success: true,
+            message: "Shift updated successfully",
+            updatedShift,
+        };
+    } catch (error) {
+        throw new Error(`Failed to update shift:`, error.message);
+    }
 };
 
 const deleteShift = async (shiftName) => {
-    const deletedShift = await Shift.findOneAndDelete({ shiftName: shiftName });
+    try {
+        const deletedShift = await Shift.findOneAndDelete({
+            shiftName: shiftName,
+        });
 
-    if (!deletedShift) 
-        return { success: false, message: "Shift not found" };
+        if (!deletedShift)
+            return { success: false, message: "Shift not found" };
 
-    return { success: true, message: "Shift deleted successfully" };
+        return { success: true, message: "Shift deleted successfully" };
+    } catch (error) {
+        throw new Error(`Failed to delete shift:`, error.message);
+    }
 };
-
 
 module.exports = {
     getAllShiftsData,
     createNewShift,
     editShift,
-    deleteShift
+    deleteShift,
 };

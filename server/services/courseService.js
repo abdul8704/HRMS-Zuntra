@@ -1,11 +1,12 @@
 const courseDetails = require("../models/courseDetails");
 const courseContent = require("../models/courseContent");
-const userCourse = require("../models/userCourse")
+const userCourse = require("../models/userCourse");
 const ApiError = require("../errors/ApiError");
 
 const getAllCourseDetails = async () => {
     try {
-        const courseData = await courseDetails.find({},
+        const courseData = await courseDetails.find(
+            {},
             {
                 _id: 1,
                 courseId: 1,
@@ -14,13 +15,16 @@ const getAllCourseDetails = async () => {
                 courseInstructor: 1,
                 courseImage: 1,
                 deadline: 1,
-                deadlineUnits: 1
+                deadlineUnits: 1,
             }
         );
         return courseData;
-    }
-    catch (err) {
-        throw new ApiError(500, "Failed to fetch all course details", err.message);
+    } catch (err) {
+        throw new ApiError(
+            500,
+            "Failed to fetch all course details",
+            err.message
+        );
     }
 };
 
@@ -28,8 +32,7 @@ const getCourseIntroById = async (courseId) => {
     try {
         const courseIntro = await courseDetails.find({ courseId });
         return courseIntro;
-    }
-    catch (err) {
+    } catch (err) {
         throw new ApiError(500, "Failed to fetch course intro", err.message);
     }
 };
@@ -38,8 +41,7 @@ const getCourseContentById = async (courseId) => {
     try {
         const content = await courseContent.find({ courseId });
         return content;
-    }
-    catch (err) {
+    } catch (err) {
         throw new ApiError(500, "Failed to fetch course content", err.message);
     }
 };
@@ -48,8 +50,7 @@ const addNewCourse = async (courseData) => {
     try {
         const newCourse = await courseDetails.create(courseData);
         return newCourse;
-    }
-    catch (err) {
+    } catch (err) {
         throw new ApiError(500, "Failed to add new course", err.message);
     }
 };
@@ -58,8 +59,7 @@ const addCourseContent = async (courseContents) => {
     try {
         const newContent = await courseContent.create(courseContents);
         return newContent;
-    }
-    catch (err) {
+    } catch (err) {
         throw new ApiError(500, "Failed to add course content", err.message);
     }
 };
@@ -77,8 +77,7 @@ const updateCourseIntro = async (courseId, updateBody) => {
         }
 
         return updatedContent;
-    }
-    catch (err) {
+    } catch (err) {
         throw new ApiError(500, "Failed to update course intro", err.message);
     }
 };
@@ -96,16 +95,19 @@ const updateCourseContent = async (courseId, updateBody) => {
         }
 
         return updatedContent;
-    }
-    catch (err) {
+    } catch (err) {
         throw new ApiError(500, "Failed to update course content", err.message);
     }
 };
 
 const deleteCourse = async (courseId) => {
     try {
-        const deletedCourseIntro = await courseDetails.findOneAndDelete({ courseId });
-        const deletedCourseContent = await courseContent.findOneAndDelete({ courseId });
+        const deletedCourseIntro = await courseDetails.findOneAndDelete({
+            courseId,
+        });
+        const deletedCourseContent = await courseContent.findOneAndDelete({
+            courseId,
+        });
 
         if (!deletedCourseIntro) {
             throw new ApiError(404, "Course intro not found");
@@ -116,8 +118,7 @@ const deleteCourse = async (courseId) => {
         }
 
         return [deletedCourseIntro, deletedCourseContent];
-    }
-    catch (err) {
+    } catch (err) {
         throw new ApiError(500, "Failed to delete course content", err.message);
     }
 };
@@ -135,14 +136,10 @@ const userCourseEnroll = async (userId, courseId) => {
         await ucourse.save();
 
         return ucourse;
-    }
-    catch (err) {
+    } catch (err) {
         throw new ApiError(500, "Failed to enroll user in course", err.message);
     }
-}
-
-
-
+};
 
 module.exports = {
     addNewCourse,
@@ -153,5 +150,5 @@ module.exports = {
     updateCourseIntro,
     updateCourseContent,
     deleteCourse,
-    userCourseEnroll
+    userCourseEnroll,
 };

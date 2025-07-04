@@ -1,41 +1,60 @@
 const Role = require("../models/roles");
 // Get all roles
 const getAllRolesData = async () => {
-    const rolesData = await Role.find({});
-    return rolesData;
+    try {
+        const rolesData = await Role.find({});
+        return rolesData;
+    } catch (error) {
+        throw new Error(`Failed to fetch roles data: ${error.message}`);
+    }
 };
 
 //@desc Get role details by role name
 const getRoleDetailsByName = async (roleName) => {
-    const roleDetail = await Role.findOne({ role: roleName });
-    return roleDetail;
+    try {
+        const roleDetail = await Role.findOne({ role: roleName });
+        return roleDetail;
+    } catch (error) {
+        throw new Error(`Failed to fetch role details: ${error.message}`);
+    }
 };
 
 const createNewRole = async (roleData) => {
-    await Role.create(roleData);
-    return { sucess: true, message: "done" };
+    try {
+        await Role.create(roleData);
+        return { success: true, message: "done" };
+    } catch (error) {
+        throw new Error(`Failed to create new role: ${error.message}`);
+    }
 };
 
 const editRole = async (roleName, updatedData) => {
-    const updatedRole = await Role.findOneAndUpdate(
-        { role: roleName },
-        { $set: updatedData },
-        { new: true }
-    );
-
-    if (!updatedRole) 
-        return { success: false, message: "Role not found" };
-    
-    return { success: true, message: "Role updated successfully", updatedRole };
+    try {
+        const updatedRole = await Role.findOneAndUpdate(
+            { role: roleName },
+            { $set: updatedData },
+            { new: true }
+        );
+        return {
+            success: true,
+            message: "Role updated successfully",
+            updatedRole,
+        };
+    } catch (error) {
+        throw new Error(`Failed to update role: ${error.message}`);
+    }
 };
 
 const deleteRole = async (roleName) => {
-    const deletedRole = await Role.findOneAndDelete({ role: roleName });
-    
-    if (!deletedRole) 
-        return { success: false, message: "Role not found" };
-    
-    return { success: true, message: "Role deleted successfully" };
+    try {
+        const deletedRole = await Role.findOneAndDelete({ role: roleName });
+        if (!deletedRole) {
+            return { success: false, message: "Role not found" };
+        }
+        return { success: true, message: "Role deleted successfully" };
+    } catch (error) {
+        throw new Error(`Failed to delete role: ${error.message}`);
+    }
 };
 
 module.exports = {
@@ -44,4 +63,4 @@ module.exports = {
     createNewRole,
     editRole,
     deleteRole,
-}
+};

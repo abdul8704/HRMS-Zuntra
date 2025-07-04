@@ -52,6 +52,7 @@ export const HrEmployeeManagement = () => {
 
         const pending = await fetchPendingEmployees();
         setPendingEmployees(pending);
+
       } catch (err) {
         console.error("Error fetching employees:", err);
       }
@@ -85,7 +86,6 @@ export const HrEmployeeManagement = () => {
     }
     return gridColors;
   };
-
   const columns = 3;
   const bgColorList = getGridBgColors(employees.length, columns, bgClasses);
 
