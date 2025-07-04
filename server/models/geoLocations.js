@@ -23,4 +23,6 @@ const geoLocationSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('GeoLocation', geoLocationSchema);
+const geoLocationModel = mongoose.model('GeoLocation', geoLocationSchema);
+
+module.exports = geoLocationModel;
