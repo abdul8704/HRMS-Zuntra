@@ -120,7 +120,7 @@ export const DashBoard = () => {
             background-color: #DECEB9;
             border-radius: 20px;
           }
-          .reminder {
+          .remainder {
             grid-column: 1/6;
             grid-row: 4/7;
             background-color: #BFBFF7;
