@@ -1,4 +1,4 @@
-const GeoLocation = require("../models/geoLocations")
+-
 const GeoUtils = require('../utils/geoFencing')
 
 const isWithinGeofence = async (latitude, longitude, campusName) => {
