@@ -17,7 +17,19 @@ const toRad = (degree) => {
     return degree * (Math.PI / 180);
 }
 
-module.exports = {
-    getDistanceFromLatLon
+function extractLatLngFromEmbed(url) {
+    const match = url.match(/!2d(-?\d+\.\d+)!3d(-?\d+\.\d+)/);
+    if (match) {
+        const lng = parseFloat(match[1]);
+        const lat = parseFloat(match[2]);
+        return { lat, lng };
+    }
+    return null;
 }
+
+
+module.exports = {
+    getDistanceFromLatLon,
+    extractLatLngFromEmbed,
+};
 

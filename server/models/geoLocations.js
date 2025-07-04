@@ -17,7 +17,7 @@ const geoLocationSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    embedUrl:{
+    embedURL:{
         type: String,
         required: true
     }

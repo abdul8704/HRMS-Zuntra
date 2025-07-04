@@ -23,16 +23,24 @@ const isWithinGeofence = async (latitude, longitude, campusId) => {
 
 const addNewCampusLocation = async (
     campusName,
-    latitude,
-    longitude,
+    embedURL,
     radius
 ) => {
     try {
+        const { lat, lng } = GeoUtils.extractLatLngFromEmbed(embedURL);
+
+        if (!lat || !lng)
+            throw new ApiError(
+                400,
+                "Unable to extract latitude and longitude from the provided embed URL"
+            );
+
         const newLocation = new GeoLocation({
-            latitude: latitude,
-            longitude: longitude,
+            embedURL: embedURL,
             campusName: campusName,
             radius: radius,
+            latitude: lat,
+            longitude: lng,
         });
         await newLocation.save();
         return newLocation;
@@ -47,7 +55,7 @@ const addNewCampusLocation = async (
 
 const getAllCampusLocations = async () => {
     try {
-        const locations = await GeoLocation.find({});
+        const locations = await GeoLocation.find({}, { campusName: 1, embedURL: 1, _id: 0 });
         return locations;
     } catch (error) {
         throw new ApiError(

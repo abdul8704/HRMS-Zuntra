@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 
 export const AddLocationForm = ({ isOpen = false, onClose = () => { }, onSubmit = () => { } }) => {
   const [formData, setFormData] = useState({
-    branchName: '',
-    address: '',
+    campusName: '',
+    embedURL: '',
     radius: ''
   });
 
   const [formErrors, setFormErrors] = useState({
-    branchName: '',
-    address: '',
+    campusName: '',
+    embedURL: '',
     radius: ''
   });
 
@@ -26,24 +26,24 @@ export const AddLocationForm = ({ isOpen = false, onClose = () => { }, onSubmit 
   };
 
   const handleAdd = () => {
-    const { branchName, address, radius } = formData;
+    const { campusName, embedURL, radius } = formData;
     const errors = {
-      branchName: '',
-      address: '',
+      campusName: '',
+      embedURL: '',
       radius: ''
     };
 
     let isValid = true;
 
-    if (!branchName.trim()) {
-      errors.branchName = 'Branch name is required.';
+    if (!campusName.trim()) {
+      errors.campusName = 'Branch name is required.';
       isValid = false;
     }
-    if (!address.trim()) {
-      errors.address = 'Address is required.';
+    if (!embedURL.trim()) {
+      errors.embedURL = 'Address is required.';
       isValid = false;
-    } else if (!address.startsWith('https://www.google.com/maps/embed?')) {
-      errors.address = 'Address must be a valid Google Maps embed URL.';
+    } else if (!embedURL.startsWith('https://www.google.com/maps/embed?')) {
+      errors.embedURL = 'Address must be a valid Google Maps embed URL.';
       isValid = false;
     }
 
@@ -83,28 +83,28 @@ export const AddLocationForm = ({ isOpen = false, onClose = () => { }, onSubmit 
               <div>
                 <input
                   type="text"
-                  placeholder="Enter branch name"
-                  value={formData.branchName}
-                  onChange={(e) => handleInputChange('branchName', e.target.value)}
+                  placeholder="Enter campus name"
+                  value={formData.campusName}
+                  onChange={(e) => handleInputChange('campusName', e.target.value)}
                   className="add-loc-input"
                 />
-                {formErrors.branchName && <p className="add-loc-error-text">{formErrors.branchName}</p>}
+                {formErrors.campusName && <p className="add-loc-error-text">{formErrors.campusName}</p>}
               </div>
 
               <div>
                 <input
                   type="text"
                   placeholder="Enter address URL"
-                  value={formData.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  value={formData.embedURL}
+                  onChange={(e) => handleInputChange('embedURL', e.target.value)}
                   className="add-loc-input"
                 />
-                {formErrors.address && <p className="add-loc-error-text">{formErrors.address}</p>}
+                {formErrors.embedURL && <p className="add-loc-error-text">{formErrors.embedURL}</p>}
               </div>
 
               <div>
                 <input
-                  type="text"
+                  type="Number"
                   placeholder="Enter radius (in meters)"
                   value={formData.radius}
                   onChange={(e) => handleInputChange('radius', e.target.value)}
