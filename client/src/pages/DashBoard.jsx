@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { Sidebar } from "../components/Sidebar";
-import { ProjectDeadline } from "../components/projectManagement/ProjectDeadline";
-import { UserGreetings } from "../components/projectManagement/UserGreetings";
-import { TimeCard } from "../components/attendance/TimeCard";
 import { jwtDecode } from 'jwt-decode';
-import { Remainder } from '../components/Remainder';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
-  const userDetails = jwtDecode(token);
+  const userDetails = jwtDecode(token); // Make sure token contains name & profileImageURL
   const [showReminderForm, setShowReminderForm] = useState(false);
   const [reminderText, setReminderText] = useState('');
   const [reminderDate, setReminderDate] = useState('');
+
+  const motivationalQuotes = [
+    "Hope you make the most of your time today!",
+    "Wishing you a day where every minute counts!",
+    "May your productivity flow effortlessly today!",
+    "Hope you stay focused and purpose-driven today!",
+    "Wishing you the discipline to turn goals into achievements!",
+    "Start strong and stick to your plan today!",
+    "Wishing you the kind of success that comes from deep focus!",
+    "Hope you invest your time wisely and feel proud at the end of the day!",
+    "Don't just count the hours — make them amazing!",
+    "May your day be full of plans that work and work that matters!"
+  ];
+  const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
 
   const toggleReminderForm = () => {
     setReminderText('');
@@ -20,216 +30,82 @@ export const DashBoard = () => {
   };
 
   return (
-    <>
-      <div className="website-container">
-        <Sidebar />
-        <div className="website-module">
-          <div className='dash-grid'>
-            <div className='greetings'>
-              <UserGreetings name={userDetails.username} profileImageURL={userDetails.profilePicture} />
-            </div>
-            <div className='intime'>
-              <TimeCard state="in" time={"9:20"} />
-            </div>
-            <div className='worktime'>
-              <TimeCard state="work" time={"9:20"} />
-            </div>
-            <div className='outtime'>
-              <TimeCard state="out" time={"9:20"} />
-            </div>
-            <div className='breaktime'>
-              <TimeCard state="break" time={"9:20"} />
-            </div>
-            <div className='remainder'>
-              <Remainder onAddReminder={toggleReminderForm} />
-              {showReminderForm && (
-                <div className="remainder-popup-overlay">
-                  <div className="remainder-popup-container">
-                    <h2 className="remainder-popup-title">Add New Reminder</h2>
+    <div className="flex min-h-screen">
+      <Sidebar />
 
-                    <input
-                      type="text"
-                      placeholder="Reminder"
-                      value={reminderText}
-                      onChange={(e) => setReminderText(e.target.value)}
-                      className="remainder-popup-input"
-                    />
+      <div className="flex-1 overflow-y-auto">
+        <div className="grid grid-cols-2 md:grid-cols-9 md:grid-rows-9 lg:grid-cols-9 lg:grid-rows-9 gap-[1rem] h-screen p-[1rem]">
 
-                    <input
-                      type="date"
-                      value={reminderDate}
-                      onChange={(e) => setReminderDate(e.target.value)}
-                      className="remainder-popup-input"
-                    />
+          {/* 1. UserGreetings (inlined)  bg-[#9e9b9b] */}
+          <div className="col-span-2 md:col-span-4 lg:col-span-4 md:row-span-1 rounded-2xl px-[0.4rem] flex items-center animate-fade-in overflow-hidden h-full w-full">
+            {/* Left (70%): Welcome Message + Quote */}
+            <div className="w-[85%] flex flex-col justify-center h-full overflow-hidden">
+              <p className="text-[#000] font-bold text-[1em] text-center">Greetings {userDetails.username}!</p>
+              <marquee className="text-[#000] opacity-[0.5] font-semibold text-[1rem]" behavior="scroll" direction="left">
+                {quote}
+              </marquee>
+            </div>
 
-                    <div className="remainder-popup-actions">
-                      <button className="remainder-popup-btn add" >Add</button>
-                      <button className="remainder-popup-btn cancel" onClick={() => setShowReminderForm(false)}>Cancel</button>
-                    </div>
-                  </div>
-                </div>
-              )}
+            {/* Right (30%): Profile Picture */}
+            <div className="w-[15%] flex justify-end items-center">
+              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md shrink-0">
+                <img
+                  src={userDetails.profilePicture || '/default-profile.png'}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
-            <div className='workbreak'>Work Break Composition</div>
-            <div className='deadline'>
-              <ProjectDeadline />
-            </div>
-            <div className='notification'>Notification</div>
-            <div className='leave'>Employee on Leave</div>
           </div>
+
+
+          {/* 2. TimeCard In */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-2 md:row-span-1 rounded-2xl bg-[#c0e8bc] flex items-center justify-center">
+            <span className="text-gray-800">Time In</span>
+          </div>
+
+          {/* 3. TimeCard Out */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-2 md:col-start-1 md:row-start-3 md:row-span-1 rounded-2xl bg-[#c3e4ee] flex items-center justify-center">
+            <span className="text-gray-800">Time Out</span>
+          </div>
+
+          {/* 4. TimeCard Work */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-2 md:col-start-3 md:row-span-1 rounded-2xl bg-[#e1bec5] flex items-center justify-center">
+            <span className="text-gray-800">Work Time</span>
+          </div>
+
+          {/* 5. TimeCard Break */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-2 md:col-start-3 md:row-start-3 md:row-span-1 rounded-2xl bg-[#deceb9] flex items-center justify-center">
+            <span className="text-gray-800">Break Time</span>
+          </div>
+
+          {/* 6. Project Deadline */}
+          <div className="col-span-2 md:col-span-5 lg:col-span-5 md:col-start-5 md:row-start-1 md:row-span-3 rounded-2xl bg-[#f2c3b9] flex items-center justify-center">
+            <span className="text-gray-800">Project Deadlines</span>
+          </div>
+
+          {/* 7. Reminders */}
+          <div className="col-span-2 md:col-span-5 lg:col-span-5 md:col-start-1 md:row-start-4 md:row-span-3 rounded-2xl bg-[#bfbff7] flex items-center justify-center">
+            <span className="text-gray-800">Reminders</span>
+          </div>
+
+          {/* 8. Notifications */}
+          <div className="col-span-2 md:col-span-4 lg:col-span-4 md:col-start-6 md:row-start-4 md:row-span-3 rounded-2xl bg-[#f6e0bf] flex items-center justify-center">
+            <span className="text-gray-800">Notifications</span>
+          </div>
+
+          {/* 9. Work Break Stats */}
+          <div className="col-span-2 md:col-span-3 lg:col-span-3 md:col-start-1 md:row-start-7 md:row-span-3 rounded-2xl bg-[#ddb3dd] flex items-center justify-center">
+            <span className="text-gray-800">Work Break Stats</span>
+          </div>
+
+          {/* 10. Employees on Leave */}
+          <div className="col-span-2 md:col-span-6 lg:col-span-6 md:col-start-4 md:row-start-7 md:row-span-3 rounded-2xl bg-[#adc0da] flex items-center justify-center">
+            <span className="text-gray-800">Employees on Leave</span>
+          </div>
+
         </div>
       </div>
-
-      <style>
-        {`
-          .dash-grid {
-            display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            grid-template-rows: repeat(9, 1fr);
-            place-content: center;
-            gap: 1rem;
-            width: 100%;
-            height: 100%;
-          }
-          .greetings {
-            grid-column: 1/5;
-            grid-row: 1/2;
-            border-radius: 20px;
-          }
-          .intime {
-            grid-column: 1/3;
-            grid-row: 2/3;
-            background-color: #C1E8BD;
-            border-radius: 20px;
-          }
-          .outtime {
-            grid-column: 1/3;
-            grid-row: 3/4;
-            background-color: #E1BEC5;
-            border-radius: 20px;
-          }
-          .worktime {
-            grid-column: 3/5;
-            grid-row: 2/3;
-            background-color: #C3E4EE;
-            border-radius: 20px;
-          }
-          .breaktime {
-            grid-column: 3/5;
-            grid-row: 3/4;
-            background-color: #DECEB9;
-            border-radius: 20px;
-          }
-          .remainder {
-            grid-column: 1/6;
-            grid-row: 4/7;
-            background-color: #BFBFF7;
-            border-radius: 20px;
-          }
-          .workbreak {
-            grid-column: 1/4;
-            grid-row: 7/10;
-            background-color: #DDB3DD;
-            border-radius: 20px;
-          }
-          .deadline {
-            grid-column: 5/10;
-            grid-row: 1/4;
-            background-color: #F2C3B9;
-            border-radius: 20px;
-          }
-          .notification {
-            grid-column: 6/10;
-            grid-row: 4/7;
-            background-color: #F6E0BF;
-            border-radius: 20px;
-          }
-          .leave {
-            grid-column: 4/10;
-            grid-row: 7/10;
-            background-color: #ADC0DA;
-            border-radius: 20px;
-          }
-          .greetings,
-          .workbreak,
-          .deadline,
-          .notification,
-          .leave {
-            padding: 1rem;
-          }
-                    .remainder-popup-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-color: rgba(0,0,0,0.5);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 999;
-        }
-
-        .remainder-popup-container {
-          background: #ffffff;
-          padding: 2rem;
-          border-radius: 12px;
-          width: 100%;
-          max-width: 400px;
-          box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .remainder-popup-title {
-          margin: 0;
-          font-size: 1.5rem;
-          font-weight: 600;
-          color: #1f2937;
-        }
-
-        .remainder-popup-input {
-          padding: 0.5rem 0.75rem;
-          border: 1px solid #d1d5db;
-          border-radius: 8px;
-          font-size: 1rem;
-        }
-
-        .remainder-popup-actions {
-          display: flex;
-          justify-content: flex-end;
-          gap: 0.5rem;
-        }
-
-        .remainder-popup-btn {
-          padding: 0.5rem 1rem;
-          border: none;
-          border-radius: 6px;
-          font-size: 1rem;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-        }
-
-        .remainder-popup-btn.add {
-          background-color: #3b82f6;
-          color: white;
-        }
-
-        .remainder-popup-btn.add:hover {
-          background-color: #2563eb;
-        }
-
-        .remainder-popup-btn.cancel {
-          background-color: #e5e7eb;
-          color: #111827;
-        }
-
-        .remainder-popup-btn.cancel:hover {
-          background-color: #d1d5db;
-        }
-        `}
-      </style>
-    </>
+    </div>
   );
 };
