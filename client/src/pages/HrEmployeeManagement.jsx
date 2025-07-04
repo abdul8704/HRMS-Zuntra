@@ -10,6 +10,23 @@ import { useParams } from 'react-router-dom';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
 import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
+import { useEffect } from 'react';
+import api from '../api/axios';
+
+const fetchPendingEmployees = async () => {
+  const response = await api.get('/api/hr/pending');
+  return response.data.data;
+};
+
+const fetchEmployees = async () => {
+  const response = await api.get('/api/employee');
+  return response.data.employees;
+}
+
+const fetchAllRoles = async () => {
+  const response = await api.get('/api/roles');
+  return response.data.roles;
+};
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
@@ -20,12 +37,35 @@ export const HrEmployeeManagement = () => {
   const [showLocationForm, setShowLocationForm] = useState(false);
   const [editRoleData, setEditRoleData] = useState(null);
 
+  const [pendingEmployees, setPendingEmployees] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [rolesData, setRolesData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const roles = await fetchAllRoles();
+        setRolesData(roles);
+
+        const allEmployees = await fetchEmployees();
+        setEmployees(allEmployees);
+
+        const pending = await fetchPendingEmployees();
+        setPendingEmployees(pending);
+      } catch (err) {
+        console.error("Error fetching employees:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+  
+
   const handleEditRole = (roleData) => {
     setEditRoleData(roleData);
   };
 
   const handleSaveEditedRole = (newData) => {
-    console.log("Updated Role:", newData);
     setEditRoleData(null);
   };
 
@@ -34,33 +74,6 @@ export const HrEmployeeManagement = () => {
   };
 
   const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
-
-  const employees = [
-    { name: "John Joseph  ounmb liipuibipbip jhiuhih niu", email: "john@zuntramnl/nkn,ml.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
-    { name: "Nisha Mehra", email: "nisha@zuntra.com", phone: "+91 9123456780", date: "12-06-2025", image: "https://randomuser.me/api/portraits/women/68.jpg" },
-    { name: "Ishita T", email: "ishita.t@zuntra.com", phone: "+91 9080706050", date: "10-06-2025", image: "https://randomuser.me/api/portraits/women/21.jpg" },
-    { name: "Ravi Kumar", email: "ravi.kumar@zuntra.com", phone: "+91 8899776655", date: "13-06-2025", image: "https://randomuser.me/api/portraits/men/30.jpg" },
-    { name: "Sneha Reddy", email: "sneha.r@zuntra.com", phone: "+91 7776665554", date: "14-06-2025", image: "https://randomuser.me/api/portraits/women/44.jpg" },
-    { name: "Karan J", email: "karan.j@zuntra.com", phone: "+91 9871234560", date: "06-06-2025", image: "https://randomuser.me/api/portraits/men/54.jpg" },
-    { name: "Ananya D", email: "ananya.d@zuntra.com", phone: "+91 9988123456", date: "07-06-2025", image: "https://randomuser.me/api/portraits/women/90.jpg" },
-    { name: "Siddharth P", email: "sid.p@zuntra.com", phone: "+91 9612347850", date: "15-06-2025", image: "https://randomuser.me/api/portraits/men/39.jpg" },
-    { name: "Meera V", email: "meera.v@zuntra.com", phone: "+91 9765432100", date: "16-06-2025", image: "https://randomuser.me/api/portraits/women/65.jpg" },
-    { name: "Rajeev S", email: "rajeev.s@zuntra.com", phone: "+91 8123456789", date: "17-06-2025", image: "https://randomuser.me/api/portraits/men/47.jpg" },
-    { name: "Harsha K", email: "harsha.k@zuntra.com", phone: "+91 9345678901", date: "18-06-2025", image: "https://randomuser.me/api/portraits/women/50.jpg" },
-    { name: "Avinash T", email: "avinash.t@zuntra.com", phone: "+91 7890654321", date: "19-06-2025", image: "https://randomuser.me/api/portraits/men/15.jpg" },
-    { name: "John Joseph", email: "john@zuntra.com", phone: "+91 1234567890", date: "10-06-2025", image: "https://randomuser.me/api/portraits/men/75.jpg" },
-    { name: "Nisha Mehra", email: "nisha@zuntra.com", phone: "+91 9123456780", date: "12-06-2025", image: "https://randomuser.me/api/portraits/women/68.jpg" },
-    { name: "Ishita T", email: "ishita.t@zuntra.com", phone: "+91 9080706050", date: "10-06-2025", image: "https://randomuser.me/api/portraits/women/21.jpg" },
-    { name: "Ravi Kumar", email: "ravi.kumar@zuntra.com", phone: "+91 8899776655", date: "13-06-2025", image: "https://randomuser.me/api/portraits/men/30.jpg" },
-    { name: "Sneha Reddy", email: "sneha.r@zuntra.com", phone: "+91 7776665554", date: "14-06-2025", image: "https://randomuser.me/api/portraits/women/44.jpg" },
-    { name: "Karan J", email: "karan.j@zuntra.com", phone: "+91 9871234560", date: "06-06-2025", image: "https://randomuser.me/api/portraits/men/54.jpg" },
-    { name: "Ananya D", email: "ananya.d@zuntra.com", phone: "+91 9988123456", date: "07-06-2025", image: "https://randomuser.me/api/portraits/women/90.jpg" },
-    { name: "Siddharth P", email: "sid.p@zuntra.com", phone: "+91 9612347850", date: "15-06-2025", image: "https://randomuser.me/api/portraits/men/39.jpg" },
-    { name: "Meera V", email: "meera.v@zuntra.com", phone: "+91 9765432100", date: "16-06-2025", image: "https://randomuser.me/api/portraits/women/65.jpg" },
-    { name: "Rajeev S", email: "rajeev.s@zuntra.com", phone: "+91 8123456789", date: "17-06-2025", image: "https://randomuser.me/api/portraits/men/47.jpg" },
-    { name: "Harsha K", email: "harsha.k@zuntra.com", phone: "+91 9345678901", date: "18-06-2025", image: "https://randomuser.me/api/portraits/women/50.jpg" },
-    { name: "Avinash T", email: "avinash.t@zuntra.com", phone: "+91 7890654321", date: "19-06-2025", image: "https://randomuser.me/api/portraits/men/15.jpg" },
-  ];
 
   const getGridBgColors = (itemsLength, columns, colors) => {
     const gridColors = [];
@@ -79,7 +92,7 @@ export const HrEmployeeManagement = () => {
   const locations = [
     {
       branchName: "Perungudi",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.2300795125925!2d80.24268317484109!3d12.957124087356895!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525d2313e5fa83%3A0x86751fde2142c085!2sZuntra%20Digital%20Private%20Limited!5e0!3m2!1sen!2sin!4v1750855923184!5m2!1sen!2sin"
+      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.230079512601!2d80.24268317507622!3d12.95712408735691!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525d2313e5fa83%3A0x86751fde2142c085!2sZuntra%20Digital%20Private%20Limited!5e0!3m2!1sen!2sin!4v1751014087167!5m2!1sen!2sin"
     },
     {
       branchName: "Selaiyur",
@@ -127,7 +140,6 @@ export const HrEmployeeManagement = () => {
   };
 
   const handleSaveAssignment = (data) => {
-    console.log("Saved assignment:", data);
     setShowAssignPopup(false);
     setSelectedEmployee(null);
   };
@@ -148,11 +160,11 @@ export const HrEmployeeManagement = () => {
             {employees.map((emp, index) => (
               <EmployeeCard
                 key={index}
-                name={emp.name}
+                name={emp.username}
                 email={emp.email}
-                phone={emp.phone}
-                image={emp.image}
-                role="UI/UX Designer"
+                phone={emp.phoneNumber}
+                image={emp.profilePicture}
+                role= {emp.role.role}
                 inTime="10:00"
                 outTime="16:00"
                 workTime="10:01"
@@ -219,7 +231,7 @@ export const HrEmployeeManagement = () => {
         {navId === "newusers" && (
           <div className="newusers-scroll-wrapper">
             <div className="newusers-container">
-              {employees.map((emp, index) => (
+              {pendingEmployees.map((emp, index) => (
                 <EmpCard
                   key={index}
                   name={emp.name}
@@ -242,6 +254,7 @@ export const HrEmployeeManagement = () => {
       {showAssignPopup && selectedEmployee && (
         <div className="popup-overlay">
           <EmpAssignmentPopUp
+            email={selectedEmployee.email}
             employee={selectedEmployee}
             isOpen={true}
             onClose={handleClosePopup}

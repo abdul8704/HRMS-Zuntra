@@ -1,7 +1,10 @@
 const UserCredentials = require("../models/userCredentials");
 
 const getAllUserDetails = async () => {
-    const userData = await UserDetails.find({});
+    const userData = await UserDetails.find({}).populate({
+        path: "role",
+        select: "role -_id", // customize as needed
+    });
     return userData;
 };
 

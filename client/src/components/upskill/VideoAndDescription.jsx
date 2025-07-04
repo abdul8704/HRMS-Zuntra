@@ -50,53 +50,54 @@ export const VideoAndDescriptionContainer = () => {
 
       <style>{`
         .video-desc-wrapper {
-          width: 100%;
-          height: 900px;
-          background-color: #ffffff;
-          border-radius: 12px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          overflow-y: auto;
-          display: flex;
-          flex-direction: column;
-          padding: 20px;
-          gap: 20px;
-        }
+  width: 100%;
+  height: 56.25rem;
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  gap: 1.25rem;
+}
 
-        .video-element {
-          width: 100%;
-          height: 90%;
-          object-fit: cover;
-          border-radius: 12px;
-        }
+.video-element {
+  width: 100%;
+  height: 90%;
+  object-fit: cover;
+  border-radius: 0.75rem;
+}
 
-        .description-box {
-          height: 50%;
-          padding: 16px;
-          background: #f9fafb;
-          border-radius: 8px;
-        }
+.description-box {
+  height: 50%;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+}
 
-        .desc-title {
-          font-size: 18px;
-          font-weight: 600;
-          color: #111827;
-          margin-bottom: 8px;
-        }
+.desc-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
 
-        .desc-text {
-          font-size: 14px;
-          line-height: 1.6;
-          color: #374151;
-        }
+.desc-text {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #374151;
+}
 
-        .video-desc-wrapper::-webkit-scrollbar {
-          width: 8px;
-        }
+.video-desc-wrapper::-webkit-scrollbar {
+  width: 0.5rem;
+}
 
-        .video-desc-wrapper::-webkit-scrollbar-thumb {
-          background-color: #cbd5e1;
-          border-radius: 6px;
-        }
+.video-desc-wrapper::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 0.375rem;
+}
+
       `}</style>
     </div>
   );
