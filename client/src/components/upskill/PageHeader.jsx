@@ -18,59 +18,58 @@ export const PageHeader = () => {
 
       <style>{`
         .intro-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          background-color: #bbd3cc;
-          padding: 1rem;
-          border-radius: 10px;
-          margin-bottom: 2rem;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #bbd3cc;
+  padding: 1rem;
+  border-radius: 0.625rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 0.125rem 0.375rem rgba(0,0,0,0.1);
+}
 
-        .text-center {
-          flex-grow: 1;
-          text-align: center;
-        }
+.text-center {
+  flex-grow: 1;
+  text-align: center;
+}
 
-        .title {
-          margin: 0;
-          font-size: 20px;
-          font-weight: 600;
-          color: #111827;
-        }
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
 
-        .instructor {
-          margin: 4px 0 0;
-          font-size: 14px;
-          color: #1f2937;
-        }
+.instructor {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: #1f2937;
+}
 
-        .right-half-rect {
-          border: 3px solid #1f2937;
-          border-right: none;
-          border-radius: 8px 0px 0px 8px;
-          height: 42px;
-          width: 36px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
+.right-half-rect {
+  border: 0.1875rem solid #1f2937;
+  border-right: none;
+  border-radius: 0.5rem 0rem 0rem 0.5rem;
+  height: 2.625rem;
+  width: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-        .arrow {
-          font-size: 43px;
-          font-weight: 700;
-          color: #1f2937;
-          width:25px;
-          display: flex;
-          justify-content: left;
-          align-items: center;
-          transform: translateX(-10px);
-          margin-left: 20px;
-          margin-top: -8px;
-          
+.arrow {
+  font-size: 2.6875rem;
+  font-weight: 700;
+  color: #1f2937;
+  width: 1.5625rem;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  transform: translateX(-0.625rem);
+  margin-left: 1.25rem;
+  margin-top: -0.5rem;
+}
 
-          }
       `}</style>
     </div>
   );

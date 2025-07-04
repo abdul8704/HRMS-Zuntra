@@ -1,8 +1,8 @@
-const GeoLocation = require("../models/geoLocations")
+-
 const GeoUtils = require('../utils/geoFencing')
 
-const isWithinGeofence = async (latitude, longitude, campusName) => {
-    const geofence = await GeoLocation.findOne({ campusName: campusName });
+const isWithinGeofence = async (latitude, longitude, campusId) => {
+    const geofence = await GeoLocation.findById(campusId);
     const distance = GeoUtils.getDistanceFromLatLon(latitude, longitude, geofence.latitude, geofence.longitude);
     return distance <= geofence.radius;
 };
@@ -18,7 +18,13 @@ const addNewCampusLocation = async (campusName, latitude, longitude, radius) => 
     return newLocation;
 };
 
+const getAllCampusLocations = async () => {
+    const locations = await GeoLocation.find({});
+    return locations;
+};
+
 module.exports = { 
     isWithinGeofence, 
-    addNewCampusLocation 
+    addNewCampusLocation,
+    getAllCampusLocations
 };
