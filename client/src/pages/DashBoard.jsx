@@ -4,7 +4,7 @@ import { ProjectDeadline } from "../components/projectManagement/ProjectDeadline
 import { UserGreetings } from "../components/projectManagement/UserGreetings";
 import { TimeCard } from "../components/attendance/TimeCard";
 import { jwtDecode } from 'jwt-decode';
-
+import { ReminderCard } from "../components/projectManagement/ReminderCard";
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
   const userDetails = jwtDecode(token);
@@ -30,7 +30,9 @@ export const DashBoard = () => {
             <div className='breaktime'>
               <TimeCard state="break" time={"9:20"} />
             </div>
-            <div className='remainder'>Remainder</div>
+            <div className="reminder">
+              <ReminderCard />
+            </div>
             <div className='workbreak'>Work Break Composition</div>
             <div className='deadline'>
               <ProjectDeadline />
@@ -81,7 +83,7 @@ export const DashBoard = () => {
             background-color: #DECEB9;
             border-radius: 20px;
           }
-          .remainder {
+          .reminder {
             grid-column: 1/6;
             grid-row: 4/7;
             background-color: #BFBFF7;
@@ -112,12 +114,14 @@ export const DashBoard = () => {
             border-radius: 20px;
           }
           .greetings,
-          .remainder,
-          .workbreak,
-          .deadline,
-          .notification,
-          .leave {
-            padding: 1rem;
+.reminder,
+.workbreak,
+.deadline,
+.notification,
+.leave {
+  padding: 1rem;
+}
+
           }
         `}
       </style>
