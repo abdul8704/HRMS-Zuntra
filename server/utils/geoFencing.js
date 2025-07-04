@@ -17,7 +17,7 @@ const toRad = (degree) => {
     return degree * (Math.PI / 180);
 }
 
-function extractLatLngFromEmbed(url) {
+const extractLatLngFromEmbed = (url) => {
     const match = url.match(/!2d(-?\d+\.\d+)!3d(-?\d+\.\d+)/);
     if (match) {
         const lng = parseFloat(match[1]);
