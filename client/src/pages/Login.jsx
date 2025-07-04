@@ -61,7 +61,9 @@ export const Login = () => {
           }
           else if (res.status === 206) {
             console.log("attendance not marked");
-            navigate("/dashboard");
+            navigate("/");
+            //TODO: after implementing authentication, let new user see the waiting page. 
+            alert("Your signup request is pending approval. Please wait for the HR to approve your request.");
           }
         },
         (error) => {
@@ -146,14 +148,15 @@ export const Login = () => {
           console.log(newUser)
 
           if (newUser.status === 200) {
-            alert("success")
             localStorage.setItem("accessToken", newUser.data.accessToken)
             
             setIsSignup(false);
             setOtpPhase(false);
             setSignupData({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });
-            alert("Signup successful!");
-            navigate("/dashboard")
+            alert("Signup successful! login to your account");
+            //TODO: after implementing authentication, let new user see the waiting page. 
+            navigate("/")
+
           }
           else {
             alert("Failed to create user");
