@@ -5,7 +5,7 @@ const getAllRolesData = async () => {
         const rolesData = await Role.find({});
         return rolesData;
     } catch (error) {
-        throw new Error(`Failed to fetch roles data: ${error.message}`);
+        throw new ApiError(`Failed to fetch roles data: ${error.message}`);
     }
 };
 
@@ -15,7 +15,7 @@ const getRoleDetailsByName = async (roleName) => {
         const roleDetail = await Role.findOne({ role: roleName });
         return roleDetail;
     } catch (error) {
-        throw new Error(`Failed to fetch role details: ${error.message}`);
+        throw new ApiError(`Failed to fetch role details: ${error.message}`);
     }
 };
 
@@ -24,7 +24,7 @@ const createNewRole = async (roleData) => {
         await Role.create(roleData);
         return { success: true, message: "done" };
     } catch (error) {
-        throw new Error(`Failed to create new role: ${error.message}`);
+        throw new ApiError(`Failed to create new role: ${error.message}`);
     }
 };
 
@@ -41,7 +41,7 @@ const editRole = async (roleName, updatedData) => {
             updatedRole,
         };
     } catch (error) {
-        throw new Error(`Failed to update role: ${error.message}`);
+        throw new ApiError(`Failed to update role: ${error.message}`);
     }
 };
 
@@ -53,7 +53,7 @@ const deleteRole = async (roleName) => {
         }
         return { success: true, message: "Role deleted successfully" };
     } catch (error) {
-        throw new Error(`Failed to delete role: ${error.message}`);
+        throw new ApiError(`Failed to delete role: ${error.message}`);
     }
 };
 

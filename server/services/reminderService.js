@@ -1,4 +1,6 @@
 const Reminder = require("../models/reminder");
+const ApiError = require("../errors/ApiError");
+
 
 // @desc Create a new reminder
 const createReminder = async (data) => {
@@ -6,7 +8,7 @@ const createReminder = async (data) => {
         const reminder = await Reminder.create(data);
         return reminder;
     } catch (error) {
-        throw new Error("Failed to create reminder", error.message);
+        throw new ApiError("Failed to create reminder", error.message);
     }
 };
 
@@ -17,7 +19,7 @@ const getAllReminders = async (userId) => {
         const reminders = await Reminder.find(filter).sort({ date: 1 });
         return reminders;
     } catch (error) {
-        throw new Error("Failed to fetch reminders", error.message);
+        throw new ApiError("Failed to fetch reminders", error.message);
     }
 };
 
@@ -36,7 +38,7 @@ const getTodaysReminders = async (userId) => {
         const reminders = await Reminder.find(filter).sort({ date: 1 });
         return reminders;
     } catch (error) {
-        throw new Error("Failed to fetch today's reminders", error.message);
+        throw new ApiError("Failed to fetch today's reminders", error.message);
     }
 };
 

@@ -28,6 +28,11 @@ const fetchAllRoles = async () => {
   return response.data.roles;
 };
 
+const fetchAllBranches = async () => {
+  const response = await api.get('/api/branch');
+  return response.data.branches;
+};
+
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
 
@@ -40,6 +45,7 @@ export const HrEmployeeManagement = () => {
   const [pendingEmployees, setPendingEmployees] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [rolesData, setRolesData] = useState([]);
+  const [branches, setBranches] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,11 +53,16 @@ export const HrEmployeeManagement = () => {
         const roles = await fetchAllRoles();
         setRolesData(roles);
 
+
         const allEmployees = await fetchEmployees();
         setEmployees(allEmployees);
 
         const pending = await fetchPendingEmployees();
         setPendingEmployees(pending);
+
+        const allBranches = await fetchAllBranches();
+        setBranches(allBranches);
+
 
       } catch (err) {
         console.error("Error fetching employees:", err);
@@ -60,7 +71,7 @@ export const HrEmployeeManagement = () => {
 
     fetchData();
   }, []);
-  
+
 
   const handleEditRole = (roleData) => {
     setEditRoleData(roleData);
@@ -89,28 +100,28 @@ export const HrEmployeeManagement = () => {
   const columns = 3;
   const bgColorList = getGridBgColors(employees.length, columns, bgClasses);
 
-  const locations = [
-    {
-      branchName: "Perungudi",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.230079512601!2d80.24268317507622!3d12.95712408735691!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525d2313e5fa83%3A0x86751fde2142c085!2sZuntra%20Digital%20Private%20Limited!5e0!3m2!1sen!2sin!4v1751014087167!5m2!1sen!2sin"
-    },
-    {
-      branchName: "Selaiyur",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124440.7668226528!2d79.99512631640623!3d12.922244400000007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f6ed2136c9f%3A0x195a3558e9f5f39b!2sZUDIO%20-%20Selaiyur%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856070265!5m2!1sen!2sin"
-    },
-    {
-      branchName: "Kodambakkam",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124374.89066981588!2d80.08488851640625!3d13.053783100000024!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52676cb6734ecb%3A0x29afa95d29fddde!2sZUDIO%20-%20Kodambakkam%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856107276!5m2!1sen!2sin"
-    },
-    {
-      branchName: "Adyar",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124403.6466499826!2d80.11916441640622!3d12.996525300000012!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526700208c639b%3A0xe27864459a616099!2sZUDIO!5e0!3m2!1sen!2sin!4v1750856305753!5m2!1sen!2sin"
-    },
-    {
-      branchName: "Avadi",
-      embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124344.53302174553!2d79.96295661640626!3d13.113963500000008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526369c5679e39%3A0xf15ed76fbd823a9c!2sZUDIO%20-%20Avadi%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856241763!5m2!1sen!2sin"
-    }
-  ];
+  // const locations = [
+  //   {
+  //     branchName: "Perungudi",
+  //     embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.230079512601!2d80.24268317507622!3d12.95712408735691!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525d2313e5fa83%3A0x86751fde2142c085!2sZuntra%20Digital%20Private%20Limited!5e0!3m2!1sen!2sin!4v1751014087167!5m2!1sen!2sin"
+  //   },
+  //   {
+  //     branchName: "Selaiyur",
+  //     embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124440.7668226528!2d79.99512631640623!3d12.922244400000007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a525f6ed2136c9f%3A0x195a3558e9f5f39b!2sZUDIO%20-%20Selaiyur%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856070265!5m2!1sen!2sin"
+  //   },
+  //   {
+  //     branchName: "Kodambakkam",
+  //     embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124374.89066981588!2d80.08488851640625!3d13.053783100000024!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52676cb6734ecb%3A0x29afa95d29fddde!2sZUDIO%20-%20Kodambakkam%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856107276!5m2!1sen!2sin"
+  //   },
+  //   {
+  //     branchName: "Adyar",
+  //     embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124403.6466499826!2d80.11916441640622!3d12.996525300000012!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526700208c639b%3A0xe27864459a616099!2sZUDIO!5e0!3m2!1sen!2sin!4v1750856305753!5m2!1sen!2sin"
+  //   },
+  //   {
+  //     branchName: "Avadi",
+  //     embedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124344.53302174553!2d79.96295661640626!3d13.113963500000008!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a526369c5679e39%3A0xf15ed76fbd823a9c!2sZUDIO%20-%20Avadi%2C%20Chennai!5e0!3m2!1sen!2sin!4v1750856241763!5m2!1sen!2sin"
+  //   }
+  // ];
 
   const roleData = [
     { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
@@ -144,6 +155,26 @@ export const HrEmployeeManagement = () => {
     setSelectedEmployee(null);
   };
 
+  const handleAddNewBranch = async (formData) => {
+    try {
+      const { campusName, embedURL, radius } = formData;
+      const response = await api.post('/api/branch/new-branch', {
+        campusName,
+        embedURL,
+        radius
+      })
+
+      if (response.data.success) {
+        const newBranch = response.data.branch;
+        setBranches((prevBranches) => [...prevBranches, newBranch]);
+        setShowLocationForm(false);
+
+      }
+    } catch (error) {
+      console.error("Error adding new branch:", error);
+    }
+  };
+
   const handleClosePopup = () => {
     setShowAssignPopup(false);
     setSelectedEmployee(null);
@@ -164,7 +195,7 @@ export const HrEmployeeManagement = () => {
                 email={emp.email}
                 phone={emp.phoneNumber}
                 image={emp.profilePicture}
-                role= {emp.role.role}
+                role={emp.role.role}
                 inTime="10:00"
                 outTime="16:00"
                 workTime="10:01"
@@ -207,8 +238,8 @@ export const HrEmployeeManagement = () => {
 
         {navId === "geofencing" && (
           <div className="geo-cards-container">
-            {locations.map((loc, index) => (
-              <GeoFencing key={index} embedUrl={loc.embedUrl} branchName={loc.branchName} />
+            {branches.map((loc, index) => (
+              <GeoFencing key={index} embedUrl={loc.embedURL} branchName={loc.campusName} />
             ))}
             <button className="plus-button" onClick={() => setShowLocationForm(true)}>
               <svg xmlns="http://www.w3.org/2000/svg" height="2rem" viewBox="0 -960 960 960" width="2rem" fill="#000000">
@@ -223,7 +254,7 @@ export const HrEmployeeManagement = () => {
             isOpen={showLocationForm}
             onClose={() => setShowLocationForm(false)}
             onSubmit={(formData) => {
-              console.log('Submitted:', formData);
+              handleAddNewBranch(formData);
             }}
           />
         )}

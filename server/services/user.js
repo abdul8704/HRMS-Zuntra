@@ -1,4 +1,5 @@
 const UserCredentials = require("../models/userCredentials");
+const ApiError = require("../errors/ApiError");
 
 const getAllUserDetails = async () => {
     try {
@@ -8,7 +9,7 @@ const getAllUserDetails = async () => {
         });
         return userData;
     } catch (error) {
-        throw new Error(`Failed to fetch user details: ${error.message}`);
+        throw new ApiError(`Failed to fetch user details: ${error.message}`);
     }
 };
 
@@ -21,7 +22,7 @@ const getDetailsOfaUser = async (userid) => {
             .populate("campus", "campusName");
         return userCreds;
     } catch (error) {
-        throw new Error(`Failed to fetch user details: ${error.message}`);
+        throw new ApiError(`Failed to fetch user details: ${error.message}`);
     }
 };
 
