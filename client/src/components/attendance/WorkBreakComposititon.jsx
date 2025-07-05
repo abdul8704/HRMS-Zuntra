@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Legend } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Legend} from 'recharts';
 import { ChevronDown } from 'lucide-react';
 
 const WorkBreakComposition = () => {
