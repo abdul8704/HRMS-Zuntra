@@ -49,22 +49,22 @@ export const DashBoard = () => {
 
           {/* 2. TimeCard In */}
           <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:row-span-1 rounded-2xl bg-[#c0e8bc] flex items-center justify-center animate-slide-in-left overflow-hidden">
-            <TimeCard state={"in"} time={"09:20"} showlabel={true} color={true} />
+            <TimeCard state={"in"} time={"09:20"} showLabel={true} color={true} />
           </div>
 
           {/* 3. TimeCard Out */}
           <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:col-start-1 md:row-start-3 md:row-span-1 rounded-2xl bg-[#c3e4ee] flex items-center justify-center animate-slide-in-left overflow-hidden">
-            <TimeCard state={"out"} time={"09:20"} showlabel={true} color={true} />
+            <TimeCard state={"out"} time={"09:20"} showLabel={true} color={true} />
           </div>
 
           {/* 4. TimeCard Work */}
           <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:col-start-3 md:row-span-1 rounded-2xl bg-[#e1bec5] flex items-center justify-center animate-slide-in-left overflow-hidden">
-            <TimeCard state={"work"} time={"09:20"} showlabel={true} color={true} />
+            <TimeCard state={"work"} time={"09:20"} showLabel={true} color={true} />
           </div>
 
           {/* 5. TimeCard Break */}
           <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:col-start-3 md:row-start-3 md:row-span-1 rounded-2xl bg-[#deceb9] flex items-center justify-center animate-slide-in-left overflow-hidden">
-            <TimeCard state={"break"} time={"09:20"} showlabel={true} color={true} />
+            <TimeCard state={"break"} time={"09:20"} showLabel={true} color={true} />
           </div>
 
           {/* 6. Project Deadline */}

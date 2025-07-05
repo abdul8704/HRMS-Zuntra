@@ -122,12 +122,12 @@ export const EmployeeCard = ({
             <div className="flex flex-col flex-wrap justify-center gap-3 flex-[1] p-2.5">
                 <button
                   onClick={() => onApprove?.()}
-                  className="h-[3rem] bg-green-500 text-white rounded-xl shadow hover:bg-green-600 text-lg font-semibold"
+                  className="h-[3rem] bg-[#C1E8BD] text-black rounded-xl shadow hover:bg-[#C1FFBD] text-lg font-semibold"
                 >
                   ✓
                 </button>
                 <button
-                  className="h-[3rem] bg-red-500 text-white rounded-xl shadow hover:bg-red-600 text-lg font-semibold"
+                  className="h-[3rem] bg-[#E1BEC5] text-black rounded-xl shadow hover:bg-[#FFBEC5] text-lg font-semibold"
                 >
                   ✕
                 </button>
@@ -137,18 +137,18 @@ export const EmployeeCard = ({
               <div className="flex flex-col flex-wrap justify-center gap-3 flex-[3] p-2.5">
                 <div className="flex gap-2.5 w-full flex-[1] justify-center">
                   <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                    <TimeCard state="in" time={inTime} label={false} color={false} />
+                    <TimeCard state="in" time={inTime} showLabel={false} color={true} />
                   </div>
                   <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                    <TimeCard state="out" time={outTime} label={false} color={false} />
+                    <TimeCard state="out" time={outTime} showLabel={false} color={true} />
                   </div>
                 </div>
                 <div className="flex flex-[1] gap-2.5 w-full justify-center">
                   <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                    <TimeCard state="break" time={breakTime} label={false} color={false} />
+                    <TimeCard state="break" time={breakTime} showLabel={false} color={true} />
                   </div>
                   <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                    <TimeCard state="work" time={workTime} label={false} color={false} />
+                    <TimeCard state="work" time={workTime} showLabel={false} color={true} />
                   </div>
                 </div>
               </div>
