@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const CourseController = require("../controllers/courseManagement")
+const CourseController = require("../controllers/courseController")
 
 router.post("/newcourse", CourseController.createCourseIntroController)
 router.post("/newcourse/content",CourseController.createCourseContentController)

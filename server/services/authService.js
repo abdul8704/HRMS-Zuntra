@@ -17,11 +17,13 @@ const verifyLogin = async (email, password) => {
                 passwordHash: 1,
             }
         );
-        if (!userData) return { success: false, message: "User not found" };
+        if (!userData) 
+            throw new ApiError(400, "User not found with this email");
 
         const verify = await bcrypt.compare(password, userData.passwordHash);
 
-        if (!verify) return { success: false, message: "Wrong Password" };
+        if (!verify) 
+            throw new ApiError(400, "Wrong Password");
         return {
             success: true,
             message: "credentials matched.",
