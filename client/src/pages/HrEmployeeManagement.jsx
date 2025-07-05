@@ -14,7 +14,11 @@ import api from '../api/axios';
 
 const fetchPendingEmployees = async () => (await api.get('/api/hr/pending')).data.data;
 const fetchEmployees = async () => (await api.get('/api/employee')).data.employees;
-const fetchAllRoles = async () => (await api.get('/api/roles')).data.roles;
+const fetchAllRoles = async () => {
+  const response = await api.get('/api/roles')
+  console.log("Roles fetched:", response.data);
+  return response.data;
+}
 const fetchAllBranches = async () => (await api.get('/api/branch')).data.branches;
 
 export const HrEmployeeManagement = () => {
@@ -92,7 +96,7 @@ export const HrEmployeeManagement = () => {
     { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
     { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
   ];
-
+  console.log("Branches: ", branches);
   return (
     <div className="flex">
       <Sidebar />

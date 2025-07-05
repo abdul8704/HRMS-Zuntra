@@ -5,7 +5,7 @@ const getAllShiftsData = async () => {
         const shiftsData = await Shift.find({});
         return shiftsData;
     } catch (error) {
-        throw new ApiError(`Failed to fetch shifts data:`, error.message);
+        throw new ApiError(500, "Failed to fetch shifts data:", error.message);
     }
 };
 
@@ -14,7 +14,7 @@ const createNewShift = async (shiftData) => {
         await Shift.create(shiftData);
         return { success: true, message: "Shift created successfully" };
     } catch (error) {
-        throw new ApiError(`Failed to create new shift:`, error.message);
+        throw new ApiError(500, "Failed to create new shift:", error.message);
     }
 };
 
@@ -31,7 +31,7 @@ const editShift = async (shiftName, updatedData) => {
             updatedShift,
         };
     } catch (error) {
-        throw new ApiError(`Failed to update shift:`, error.message);
+        throw new ApiError(500, "Failed to update shift:", error.message);
     }
 };
 
@@ -46,7 +46,7 @@ const deleteShift = async (shiftName) => {
 
         return { success: true, message: "Shift deleted successfully" };
     } catch (error) {
-        throw new ApiError(`Failed to delete shift:`, error.message);
+        throw new ApiError(500, "Failed to delete shift:", error.message);
     }
 };
 

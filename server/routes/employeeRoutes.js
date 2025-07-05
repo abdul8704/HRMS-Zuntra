@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const employeeController = require("../controllers/employeeManagement")
+const employeeController = require("../controllers/employeeController")
 
 router.post("/logout", employeeController.handleLogout);
 router.get("/attendance", employeeController.getAttendanceData);

@@ -38,7 +38,6 @@ const getAttendanceData = asyncHandler(async (req, res) => {
 });
 
 const fetchAllEmployees = asyncHandler(async (req, res) => {
-    console.log("sendingngn")
     const employees = await employeeService.getAllEmployees();
     res.status(200).json({ success: true, employees });
 });

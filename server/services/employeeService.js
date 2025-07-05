@@ -243,6 +243,35 @@ const getAllEmployees = async () => {
 
     return employees;
 };
+
+// @desc Get details of a user
+const getDetailsOfaEmployee = async (userid) => {
+    try {
+        const userCreds = await User.findById(userid)
+            .populate("role", "roleName")
+            .populate("shift", "startTime startTime")
+            .populate("campus", "campusName");
+        return userCreds;
+    } catch (error) {
+        throw new ApiError(500, "Failed to fetch user details: ", error.message);
+    }
+};
+
+const getEmployeeByRole = async (roleId) => {
+    try {
+        const userData = await User.find({ role: roleId }).populate(
+            "role",
+            "roleName"
+        );
+        return userData;
+    } catch (error) {
+        throw new ApiError(
+            500,
+            "Failed to fetch users by role: ",
+            error.message
+        );
+    }
+};
   
 
 module.exports = {
@@ -250,4 +279,5 @@ module.exports = {
     markAttendanceOnLogin,
     markEndOfSession,
     getAllEmployees,
+    getDetailsOfaEmployee,
 };
