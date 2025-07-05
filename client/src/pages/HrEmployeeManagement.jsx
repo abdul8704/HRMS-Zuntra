@@ -100,7 +100,7 @@ export const HrEmployeeManagement = () => {
         <EmpNavbar />
 
         {navId === "all" && (
-          <div className="p-4 flex flex-wrap gap-4 overflow-y-auto h-[calc(100vh-7rem)]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto h-[calc(100vh-7rem)] mt-[1rem]">
             {employees.map((emp, index) => (
               <EmployeeCard
                 key={index}
