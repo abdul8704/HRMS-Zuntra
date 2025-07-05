@@ -97,7 +97,7 @@ export const HrEmployeeManagement = () => {
 
   const roleData = [
     { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-    { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
+    { role: "Executive Managerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
     { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
     { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
     { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
@@ -134,7 +134,8 @@ export const HrEmployeeManagement = () => {
         )}
 
         {navId === "roles" && (
-          <div className="p-4 flex flex-wrap gap-4 overflow-y-auto h-[calc(100vh-7rem)]">
+           <div className="flex flex-wrap gap-[1rem] px-[1rem] overflow-y-auto mt-[1rem]">
+
             {roleData.map((role, idx) => (
               <EmpRoleCard
                 key={idx}
