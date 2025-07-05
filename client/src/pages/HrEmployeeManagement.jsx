@@ -12,27 +12,9 @@ import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignme
 import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
 import api from '../api/axios';
 
-const fetchPendingEmployees = async () => {
-  const response = await api.get('/api/hr/pending');
-  return response.data.pendingEmployees;
-}
-const fetchEmployees = async () => {
-  const response = await api.get('/api/employee')
-    return response.data.employees;
-}
-const fetchAllRoles = async () => {
-  const response = await api.get('/api/roles')
-  console.log("Rolessss fetched:", response.data);
-  return response.data;
-}
-const fetchAllBranches = async () => {
-  const response = await api.get('/api/branch');
-  console.log("Branches fetched:", response.data.branches);
-  return response.data.branches;
-}
-
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
+
   const [showPopup, setShowPopup] = useState(false);
   const [showAssignPopup, setShowAssignPopup] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -44,15 +26,31 @@ export const HrEmployeeManagement = () => {
   const [rolesData, setRolesData] = useState([]);
   const [branches, setBranches] = useState([]);
 
+  const [isLoadingRoles, setIsLoadingRoles] = useState(true);
+  const [isErrorRoles, setIsErrorRoles] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setRolesData(await fetchAllRoles());
-        setEmployees(await fetchEmployees());
-        setPendingEmployees(await fetchPendingEmployees());
-        setBranches(await fetchAllBranches());
+        setIsLoadingRoles(true);
+        setIsErrorRoles(false);
+
+        const [roles, emps, pending, brs] = await Promise.all([
+          api.get('/api/roles'),
+          api.get('/api/employee'),
+          api.get('/api/hr/pending'),
+          api.get('/api/branch'),
+        ]);
+
+        setRolesData(roles.data);
+        setEmployees(emps.data.employees);
+        setPendingEmployees(pending.data.pendingEmployees);
+        setBranches(brs.data.branches);
       } catch (err) {
-        console.error("Error fetching employees:", err);
+        console.error("Error fetching data:", err);
+        setIsErrorRoles(true);
+      } finally {
+        setIsLoadingRoles(false);
       }
     };
     fetchData();
@@ -94,25 +92,14 @@ export const HrEmployeeManagement = () => {
     });
   };
   const bgColorList = getGridBgColors(employees.length, 3, bgClasses);
-
-  const roleData = [
-    { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-    { role: "Executive Managerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
-    { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-    { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
-    { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
-    { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
-    { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
-    { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
-    { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
-  ];
-
+  console.log(rolesData)
   return (
     <div className="flex">
       <Sidebar />
       <div className="flex-1 p-[1rem]">
         <EmpNavbar />
 
+        {/* Employee List */}
         {navId === "all" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto h-[calc(100vh-7rem)] mt-[1rem]">
             {employees.map((emp, index) => (
@@ -133,34 +120,51 @@ export const HrEmployeeManagement = () => {
           </div>
         )}
 
+        {/* Roles List */}
         {navId === "roles" && (
-           <div className="flex flex-wrap gap-[1rem] px-[1rem] overflow-y-auto mt-[1rem]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[1rem] px-[1rem] mt-[1rem] justify-items-center overflow-y-auto">
+            {isLoadingRoles ? (
+              <p className="text-center col-span-full mt-4 text-gray-600 font-semibold"><Loading/></p>
+            ) : isErrorRoles ? (
+              <p className="text-center col-span-full mt-4 text-red-500 font-semibold">Error fetching roles</p>
+            ) : rolesData.length === 0 ? (
+              <p className="text-center col-span-full mt-4 text-gray-500 font-medium">No roles available</p>
+            ) : (
+              rolesData.map((role, idx) => (
+                <EmpRoleCard
+                  key={idx}
+                  role={role.role}
+                  bgColor={role.color || "#e0e0e0"}
+                  onEdit={() =>
+                    handleEditRole({
+                      role: role.role,
+                      members: role.memberCount,
+                      color: role.bgColor || "#e0e0e0",
+                    })
+                  }
+                />
+              ))
+            )}
 
-            {roleData.map((role, idx) => (
-              <EmpRoleCard
-                key={idx}
-                role={role.role}
-                memberCount={role.memberCount}
-                bgColor={role.bgColor}
-                ibgcolor={role.ibgcolor}
-                onEdit={() => handleEditRole({
-                  role: role.role,
-                  members: role.memberCount,
-                  color: role.bgColor,
-                })}
-              />
-            ))}
+            {/* Floating Add Button */}
             <div
               className="fixed bottom-8 right-20 w-14 h-14 bg-[#BBD3CC] text-[#6c6c6c] rounded-full flex items-center justify-center text-2xl font-bold cursor-pointer hover:scale-110 hover:bg-[#A6C4BA] transition-transform z-[1000]"
               onClick={() => setShowPopup(true)}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" height="2rem" viewBox="0 -960 960 960" width="2rem" fill="#000000">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="2rem"
+                viewBox="0 -960 960 960"
+                width="2rem"
+                fill="#000000"
+              >
                 <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
               </svg>
             </div>
           </div>
         )}
 
+        {/* Geo-Fencing */}
         {navId === "geofencing" && (
           <div className="p-4 flex flex-col gap-4 overflow-y-auto h-[calc(100vh-7rem)]">
             {branches.map((loc, index) => (
@@ -177,6 +181,7 @@ export const HrEmployeeManagement = () => {
           </div>
         )}
 
+        {/* New Users */}
         {navId === "newusers" && (
           <div className="p-4 flex flex-wrap gap-4 overflow-y-auto h-[calc(100vh-7rem)]">
             {pendingEmployees.map((emp, index) => (
