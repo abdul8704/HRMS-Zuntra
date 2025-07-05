@@ -7,7 +7,7 @@ export const EmployeeCard = ({
   email,
   phone,
   role,
-  image = "https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png",
+  image="https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png",
   inTime,
   outTime,
   workTime,
@@ -120,26 +120,18 @@ export const EmployeeCard = ({
           {/* Time Cards or Action Buttons */}
           {isNewUser ? (
             <div className="flex flex-col flex-wrap justify-center gap-3 flex-[1] p-2.5">
-              <button
-                onClick={() => onApprove?.()}
-                className="h-[3rem] bg-green-500 text-white rounded-xl text-lg font-semibold 
-               shadow-[0_0_10px_2px_rgba(34,197,94,0.6)] 
-               hover:bg-green-600 hover:shadow-[0_0_15px_4px_rgba(34,197,94,0.8)] 
-               transition-all duration-300"
-              >
-                ✓
-              </button>
-              <button
-                className="h-[3rem] bg-red-500 text-white rounded-xl text-lg font-semibold 
-               shadow-[0_0_10px_2px_rgba(239,68,68,0.6)] 
-               hover:bg-red-600 hover:shadow-[0_0_15px_4px_rgba(239,68,68,0.8)] 
-               transition-all duration-300"
-              >
-                ✕
-              </button>
+                <button
+                  onClick={() => onApprove?.()}
+                  className="h-[3rem] bg-green-500 text-white rounded-xl shadow hover:bg-green-600 text-lg font-semibold"
+                >
+                  ✓
+                </button>
+                <button
+                  className="h-[3rem] bg-red-500 text-white rounded-xl shadow hover:bg-red-600 text-lg font-semibold"
+                >
+                  ✕
+                </button>
             </div>
-
-
           ) : (
             <>
               <div className="flex flex-col flex-wrap justify-center gap-3 flex-[3] p-2.5">
