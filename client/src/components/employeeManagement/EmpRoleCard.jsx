@@ -55,15 +55,16 @@ const darkenColor = (hex, percent = 20) => {
 
   return `#${toHex(r2)}${toHex(g2)}${toHex(b2)}`;
 };
-
 export const EmpRoleCard = ({ role, bgColor, onEdit }) => {
   const handleEditClick = () => {
     onEdit({ role, color: bgColor });
   };
 
   const textRef = useRef(null);
+  const cardRef = useRef(null);
   const [isOverflowed, setIsOverflowed] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const el = textRef.current;
@@ -74,15 +75,33 @@ export const EmpRoleCard = ({ role, bgColor, onEdit }) => {
     }
   }, [role]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      }
+    );
+
+    if (cardRef.current) observer.observe(cardRef.current);
+
+    return () => {
+      if (cardRef.current) observer.unobserve(cardRef.current);
+    };
+  }, []);
+
   const iconColor = darkenColor(bgColor, 35);
 
   return (
     <div
-      className="w-full h-full flex items-center rounded-xl shadow-md font-sans p-4 bg-opacity-90"
+      ref={cardRef}
+      className={`w-full h-full flex items-center rounded-xl shadow-md font-sans p-4 bg-opacity-90 transition-all duration-700 ease-out ${
+        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+      }`}
       style={{ backgroundColor: bgColor }}
     >
       <div className="flex items-center justify-between gap-4 w-full h-full">
-        {/* Icon */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="2.2rem"
@@ -93,16 +112,12 @@ export const EmpRoleCard = ({ role, bgColor, onEdit }) => {
           <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5Zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5Z" />
         </svg>
 
-        {/* Role Text */}
         <div
           className="relative flex-1 min-w-0"
           onMouseEnter={() => isOverflowed && setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
         >
-          <p
-            ref={textRef}
-            className="text-base font-bold text-gray-800 truncate"
-          >
+          <p ref={textRef} className="text-base font-bold text-gray-800 truncate">
             {role}
           </p>
           {showTooltip && (
@@ -115,7 +130,6 @@ export const EmpRoleCard = ({ role, bgColor, onEdit }) => {
           )}
         </div>
 
-        {/* Edit Button */}
         <span className="cursor-pointer shrink-0" onClick={handleEditClick}>
           <svg
             xmlns="http://www.w3.org/2000/svg"

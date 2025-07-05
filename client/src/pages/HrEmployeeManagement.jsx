@@ -10,6 +10,7 @@ import { EditRolePopup } from '../components/employeeManagement/EditRolePopup';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
 import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
+import { Loading } from '../components/Loading';
 import api from '../api/axios';
 
 export const HrEmployeeManagement = () => {
@@ -92,14 +93,13 @@ export const HrEmployeeManagement = () => {
     });
   };
   const bgColorList = getGridBgColors(employees.length, 3, bgClasses);
-  console.log(rolesData)
+
   return (
     <div className="flex">
       <Sidebar />
       <div className="flex-1 p-[1rem]">
         <EmpNavbar />
 
-        {/* Employee List */}
         {navId === "all" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto h-[calc(100vh-7rem)] mt-[1rem]">
             {employees.map((emp, index) => (
@@ -120,51 +120,50 @@ export const HrEmployeeManagement = () => {
           </div>
         )}
 
-        {/* Roles List */}
         {navId === "roles" && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[1rem] px-[1rem] mt-[1rem] justify-items-center overflow-y-auto">
-            {isLoadingRoles ? (
-              <p className="text-center col-span-full mt-4 text-gray-600 font-semibold"><Loading/></p>
-            ) : isErrorRoles ? (
-              <p className="text-center col-span-full mt-4 text-red-500 font-semibold">Error fetching roles</p>
-            ) : rolesData.length === 0 ? (
-              <p className="text-center col-span-full mt-4 text-gray-500 font-medium">No roles available</p>
-            ) : (
-              rolesData.map((role, idx) => (
-                <EmpRoleCard
-                  key={idx}
-                  role={role.role}
-                  bgColor={role.color || "#e0e0e0"}
-                  onEdit={() =>
-                    handleEditRole({
-                      role: role.role,
-                      members: role.memberCount,
-                      color: role.bgColor || "#e0e0e0",
-                    })
-                  }
-                />
-              ))
-            )}
+          <div className="px-[1rem] mt-[1rem] h-[calc(100vh-7rem)] overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[1rem] justify-items-center">
+              {isLoadingRoles ? (
+                <p className="text-center col-span-full mt-4 text-gray-600 font-semibold">
+                  <Loading />
+                </p>
+              ) : isErrorRoles ? (
+                <p className="text-center col-span-full mt-4 text-red-500 font-semibold">
+                  Error fetching roles
+                </p>
+              ) : rolesData.length === 0 ? (
+                <p className="text-center col-span-full mt-4 text-gray-500 font-medium">
+                  No roles available
+                </p>
+              ) : (
+                rolesData.map((role, idx) => (
+                  <EmpRoleCard
+                    key={idx}
+                    role={role.role}
+                    bgColor={role.color || "#e0e0e0"}
+                    onEdit={() =>
+                      handleEditRole({
+                        role: role.role,
+                        members: role.memberCount,
+                        color: role.bgColor || "#e0e0e0",
+                      })
+                    }
+                  />
+                ))
+              )}
+            </div>
 
-            {/* Floating Add Button */}
             <div
               className="fixed bottom-8 right-20 w-14 h-14 bg-[#BBD3CC] text-[#6c6c6c] rounded-full flex items-center justify-center text-2xl font-bold cursor-pointer hover:scale-110 hover:bg-[#A6C4BA] transition-transform z-[1000]"
               onClick={() => setShowPopup(true)}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="2rem"
-                viewBox="0 -960 960 960"
-                width="2rem"
-                fill="#000000"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" height="2rem" viewBox="0 -960 960 960" width="2rem" fill="#000000">
                 <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
               </svg>
             </div>
           </div>
         )}
 
-        {/* Geo-Fencing */}
         {navId === "geofencing" && (
           <div className="p-4 flex flex-col gap-4 overflow-y-auto h-[calc(100vh-7rem)]">
             {branches.map((loc, index) => (
@@ -181,7 +180,6 @@ export const HrEmployeeManagement = () => {
           </div>
         )}
 
-        {/* New Users */}
         {navId === "newusers" && (
           <div className="p-4 flex flex-wrap gap-4 overflow-y-auto h-[calc(100vh-7rem)]">
             {pendingEmployees.map((emp, index) => (
