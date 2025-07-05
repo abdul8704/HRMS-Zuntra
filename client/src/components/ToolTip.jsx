@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export const ToolTip = ({ text, anchorRef, position = 'top', offset = 8 }) => {
+export const ToolTip = ({ text, anchorRef, position = 'top', offset }) => {
   const [style, setStyle] = useState({ top: 0, left: 0, visible: false });
 
   useEffect(() => {

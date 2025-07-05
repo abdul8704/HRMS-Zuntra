@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import zuntraLogo from "../assets/zuntra.png";
 import api from "../api/axios";
-import { useNavigate } from "react-router-dom"
-
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -12,165 +11,188 @@ export const Login = () => {
   const [otpPhase, setOtpPhase] = useState(false);
   const navigate = useNavigate();
 
-
   const [loginData, setLoginData] = useState({ email: '', password: '' });
-  const [signupData, setSignupData] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
+  const [signupData, setSignupData] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });
   const [resetData, setResetData] = useState({ email: '', otp: '', password: '', confirmPassword: '' });
+
+  const [formErrors, setFormErrors] = useState({
+    name: '', email: '', phone: '', password: '', confirmPassword: '', otp: ''
+  });
 
   const handleToggle = () => {
     setIsSignup(!isSignup);
     setShowReset(false);
+    setFormErrors({});
   };
 
-  const handleLoginChange = (e) => setLoginData({ ...loginData, [e.target.name]: e.target.value });
-  const handleSignupChange = (e) => setSignupData({ ...signupData, [e.target.name]: e.target.value });
-  const handleResetChange = (e) => setResetData({ ...resetData, [e.target.name]: e.target.value });
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const handleSignupChange = (e) => {
+    const { name, value } = e.target;
+    setSignupData(prev => ({ ...prev, [name]: value }));
+
+    setFormErrors(prev => {
+      const updated = { ...prev, [name]: '' };
+
+      if (name === "email" && value && !validateEmail(value)) {
+        updated.email = "Enter a valid email.";
+      }
+
+      if (name === "confirmPassword" && value !== signupData.password) {
+        updated.confirmPassword = "Passwords do not match.";
+      }
+
+      return updated;
+    });
+  };
+
+  const handleLoginChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData(prev => ({ ...prev, [name]: value }));
+    setFormErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const handleResetChange = (e) => {
+    const { name, value } = e.target;
+    setResetData(prev => ({ ...prev, [name]: value }));
+
+    setFormErrors(prev => {
+      const updated = { ...prev, [name]: '' };
+
+      if (name === "email" && value && !validateEmail(value)) {
+        updated.email = "Enter a valid email.";
+      }
+
+      if (name === "confirmPassword" && value !== resetData.password) {
+        updated.confirmPassword = "Passwords do not match.";
+      }
+
+      return updated;
+    });
+  };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    if (!loginData.email || !loginData.password) {
-      alert("Please enter both email and password.");
-      return;
+    const errors = { email: '', password: '' };
+    let valid = true;
+
+    if (!loginData.email) {
+      errors.email = "Email is required.";
+      valid = false;
+    } else if (!validateEmail(loginData.email)) {
+      errors.email = "Enter a valid email.";
+      valid = false;
     }
+
+    if (!loginData.password) {
+      errors.password = "Password is required.";
+      valid = false;
+    }
+
+    setFormErrors(errors);
+    if (!valid) return;
+
     try {
       const response = await api.post("/auth/login", loginData);
-      if (response.status !== 200) {
-        alert("Something went wrong")
-      }
+      if (response.status !== 200) return alert("Something went wrong");
+
       const token = response.data.accessToken;
       localStorage.setItem("accessToken", token);
-
-      if (!navigator.geolocation) {
-        console.error("Geolocation is not supported by your browser");
-        return;
-      }
 
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
-
           const res = await api.post("/auth/geofence", {
-            latitude: latitude,
-            longitude: longitude,
-            email: loginData.email
-          })
+            latitude, longitude, email: loginData.email
+          });
 
           if (res.status === 200) {
-            console.log("Attendace Marked buddy");
-            navigate("/dashboard")
-          }
-          else if (res.status === 206) {
-            console.log("attendance not marked");
+            console.log("Attendance Marked");
+            navigate("/dashboard");
+          } else if (res.status === 206) {
+            alert("Your signup request is pending approval.");
             navigate("/");
-            //TODO: after implementing authentication, let new user see the waiting page. 
-            alert("Your signup request is pending approval. Please wait for the HR to approve your request.");
           }
         },
-        (error) => {
-          console.error("Error getting location:", error);
-        }
+        (error) => console.error("Error getting location:", error)
       );
-    }
-    catch (err) {
-      if (err.status === 401) {
-        if (err.response.data.data.message === "Wrong Password") {
-          alert("Wrong Password!!")
-        }
-        else if (err.response.data.data.message === 'User not found') {
-          alert("User not found!!")
-        }
-        console.log(err.response.data);
-
+    } catch (err) {
+      if (err?.response?.status === 401) {
+        const msg = err.response.data?.data?.message;
+        alert(msg === "Wrong Password" ? "Wrong Password!!" : "User not found!!");
+      } else {
+        console.log(err.response);
       }
     }
-
   };
 
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
-
     const { name, email, phone, password, confirmPassword, otp } = signupData;
 
-    try {
-      if (!otpPhase) {
-        if (!name || !email || !phone || !password || !confirmPassword) {
-          alert("All fields are required.");
-          return;
-        }
-        if (password !== confirmPassword) {
-          alert("Passwords do not match.");
-          return;
-        }
+    const errors = {
+      name: '', email: '', phone: '', password: '', confirmPassword: '', otp: ''
+    };
+    let valid = true;
 
-        const userExist = await api.post("/auth/check", {
-          email: email
-        })
+    if (!otpPhase) {
+      if (!name) { errors.name = "Name is required."; valid = false; }
+      if (!email) { errors.email = "Email is required."; valid = false; }
+      else if (!validateEmail(email)) { errors.email = "Enter a valid email."; valid = false; }
+      if (!phone) { errors.phone = "Phone number is required."; valid = false; }
+      if (!password) { errors.password = "Password is required."; valid = false; }
+      if (!confirmPassword || confirmPassword !== password) {
+        errors.confirmPassword = "Passwords do not match.";
+        valid = false;
+      }
 
-        if (userExist.data.exists === true) {
-          alert("User already exists");
-          return;
-        }
-        const sendotp = await api.post("/auth/signup/send-otp", {
-          useremail: email
-        })
+      setFormErrors(errors);
+      if (!valid) return;
 
+      try {
+        const userExist = await api.post("/auth/check", { email });
+        if (userExist.data.exists) return alert("User already exists");
+
+        const sendotp = await api.post("/auth/signup/send-otp", { useremail: email });
         if (sendotp.status === 200) {
           setOtpPhase(true);
           alert("OTP sent to your email/phone.");
-          return;
-        }
-        else {
-          alert("Failed to send OTP");
-          return;
-        }
-
+        } else alert("Failed to send OTP");
+      } catch (error) {
+        alert("Something went wrong");
       }
-      else {
-        if (!otp) {
-          alert("Please enter the OTP.");
-          return;
-        }
 
-        const verifyOtp = await api.post("/auth/signup/verify-otp", {
-          useremail: email,
-          otp: otp
-        })
+    } else {
+      if (!otp) {
+        setFormErrors(prev => ({ ...prev, otp: "Please enter the OTP." }));
+        return;
+      }
 
-        console.log(verifyOtp)
-
+      try {
+        const verifyOtp = await api.post("/auth/signup/verify-otp", { useremail: email, otp });
         if (verifyOtp.status === 200) {
           const newUser = await api.post("/auth/signup/newuser", {
-            username: name,
-            email: email,
-            phoneNum: phone,
-            password: password
-          })
-          console.log(newUser)
+            username: name, email, phoneNum: phone, password
+          });
 
           if (newUser.status === 200) {
-            localStorage.setItem("accessToken", newUser.data.accessToken)
-            
+            localStorage.setItem("accessToken", newUser.data.accessToken);
+            alert("Signup successful! Login to your account.");
+            setSignupData({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });
+            setFormErrors({});
             setIsSignup(false);
             setOtpPhase(false);
-            setSignupData({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });
-            alert("Signup successful! login to your account");
-            //TODO: after implementing authentication, let new user see the waiting page. 
-            navigate("/")
-
-          }
-          else {
-            alert("Failed to create user");
-            return;
-          }
+            navigate("/");
+          } else alert("Failed to create user");
         }
-      }
-    }
-    catch (error) {
-      if (error.response.data.error === "Incorrect OTP")
-        alert("Incorrect OTP")
-      else {
-        alert("Something went wrong")
-        console.log(error.response)
+      } catch (error) {
+        if (error.response?.data?.error === "Incorrect OTP") {
+          setFormErrors(prev => ({ ...prev, otp: "Incorrect OTP" }));
+        } else {
+          alert("Something went wrong");
+        }
       }
     }
   };
@@ -179,83 +201,63 @@ export const Login = () => {
     e.preventDefault();
     const { email, otp, password, confirmPassword } = resetData;
 
-    try {
-      if (!otpSent) {
-        if (!email) {
-          alert("Please enter your email to receive OTP.");
-          return;
-        }
-        const userExist = await api.post("/auth/check", {
-          email: email
-        })
+    const errors = { email: '', otp: '', password: '', confirmPassword: '' };
+    let valid = true;
 
-        if (userExist.data.exists === false) {
-          alert("We couldn't find a user with this email");
-          return;
-        }
+    if (!otpSent) {
+      if (!email) { errors.email = "Email is required."; valid = false; }
+      else if (!validateEmail(email)) { errors.email = "Enter a valid email."; valid = false; }
+      setFormErrors(errors);
+      if (!valid) return;
 
-        const sendotp = await api.post("/auth/signup/send-otp", {
-          useremail: email
-        })
+      try {
+        const userExist = await api.post("/auth/check", { email });
+        if (!userExist.data.exists) return alert("We couldn't find a user with this email");
 
+        const sendotp = await api.post("/auth/signup/send-otp", { useremail: email });
         if (sendotp.status === 200) {
           setOtpSent(true);
           alert("OTP sent to your email/phone.");
-          return;
-        }
-        else {
-          alert("Failed to send OTP");
-          return;
-        }
+        } else alert("Failed to send OTP");
+      } catch (error) {
+        alert("Something went wrong");
       }
-      else if (!otpVerified) {
-        if (!otp) {
-          alert("Please enter the OTP.");
-          return;
-        }
-
-        const verifyOtp = await api.post("/auth/signup/verify-otp", {
-          useremail: email,
-          otp: otp
-        })
-
-        if (verifyOtp.status !== 200) {
-          alert("Something went wrong")
-          return
-        }
-        setOtpVerified(true);
-
-
+    } else if (!otpVerified) {
+      if (!otp) {
+        setFormErrors(prev => ({ ...prev, otp: "Please enter the OTP." }));
+        return;
       }
-      else {
-        if (!password || !confirmPassword) {
-          alert("Please fill all password fields.");
-          return;
-        }
-        if (password !== confirmPassword) {
-          alert("Passwords do not match.");
-          return;
-        }
-        const resetPass = await api.post("/auth/reset-password", {
-          email: email,
-          password: password
-        })
 
+      try {
+        const verifyOtp = await api.post("/auth/signup/verify-otp", { useremail: email, otp });
+        if (verifyOtp.status === 200) setOtpVerified(true);
+        else alert("Something went wrong");
+      } catch (error) {
+        if (error.response?.data?.error === "Incorrect OTP") {
+          setFormErrors(prev => ({ ...prev, otp: "Incorrect OTP" }));
+        } else alert("Something went wrong");
+      }
+    } else {
+      if (!password) { errors.password = "Password is required."; valid = false; }
+      if (!confirmPassword || confirmPassword !== password) {
+        errors.confirmPassword = "Passwords do not match.";
+        valid = false;
+      }
+
+      setFormErrors(errors);
+      if (!valid) return;
+
+      try {
+        const resetPass = await api.post("/auth/reset-password", { email, password });
         if (resetPass) {
-          alert("Password Changed Successfully")
+          alert("Password Changed Successfully");
           setShowReset(false);
           setOtpSent(false);
           setOtpVerified(false);
           setResetData({ email: '', otp: '', password: '', confirmPassword: '' });
-          return;
         }
-      }
-    } catch (error) {
-      if (error.response.data.error === "Incorrect OTP")
-        alert("Incorrect OTP")
-      else {
-        alert("Something went wrong")
-        console.log(error.response)
+      } catch (error) {
+        alert("Something went wrong");
       }
     }
   };
@@ -271,119 +273,131 @@ export const Login = () => {
   );
 
   return (
-    <div className="login-page">
-      <img className="login-logo-container" src={zuntraLogo} alt="ZUNTRA" />
+    <>
+      <div className="login-page">
+        <img className="login-logo-container" src={zuntraLogo} alt="ZUNTRA" />
 
-      <div className="login-container">
-        <div className="login-wrapper">
-          <div className="login-card">
-            {!showReset ? (
-              isSignup ? (
-                <>
-                  <h1 className="login-title">Sign up</h1>
-                  <form className="login-form" onSubmit={handleSignupSubmit}>
-                    <input name="name" value={signupData.name} onChange={handleSignupChange} className="login-input" type="text" placeholder="Name" />
-                    <input name="email" value={signupData.email} onChange={handleSignupChange} className="login-input" type="email" placeholder="Email" />
-                    <input name="phone" value={signupData.phone} onChange={handleSignupChange} className="login-input" type="tel" placeholder="Phone Number" />
+        <div className="login-container">
+          <div className="login-wrapper">
+            <div className="login-card">
+              {!showReset ? (
+                isSignup ? (
+                  <>
+                    <h1 className="login-title">Sign up</h1>
+                    <form className="login-form" onSubmit={handleSignupSubmit}>
+                      <div className="login-input-container">
+                        <div>
+                          <input name="name" value={signupData.name} onChange={handleSignupChange} className="login-input" type="text" placeholder="Name" />
+                          {formErrors.name && <p className="login-error-text">{formErrors.name}</p>}
+                        </div>
+                        <div>
+                          <input name="email" value={signupData.email} onChange={handleSignupChange} className="login-input" type="email" placeholder="Email" />
+                          {formErrors.email && <p className="login-error-text">{formErrors.email}</p>}
+                        </div>
+                        <div>
+                          <input name="phone" value={signupData.phone} onChange={handleSignupChange} className="login-input" type="tel" placeholder="Phone Number" />
+                          {formErrors.phone && <p className="login-error-text">{formErrors.phone}</p>}
+                        </div>
 
-                    {!otpPhase ? (
-                      <>
-                        <input name="password" value={signupData.password} onChange={handleSignupChange} className="login-input" type="password" placeholder="Password" />
-                        <input name="confirmPassword" value={signupData.confirmPassword} onChange={handleSignupChange} className="login-input" type="password" placeholder="Confirm Password" />
-                      </>
-                    ) : (
-                      <input name="otp" value={signupData.otp} onChange={handleSignupChange} className="login-input" type="text" placeholder="Enter OTP" />
-                    )}
-
-                    <div className="login-forgot"></div>
-                    <button type="submit" className="login-button">{otpPhase ? "Submit" : "Sign Up"}</button>
-                  </form>
-                  {renderGoogleButton()}
-                </>
+                        {!otpPhase ? (
+                          <>
+                            <div>
+                              <input name="password" value={signupData.password} onChange={handleSignupChange} className="login-input" type="password" placeholder="Password" />
+                              {formErrors.password && <p className="login-error-text">{formErrors.password}</p>}
+                            </div>
+                            <div>
+                              <input name="confirmPassword" value={signupData.confirmPassword} onChange={handleSignupChange} className="login-input" type="password" placeholder="Confirm Password" />
+                              {formErrors.confirmPassword && <p className="login-error-text">{formErrors.confirmPassword}</p>}
+                            </div>
+                          </>
+                        ) : (
+                          <div>
+                            <input name="otp" value={signupData.otp} onChange={handleSignupChange} className="login-input" type="text" placeholder="Enter OTP" />
+                            {formErrors.otp && <p className="login-error-text">{formErrors.otp}</p>}
+                          </div>
+                        )}
+                      </div>
+                      <button type="submit" className="login-button">{otpPhase ? "Submit" : "Sign Up"}</button>
+                    </form>
+                    {renderGoogleButton()}
+                  </>
+                ) : (
+                  <>
+                    <h1 className="login-title">Login</h1>
+                    <form className="login-form" onSubmit={handleLoginSubmit}>
+                      <div className="login-input-container">
+                        <div>
+                          <input name="email" value={loginData.email} onChange={handleLoginChange} className="login-input" type="email" placeholder="Email" />
+                          {formErrors.email && <p className="login-error-text">{formErrors.email}</p>}
+                        </div>
+                        <div>
+                          <input name="password" value={loginData.password} onChange={handleLoginChange} className="login-input" type="password" placeholder="Password" />
+                          {formErrors.password && <p className="login-error-text">{formErrors.password}</p>}
+                        </div>
+                      </div>
+                      <div className="login-forgot-container"><label className="login-forgot" onClick={() => setShowReset(true)}>Forgot Password?</label></div>
+                      <button type="submit" className="login-button">Clock in</button>
+                    </form>
+                    {renderGoogleButton()}
+                  </>
+                )
               ) : (
                 <>
-                  <h1 className="login-title">Login</h1>
-                  <form className="login-form" onSubmit={handleLoginSubmit}>
-                    <input name="email" value={loginData.email} onChange={handleLoginChange} className="login-input" type="email" placeholder="Email" />
-                    <input style={{ marginBottom: 0 }} name="password" value={loginData.password} onChange={handleLoginChange} className="login-input" type="password" placeholder="Password" />
-                    <div className="login-forgot-container"><label className="login-forgot" onClick={() => setShowReset(true)}>Forgot Password?</label></div>
-                    <button type="submit" className="login-button">Clock in</button>
+                  <h1 className="login-title">Reset Password</h1>
+                  <form className="login-form" onSubmit={handleResetSubmit}>
+                    <div className="login-input-container">
+                      {!otpSent && (
+                        <div>
+                          <input name="email" value={resetData.email} onChange={handleResetChange} className="login-input" type="email" placeholder="Enter Email" />
+                          {formErrors.email && <p className="login-error-text">{formErrors.email}</p>}
+                        </div>
+                      )}
+                      {otpSent && !otpVerified && (
+                        <div>
+                          <input name="otp" value={resetData.otp} onChange={handleResetChange} className="login-input" type="text" placeholder="Enter OTP" />
+                          {formErrors.otp && <p className="login-error-text">{formErrors.otp}</p>}
+                        </div>
+                      )}
+                      {otpVerified && (
+                        <>
+                          <div>
+                            <input name="password" value={resetData.password} onChange={handleResetChange} className="login-input" type="password" placeholder="New Password" />
+                            {formErrors.password && <p className="login-error-text">{formErrors.password}</p>}
+                          </div>
+                          <div>
+                            <input name="confirmPassword" value={resetData.confirmPassword} onChange={handleResetChange} className="login-input" type="password" placeholder="Confirm Password" />
+                            {formErrors.confirmPassword && <p className="login-error-text">{formErrors.confirmPassword}</p>}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <button type="submit" className="login-button">
+                      {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
+                    </button>
+                    <div className="back-login-container">
+                      <label className="back-login" onClick={() => {
+                        setShowReset(false);
+                        setOtpSent(false);
+                        setOtpVerified(false);
+                        setFormErrors({});
+                        setResetData({ email: '', otp: '', password: '', confirmPassword: '' });
+                      }}>
+                        Back to login
+                      </label>
+                    </div>
                   </form>
-                  {renderGoogleButton()}
                 </>
-              )
-            ) : (
-              <>
-                <h1 className="login-title">Reset Password</h1>
-                <form className="login-form" onSubmit={handleResetSubmit}>
-                  {!otpSent && (
-                    <input
-                      name="email"
-                      value={resetData.email}
-                      onChange={handleResetChange}
-                      className="login-input"
-                      type="email"
-                      placeholder="Enter Email"
-                    />
-                  )}
-                  {otpSent && !otpVerified && (
-                    <input
-                      name="otp"
-                      value={resetData.otp}
-                      onChange={handleResetChange}
-                      className="login-input"
-                      type="text"
-                      placeholder="Enter OTP"
-                    />
-                  )}
-                  {otpVerified && (
-                    <>
-                      <div style={{ fontSize: '0.9rem', color: '#555', marginBottom: '0.5rem' }}>
-                      </div>
-                      <input
-                        name="password"
-                        value={resetData.password}
-                        onChange={handleResetChange}
-                        className="login-input"
-                        type="password"
-                        placeholder="New Password"
-                      />
-                      <input
-                        name="confirmPassword"
-                        value={resetData.confirmPassword}
-                        onChange={handleResetChange}
-                        className="login-input"
-                        type="password"
-                        placeholder="Confirm Password"
-                      />
-                    </>
-                  )}
-                  <button type="submit" className="login-button">
-                    {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
-                  </button>
-                  <div className="back-login-container">
-                    <label className="back-login" onClick={() => {
-                      setShowReset(false);
-                      setOtpSent(false);
-                      setOtpVerified(false);
-                      setResetData({ email: '', otp: '', password: '', confirmPassword: '' });
-                    }}>
-                      Back to login
-                    </label>
+              )}
+              {!showReset && (
+                <div className="login-switch" onClick={handleToggle}>
+                  <h6 className={`login-switch-label ${!isSignup ? "login-switch-label-active" : ""}`}>Clock in</h6>
+                  <div className={`login-toggle ${isSignup ? "login-toggle-active" : ""}`}>
+                    <div className={` ${isSignup ? "login-knob-active" : "login-knob"}`}></div>
                   </div>
-
-                </form>
-              </>
-            )}
-            {!showReset && (
-              <div className="login-switch" onClick={handleToggle}>
-                <h6 className={`login-switch-label ${!isSignup ? "login-switch-label-active" : ""}`}>Clock in</h6>
-                <div className={`login-toggle ${isSignup ? "login-toggle-active" : ""}`}>
-                  <div className={` ${isSignup ? "login-knob-active" : "login-knob"}`}></div>
+                  <h6 className={`login-switch-label ${isSignup ? "login-switch-label-active" : ""}`}>Sign up</h6>
                 </div>
-                <h6 className={`login-switch-label ${isSignup ? "login-switch-label-active" : ""}`}>Sign up</h6>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -435,12 +449,18 @@ export const Login = () => {
     flex-direction: column;
     align-items: center;
   }
+  
+  .login-input-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; 
+  }
 
   .login-input {
     width: 100%;
     font-size: clamp(0.9rem, 2.5vw, 1rem);
     padding: clamp(0.5rem, 1.5vw, 0.6rem) clamp(0.7rem, 2vw, 0.9rem);
-    margin-bottom: 1rem;
     border-radius: 0.5rem;
     border: 1px solid #aaa;
     background-color: #fff;
@@ -459,7 +479,6 @@ export const Login = () => {
 
   .login-forgot-container {
     align-self: flex-end;
-    margin-bottom: 0.8rem;
     text-align: right;
     width: 100%;
   }
@@ -504,6 +523,7 @@ export const Login = () => {
     width: 40%;
     min-width: 6rem;
     transition: background-color 0.3s;
+    margin-top: 1rem;
   }
 
   .login-button:hover {
@@ -618,6 +638,13 @@ export const Login = () => {
     box-sizing: border-box;
   }
 
+  .login-error-text {
+    color: #dc2626;
+    font-size: 0.675rem;
+    margin-top: 0.25rem;
+    margin-left: 0.25rem;
+  }
+
   /* Tablet and smaller desktop styles */
   @media (max-width: 1024px) {
     .login-logo-container {
@@ -727,6 +754,6 @@ export const Login = () => {
   }
 
 `}</style>
-    </div>
+    </>
   );
 };
