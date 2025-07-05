@@ -38,8 +38,18 @@ const getAttendanceData = asyncHandler(async (req, res) => {
 });
 
 const fetchAllEmployees = asyncHandler(async (req, res) => {
-    console.log("sendingngn")
     const employees = await employeeService.getAllEmployees();
+    res.status(200).json({ success: true, employees });
+});
+
+const getEmployeeByRole = asyncHandler(async (req, res) => {
+    const { role } = req.params;
+
+    if (!role) 
+        throw new ApiError(400, "Role not provided");
+
+    const employees = await employeeService.getEmployeeByRole(role);
+
     res.status(200).json({ success: true, employees });
 });
 
@@ -47,4 +57,5 @@ module.exports = {
     handleLogout,
     getAttendanceData,
     fetchAllEmployees,
+    getEmployeeByRole,
 };

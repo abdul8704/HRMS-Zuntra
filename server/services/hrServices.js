@@ -7,6 +7,13 @@ const ApiError = require("../errors/ApiError");
 
 const updateUserData = async (email, shiftId, campusId, roleId) => {
     try {
+        console.log(
+            "Updating user data for email:",
+            email,
+            shiftId,
+            campusId,
+            roleId
+        );
         const update = await UserCredentials.updateOne(
             { email: email },
             {
@@ -20,7 +27,7 @@ const updateUserData = async (email, shiftId, campusId, roleId) => {
 
         return update;
     } catch (error) {
-        throw new ApiError(`Failed to update user data`, error.message);
+        throw new ApiError(500, `Failed to update user data for ${email}`, error.message);
     }
 };
 
@@ -29,7 +36,7 @@ const getPendingUsers = async () => {
         const users = await UserCredentials.find({ role: { $exists: false } });
         return users;
     } catch (error) {
-        throw new ApiError(`Failed to get pending users`, error.message);
+        throw new ApiError(`Failed to fetch pending users`, error.message);
     }
 };
 
@@ -41,7 +48,7 @@ const creatUserPersonal = async (userid) => {
 
         await userPersonal.save();
     } catch (error) {
-        throw new ApiError(`Failed to create user personal data`, error.message);
+        throw new ApiError(500, `Failed to create user personal data for ${userid}`, error.message);
     }
 };
 
@@ -53,7 +60,7 @@ const createUserCourse = async (userid) => {
 
         await userCourse.save();
     } catch (error) {
-        throw new ApiError(`Failed to create user course data`, error.message);
+        throw new ApiError(500, `Failed to create user course data for ${userid}`, error.message);
     }
 };
 

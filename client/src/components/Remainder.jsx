@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Plus } from 'lucide-react'
+import React, { useState } from 'react';
+import { Plus } from 'lucide-react';
 
 export const Remainder = ({ onAddReminder }) => {
   const [reminders, setReminders] = useState([
@@ -13,116 +13,33 @@ export const Remainder = ({ onAddReminder }) => {
   ]);
 
   const handleAddReminder = () => {
-    if (onAddReminder) onAddReminder(); // Call the prop function
+    if (onAddReminder) onAddReminder();
   };
 
   return (
-    <>
-      <div className="remainder-container">
-        {/* Header */}
-        <div className="remainder-header">
-          <h1 className="remainder-title">Remainder</h1>
-          <button 
-            onClick={handleAddReminder}
-            className="remainder-add-btn"
-          >
-            <Plus size={20} />
-          </button>
-        </div>
-
-        {/* Reminders List */}
-        <div className="remainder-content">
-          <ul className="remainder-list">
-            {reminders.map((reminder, index) => (
-              <li key={index} className="remainder-item">
-                <div className="remainder-bullet"></div>
-                <span className="remainder-text">{reminder}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+    <div className="w-full h-full bg-[#BFBFF7] flex flex-col rounded-2xl">
+      {/* Header */}
+      <div className="flex justify-between items-center px-4 py-2">
+        <h1 className="text-xl font-semibold text-gray-800">Reminder</h1>
+        <button
+          onClick={handleAddReminder}
+          className="bg-blue-500 text-white p-1 rounded-full shadow-md hover:bg-blue-600 transition-all flex items-center justify-center"
+        >
+          <Plus size={20} />
+        </button>
       </div>
-    <style>{`
-        .remainder-container {
-  width: 100%;
-  height: 100%;
-  background-color:  #BFBFF7;
-  display: flex;
-  flex-direction: column;
-  border-radius: 20px;
-}
 
-.remainder-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.2rem 1rem ;
-}
-
-.remainder-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.remainder-add-btn {
-  background-color: #3b82f6;
-  color: white;
-  padding: 0.1rem;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.remainder-add-btn:hover {
-  background-color: #2563eb;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-.remainder-content {
-  flex: 1;
-  margin-right: 1rem;
-  overflow-y: auto;
-}
-
-.remainder-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.remainder-item {
-  display: flex;
-  align-items: flex-start;
-  padding-left: 2rem;
-  gap: 0.5rem;
-  border-radius: 8px;
-  transition: background-color 0.15s ease;
-}
-
-.remainder-bullet {
-  width: 8px;
-  height: 8px;
-  background-color: #3b82f6;
-  border-radius: 50%;
-  margin-top: 8px;
-  flex-shrink: 0;
-}
-
-.remainder-text {
-  color: #374151;
-  line-height: 1.5;
-  flex: 1;
-}    
-    `}</style>
-</>
-  )
-}
+      {/* Reminders List */}
+      <div className="flex-1 overflow-y-auto pr-4">
+        <ul className="flex flex-col gap-3 px-4 pb-4">
+          {reminders.map((reminder, index) => (
+            <li key={index} className="flex items-start gap-2 pl-4">
+              <div className="w-2 h-2 mt-2 bg-blue-500 rounded-full flex-shrink-0" />
+              <span className="text-gray-700 leading-relaxed">{reminder}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
