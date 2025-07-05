@@ -1,4 +1,4 @@
-export const TimeCard = ({ state, time = "09:00", showLabel = true, color = true }) => {
+export const TimeCard = ({ state, time = "09:00", showLabel, color}) => {
   const config = {
     in: {
       bg: "bg-[#c5e7b2]",
@@ -42,9 +42,8 @@ export const TimeCard = ({ state, time = "09:00", showLabel = true, color = true
     },
   };
 
-  const { bg, label: defaultLabel, icon } = config[state] || config.in;
-  const appliedBg = color === false ? "bg-white/20" : bg;
-  const displayLabel = showLabel ? defaultLabel : null;
+  const { bg, label, icon } = config[state] || config.in;
+  const appliedBg = color === false ? "bg-white/40" : bg;
 
   return (
     <div className={`w-full h-full ${appliedBg} rounded-xl overflow-hidden p-1 flex items-center justify-center gap-3`}>
@@ -53,9 +52,9 @@ export const TimeCard = ({ state, time = "09:00", showLabel = true, color = true
         <span className="text-[clamp(0.85rem,3vw,1rem)] font-semibold">
           {time}
         </span>
-        {displayLabel && (
+        {showLabel && (
           <span className="text-[clamp(0.6rem,2.5vw,0.8rem)] text-[#333] opacity-85 truncate max-w-full">
-            {displayLabel}
+            {label}
           </span>
         )}
       </div>
