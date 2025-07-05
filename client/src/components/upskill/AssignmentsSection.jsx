@@ -2,91 +2,54 @@ import React from 'react';
 
 export const AssignmentsSection = () => {
   return (
-    <div className="assignment-section">
-      <h4 className="assignment-title">
-        <span className="assignment-bar"></span>
+    <div className="p-4">
+      <h4 className="flex items-center text-lg font-bold mb-4">
+        <span className="w-1 h-5 bg-teal-600 mr-2 rounded-sm" />
         Assignments
       </h4>
 
-      <div className="question-box">
-        <p>1. Answer for question 1 is option b. Okay?</p>
+      {/* Question 1 */}
+      <div className="bg-gray-300 p-4 mb-4 rounded-lg">
+        <p className="font-medium mb-2">1. Answer for question 1 is option b. Okay?</p>
         <form>
-          <label><input type="radio" name="q1" /> option 1</label><br />
-          <label><input type="radio" name="q1" /> option 2</label><br />
-          <label><input type="radio" name="q1" defaultChecked /> option 3</label><br />
-          <label><input type="radio" name="q1" /> option 4</label>
+          <label className="block mb-1 text-sm">
+            <input type="radio" name="q1" className="mr-2" /> option 1
+          </label>
+          <label className="block mb-1 text-sm">
+            <input type="radio" name="q1" className="mr-2" /> option 2
+          </label>
+          <label className="block mb-1 text-sm">
+            <input type="radio" name="q1" className="mr-2" defaultChecked /> option 3
+          </label>
+          <label className="block mb-1 text-sm">
+            <input type="radio" name="q1" className="mr-2" /> option 4
+          </label>
         </form>
       </div>
 
-      <div className="question-box">
-        <p>2. Answer for question 2 is option b. Okay?</p>
+      {/* Question 2 */}
+      <div className="bg-gray-300 p-4 mb-4 rounded-lg">
+        <p className="font-medium mb-2">2. Answer for question 2 is option b. Okay?</p>
         <form>
-          <label><input type="radio" name="q2" defaultChecked /> option 1</label><br />
-          <label><input type="radio" name="q2" /> option 2</label><br />
-          <label><input type="radio" name="q2" /> option 3</label><br />
-          <label><input type="radio" name="q2" /> option 4</label>
+          <label className="block mb-1 text-sm">
+            <input type="radio" name="q2" className="mr-2" defaultChecked /> option 1
+          </label>
+          <label className="block mb-1 text-sm">
+            <input type="radio" name="q2" className="mr-2" /> option 2
+          </label>
+          <label className="block mb-1 text-sm">
+            <input type="radio" name="q2" className="mr-2" /> option 3
+          </label>
+          <label className="block mb-1 text-sm">
+            <input type="radio" name="q2" className="mr-2" /> option 4
+          </label>
         </form>
       </div>
 
-      <button className="submit-btn">Submit</button>
-
-      <style>{`
-        .assignment-section {
-          padding: 1rem;
-        }
-
-        .assignment-title {
-          display: flex;
-          align-items: center;
-          font-size: 1.2rem;
-          font-weight: bold;
-          margin-bottom: 1rem;
-        }
-
-        .assignment-bar {
-          width: 4px;
-          height: 20px;
-          background-color: #009688;
-          margin-right: 10px;
-        }
-
-        .question-box {
-          background-color: #e0e0e0;
-          padding: 1rem;
-          margin-bottom: 1rem;
-          border-radius: 8px;
-        }
-
-        .question-box p {
-          font-weight: 500;
-          margin-bottom: 0.5rem;
-        }
-
-        label {
-          display: block;
-          margin: 0.3rem 0;
-          font-size: 0.95rem;
-        }
-
-        .submit-btn {
-          margin-top: 1rem;
-          padding: 0.4rem 1.5rem;
-          border: 1px solid #009688;
-          border-radius: 20px;
-          background-color: white;
-          color: #009688;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background 0.3s;
-        }
-
-        .submit-btn:hover {
-          background-color: #009688;
-          color: white;
-        }
-      `}</style>
+      {/* Submit Button */}
+      <button className="mt-4 px-6 py-2 border border-teal-600 rounded-full bg-white text-teal-600 font-medium hover:bg-teal-600 hover:text-white transition duration-300">
+        Submit
+      </button>
     </div>
   );
 };
-
-
