@@ -43,7 +43,7 @@ const getPendingEmployees = asyncHandler(async (req, res) => {
         date: emp.dateJoined.toISOString().split('T')[0], 
     }));
 
-    res.status(200).json({ success: true, data: formattedPendingEmployees });
+    res.status(200).json({ success: true, pendingEmployees: formattedPendingEmployees });
 })
 
 

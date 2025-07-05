@@ -1,20 +1,22 @@
 import React from 'react';
 
-export const Loading = ({ useGif = false }) => {
+export const Loading = ({ useGif = false, variant = "pulse" }) => {
   return (
     <div className="w-full h-full flex items-center justify-center z-50">
       {useGif ? (
-        <img src={require('../assets/loader.gif')} alt="Loading..." className="w-full h-full object-contain" />
+        <img
+          src={require('../assets/loader.gif')}
+          alt="Loading..."
+          className="w-full h-full object-contain"
+        />
       ) : (
         <div className="text-gray-600 text-lg font-medium">
-          <span className="loading-text">
-            <span className="letter" style={{'--delay': '0s'}}>L</span>
-            <span className="letter" style={{'--delay': '0.1s'}}>o</span>
-            <span className="letter" style={{'--delay': '0.2s'}}>a</span>
-            <span className="letter" style={{'--delay': '0.3s'}}>d</span>
-            <span className="letter" style={{'--delay': '0.4s'}}>i</span>
-            <span className="letter" style={{'--delay': '0.5s'}}>n</span>
-            <span className="letter" style={{'--delay': '0.6s'}}>g</span>
+          <span className={`loading-text loading-text-${variant}`}>
+            {"Loading".split("").map((char, i) => (
+              <span className="letter" key={i} style={{ "--delay": `${i * 0.1}s` }}>
+                {char}
+              </span>
+            ))}
             <span className="dots ml-1 inline-block w-6 text-left">
               <span className="dot-1">.</span>
               <span className="dot-2">.</span>
@@ -24,13 +26,12 @@ export const Loading = ({ useGif = false }) => {
         </div>
       )}
 
-      {/* Keyframe animation for dots */}
       <style>{`
         .loading-text {
           display: inline-block;
         }
 
-        .loading-text .letter {
+        .loading-text-pulse .letter {
           display: inline-block;
           animation: letterPulse 2s infinite;
           animation-delay: var(--delay);
@@ -47,44 +48,6 @@ export const Loading = ({ useGif = false }) => {
           }
         }
 
-        .dots {
-          display: inline-block;
-          width: 24px;
-          text-align: left;
-        }
-
-        .dots .dot-1,
-        .dots .dot-2,
-        .dots .dot-3 {
-          opacity: 0;
-          animation: dotFade 1.5s infinite;
-        }
-
-        .dots .dot-1 {
-          animation-delay: 0.7s;
-        }
-
-        .dots .dot-2 {
-          animation-delay: 1s;
-        }
-
-        .dots .dot-3 {
-          animation-delay: 1.3s;
-        }
-
-        @keyframes dotFade {
-          0%, 20% {
-            opacity: 0;
-          }
-          40%, 80% {
-            opacity: 1;
-          }
-          100% {
-            opacity: 0;
-          }
-        }
-
-        /* Alternative wave animation for the whole text */
         .loading-text-wave .letter {
           display: inline-block;
           animation: letterWave 2s infinite;
@@ -100,7 +63,6 @@ export const Loading = ({ useGif = false }) => {
           }
         }
 
-        /* Alternative glow animation for the whole text */
         .loading-text-glow .letter {
           display: inline-block;
           animation: letterGlow 2s infinite;
@@ -116,6 +78,23 @@ export const Loading = ({ useGif = false }) => {
             text-shadow: 0 0 15px rgba(107, 114, 128, 0.8);
             color: #374151;
           }
+        }
+
+        .dots .dot-1,
+        .dots .dot-2,
+        .dots .dot-3 {
+          opacity: 0;
+          animation: dotFade 1.5s infinite;
+        }
+
+        .dot-1 { animation-delay: 0.7s; }
+        .dot-2 { animation-delay: 1s; }
+        .dot-3 { animation-delay: 1.3s; }
+
+        @keyframes dotFade {
+          0%, 20% { opacity: 0; }
+          40%, 80% { opacity: 1; }
+          100% { opacity: 0; }
         }
       `}</style>
     </div>

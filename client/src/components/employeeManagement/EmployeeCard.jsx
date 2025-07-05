@@ -7,12 +7,14 @@ export const EmployeeCard = ({
   email,
   phone,
   role,
-  image,
+  image="https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png",
   inTime,
   outTime,
   workTime,
   breakTime,
   bgColor = "#cfd9ea",
+  isNewUser = false,
+  onApprove,
 }) => {
   const [tooltip, setTooltip] = useState({ show: false, text: "", anchorRef: null });
   const [isVisible, setIsVisible] = useState(false);
@@ -21,15 +23,10 @@ export const EmployeeCard = ({
   const emailRef = useRef(null);
   const phoneRef = useRef(null);
 
-  // Intersection Observer for scroll animation
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-        } else {
-          setIsVisible(false);
-        }
+        setIsVisible(entry.isIntersecting);
       },
       {
         threshold: 0.1,
@@ -37,14 +34,10 @@ export const EmployeeCard = ({
       }
     );
 
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
-    }
+    if (cardRef.current) observer.observe(cardRef.current);
 
     return () => {
-      if (cardRef.current) {
-        observer.unobserve(cardRef.current);
-      }
+      if (cardRef.current) observer.unobserve(cardRef.current);
     };
   }, []);
 
@@ -60,148 +53,118 @@ export const EmployeeCard = ({
 
   return (
     <>
-      <div 
+      <div
         ref={cardRef}
         className={`
-          employee-card w-full rounded-2xl p-4 shadow-lg relative
+          employee-card w-full rounded-2xl shadow-lg relative
           transition-all duration-700 ease-out
-          ${isVisible 
-            ? 'opacity-100 translate-y-0' 
-            : 'opacity-0 translate-y-8'
-          }
+          ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
         `}
         style={{ backgroundColor: bgColor }}
       >
-        <div className="flex flex-row flex-wrap justify-between items-start w-full gap-4">
+        <div className={`flex ${isNewUser ? "flex-row" : "flex-col"} lg:flex-row items-stretch w-full gap-4`}>
           {/* Left Section */}
-          <div className="flex flex-row items-stretch flex-1 min-w-[260px] gap-4 basis-[55%]">
-            {/* Image Container */}
-            <div className="flex items-stretch justify-start h-full w-20">
-              <img 
-                src={image} 
-                alt="Profile" 
-                className="w-full h-full object-cover block rounded-lg"
+          <div className="flex items-center flex-[7] gap-4 min-w-0">
+            {/* Image */}
+            <div className="flex items-center sm:items-stretch justify-center sm:justify-start h-[20vh] max-w-[8rem]">
+              <img
+                src={image}
+                alt="Profile"
+                className="w-full h-full object-cover block rounded-l-lg sm:rounded-l-lg sm:rounded-r-none rounded-t-lg sm:rounded-t-none"
               />
             </div>
-            
-            {/* Info Container */}
-            <div className="flex flex-col gap-1.5 flex-1 min-w-0 overflow-hidden">
-              <h2
+
+            {/* Info */}
+            <div className="flex flex-col flex-1 min-w-0 max-w-full items-center sm:items-start justify-center overflow-hidden">
+              <h6
                 ref={nameRef}
-                className="text-lg m-0 cursor-pointer"
-                onMouseEnter={() => showTooltip(nameRef, name)}
-                onMouseLeave={hideTooltip}
+                className="text-md m-0 cursor-pointer truncate w-full max-w-full text-center sm:text-left"
               >
-                <span className="overflow-hidden text-ellipsis whitespace-nowrap max-w-full inline-block">
-                  {name}
-                </span>
-              </h2>
-              
-              <div 
+                {name}
+              </h6>
+
+              <div
                 ref={emailRef}
-                className="flex items-center gap-2 text-sm text-gray-800 max-w-full flex-nowrap overflow-hidden"
-                onMouseEnter={() => showTooltip(emailRef, email)} 
-                onMouseLeave={hideTooltip}
+                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden"
               >
-                <span className="text-base flex-shrink-0">📧</span>
-                <span className="overflow-hidden text-ellipsis whitespace-nowrap max-w-full inline-block">
-                  {email}
-                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="12" fill="none" viewBox="0 0 18 12">
+                  <path
+                    fill="#000"
+                    fillOpacity=".5"
+                    d="M1.72 11.775c-.474 0-.878-.144-1.215-.432-.336-.288-.504-.634-.505-1.04V1.472C0 1.067.168.72.505.432A1.81 1.81 0 0 1 1.72 0h13.754c.473 0 .878.144 1.215.433.337.288.505.635.505 1.039v8.831c0 .405-.169.752-.505 1.04a1.801 1.801 0 0 1-1.215.432H1.72Zm6.876-5.151 6.877-3.68V1.472l-6.877 3.68-6.877-3.68v1.472l6.877 3.68Z"
+                  />
+                </svg>
+                <span className="truncate">{email}</span>
               </div>
-              
-              <div 
+
+              <div
                 ref={phoneRef}
-                className="flex items-center gap-2 text-sm text-gray-800 max-w-full flex-nowrap overflow-hidden"
-                onMouseEnter={() => showTooltip(phoneRef, phone)} 
-                onMouseLeave={hideTooltip}
+                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden"
               >
-                <span className="text-base flex-shrink-0">📞</span>
-                <span className="overflow-hidden text-ellipsis whitespace-nowrap max-w-full inline-block">
-                  {phone}
-                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="12" fill="none" viewBox="0 0 13 12">
+                  <path
+                    fill="#000"
+                    fillOpacity=".5"
+                    d="M2.536 5.166C3.544 7.018 5.169 8.53 7.15 9.477l1.541-1.439a.732.732 0 0 1 .715-.157 8.507 8.507 0 0 0 2.5.373c.386 0 .7.294.7.654v2.283c0 .36-.314.654-.7.654C5.33 11.845 0 6.867 0 .726 0 .364.315.07.7.07h2.452c.385 0 .7.295.7.654 0 .818.14 1.603.4 2.336a.626.626 0 0 1-.175.667l-1.541 1.44Z"
+                  />
+                </svg>
+                <span className="truncate">{phone}</span>
               </div>
-              
-              <div 
-                className="mt-1 py-1 px-2 rounded-xl w-fit text-xs text-black"
-                style={{ backgroundColor: bgColor }}
-              >
+
+              <div className="mt-1 py-1 px-2 rounded-xl w-fit text-xs text-black bg-white/40 truncate">
                 {role}
               </div>
             </div>
           </div>
 
-          {/* Time Container */}
-          <div className="flex flex-wrap justify-end gap-3 flex-1 min-w-[200px] basis-[40%]">
-            <div className="flex gap-2.5">
-              <div className="flex-[0_1_calc(50%-0.4rem)] flex justify-center items-center min-w-[112px]">
-                <TimeCard state="in" time={inTime} label={false} color={false} />
-              </div>
-              <div className="flex-[0_1_calc(50%-0.4rem)] flex justify-center items-center min-w-[112px]">
-                <TimeCard state="out" time={outTime} color={false} label={false} />
-              </div>
+          {/* Time Cards or Action Buttons */}
+          {isNewUser ? (
+            <div className="flex flex-col flex-wrap justify-center gap-3 flex-[1] p-2.5">
+                <button
+                  onClick={() => onApprove?.()}
+                  className="h-[3rem] bg-green-500 text-white rounded-xl shadow hover:bg-green-600 text-lg font-semibold"
+                >
+                  ✓
+                </button>
+                <button
+                  className="h-[3rem] bg-red-500 text-white rounded-xl shadow hover:bg-red-600 text-lg font-semibold"
+                >
+                  ✕
+                </button>
             </div>
-            <div className="flex gap-2.5">
-              <div className="flex-[0_1_calc(50%-0.4rem)] flex justify-center items-center min-w-[112px]">
-                <TimeCard state="break" time={breakTime} color={false} label={false} />
+
+          ) : (
+            <>
+              <div className="flex flex-col flex-wrap justify-center gap-3 flex-[3] p-2.5">
+                <div className="flex gap-2.5 w-full flex-[1] justify-center">
+                  <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                    <TimeCard state="in" time={inTime} label={false} color={false} />
+                  </div>
+                  <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                    <TimeCard state="out" time={outTime} label={false} color={false} />
+                  </div>
+                </div>
+                <div className="flex flex-[1] gap-2.5 w-full justify-center">
+                  <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                    <TimeCard state="break" time={breakTime} label={false} color={false} />
+                  </div>
+                  <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                    <TimeCard state="work" time={workTime} label={false} color={false} />
+                  </div>
+                </div>
               </div>
-              <div className="flex-[0_1_calc(50%-0.4rem)] flex justify-center items-center min-w-[112px]">
-                <TimeCard state="work" time={workTime} color={false} label={false} />
-              </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
-
-        {/* Mobile Responsive Styles */}
-        <style jsx>{`
-          @media (max-width: 400px) {
-            .employee-card > div {
-              flex-direction: column !important;
-              gap: 1rem !important;
-            }
-
-            .employee-card > div > div:first-child {
-              flex-direction: column !important;
-              align-items: center !important;
-              flex: 1 1 100% !important;
-              min-width: 0 !important;
-            }
-
-            .employee-card > div > div:first-child > div:last-child {
-              align-items: center !important;
-              text-align: center !important;
-            }
-
-            .employee-card > div > div:last-child {
-              justify-content: center !important;
-              flex: 1 1 100% !important;
-              min-width: 0 !important;
-            }
-
-            .employee-card h2 {
-              font-size: 1rem !important;
-            }
-
-            .employee-card span {
-              max-width: 100% !important;
-              word-break: break-word !important;
-              white-space: normal !important;
-            }
-
-            .employee-card > div > div:last-child > div {
-              flex: 1 1 100% !important;
-              min-width: 6rem !important;
-            }
-          }
-        `}</style>
       </div>
 
       {/* Tooltip */}
       {tooltip.show && (
-        <ToolTip 
-          text={tooltip.text} 
+        <ToolTip
+          text={tooltip.text}
           anchorRef={tooltip.anchorRef}
           position="top"
-          offset={8}
+          offset={10}
         />
       )}
     </>
