@@ -1,107 +1,68 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ToolTip } from './ToolTip';
+import { ToolTip } from './ToolTip'; // Adjust the path as needed
 
-export const UserGreetings = ({ name, profileImageURL }) => {
-  const navigate = useNavigate();
-  const textRef = useRef(null);
+export const UserGreetings = ({ name, profileImageURL, marqueeText }) => {
+  const nameRef = useRef(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const [quote, setQuote] = useState('');
 
-  const motivationalQuotes = [
-    "Hope you make the most of your time today!",
-    "Wishing you a day where every minute counts!",
-    "May your productivity flow effortlessly today!",
-    "Hope you stay focused and purpose-driven today!",
-    "Wishing you the discipline to turn goals into achievements!",
-    "Start strong and stick to your plan today!",
-    "Wishing you the kind of success that comes from deep focus!",
-    "Hope you invest your time wisely and feel proud at the end of the day!",
-    "Don't just count the hours — make them amazing!",
-    "May your day be full of plans that work and work that matters!"
-  ];
-
+  // Check overflow once on mount and when name changes
   useEffect(() => {
-    const random = Math.floor(Math.random() * motivationalQuotes.length);
-    setQuote(motivationalQuotes[random]);
-  }, []);
-
-  const handleMouseEnter = () => {
-    const el = textRef.current;
-    if (el && el.scrollWidth > el.clientWidth) {
-      setShowTooltip(true);
+    const el = nameRef.current;
+    if (el) {
+      setIsOverflowing(el.scrollWidth > el.clientWidth);
     }
-  };
-
-  const handleMouseLeave = () => {
-    setShowTooltip(false);
-  };
-
-  const handleClick = () => {
-    navigate('/profile');
-  };
+  }, [name]);
 
   return (
-    <div className="w-full h-full flex flex-col justify-center font-sans p-4 relative overflow-hidden animate-fade-in">
-      <div className="flex items-center">
-        {/* Text area - 80% */}
-        <div className="w-[80%] overflow-hidden">
-          <h2
-            ref={textRef}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            className="text-[1.4rem] text-gray-800 truncate whitespace-nowrap overflow-hidden cursor-default transition-all duration-300 ease-in-out"
+    <div className="w-full h-full flex items-center rounded-2xl overflow-hidden">
+      {/* Left Side: Greeting and Marquee */}
+      <div className="flex-1 h-full flex flex-col justify-center overflow-hidden">
+        {/* Greeting with Conditional Tooltip */}
+        <div
+          className="relative max-w-full"
+          onMouseEnter={() => isOverflowing && setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+        >
+          <p
+            ref={nameRef}
+            className="text-[2.5vh] font-semibold text-gray-800 overflow-hidden text-ellipsis whitespace-nowrap max-w-full"
           >
-            Greetings, {name}! 👋
-          </h2>
-
-          <div className="relative w-full overflow-hidden h-[1.5rem] mt-1">
-            <div className="absolute whitespace-nowrap animate-marquee text-base text-gray-500">
-              {quote}
-            </div>
-          </div>
+            Greetings, {name}
+          </p>
+          {isOverflowing && showTooltip && (
+            <ToolTip text={`${name}`} anchorRef={nameRef} />
+          )}
         </div>
 
-        {/* Profile image - 20% */}
-        <div className="w-[20%] flex justify-end">
-          <img
-            src={profileImageURL}
-            alt="Profile"
-            onClick={handleClick}
-            className="w-[3.75rem] h-[3.75rem] rounded-full object-cover transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg cursor-pointer hover:opacity-80"
-          />
+        {/* Marquee */}
+        <div className="relative w-full overflow-hidden mt-[0.5vh]">
+          <div className="animate-marquee whitespace-nowrap text-[2.3vh] text-gray-600 w-max">
+            {marqueeText}
+          </div>
         </div>
       </div>
 
-      {showTooltip && (
-        <ToolTip
-          text={`Greetings, ${name}! 👋`}
-          anchorRef={textRef}
-          position="bottom"
-          offset={8}
+      {/* Profile Picture */}
+      <div className="ml-4 shrink-0">
+        <img
+          src={profileImageURL}
+          alt="Profile"
+          className="w-[3rem] h-[3rem] rounded-full object-cover border-2 border-orange-400 shadow"
         />
-      )}
+      </div>
 
-      <style>
-        {`
-          @keyframes marquee {
-            0%   { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-          }
-          .animate-marquee {
-            animation: marquee 10s linear infinite;
-          }
+      {/* Marquee Animation */}
+      <style>{`
+        @keyframes marquee {
+          0% { transform: translateX(100%); }
+          100% { transform: translateX(-100%); }
+        }
 
-          @keyframes fade-in {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-
-          .animate-fade-in {
-            animation: fade-in 0.6s ease-out;
-          }
-        `}
-      </style>
+        .animate-marquee {
+          animation: marquee 10s linear infinite;
+        }
+      `}</style>
     </div>
   );
 };

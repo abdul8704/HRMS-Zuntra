@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { jwtDecode } from 'jwt-decode';
+import { UserGreetings } from '../components/Dashboard/UserGreetings';
+import { ProjectDeadline } from '../components/projectManagement/ProjectDeadline';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
@@ -36,74 +38,55 @@ export const DashBoard = () => {
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 md:grid-cols-9 md:grid-rows-9 lg:grid-cols-9 lg:grid-rows-9 gap-[1rem] h-screen p-[1rem]">
 
-          {/* 1. UserGreetings (inlined)  bg-[#9e9b9b] */}
-          <div className="col-span-2 md:col-span-4 lg:col-span-4 md:row-span-1 rounded-2xl px-[0.4rem] flex items-center animate-fade-in overflow-hidden h-full w-full">
-            {/* Left (70%): Welcome Message + Quote */}
-            <div className="w-[85%] flex flex-col justify-center h-full overflow-hidden">
-              <p className="text-[#000] font-bold text-[1em] text-center">Greetings {userDetails.username}!</p>
-              <marquee className="text-[#000] opacity-[0.5] font-semibold text-[1rem]" behavior="scroll" direction="left">
-                {quote}
-              </marquee>
-            </div>
-
-            {/* Right (30%): Profile Picture */}
-            <div className="w-[15%] flex justify-end items-center">
-              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white shadow-md shrink-0">
-                <img
-                  src={userDetails.profilePicture || '/default-profile.png'}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
+          {/* 1. UserGreetings - Large card on mobile */}
+          <div className="h-[10vh] md:h-full bg-[#00ff00] col-span-2 md:col-span-4 lg:col-span-4 md:row-span-1 rounded-2xl flex items-center animate-fade-in overflow-hidden px-[0.3rem] w-full">
+            <UserGreetings name={userDetails.username} profileImageURL={userDetails.profilePicture} marqueeText={quote}/>
           </div>
 
-
-          {/* 2. TimeCard In */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-2 md:row-span-1 rounded-2xl bg-[#c0e8bc] flex items-center justify-center">
+          {/* 2. TimeCard In - Small card on mobile */}
+          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 lg:col-span-2 md:row-span-1 rounded-2xl bg-[#c0e8bc] flex items-center justify-center">
             <span className="text-gray-800">Time In</span>
           </div>
 
-          {/* 3. TimeCard Out */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-2 md:col-start-1 md:row-start-3 md:row-span-1 rounded-2xl bg-[#c3e4ee] flex items-center justify-center">
+          {/* 3. TimeCard Out - Small card on mobile */}
+          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 lg:col-span-2 md:col-start-1 md:row-start-3 md:row-span-1 rounded-2xl bg-[#c3e4ee] flex items-center justify-center">
             <span className="text-gray-800">Time Out</span>
           </div>
 
-          {/* 4. TimeCard Work */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-2 md:col-start-3 md:row-span-1 rounded-2xl bg-[#e1bec5] flex items-center justify-center">
+          {/* 4. TimeCard Work - Small card on mobile */}
+          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 lg:col-span-2 md:col-start-3 md:row-span-1 rounded-2xl bg-[#e1bec5] flex items-center justify-center">
             <span className="text-gray-800">Work Time</span>
           </div>
 
-          {/* 5. TimeCard Break */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-2 md:col-start-3 md:row-start-3 md:row-span-1 rounded-2xl bg-[#deceb9] flex items-center justify-center">
+          {/* 5. TimeCard Break - Small card on mobile */}
+          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 lg:col-span-2 md:col-start-3 md:row-start-3 md:row-span-1 rounded-2xl bg-[#deceb9] flex items-center justify-center">
             <span className="text-gray-800">Break Time</span>
           </div>
 
-          {/* 6. Project Deadline */}
-          <div className="col-span-2 md:col-span-5 lg:col-span-5 md:col-start-5 md:row-start-1 md:row-span-3 rounded-2xl bg-[#f2c3b9] flex items-center justify-center">
-            <span className="text-gray-800">Project Deadlines</span>
+          {/* 6. Project Deadline - Large card on mobile */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-5 lg:col-span-5 md:col-start-5 md:row-start-1 md:row-span-3 rounded-2xl bg-[#f2c3b9] flex items-center justify-center">
+            <ProjectDeadline />
           </div>
 
-          {/* 7. Reminders */}
-          <div className="col-span-2 md:col-span-5 lg:col-span-5 md:col-start-1 md:row-start-4 md:row-span-3 rounded-2xl bg-[#bfbff7] flex items-center justify-center">
+          {/* 7. Reminders - Large card on mobile */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-5 lg:col-span-5 md:col-start-1 md:row-start-4 md:row-span-3 rounded-2xl bg-[#bfbff7] flex items-center justify-center">
             <span className="text-gray-800">Reminders</span>
           </div>
 
-          {/* 8. Notifications */}
-          <div className="col-span-2 md:col-span-4 lg:col-span-4 md:col-start-6 md:row-start-4 md:row-span-3 rounded-2xl bg-[#f6e0bf] flex items-center justify-center">
+          {/* 8. Notifications - Medium card on mobile */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-4 lg:col-span-4 md:col-start-6 md:row-start-4 md:row-span-3 rounded-2xl bg-[#f6e0bf] flex items-center justify-center">
             <span className="text-gray-800">Notifications</span>
           </div>
 
-          {/* 9. Work Break Stats */}
-          <div className="col-span-2 md:col-span-3 lg:col-span-3 md:col-start-1 md:row-start-7 md:row-span-3 rounded-2xl bg-[#ddb3dd] flex items-center justify-center">
+          {/* 9. Work Break Stats - Medium card on mobile */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-3 lg:col-span-3 md:col-start-1 md:row-start-7 md:row-span-3 rounded-2xl bg-[#ddb3dd] flex items-center justify-center">
             <span className="text-gray-800">Work Break Stats</span>
           </div>
 
-          {/* 10. Employees on Leave */}
-          <div className="col-span-2 md:col-span-6 lg:col-span-6 md:col-start-4 md:row-start-7 md:row-span-3 rounded-2xl bg-[#adc0da] flex items-center justify-center">
+          {/* 10. Employees on Leave - Large card on mobile */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-6 lg:col-span-6 md:col-start-4 md:row-start-7 md:row-span-3 rounded-2xl bg-[#adc0da] flex items-center justify-center">
             <span className="text-gray-800">Employees on Leave</span>
           </div>
-
         </div>
       </div>
     </div>

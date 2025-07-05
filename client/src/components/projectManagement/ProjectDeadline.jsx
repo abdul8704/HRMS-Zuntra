@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
-import { jwtDecode } from 'jwt-decode';
 
 export const ProjectDeadline = () => {
   const [projectDate, setProjectDate] = useState(new Date());
@@ -38,128 +37,50 @@ export const ProjectDeadline = () => {
 
   const selectedDate = projectDate.toISOString().split('T')[0];
 
+
+
   return (
-    <>
-      <div className="project-deadline">
-        <div className="header">
-          <h2>Project Deadline</h2>
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => {
-              const newDate = new Date(e.target.value);
-              if (!isNaN(newDate)) setProjectDate(newDate);
-            }}
-          />
-        </div>
-
-        <div className="table-header">
-          <span>Project Name</span>
-          <span>Team</span>
-        </div>
-
-        <div className="project-list">
-          {loading ? (
-            <div className="no-projects">Loading...</div>
-          ) : projects.length === 0 ? (
-            <div className="no-projects">{apiMessage || 'No projects for this date.'}</div>
-          ) : (
-            projects.map((project, index) => (
-              <div key={index} className="project-item">
-                <span>{project.projectTitle}</span>
-                <span>{project.teamName}</span>
-              </div>
-            ))
-          )}
-        </div>
+    <div className="w-full h-full rounded-2xl flex flex-col text-[clamp(0.7rem,1.2vw,1rem)] p-[clamp(0.5rem,1vw,1rem)]">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-[0.5rem]">
+        <h2 className="font-semibold text-gray-800 text-[clamp(0.9rem,1.5vw,0.3rem)]">Project Deadline</h2>
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => {
+            const newDate = new Date(e.target.value);
+            if (!isNaN(newDate)) setProjectDate(newDate);
+          }}
+          className="bg-[rgba(252,224,255,0.5)] px-[clamp(0.5rem,1vw,1rem)] py-[0.3rem] rounded-md border border-gray-300 text-[clamp(0.7rem,1vw,0.3rem)] h-[1.5rem]"
+        />
       </div>
 
-      <style>
-        {`
-          .project-deadline {
-            background-color: #F2C3B9;
-            border-radius: 20px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-          }
+      {/* Table Header */}
+      <div className="grid grid-cols-2 gap-3 font-semibold mb-[clamp(0.5rem,1vw,1rem)]">
+        <span className="bg-[rgba(252,224,255,0.5)] py-[0.3rem] px-[0.5rem] rounded-md text-center text-[clamp(0.75rem,1.2vw,0.3rem)]">Project Name</span>
+        <span className="bg-[rgba(252,224,255,0.5)] py-[0.3rem] px-[0.5rem] rounded-md text-center text-[clamp(0.75rem,1.2vw,0.3rem)]">Team</span>
+      </div>
 
-          .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 0.5rem 1rem;
-          }
-
-          .header h2 {
-            font-size: 1.2rem;
-            font-weight: bold;
-          }
-
-          .header input {
-            padding: 0.2rem 0.5rem;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #fce0d9;
-            font-size: 0.9rem;
-          }
-
-          .table-header {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin: 0 1rem 0.3rem 1rem;
-            font-weight: bold;
-            font-size: 0.9rem;
-          }
-
-          .table-header span {
-            background-color: #f8d4c8;
-            padding: 0.4rem;
-            border-radius: 10px;
-            text-align: center;
-          }
-
-          .project-list {
-            flex: 1;
-            overflow-y: auto;
-            margin: 0 1rem 1rem 1rem;
-          }
-
-          .project-item {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-            color: #444;
-          }
-
-          .project-item span {
-            padding: 0.3rem 0.6rem;
-          }
-
-          .no-projects {
-            text-align: center;
-            padding: 1rem;
-            font-style: italic;
-            color: #666;
-          }
-
-          .project-list::-webkit-scrollbar {
-            width: 6px;
-          }
-
-          .project-list::-webkit-scrollbar-thumb {
-            background-color: grey;
-            border-radius: 6px;
-          }
-
-          .project-list::-webkit-scrollbar-track {
-            background: transparent;
-          }
-        `}
-      </style>
-    </>
+      {/* Project List */}
+      <div className="flex-1 overflow-y-auto">
+        {loading ? (
+          <div className="text-center italic text-gray-600 py-4">Loading...</div>
+        ) : projects.length === 0 ? (
+          <div className="text-center italic text-gray-600 py-4">
+            {apiMessage || 'No projects for this date.'}
+          </div>
+        ) : (
+          projects.map((project, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-2 gap-3 mb-2 text-gray-700 text-[clamp(0.7rem,1.1vw,0.9rem)]"
+            >
+              <span className="px-2">{project.projectTitle}</span>
+              <span className="px-2">{project.teamName}</span>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
   );
 };
