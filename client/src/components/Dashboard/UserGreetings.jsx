@@ -48,7 +48,7 @@ export const UserGreetings = ({ name, profileImageURL, marqueeText }) => {
         <img
           src={profileImageURL}
           alt="Profile"
-          className="w-[3rem] h-[3rem] rounded-full object-cover border-2 border-orange-400 shadow"
+          className="w-[3rem] h-[3rem] rounded-full object-cover"
         />
       </div>
 
