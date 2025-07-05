@@ -4,6 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import { UserGreetings } from '../components/Dashboard/UserGreetings';
 import { ProjectDeadline } from '../components/projectManagement/ProjectDeadline';
 import { ReminderCard } from '../components/Dashboard/ReminderCard';
+import { NotificationCard } from '../components/Dashboard/NotificationCard';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
@@ -76,7 +77,7 @@ export const DashBoard = () => {
 
           {/* 8. Notifications - Medium card on mobile */}
           <div className="h-[30vh] md:h-full col-span-2 md:col-span-4 lg:col-span-4 md:col-start-6 md:row-start-4 md:row-span-3 rounded-2xl bg-[#f6e0bf] flex items-center justify-center">
-            <span className="text-gray-800">Notifications</span>
+            <NotificationCard />
           </div>
 
           {/* 9. Work Break Stats - Medium card on mobile */}
