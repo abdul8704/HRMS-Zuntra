@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { TimeCard } from "../dashboard/TimeCard";
-import { ToolTip } from "../dashboard/ToolTip";
+import { ToolTip } from "../ToolTip";
 
 export const EmployeeCard = ({
   name,
@@ -41,12 +41,22 @@ export const EmployeeCard = ({
     };
   }, []);
 
-  const showTooltip = (anchorRef, text) => {
-    setTooltip({
-      show: true,
-      text,
-      anchorRef
-    });
+  const showTooltipIfTruncated = (anchorRef, text) => {
+    const element = anchorRef.current;
+    if (element) {
+      // For the name (h6 element), check directly
+      if (element.tagName === 'H6') {
+        if (element.scrollWidth > element.clientWidth) {
+          setTooltip({ show: true, text, anchorRef });
+        }
+      } else {
+        // For email and phone containers, check the span inside
+        const spanElement = element.querySelector('span');
+        if (spanElement && spanElement.scrollWidth > spanElement.clientWidth) {
+          setTooltip({ show: true, text, anchorRef });
+        }
+      }
+    }
   };
 
   const hideTooltip = () => setTooltip({ show: false, text: "", anchorRef: null });
@@ -65,8 +75,8 @@ export const EmployeeCard = ({
         <div className={`flex ${isNewUser ? "flex-row" : "flex-col"} lg:flex-row items-stretch w-full gap-4`}>
           {/* Left Section */}
           <div className="flex items-center flex-[7] gap-4 min-w-0">
-            {/* Image */}
-            <div className="flex items-center sm:items-stretch justify-center sm:justify-start h-[20vh] max-w-[8rem]">
+            {/* Image - Option 1: Make image take full height of its container */}
+            <div className="flex items-center sm:items-stretch justify-center sm:justify-start self-stretch max-w-[8rem]">
               <img
                 src={image}
                 alt="Profile"
@@ -75,17 +85,21 @@ export const EmployeeCard = ({
             </div>
 
             {/* Info */}
-            <div className="flex flex-col flex-1 min-w-0 max-w-full items-center sm:items-start justify-center overflow-hidden">
+            <div className="flex flex-col flex-1 min-w-0 max-w-full items-center sm:items-start justify-center overflow-hidden py-4">
               <h6
                 ref={nameRef}
                 className="text-md m-0 cursor-pointer truncate w-full max-w-full text-center sm:text-left"
+                onMouseEnter={() => showTooltipIfTruncated(nameRef, name)}
+                onMouseLeave={hideTooltip}
               >
                 {name}
               </h6>
 
               <div
                 ref={emailRef}
-                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden"
+                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden cursor-pointer"
+                onMouseEnter={() => showTooltipIfTruncated(emailRef, email)}
+                onMouseLeave={hideTooltip}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="12" fill="none" viewBox="0 0 18 12">
                   <path
@@ -99,7 +113,9 @@ export const EmployeeCard = ({
 
               <div
                 ref={phoneRef}
-                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden"
+                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden cursor-pointer"
+                onMouseEnter={() => showTooltipIfTruncated(phoneRef, phone)}
+                onMouseLeave={hideTooltip}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="12" fill="none" viewBox="0 0 13 12">
                   <path

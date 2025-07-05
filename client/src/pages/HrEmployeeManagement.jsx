@@ -7,7 +7,7 @@ import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
 import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
 import { EditRolePopup } from '../components/employeeManagement/EditRolePopup';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
-import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
+import { EmpAssignmentPopUp } from '../components/employeeManagement/EmployeeAssignmentPopup';
 import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
 import { Loading } from '../components/Loading';
 import api from '../api/axios';
@@ -29,11 +29,27 @@ export const HrEmployeeManagement = () => {
   const [isLoadingRoles, setIsLoadingRoles] = useState(true);
   const [isErrorRoles, setIsErrorRoles] = useState(false);
 
+  const [isLoadingEmployees, setIsLoadingEmployees] = useState(true);
+  const [isErrorEmployees, setIsErrorEmployees] = useState(false);
+
+  const [isLoadingPending, setIsLoadingPending] = useState(true);
+  const [isErrorPending, setIsErrorPending] = useState(false);
+
+  const [isLoadingBranches, setIsLoadingBranches] = useState(true);
+  const [isErrorBranches, setIsErrorBranches] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoadingRoles(true);
+        setIsLoadingEmployees(true);
+        setIsLoadingPending(true);
+        setIsLoadingBranches(true);
+
         setIsErrorRoles(false);
+        setIsErrorEmployees(false);
+        setIsErrorPending(false);
+        setIsErrorBranches(false);
 
         const [roles, emps, pending, brs] = await Promise.all([
           api.get('/api/roles'),
@@ -49,8 +65,14 @@ export const HrEmployeeManagement = () => {
       } catch (err) {
         console.error("Error fetching data:", err);
         setIsErrorRoles(true);
+        setIsErrorEmployees(true);
+        setIsErrorPending(true);
+        setIsErrorBranches(true);
       } finally {
         setIsLoadingRoles(false);
+        setIsLoadingEmployees(false);
+        setIsLoadingPending(false);
+        setIsLoadingBranches(false);
       }
     };
     fetchData();
@@ -99,41 +121,45 @@ export const HrEmployeeManagement = () => {
       <div className="flex-1 p-[1rem]">
         <EmpNavbar />
 
+        {/* All Employees */}
         {navId === "all" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto h-[calc(100vh-7rem)] mt-[1rem]">
-            {employees.map((emp, index) => (
-              <EmployeeCard
-                key={index}
-                name={emp.username}
-                email={emp.email}
-                phone={emp.phoneNumber}
-                image={emp.profilePicture}
-                role={emp.role.role}
-                inTime="10:00"
-                outTime="16:00"
-                workTime="10:01"
-                breakTime="12:00"
-                bgColor={bgColorList[index]}
-              />
-            ))}
+            {isLoadingEmployees ? (
+              <p className="text-center col-span-full mt-4 text-gray-600 font-semibold"><Loading /></p>
+            ) : isErrorEmployees ? (
+              <p className="text-center col-span-full mt-4 text-red-500 font-semibold">Error fetching employees</p>
+            ) : employees.length === 0 ? (
+              <p className="text-center col-span-full mt-4 text-gray-500 font-medium">No employees available</p>
+            ) : (
+              employees.map((emp, index) => (
+                <EmployeeCard
+                  key={index}
+                  name={emp.username}
+                  email={emp.email}
+                  phone={emp.phoneNumber}
+                  image={emp.profilePicture}
+                  role={emp.role.role}
+                  inTime="10:00"
+                  outTime="16:00"
+                  workTime="10:01"
+                  breakTime="12:00"
+                  bgColor={bgColorList[index]}
+                />
+              ))
+            )}
           </div>
         )}
 
+        {/* Roles */}
         {navId === "roles" && (
           <div className="px-[1rem] mt-[1rem] h-[calc(100vh-7rem)] overflow-y-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[1rem] justify-items-center">
               {isLoadingRoles ? (
-                <p className="text-center col-span-full mt-4 text-gray-600 font-semibold">
-                  <Loading />
-                </p>
+                <p className="text-center col-span-full mt-4 text-gray-600 font-semibold"><Loading /></p>
               ) : isErrorRoles ? (
-                <p className="text-center col-span-full mt-4 text-red-500 font-semibold">
-                  Error fetching roles
-                </p>
+                <p className="text-center col-span-full mt-4 text-red-500 font-semibold">Error fetching roles</p>
               ) : rolesData.length === 0 ? (
-                <p className="text-center col-span-full mt-4 text-gray-500 font-medium">
-                  No roles available
-                </p>
+                <p className="text-center col-span-full mt-4 text-gray-500 font-medium">No roles available</p>
               ) : (
                 rolesData.map((role, idx) => (
                   <EmpRoleCard
@@ -151,7 +177,6 @@ export const HrEmployeeManagement = () => {
                 ))
               )}
             </div>
-
             <div
               className="fixed bottom-8 right-20 w-14 h-14 bg-[#BBD3CC] text-[#6c6c6c] rounded-full flex items-center justify-center text-2xl font-bold cursor-pointer hover:scale-110 hover:bg-[#A6C4BA] transition-transform z-[1000]"
               onClick={() => setShowPopup(true)}
@@ -163,11 +188,20 @@ export const HrEmployeeManagement = () => {
           </div>
         )}
 
+        {/* Geofencing */}
         {navId === "geofencing" && (
           <div className="p-4 flex flex-col gap-4 overflow-y-auto h-[calc(100vh-7rem)]">
-            {branches.map((loc, index) => (
-              <GeoFencing key={index} embedUrl={loc.embedURL} branchName={loc.campusName} />
-            ))}
+            {isLoadingBranches ? (
+              <p className="text-center mt-4 text-gray-600 font-semibold"><Loading /></p>
+            ) : isErrorBranches ? (
+              <p className="text-center mt-4 text-red-500 font-semibold">Error fetching branches</p>
+            ) : branches.length === 0 ? (
+              <p className="text-center mt-4 text-gray-500 font-medium">No branches available</p>
+            ) : (
+              branches.map((loc, index) => (
+                <GeoFencing key={index} embedUrl={loc.embedURL} branchName={loc.campusName} />
+              ))
+            )}
             <button
               className="fixed bottom-8 right-20 w-14 h-14 bg-[#BBD3CC] text-[#6c6c6c] rounded-full flex items-center justify-center text-2xl font-bold cursor-pointer hover:scale-110 hover:bg-[#A6C4BA] transition-transform z-[1000]"
               onClick={() => setShowLocationForm(true)}
@@ -179,9 +213,17 @@ export const HrEmployeeManagement = () => {
           </div>
         )}
 
+        {/* New Users */}
         {navId === "newusers" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto mt-[1rem]">
-            {pendingEmployees.map((emp, index) => (
+            {isLoadingPending ? (
+              <p className="text-center col-span-full mt-4 text-gray-600 font-semibold"><Loading /></p>
+            ) : isErrorPending ? (
+              <p className="text-center col-span-full mt-4 text-red-500 font-semibold">Error fetching new users</p>
+            ) : pendingEmployees.length === 0 ? (
+              <p className="text-center col-span-full mt-4 text-gray-500 font-medium">No new users pending</p>
+            ) : (
+              pendingEmployees.map((emp, index) => (
                 <EmployeeCard
                   key={index}
                   name={emp.name}
@@ -193,10 +235,12 @@ export const HrEmployeeManagement = () => {
                   isNewUser={true}
                   onApprove={() => handleApprove(emp)}
                 />
-            ))}
+              ))
+            )}
           </div>
         )}
 
+        {/* Location Form */}
         {showLocationForm && (
           <AddLocationForm
             isOpen={showLocationForm}

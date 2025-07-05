@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { ToolTip } from './ToolTip'; // Adjust the path as needed
+import { ToolTip } from '../ToolTip'; // Adjust the path as needed
 
 export const UserGreetings = ({ name, profileImageURL, marqueeText }) => {
   const nameRef = useRef(null);
