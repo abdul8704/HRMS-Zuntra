@@ -12,14 +12,24 @@ import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignme
 import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
 import api from '../api/axios';
 
-const fetchPendingEmployees = async () => (await api.get('/api/hr/pending')).data.data;
-const fetchEmployees = async () => (await api.get('/api/employee')).data.employees;
+const fetchPendingEmployees = async () => {
+  const response = await api.get('/api/hr/pending');
+  return response.data.pendingEmployees;
+}
+const fetchEmployees = async () => {
+  const response = await api.get('/api/employee')
+    return response.data.employees;
+}
 const fetchAllRoles = async () => {
   const response = await api.get('/api/roles')
-  console.log("Roles fetched:", response.data);
+  console.log("Rolessss fetched:", response.data);
   return response.data;
 }
-const fetchAllBranches = async () => (await api.get('/api/branch')).data.branches;
+const fetchAllBranches = async () => {
+  const response = await api.get('/api/branch');
+  console.log("Branches fetched:", response.data.branches);
+  return response.data.branches;
+}
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
@@ -96,7 +106,7 @@ export const HrEmployeeManagement = () => {
     { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
     { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
   ];
-  console.log("Branches: ", branches);
+
   return (
     <div className="flex">
       <Sidebar />

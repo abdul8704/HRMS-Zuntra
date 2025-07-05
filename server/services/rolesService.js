@@ -9,10 +9,10 @@ const getAllRolesData = async () => {
     }
 };
 
-//@desc Get role details by role name
-const getRoleDetailsByName = async (roleName) => {
+//@desc Get role details by role id
+const getRoleDetailsById = async (roleid) => {
     try {
-        const roleDetail = await Role.findOne({ role: roleName });
+        const roleDetail = await Role.findOne({ _id: roleid });
         return roleDetail;
     } catch (error) {
         throw new ApiError(500, "failed to fetch role details: ", error.message);
@@ -59,7 +59,7 @@ const deleteRole = async (roleName) => {
 
 module.exports = {
     getAllRolesData,
-    getRoleDetailsByName,
+    getRoleDetailsById,
     createNewRole,
     editRole,
     deleteRole,
