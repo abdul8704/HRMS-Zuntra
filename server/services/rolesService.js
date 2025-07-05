@@ -2,20 +2,24 @@ const Role = require("../models/roles");
 // Get all roles
 const getAllRolesData = async () => {
     try {
-        const rolesData = await Role.find({});
+        const rolesData = await Role.find({}, {
+            role: 1,
+            color: 1,
+            _id: 1,
+        });
         return rolesData;
     } catch (error) {
-        throw new ApiError(`Failed to fetch roles data: ${error.message}`);
+        throw new ApiError(500, "Failed to fetch roles data: ", error.message);
     }
 };
 
-//@desc Get role details by role name
-const getRoleDetailsByName = async (roleName) => {
+//@desc Get role details by role id
+const getRoleDetailsById = async (roleid) => {
     try {
-        const roleDetail = await Role.findOne({ role: roleName });
+        const roleDetail = await Role.findOne({ _id: roleid });
         return roleDetail;
     } catch (error) {
-        throw new ApiError(`Failed to fetch role details: ${error.message}`);
+        throw new ApiError(500, "failed to fetch role details: ", error.message);
     }
 };
 
@@ -24,7 +28,7 @@ const createNewRole = async (roleData) => {
         await Role.create(roleData);
         return { success: true, message: "done" };
     } catch (error) {
-        throw new ApiError(`Failed to create new role: ${error.message}`);
+        throw new ApiError(500, "Failed to create new role: ", error.message);
     }
 };
 
@@ -41,7 +45,7 @@ const editRole = async (roleName, updatedData) => {
             updatedRole,
         };
     } catch (error) {
-        throw new ApiError(`Failed to update role: ${error.message}`);
+        throw new ApiError(500,"Failed to update role: ", error.message);
     }
 };
 
@@ -53,13 +57,13 @@ const deleteRole = async (roleName) => {
         }
         return { success: true, message: "Role deleted successfully" };
     } catch (error) {
-        throw new ApiError(`Failed to delete role: ${error.message}`);
+        throw new ApiError(500, "Failed to delete role: ", error.message);
     }
 };
 
 module.exports = {
     getAllRolesData,
-    getRoleDetailsByName,
+    getRoleDetailsById,
     createNewRole,
     editRole,
     deleteRole,

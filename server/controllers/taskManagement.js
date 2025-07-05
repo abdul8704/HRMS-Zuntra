@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const taskService = require('../services/taskService');
-const userService = require('../services/user')
+const EmployeeService = require('../services/employeeService');
 const projectService = require('../services/projectService');
 const ApiError = require('../errors/ApiError');
 const asyncHandler = require('express-async-handler');
@@ -34,7 +34,7 @@ const getTasksBasedOnStatus = asyncHandler(async (req, res) => {
     }
 
     const enrichedTasks = await Promise.all(tasks.map(async (task) => {
-        const assignedToUser = await userService.getDetailsOfaUser(task.assignedTo);
+        const assignedToUser = await EmployeeService.getDetailsOfaEmployee(task.assignedTo);
 
         return {
             ...task.toObject(),

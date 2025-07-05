@@ -10,15 +10,12 @@ import { EditRolePopup } from '../components/employeeManagement/EditRolePopup';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmpAssignmentPopUp';
 import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
+import { Loading } from '../components/Loading';
 import api from '../api/axios';
-
-const fetchPendingEmployees = async () => (await api.get('/api/hr/pending')).data.data;
-const fetchEmployees = async () => (await api.get('/api/employee')).data.employees;
-const fetchAllRoles = async () => (await api.get('/api/roles')).data.roles;
-const fetchAllBranches = async () => (await api.get('/api/branch')).data.branches;
 
 export const HrEmployeeManagement = () => {
   const { navId } = useParams();
+
   const [showPopup, setShowPopup] = useState(false);
   const [showAssignPopup, setShowAssignPopup] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -30,15 +27,31 @@ export const HrEmployeeManagement = () => {
   const [rolesData, setRolesData] = useState([]);
   const [branches, setBranches] = useState([]);
 
+  const [isLoadingRoles, setIsLoadingRoles] = useState(true);
+  const [isErrorRoles, setIsErrorRoles] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setRolesData(await fetchAllRoles());
-        setEmployees(await fetchEmployees());
-        setPendingEmployees(await fetchPendingEmployees());
-        setBranches(await fetchAllBranches());
+        setIsLoadingRoles(true);
+        setIsErrorRoles(false);
+
+        const [roles, emps, pending, brs] = await Promise.all([
+          api.get('/api/roles'),
+          api.get('/api/employee'),
+          api.get('/api/hr/pending'),
+          api.get('/api/branch'),
+        ]);
+
+        setRolesData(roles.data);
+        setEmployees(emps.data.employees);
+        setPendingEmployees(pending.data.pendingEmployees);
+        setBranches(brs.data.branches);
       } catch (err) {
-        console.error("Error fetching employees:", err);
+        console.error("Error fetching data:", err);
+        setIsErrorRoles(true);
+      } finally {
+        setIsLoadingRoles(false);
       }
     };
     fetchData();
@@ -81,18 +94,6 @@ export const HrEmployeeManagement = () => {
   };
   const bgColorList = getGridBgColors(employees.length, 3, bgClasses);
 
-  const roleData = [
-    { role: "HR Manager", memberCount: 1, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-    { role: "Executive Manager", memberCount: 2, bgColor: "#d6e9f8", ibgcolor: "#3f51b5" },
-    { role: "UI/UX Designer", memberCount: 2, bgColor: "#ffe0dc", ibgcolor: "#f44336" },
-    { role: "App Developer", memberCount: 2, bgColor: "#ccfbf1", ibgcolor: "#00acc1" },
-    { role: "Web Developer", memberCount: 2, bgColor: "#fbcfe8", ibgcolor: "#e91e63" },
-    { role: "Data Scientist", memberCount: 1, bgColor: "#f3e8ff", ibgcolor: "#9c27b0" },
-    { role: "DevOps Engineer", memberCount: 2, bgColor: "#c084fc", ibgcolor: "#6200ea" },
-    { role: "Marketing", memberCount: 3, bgColor: "#ede9fe", ibgcolor: "#8e24aa" },
-    { role: "Content Writer", memberCount: 2, bgColor: "#d9f99d", ibgcolor: "#558b2f" },
-  ];
-
   return (
     <div className="flex">
       <Sidebar />
@@ -120,21 +121,38 @@ export const HrEmployeeManagement = () => {
         )}
 
         {navId === "roles" && (
-          <div className="p-4 flex flex-wrap gap-4 overflow-y-auto h-[calc(100vh-7rem)]">
-            {roleData.map((role, idx) => (
-              <EmpRoleCard
-                key={idx}
-                role={role.role}
-                memberCount={role.memberCount}
-                bgColor={role.bgColor}
-                ibgcolor={role.ibgcolor}
-                onEdit={() => handleEditRole({
-                  role: role.role,
-                  members: role.memberCount,
-                  color: role.bgColor,
-                })}
-              />
-            ))}
+          <div className="px-[1rem] mt-[1rem] h-[calc(100vh-7rem)] overflow-y-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[1rem] justify-items-center">
+              {isLoadingRoles ? (
+                <p className="text-center col-span-full mt-4 text-gray-600 font-semibold">
+                  <Loading />
+                </p>
+              ) : isErrorRoles ? (
+                <p className="text-center col-span-full mt-4 text-red-500 font-semibold">
+                  Error fetching roles
+                </p>
+              ) : rolesData.length === 0 ? (
+                <p className="text-center col-span-full mt-4 text-gray-500 font-medium">
+                  No roles available
+                </p>
+              ) : (
+                rolesData.map((role, idx) => (
+                  <EmpRoleCard
+                    key={idx}
+                    role={role.role}
+                    bgColor={role.color || "#e0e0e0"}
+                    onEdit={() =>
+                      handleEditRole({
+                        role: role.role,
+                        members: role.memberCount,
+                        color: role.bgColor || "#e0e0e0",
+                      })
+                    }
+                  />
+                ))
+              )}
+            </div>
+
             <div
               className="fixed bottom-8 right-20 w-14 h-14 bg-[#BBD3CC] text-[#6c6c6c] rounded-full flex items-center justify-center text-2xl font-bold cursor-pointer hover:scale-110 hover:bg-[#A6C4BA] transition-transform z-[1000]"
               onClick={() => setShowPopup(true)}

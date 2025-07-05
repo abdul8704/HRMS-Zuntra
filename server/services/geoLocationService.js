@@ -55,7 +55,7 @@ const addNewCampusLocation = async (
 
 const getAllCampusLocations = async () => {
     try {
-        const locations = await GeoLocation.find({}, { campusName: 1, embedURL: 1, _id: 0 });
+        const locations = await GeoLocation.find({}, { campusName: 1, embedURL: 1, _id: 1 });
         return locations;
     } catch (error) {
         throw new ApiError(

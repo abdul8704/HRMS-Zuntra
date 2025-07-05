@@ -19,7 +19,7 @@ const getAllReminders = async (userId) => {
         const reminders = await Reminder.find(filter).sort({ date: 1 });
         return reminders;
     } catch (error) {
-        throw new ApiError("Failed to fetch reminders", error.message);
+        throw new ApiError(500, "Failed to fetch reminders", error.message);
     }
 };
 
@@ -38,7 +38,7 @@ const getTodaysReminders = async (userId) => {
         const reminders = await Reminder.find(filter).sort({ date: 1 });
         return reminders;
     } catch (error) {
-        throw new ApiError("Failed to fetch today's reminders", error.message);
+        throw new ApiError(500, "Failed to fetch today's reminders", error.message);
     }
 };
 

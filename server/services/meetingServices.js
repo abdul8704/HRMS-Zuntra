@@ -6,7 +6,7 @@ const getAllMeetings = async () => {
     if(meetData)
             return meetData;
     else 
-        throw new ApiError("No meetings found");    
+        throw new ApiError(404, "No meetings found");    
 }
 
 module.exports = {

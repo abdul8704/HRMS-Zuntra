@@ -37,7 +37,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
   const getBranches = async () => {
     try {
       const response = await api.get('/api/branch');
-      return response.data;
+      return response.data.branches;
     }
     catch (error) {
       alert("Error fetching branches. Please try again later.");
