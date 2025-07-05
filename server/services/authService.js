@@ -33,12 +33,12 @@ const verifyLogin = async (email, password) => {
             },
         };
     } catch (err) {
-        throw new ApiError(500, "Failed to verify login", err.message)
+        throw new ApiError(500, "Failed to verify login", err.message);
     }
 };
 
 const createNewUser = async (userData) => {
-    try{
+    try {
         const { username, email, password, phoneNum } = userData;
 
         const hashedpass = await bcrypt.hash(
@@ -59,25 +59,39 @@ const createNewUser = async (userData) => {
             success: true,
             message: "User registered successfully, wait for aproval.",
         };
-    }catch(err){
+    } catch (err) {
         throw new ApiError(500, "Failed to create user", err.message);
     }
 };
 
 const getUserByEmail = async (email) => {
-    const userData = await UserCreds.findOne({ email: email });
-    return userData;
+    try {
+        const userData = await UserCreds.findOne({ email: email });
+        return userData;
+    } catch (err) {
+        throw new ApiError(500, "Failed to get user by email", err.message);
+    }
 };
 
 const passwordReset = async (email, password) => {
-    const hashedpass = await bcrypt.hash(password, Number(process.env.HASH_SALT));
+    try {
+        const hashedpass = await bcrypt.hash(
+            password,
+            Number(process.env.HASH_SALT)
+        );
 
-    await UserCreds.updateOne({email: email}, {
-        passwordHash: hashedpass
-    })
+        await UserCreds.updateOne(
+            { email: email },
+            {
+                passwordHash: hashedpass,
+            }
+        );
 
-    return { success: true, message: "pass changed"}
-}
+        return { success: true, message: "pass changed" };
+    } catch (err) {
+        throw new ApiError(500, "Failed to reset password", err.message);
+    }
+};
 
 module.exports = {
     verifyLogin,

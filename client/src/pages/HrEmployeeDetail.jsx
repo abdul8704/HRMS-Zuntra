@@ -4,6 +4,7 @@ import AttendanceCalendar from "../components/attendance/AttendanceCalendar";
 import AttendanceCard from "../components/attendance/AttendanceCard";
 import ProgressCard from "../components/attendance/ProgressCard";
 import TabNavigationCard from "../components/attendance/TabNavigationCard";
+import { CourseCard } from "../components/coursemanagement/CourseCard";
 
 /**
  * 8x7 Grid Layout:
@@ -23,15 +24,18 @@ import TabNavigationCard from "../components/attendance/TabNavigationCard";
  */
 
 export const HrEmployeeDetail = () => {
+  const [ tabVariable, setTabVariable ] = React.useState(0);
   return (
     <div className="attendance-page">
       <ProfileSidebar />
       
       <div className="attendance-container">
         {/* Optional header / tabs */}
-        <TabNavigationCard />
-        
-        {/* 8x7 Grid Layout */}
+        <TabNavigationCard
+          tabVariable={tabVariable}
+          setTabVariable={setTabVariable}
+        />
+        {tabVariable==0 &&(
         <div className="dashboard-grid-8x7">
           {/* 1a - InTime (spans 2x1) */}
           <div className="in-time-wrapper">
@@ -73,7 +77,13 @@ export const HrEmployeeDetail = () => {
           <div className="attendance-card-wrapper">
             <AttendanceCard />
           </div>
-        </div>
+        </div> )}
+        {tabVariable==1 && (
+          <div className="completed-courses">
+            <h1>Completed Courses</h1>
+          </div>
+        )}
+        
       </div>
 
       <style>{`

@@ -10,6 +10,7 @@ const roleService = require("../services/rolesService")
 // @route GET /api/project/ongoing
 const getAllOnGoingProjects = asyncHandler(async (req, res) => {
     const projectsList = await projectService.getAllOnGoingProjects();
+    console.log(projectsList);
 
     if (projectsList.length === 0) {
         throw new ApiError(404, "No Ongoing Projects Available");
@@ -18,7 +19,8 @@ const getAllOnGoingProjects = asyncHandler(async (req, res) => {
     const formattedResult = await Promise.all(
         projectsList.map(async (project) => {
             const teamLeaderDetail = await userService.getDetailsOfaUser(project.teamLeader);
-            const roleDetail = await roleService.getRoleDetailsByName(teamLeaderDetail.role);
+            console.log(teamLeaderDetail);
+            const roleDetail = teamLeaderDetail.role;
             const roleColor = roleDetail?.color || "#000000";
 
             const diffArray = dateUtils.dateDiff(project.endDate);

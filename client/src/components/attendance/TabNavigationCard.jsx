@@ -1,32 +1,30 @@
 import React, { useState } from "react";
 
-export default function TabNavigationCard() {
-  const [active, setActive] = useState("attendance");
+
+export default function TabNavigationCard({ tabVariable, setTabVariable }) {
+  const active = tabVariable;
 
   return (
     <div className="nav-card">
-      {/* Sliding background */}
       <div
         className="nav-slider"
-        style={{ left: active === "attendance" ? "0%" : "50%" }}
+        style={{ left: active === 0 ? "0%" : "50%" }}
       />
 
-      {/* Tabs */}
       <button
-        className={`nav-tab ${active === "attendance" ? "active" : ""}`}
-        onClick={() => setActive("attendance")}
+        className={`nav-tab ${active === 0 ? "active" : ""}`}
+        onClick={() => setTabVariable(0)}
       >
         Attendance
       </button>
 
       <button
-        className={`nav-tab ${active === "courses" ? "active" : ""}`}
-        onClick={() => setActive("courses")}
+        className={`nav-tab ${active === 1 ? "active" : ""}`}
+        onClick={() => setTabVariable(1)}
       >
         Courses
       </button>
 
-      {/* Custom SVG icon */}
       <div className="nav-icon" aria-hidden="true">
         <svg
           xmlns="http://www.w3.org/2000/svg"
