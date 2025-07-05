@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Sidebar } from "../components/Sidebar";
 import { jwtDecode } from 'jwt-decode';
-import { UserGreetings } from '../components/Dashboard/UserGreetings';
+import { UserGreetings } from '../components/dashboard/UserGreetings';
 import { ProjectDeadline } from '../components/projectManagement/ProjectDeadline';
-import { ReminderCard } from '../components/Dashboard/ReminderCard';
-import { NotificationCard } from '../components/Dashboard/NotificationCard';
+import { ReminderCard } from '../components/dashboard/ReminderCard';
+import { NotificationCard } from '../components/dashboard/NotificationCard';
+import { TimeCard } from '../components/dashboard/TimeCard';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
@@ -41,28 +42,28 @@ export const DashBoard = () => {
         <div className="grid grid-cols-2 md:grid-cols-9 md:grid-rows-9 lg:grid-cols-9 lg:grid-rows-9 gap-[1rem] h-screen p-[1rem]">
 
           {/* 1. UserGreetings - Large card on mobile */}
-          <div className="h-[10vh] md:h-full bg-[#00ff00] col-span-2 md:col-span-4 lg:col-span-4 md:row-span-1 rounded-2xl flex items-center animate-fade-in overflow-hidden px-[0.3rem] w-full">
+          <div className="h-[10vh] md:h-full col-span-2 md:col-span-4 lg:col-span-4 md:row-span-1 rounded-2xl flex items-center animate-fade-in overflow-hidden px-[0.3rem] w-full">
             <UserGreetings name={userDetails.username} profileImageURL={userDetails.profilePicture} marqueeText={quote}/>
           </div>
 
           {/* 2. TimeCard In - Small card on mobile */}
           <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 lg:col-span-2 md:row-span-1 rounded-2xl bg-[#c0e8bc] flex items-center justify-center">
-            <span className="text-gray-800">Time In</span>
+            <TimeCard state={"in"} time={"09:20"} showlabel={true} color={true} />
           </div>
 
           {/* 3. TimeCard Out - Small card on mobile */}
           <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 lg:col-span-2 md:col-start-1 md:row-start-3 md:row-span-1 rounded-2xl bg-[#c3e4ee] flex items-center justify-center">
-            <span className="text-gray-800">Time Out</span>
+            <TimeCard state={"out"} time={"09:20"} showlabel={true} color={true} />
           </div>
 
           {/* 4. TimeCard Work - Small card on mobile */}
           <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 lg:col-span-2 md:col-start-3 md:row-span-1 rounded-2xl bg-[#e1bec5] flex items-center justify-center">
-            <span className="text-gray-800">Work Time</span>
+            <TimeCard state={"work"} time={"09:20"} showlabel={true} color={true} />
           </div>
 
           {/* 5. TimeCard Break - Small card on mobile */}
           <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 lg:col-span-2 md:col-start-3 md:row-start-3 md:row-span-1 rounded-2xl bg-[#deceb9] flex items-center justify-center">
-            <span className="text-gray-800">Break Time</span>
+            <TimeCard state={"break"} time={"09:20"} showlabel={true} color={true} />
           </div>
 
           {/* 6. Project Deadline - Large card on mobile */}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TimeCard } from "../attendance/TimeCard";
+import { TimeCard } from "../dashboard/TimeCard";
 
 const darkenColor = (hex, percent = 10) => {
   if (!hex || typeof hex !== "string") return "#888";
