@@ -30,8 +30,8 @@ export const AddRolePopup = ({ onClose }) => {
   const [courseCards, setCourseCards] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const colors = generateLightColors();
 
+  const colors = generateLightColors();
   const availableCourses = predefinedCourses.filter(
     (course) =>
       !courseCards.find((c) => c.id === course.id) &&
@@ -54,30 +54,28 @@ export const AddRolePopup = ({ onClose }) => {
   };
 
   return (
-    <>
-      <div className="popup-overlay">
-        <div className="popup-container">
-          <div className="role-color-row">
-            <input
-              type="text"
-              className="role-input"
-              placeholder="Enter role"
-              value={roleName}
-              onChange={(e) => setRoleName(e.target.value)}
-            />
-            <div
-              className="main-circle"
-              style={{ backgroundColor: roleColor }}
-              onClick={() => setShowColors(!showColors)}
-            />
-          </div>
-
+    <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-[2000]">
+      <div className="bg-white rounded-2xl p-6 w-[90%] max-w-[550px] shadow-lg flex flex-col gap-5 relative">
+        {/* Role input and color */}
+        <div className="flex items-center gap-3 relative w-full">
+          <input
+            type="text"
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 text-base outline-none"
+            placeholder="Enter role"
+            value={roleName}
+            onChange={(e) => setRoleName(e.target.value)}
+          />
+          <div
+            className="w-6 h-6 rounded-full border-2 border-gray-600 cursor-pointer"
+            style={{ backgroundColor: roleColor }}
+            onClick={() => setShowColors(!showColors)}
+          />
           {showColors && (
-            <div className="color-circles-container">
+            <div className="absolute top-10 right-0 bg-white border rounded-lg shadow-lg p-2 grid grid-cols-6 gap-1 z-50 overflow-visible">
               {colors.map((color, idx) => (
                 <div
                   key={idx}
-                  className="color-circle"
+                  className="w-6 h-6 rounded-full cursor-pointer hover:scale-110 transition-transform"
                   style={{ backgroundColor: color }}
                   onClick={() => {
                     setRoleColor(color);
@@ -87,36 +85,17 @@ export const AddRolePopup = ({ onClose }) => {
               ))}
             </div>
           )}
+        </div>
 
-          {/* Exact same as EditRolePopup course box */}
-          <div className="course-box">
-            <span className="box-title">Ongoing courses...</span>
+        {/* Courses Section */}
+        <div className="bg-gray-300 rounded-xl h-64 w-full relative px-2 pt-4 pb-4">
+          {courseCards.length === 0 && (
+            <span className="absolute top-3 left-4 text-sm text-gray-600">Ongoing courses...</span>
+          )}
 
-            {showDropdown && (
-              <div className="dropdown-course-list">
-                <input
-                  type="text"
-                  placeholder="Search courses..."
-                  className="search-input"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <div className="dropdown-items-scroll">
-                  {availableCourses.map((course) => (
-                    <div key={course.id} className="dropdown-item" onClick={() => handleAddCourse(course)}>
-                      <EmpCourseCard
-                        courseName={course.courseName}
-                        authorName={course.authorName}
-                        imageUrl={course.imageUrl}
-                        onRemove={null}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="course-list-wrapper">
+          {/* Selected Cards */}
+          <div className="h-full overflow-y-auto pr-2">
+            <div className="grid grid-cols-2 gap-1 mt-0">
               {courseCards.map((course) => (
                 <EmpCourseCard
                   key={course.id}
@@ -124,194 +103,67 @@ export const AddRolePopup = ({ onClose }) => {
                   authorName={course.authorName}
                   imageUrl={course.imageUrl}
                   onRemove={() => handleRemoveCourse(course.id)}
+                  truncateTitle={false}
                 />
               ))}
             </div>
-
-            <span className="plus-circle" onClick={() => setShowDropdown(!showDropdown)}>+</span>
           </div>
 
-          <div className="button-row">
-            <button className="cancel-btn" onClick={onClose}>Cancel</button>
-            <button className="add-btn" onClick={handleSubmit}>Add</button>
-          </div>
+          {/* Dropdown */}
+          {showDropdown && (
+            <div className="absolute bottom-16 right-6 w-[240px] bg-white rounded-xl shadow-md z-[1000] p-2 flex flex-col gap-2 overflow-visible">
+              <input
+                type="text"
+                placeholder="Search courses..."
+                className="w-full p-2 rounded-md text-sm bg-white outline-none border"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <div className="max-h-40 overflow-y-auto overflow-x-hidden flex flex-col gap-1 items-center">
+                {availableCourses.map((course) => (
+                  <div
+                    key={course.id}
+                    className="cursor-pointer"
+                    onClick={() => handleAddCourse(course)}
+                  >
+                    <EmpCourseCard
+                      courseName={course.courseName}
+                      authorName={course.authorName}
+                      imageUrl={course.imageUrl}
+                      truncateTitle={true}
+                      inDropdown={true}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Floating + Button */}
+          <span
+            className="absolute bottom-3 right-4 bg-teal-800/20 hover:bg-teal-800/40 rounded-full px-3 py-1 text-xl font-bold text-gray-800 cursor-pointer shadow-md z-[200]"
+            onClick={() => setShowDropdown(!showDropdown)}
+          >
+            +
+          </span>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex justify-center gap-4">
+          <button
+            className="px-4 py-2 rounded-md bg-gray-200 text-black hover:bg-red-600 hover:text-white hover:opacity-60 text-sm"
+            onClick={onClose}
+          >
+            Cancel
+          </button>
+          <button
+            className="px-4 py-2 rounded-md bg-green-200 text-black hover:bg-green-600 hover:text-white text-sm"
+            onClick={handleSubmit}
+          >
+            Add
+          </button>
         </div>
       </div>
-
-      <style>{`
-        .popup-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.2);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 2000;
-        }
-
-        .popup-container {
-          background: white;
-          border-radius: 1rem;
-          padding: 2rem;
-          width: 95%;
-          max-width: 700px;
-          box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
-          display: flex;
-          flex-direction: column;
-          gap: 1.2rem;
-        }
-
-        .role-color-row {
-          display: flex;
-          align-items: center;
-          gap: 0.8rem;
-        }
-
-        .role-input {
-          flex: 1;
-          padding: 0.5rem 1rem;
-          border-radius: 8px;
-          border: 1px solid #ccc;
-          font-size: 1rem;
-          outline: none;
-        }
-
-        .main-circle {
-          width: 1.5rem;
-          height: 1.5rem;
-          border-radius: 50%;
-          border: 2px solid #999;
-          cursor: pointer;
-        }
-
-        .color-circles-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.5rem;
-        }
-
-        .color-circle {
-          width: 1.5rem;
-          height: 1.5rem;
-          border-radius: 50%;
-          cursor: pointer;
-          border: 2px solid transparent;
-        }
-
-        .course-box {
-          background-color: #d9d9d9;
-          border-radius: 10px;
-          height: 18rem;
-          width: 100%;
-          position: relative;
-          padding: 2.5rem 1rem 2rem 1rem;
-          overflow-y: auto;
-        }
-
-        .box-title {
-          position: absolute;
-          top: 0.8rem;
-          left: 1rem;
-          font-size: 1rem;
-          color: #555;
-        }
-
-        .plus-circle {
-          position: absolute;
-          bottom: 0.8rem;
-          right: 1rem;
-          background: rgba(0, 128, 128, 0.15);
-          border-radius: 50%;
-          padding: 0.3rem 0.6rem;
-          font-size: 1rem;
-          color: #333;
-          cursor: pointer;
-        }
-
-        .course-list-wrapper {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: flex-start;
-          align-items: flex-start;
-          gap: 0.75rem;
-          margin-top: 2.5rem;
-        }
-
-        .dropdown-course-list {
-          position: absolute;
-          bottom: 3rem;
-          right: 1rem;
-          width: 230px;
-          background: white;
-          border-radius: 0.8rem;
-          box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-          z-index: 1000;
-          padding: 0.5rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.4rem;
-        }
-
-        .search-input {
-          width: 100%;
-          padding: 0.4rem;
-          border: none;
-          outline: none;
-          border-radius: 0.4rem;
-          font-size: 0.9rem;
-          background-color: white;
-        }
-
-        .dropdown-items-scroll {
-          max-height: 8rem;
-          overflow-y: auto;
-          overflow-x: hidden;
-          display: flex;
-          flex-direction: column;
-          gap: 0;
-          padding-left: 0.3rem;
-        }
-
-        .dropdown-item {
-          cursor: pointer;
-          margin-bottom: 2px;
-        }
-
-        .button-row {
-          display: flex;
-          justify-content: center;
-          gap: 1rem;
-        }
-
-        .cancel-btn, .add-btn {
-          padding: 0.5rem 1rem;
-          border-radius: 0.5rem;
-          border: none;
-          font-size: 0.9rem;
-          cursor: pointer;
-        }
-
-        .cancel-btn {
-          background-color: #f3f4f6;
-          color: black;
-        }
-
-        .cancel-btn:hover {
-          background-color: red;
-          color: white;
-          opacity: 0.6;
-        }
-
-        .add-btn {
-          background-color: rgba(140, 221, 132, 0.8);
-          color: black;
-        }
-
-        .add-btn:hover {
-          background-color: green;
-          color: white;
-        }
-      `}</style>
-    </>
+    </div>
   );
 };
