@@ -149,7 +149,7 @@ export const Login = () => {
 
           if (newUser.status === 200) {
             localStorage.setItem("accessToken", newUser.data.accessToken)
-            
+
             setIsSignup(false);
             setOtpPhase(false);
             setSignupData({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });
@@ -282,19 +282,20 @@ export const Login = () => {
                 <>
                   <h1 className="login-title">Sign up</h1>
                   <form className="login-form" onSubmit={handleSignupSubmit}>
-                    <input name="name" value={signupData.name} onChange={handleSignupChange} className="login-input" type="text" placeholder="Name" />
-                    <input name="email" value={signupData.email} onChange={handleSignupChange} className="login-input" type="email" placeholder="Email" />
-                    <input name="phone" value={signupData.phone} onChange={handleSignupChange} className="login-input" type="tel" placeholder="Phone Number" />
+                    <div className="login-input-container">
+                      <input name="name" value={signupData.name} onChange={handleSignupChange} className="login-input" type="text" placeholder="Name" />
+                      <input name="email" value={signupData.email} onChange={handleSignupChange} className="login-input" type="email" placeholder="Email" />
+                      <input name="phone" value={signupData.phone} onChange={handleSignupChange} className="login-input" type="tel" placeholder="Phone Number" />
 
-                    {!otpPhase ? (
-                      <>
-                        <input name="password" value={signupData.password} onChange={handleSignupChange} className="login-input" type="password" placeholder="Password" />
-                        <input name="confirmPassword" value={signupData.confirmPassword} onChange={handleSignupChange} className="login-input" type="password" placeholder="Confirm Password" />
-                      </>
-                    ) : (
-                      <input name="otp" value={signupData.otp} onChange={handleSignupChange} className="login-input" type="text" placeholder="Enter OTP" />
-                    )}
-
+                      {!otpPhase ? (
+                        <>
+                          <input name="password" value={signupData.password} onChange={handleSignupChange} className="login-input" type="password" placeholder="Password" />
+                          <input name="confirmPassword" value={signupData.confirmPassword} onChange={handleSignupChange} className="login-input" type="password" placeholder="Confirm Password" />
+                        </>
+                      ) : (
+                        <input name="otp" value={signupData.otp} onChange={handleSignupChange} className="login-input" type="text" placeholder="Enter OTP" />
+                      )}
+                    </div>
                     <div className="login-forgot"></div>
                     <button type="submit" className="login-button">{otpPhase ? "Submit" : "Sign Up"}</button>
                   </form>
@@ -304,8 +305,10 @@ export const Login = () => {
                 <>
                   <h1 className="login-title">Login</h1>
                   <form className="login-form" onSubmit={handleLoginSubmit}>
-                    <input name="email" value={loginData.email} onChange={handleLoginChange} className="login-input" type="email" placeholder="Email" />
-                    <input style={{ marginBottom: 0 }} name="password" value={loginData.password} onChange={handleLoginChange} className="login-input" type="password" placeholder="Password" />
+                    <div className="login-input-container">
+                      <input name="email" value={loginData.email} onChange={handleLoginChange} className="login-input" type="email" placeholder="Email" />
+                      <input style={{ marginBottom: 0 }} name="password" value={loginData.password} onChange={handleLoginChange} className="login-input" type="password" placeholder="Password" />
+                    </div>
                     <div className="login-forgot-container"><label className="login-forgot" onClick={() => setShowReset(true)}>Forgot Password?</label></div>
                     <button type="submit" className="login-button">Clock in</button>
                   </form>
@@ -316,48 +319,50 @@ export const Login = () => {
               <>
                 <h1 className="login-title">Reset Password</h1>
                 <form className="login-form" onSubmit={handleResetSubmit}>
-                  {!otpSent && (
-                    <input
-                      name="email"
-                      value={resetData.email}
-                      onChange={handleResetChange}
-                      className="login-input"
-                      type="email"
-                      placeholder="Enter Email"
-                    />
-                  )}
-                  {otpSent && !otpVerified && (
-                    <input
-                      name="otp"
-                      value={resetData.otp}
-                      onChange={handleResetChange}
-                      className="login-input"
-                      type="text"
-                      placeholder="Enter OTP"
-                    />
-                  )}
-                  {otpVerified && (
-                    <>
-                      <div style={{ fontSize: '0.9rem', color: '#555', marginBottom: '0.5rem' }}>
-                      </div>
+                  <div className="login-input-container">
+                    {!otpSent && (
                       <input
-                        name="password"
-                        value={resetData.password}
+                        name="email"
+                        value={resetData.email}
                         onChange={handleResetChange}
                         className="login-input"
-                        type="password"
-                        placeholder="New Password"
+                        type="email"
+                        placeholder="Enter Email"
                       />
+                    )}
+                    {otpSent && !otpVerified && (
                       <input
-                        name="confirmPassword"
-                        value={resetData.confirmPassword}
+                        name="otp"
+                        value={resetData.otp}
                         onChange={handleResetChange}
                         className="login-input"
-                        type="password"
-                        placeholder="Confirm Password"
+                        type="text"
+                        placeholder="Enter OTP"
                       />
-                    </>
-                  )}
+                    )}
+                    {otpVerified && (
+                      <>
+                        <div style={{ fontSize: '0.9rem', color: '#555', marginBottom: '0.5rem' }}>
+                        </div>
+                        <input
+                          name="password"
+                          value={resetData.password}
+                          onChange={handleResetChange}
+                          className="login-input"
+                          type="password"
+                          placeholder="New Password"
+                        />
+                        <input
+                          name="confirmPassword"
+                          value={resetData.confirmPassword}
+                          onChange={handleResetChange}
+                          className="login-input"
+                          type="password"
+                          placeholder="Confirm Password"
+                        />
+                      </>
+                    )}
+                  </div>
                   <button type="submit" className="login-button">
                     {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
                   </button>
@@ -435,12 +440,18 @@ export const Login = () => {
     flex-direction: column;
     align-items: center;
   }
+  
+  .login-input-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; 
+  }
 
   .login-input {
     width: 100%;
     font-size: clamp(0.9rem, 2.5vw, 1rem);
     padding: clamp(0.5rem, 1.5vw, 0.6rem) clamp(0.7rem, 2vw, 0.9rem);
-    margin-bottom: 1rem;
     border-radius: 0.5rem;
     border: 1px solid #aaa;
     background-color: #fff;
@@ -459,7 +470,6 @@ export const Login = () => {
 
   .login-forgot-container {
     align-self: flex-end;
-    margin-bottom: 0.8rem;
     text-align: right;
     width: 100%;
   }
@@ -504,6 +514,7 @@ export const Login = () => {
     width: 40%;
     min-width: 6rem;
     transition: background-color 0.3s;
+    margin-top: 1rem;
   }
 
   .login-button:hover {
@@ -616,6 +627,13 @@ export const Login = () => {
     border: 0.2rem solid #08bdb1;
     right: 0rem;
     box-sizing: border-box;
+  }
+
+  .login-error-text {
+    color: #dc2626;
+    font-size: 0.675rem;
+    margin-top: 0.25rem;
+    margin-left: 0.25rem;
   }
 
   /* Tablet and smaller desktop styles */
