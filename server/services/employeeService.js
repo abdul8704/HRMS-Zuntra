@@ -280,4 +280,5 @@ module.exports = {
     markEndOfSession,
     getAllEmployees,
     getDetailsOfaEmployee,
+    getEmployeeByRole,
 };
