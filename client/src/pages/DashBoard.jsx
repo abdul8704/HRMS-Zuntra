@@ -41,57 +41,90 @@ export const DashBoard = () => {
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 md:grid-cols-9 md:grid-rows-9 lg:grid-cols-9 lg:grid-rows-9 gap-[1rem] h-screen p-[1rem]">
 
-          {/* 1. UserGreetings - Large card on mobile */}
-          <div className="h-[10vh] md:h-full col-span-2 md:col-span-4 lg:col-span-4 md:row-span-1 rounded-2xl flex items-center animate-fade-in overflow-hidden px-[0.3rem] w-full">
-            <UserGreetings name={userDetails.username} profileImageURL={userDetails.profilePicture} marqueeText={quote}/>
+          {/* 1. UserGreetings */}
+          <div className="h-[10vh] md:h-full col-span-2 md:col-span-4 md:row-span-1 rounded-2xl flex items-center overflow-hidden px-[0.3rem] animate-slide-in-left">
+            <UserGreetings name={userDetails.username} profileImageURL={userDetails.profilePicture} marqueeText={quote} />
           </div>
 
-          {/* 2. TimeCard In - Small card on mobile */}
-          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 lg:col-span-2 md:row-span-1 rounded-2xl bg-[#c0e8bc] flex items-center justify-center">
+          {/* 2. TimeCard In */}
+          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:row-span-1 rounded-2xl bg-[#c0e8bc] flex items-center justify-center animate-slide-in-left">
             <TimeCard state={"in"} time={"09:20"} showlabel={true} color={true} />
           </div>
 
-          {/* 3. TimeCard Out - Small card on mobile */}
-          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 lg:col-span-2 md:col-start-1 md:row-start-3 md:row-span-1 rounded-2xl bg-[#c3e4ee] flex items-center justify-center">
+          {/* 3. TimeCard Out */}
+          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:col-start-1 md:row-start-3 md:row-span-1 rounded-2xl bg-[#c3e4ee] flex items-center justify-center animate-slide-in-left">
             <TimeCard state={"out"} time={"09:20"} showlabel={true} color={true} />
           </div>
 
-          {/* 4. TimeCard Work - Small card on mobile */}
-          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 lg:col-span-2 md:col-start-3 md:row-span-1 rounded-2xl bg-[#e1bec5] flex items-center justify-center">
+          {/* 4. TimeCard Work */}
+          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:col-start-3 md:row-span-1 rounded-2xl bg-[#e1bec5] flex items-center justify-center animate-slide-in-left">
             <TimeCard state={"work"} time={"09:20"} showlabel={true} color={true} />
           </div>
 
-          {/* 5. TimeCard Break - Small card on mobile */}
-          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 lg:col-span-2 md:col-start-3 md:row-start-3 md:row-span-1 rounded-2xl bg-[#deceb9] flex items-center justify-center">
+          {/* 5. TimeCard Break */}
+          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:col-start-3 md:row-start-3 md:row-span-1 rounded-2xl bg-[#deceb9] flex items-center justify-center animate-slide-in-left">
             <TimeCard state={"break"} time={"09:20"} showlabel={true} color={true} />
           </div>
 
-          {/* 6. Project Deadline - Large card on mobile */}
-          <div className="h-[30vh] md:h-full col-span-2 md:col-span-5 lg:col-span-5 md:col-start-5 md:row-start-1 md:row-span-3 rounded-2xl bg-[#f2c3b9] flex items-center justify-center">
+          {/* 6. Project Deadline */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-5 md:col-start-5 md:row-start-1 md:row-span-3 rounded-2xl bg-[#f2c3b9] flex items-center justify-center animate-slide-in-right">
             <ProjectDeadline />
           </div>
 
-          {/* 7. Reminders - Large card on mobile */}
-          <div className="h-[30vh] md:h-full col-span-2 md:col-span-5 lg:col-span-5 md:col-start-1 md:row-start-4 md:row-span-3 rounded-2xl bg-[#bfbff7] flex items-center justify-center">
+          {/* 7. Reminders */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-5 md:col-start-1 md:row-start-4 md:row-span-3 rounded-2xl bg-[#bfbff7] flex items-center justify-center animate-slide-in-left">
             <ReminderCard />
           </div>
 
-          {/* 8. Notifications - Medium card on mobile */}
-          <div className="h-[30vh] md:h-full col-span-2 md:col-span-4 lg:col-span-4 md:col-start-6 md:row-start-4 md:row-span-3 rounded-2xl bg-[#f6e0bf] flex items-center justify-center">
+          {/* 8. Notifications */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-4 md:col-start-6 md:row-start-4 md:row-span-3 rounded-2xl bg-[#f6e0bf] flex items-center justify-center animate-slide-in-right">
             <NotificationCard />
           </div>
 
-          {/* 9. Work Break Stats - Medium card on mobile */}
-          <div className="h-[30vh] md:h-full col-span-2 md:col-span-3 lg:col-span-3 md:col-start-1 md:row-start-7 md:row-span-3 rounded-2xl bg-[#ddb3dd] flex items-center justify-center">
+          {/* 9. Work Break Stats */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-3 md:col-start-1 md:row-start-7 md:row-span-3 rounded-2xl bg-[#ddb3dd] flex items-center justify-center animate-slide-in-left">
             <span className="text-gray-800">Work Break Stats</span>
           </div>
 
-          {/* 10. Employees on Leave - Large card on mobile */}
-          <div className="h-[30vh] md:h-full col-span-2 md:col-span-6 lg:col-span-6 md:col-start-4 md:row-start-7 md:row-span-3 rounded-2xl bg-[#adc0da] flex items-center justify-center">
+          {/* 10. Employees on Leave */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-6 md:col-start-4 md:row-start-7 md:row-span-3 rounded-2xl bg-[#adc0da] flex items-center justify-center animate-slide-in-right">
             <span className="text-gray-800">Employees on Leave</span>
           </div>
         </div>
       </div>
+
+      {/* Animation styles */}
+      <style>{`
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-10%);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(10%);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .animate-slide-in-left {
+          animation: slideInLeft 0.8s ease-out;
+        }
+
+        .animate-slide-in-right {
+          animation: slideInRight 0.8s ease-out;
+        }
+      `}</style>
     </div>
   );
 };
