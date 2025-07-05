@@ -2,43 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { TimeCard } from "../dashboard/TimeCard";
 import { ToolTip } from "../dashboard/ToolTip";
 
-const darkenColor = (hex, percent = 10) => {
-  if (!hex || typeof hex !== "string") return "#888";
-  let col = hex.replace("#", "");
-  if (col.length === 3) col = col.split("").map((c) => c + c).join("");
-  const r = parseInt(col.substring(0, 2), 16);
-  const g = parseInt(col.substring(2, 4), 16);
-  const b = parseInt(col.substring(4, 6), 16);
-
-  const toHSL = (r, g, b) => {
-    r /= 255;
-    g /= 255;
-    b /= 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-    if (max === min) {
-      h = s = 0;
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
-      }
-      h /= 6;
-    }
-    return { h, s, l };
-  };
-
-  const hsl = toHSL(r, g, b);
-  hsl.l = Math.max(0, hsl.l - percent / 100);
-  const h = Math.round(hsl.h * 360);
-  const s = Math.round(hsl.s * 100);
-  const l = Math.round(hsl.l * 100);
-  return `hsl(${h}, ${s}%, ${l}%)`;
-};
-
 export const EmployeeCard = ({
   name,
   email,
@@ -57,9 +20,6 @@ export const EmployeeCard = ({
   const nameRef = useRef(null);
   const emailRef = useRef(null);
   const phoneRef = useRef(null);
-
-  const cardColor = darkenColor(bgColor);
-  const lightAccentColor = darkenColor(bgColor, 6);
 
   // Intersection Observer for scroll animation
   useEffect(() => {
@@ -110,7 +70,7 @@ export const EmployeeCard = ({
             : 'opacity-0 translate-y-8'
           }
         `}
-        style={{ backgroundColor: cardColor }}
+        style={{ backgroundColor: bgColor }}
       >
         <div className="flex flex-row flex-wrap justify-between items-start w-full gap-4">
           {/* Left Section */}
@@ -163,7 +123,7 @@ export const EmployeeCard = ({
               
               <div 
                 className="mt-1 py-1 px-2 rounded-xl w-fit text-xs text-black"
-                style={{ backgroundColor: lightAccentColor }}
+                style={{ backgroundColor: bgColor }}
               >
                 {role}
               </div>
