@@ -3,11 +3,8 @@ const ApiError = require('../errors/ApiError');
 const asyncHandler = require('express-async-handler');
 
 const getAllroles = asyncHandler(async (req, res) => {
-    const roles = await RoleService.getAllRolesData({}, {
-        role: 1,
-        color: 1,
-        _id: 1
-    });
+
+    const roles = await RoleService.getAllRolesData();
     
     if (roles.length === 0) 
         throw new ApiError(404, 'No roles found');

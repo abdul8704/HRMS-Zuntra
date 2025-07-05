@@ -2,7 +2,11 @@ const Role = require("../models/roles");
 // Get all roles
 const getAllRolesData = async () => {
     try {
-        const rolesData = await Role.find({});
+        const rolesData = await Role.find({}, {
+            role: 1,
+            color: 1,
+            _id: 1,
+        });
         return rolesData;
     } catch (error) {
         throw new ApiError(500, "Failed to fetch roles data: ", error.message);
