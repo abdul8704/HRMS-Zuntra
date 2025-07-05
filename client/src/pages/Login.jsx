@@ -332,10 +332,13 @@ export const Login = () => {
                         </div>
                         <div>
                           <input name="password" value={loginData.password} onChange={handleLoginChange} className="login-input" type="password" placeholder="Password" />
-                          {formErrors.password && <p className="login-error-text">{formErrors.password}</p>}
+
                         </div>
                       </div>
-                      <div className="login-forgot-container"><label className="login-forgot" onClick={() => setShowReset(true)}>Forgot Password?</label></div>
+                      <div className="login-forgot-container">
+                        {formErrors.password && <p className="login-error-text flex-[1]">{formErrors.password}</p>}
+                        <label className="login-forgot" onClick={() => setShowReset(true)}>Forgot Password?</label>
+                      </div>
                       <button type="submit" className="login-button">Clock in</button>
                     </form>
                     {renderGoogleButton()}
@@ -478,8 +481,10 @@ export const Login = () => {
   }
 
   .login-forgot-container {
-    align-self: flex-end;
-    text-align: right;
+    display:flex;
+    // background-color: rgba(255, 32, 147, 0.44);
+    justify-content: flex-end;
+    align-items: center;
     width: 100%;
   }
 
@@ -491,13 +496,13 @@ export const Login = () => {
   }
   
   .login-forgot {
-    width: 100%;
+    margin-top: 4px;
     font-size: clamp(0.7rem, 2vw, 0.8rem);
-    color: #215E97;
-    margin-top: -0.5rem;
-    margin-bottom: 1rem;
+    color: #215E97;;
     cursor: pointer;
+    text-align: right;
     word-wrap: break-word;
+    flex: 1;
   }
 
   .back-login {
