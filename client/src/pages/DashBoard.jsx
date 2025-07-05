@@ -93,36 +93,52 @@ export const DashBoard = () => {
         </div>
       </div>
 
-      {/* Animation styles */}
+      {/* Enhanced Animation Styles */}
       <style>{`
         @keyframes slideInLeft {
-          from {
+          0% {
             opacity: 0;
-            transform: translateX(-10%);
+            transform: translateX(-30px) scale(0.95);
           }
-          to {
+          100% {
             opacity: 1;
-            transform: translateX(0);
+            transform: translateX(0) scale(1);
           }
         }
 
         @keyframes slideInRight {
-          from {
+          0% {
             opacity: 0;
-            transform: translateX(10%);
+            transform: translateX(30px) scale(0.95);
           }
-          to {
+          100% {
             opacity: 1;
-            transform: translateX(0);
+            transform: translateX(0) scale(1);
           }
         }
 
         .animate-slide-in-left {
-          animation: slideInLeft 0.8s ease-out;
+          animation: slideInLeft 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          animation-fill-mode: both;
         }
 
         .animate-slide-in-right {
-          animation: slideInRight 0.8s ease-out;
+          animation: slideInRight 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          animation-fill-mode: both;
+        }
+
+        /* Reduced motion for users who prefer it */
+        @media (prefers-reduced-motion: reduce) {
+          .animate-slide-in-left,
+          .animate-slide-in-right {
+            animation: none;
+            opacity: 1;
+            transform: none;
+          }
+          
+          .grid > div {
+            transition: none;
+          }
         }
       `}</style>
     </div>
