@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Sidebar } from "../components/Sidebar";
 import { EmpNavbar } from '../components/employeeManagement/EmpNavbar';
-import { EmpCard } from '../components/employeeManagement/EmpCard';
 import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
 import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
 import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
@@ -181,18 +180,19 @@ export const HrEmployeeManagement = () => {
         )}
 
         {navId === "newusers" && (
-          <div className="p-4 flex flex-wrap gap-4 overflow-y-auto h-[calc(100vh-7rem)]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto mt-[1rem]">
             {pendingEmployees.map((emp, index) => (
-              <EmpCard
-                key={index}
-                name={emp.name}
-                email={emp.email}
-                phone={emp.phone}
-                date={emp.date}
-                image={emp.image}
-                color={bgColorList[index]}
-                onApprove={() => handleApprove(emp)}
-              />
+                <EmployeeCard
+                  key={index}
+                  name={emp.name}
+                  email={emp.email}
+                  phone={emp.phone}
+                  role={emp.date}
+                  bgColor={bgColorList[index]}
+                  image={emp.image}
+                  isNewUser={true}
+                  onApprove={() => handleApprove(emp)}
+                />
             ))}
           </div>
         )}

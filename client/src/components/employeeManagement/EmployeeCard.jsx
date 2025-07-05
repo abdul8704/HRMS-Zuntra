@@ -13,6 +13,8 @@ export const EmployeeCard = ({
   workTime,
   breakTime,
   bgColor = "#cfd9ea",
+  isNewUser = false,
+  onApprove,
 }) => {
   const [tooltip, setTooltip] = useState({ show: false, text: "", anchorRef: null });
   const [isVisible, setIsVisible] = useState(false);
@@ -60,7 +62,7 @@ export const EmployeeCard = ({
         `}
         style={{ backgroundColor: bgColor }}
       >
-        <div className="flex flex-col lg:flex-row items-stretch w-full gap-4">
+        <div className={`flex ${isNewUser ? "flex-row" : "flex-col"} lg:flex-row items-stretch w-full gap-4`}>
           {/* Left Section */}
           <div className="flex items-center flex-[7] gap-4 min-w-0">
             {/* Image */}
@@ -115,25 +117,44 @@ export const EmployeeCard = ({
             </div>
           </div>
 
-          {/* Time Cards */}
-          <div className="flex flex-col flex-wrap justify-center gap-3 flex-[3] p-2.5">
-            <div className="flex gap-2.5 w-full flex-[1] justify-center">
-              <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                <TimeCard state="in" time={inTime} label={false} color={false} />
-              </div>
-              <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                <TimeCard state="out" time={outTime} label={false} color={false} />
-              </div>
+          {/* Time Cards or Action Buttons */}
+          {isNewUser ? (
+            <div className="flex flex-col flex-wrap justify-center gap-3 flex-[1] p-2.5">
+                <button
+                  onClick={() => onApprove?.()}
+                  className="h-[3rem] bg-green-500 text-white rounded-xl shadow hover:bg-green-600 text-lg font-semibold"
+                >
+                  ✓
+                </button>
+                <button
+                  className="h-[3rem] bg-red-500 text-white rounded-xl shadow hover:bg-red-600 text-lg font-semibold"
+                >
+                  ✕
+                </button>
             </div>
-            <div className="flex flex-[1] gap-2.5 w-full justify-center">
-              <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                <TimeCard state="break" time={breakTime} label={false} color={false} />
+
+          ) : (
+            <>
+              <div className="flex flex-col flex-wrap justify-center gap-3 flex-[3] p-2.5">
+                <div className="flex gap-2.5 w-full flex-[1] justify-center">
+                  <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                    <TimeCard state="in" time={inTime} label={false} color={false} />
+                  </div>
+                  <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                    <TimeCard state="out" time={outTime} label={false} color={false} />
+                  </div>
+                </div>
+                <div className="flex flex-[1] gap-2.5 w-full justify-center">
+                  <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                    <TimeCard state="break" time={breakTime} label={false} color={false} />
+                  </div>
+                  <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                    <TimeCard state="work" time={workTime} label={false} color={false} />
+                  </div>
+                </div>
               </div>
-              <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                <TimeCard state="work" time={workTime} label={false} color={false} />
-              </div>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </div>
 
