@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Sidebar } from "../components/Sidebar";
-import { EmpNavbar } from '../components/employeeManagement/EmpNavbar';
+import { EmployeeNavbar } from '../components/employeeManagement/EmployeeNavbar';
 import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
-import { EmpRoleCard } from '../components/employeeManagement/EmpRoleCard';
+import { EmployeeRoleCard } from '../components/employeeManagement/EmployeeRoleCard';
 import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
 import { EditRolePopup } from '../components/employeeManagement/EditRolePopup';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
@@ -12,7 +12,7 @@ import { AddLocationForm } from '../components/employeeManagement/AddLocationFor
 import { Loading } from '../components/Loading';
 import api from '../api/axios';
 
-export const HrEmployeeManagement = () => {
+export const EmployeeManagement = () => {
   const { navId } = useParams();
 
   const [showPopup, setShowPopup] = useState(false);
@@ -118,14 +118,17 @@ export const HrEmployeeManagement = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="flex-1 p-[1rem]">
-        <EmpNavbar />
+      <div className="flex gap-[1rem] flex-col flex-1 p-[1rem] h-screen">
+        <EmployeeNavbar />
 
         {/* All Employees */}
         {navId === "all" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto h-[calc(100vh-7rem)] mt-[1rem]">
+          <div className="flex-1 px-[1rem] grid grid-cols-1 md:grid-cols-2 gap-[1rem] overflow-y-auto">
             {isLoadingEmployees ? (
-              <p className="text-center col-span-full mt-4 text-gray-600 font-semibold"><Loading /></p>
+              <div className="text-center col-span-full mt-4 text-gray-600 font-semibold">
+                <Loading />
+              </div>
+
             ) : isErrorEmployees ? (
               <p className="text-center col-span-full mt-4 text-red-500 font-semibold">Error fetching employees</p>
             ) : employees.length === 0 ? (
@@ -152,17 +155,20 @@ export const HrEmployeeManagement = () => {
 
         {/* Roles */}
         {navId === "roles" && (
-          <div className="px-[1rem] mt-[1rem] h-[calc(100vh-7rem)] overflow-y-auto">
+          <div className="flex-1 px-[1rem] overflow-y-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[1rem] justify-items-center">
               {isLoadingRoles ? (
-                <p className="text-center col-span-full mt-4 text-gray-600 font-semibold"><Loading /></p>
+                <div className="text-center col-span-full mt-4 text-gray-600 font-semibold">
+                  <Loading />
+                </div>
+
               ) : isErrorRoles ? (
                 <p className="text-center col-span-full mt-4 text-red-500 font-semibold">Error fetching roles</p>
               ) : rolesData.length === 0 ? (
                 <p className="text-center col-span-full mt-4 text-gray-500 font-medium">No roles available</p>
               ) : (
                 rolesData.map((role, idx) => (
-                  <EmpRoleCard
+                  <EmployeeRoleCard
                     key={idx}
                     role={role.role}
                     bgColor={role.color || "#e0e0e0"}
@@ -190,9 +196,12 @@ export const HrEmployeeManagement = () => {
 
         {/* Geofencing */}
         {navId === "geofencing" && (
-          <div className="p-4 flex flex-col gap-4 overflow-y-auto h-[calc(100vh-7rem)]">
+          <div className="flex flex-col px-[1rem] gap-4 overflow-y-auto flex-1">
             {isLoadingBranches ? (
-              <p className="text-center mt-4 text-gray-600 font-semibold"><Loading /></p>
+              <div className="text-center col-span-full mt-4 text-gray-600 font-semibold">
+                <Loading />
+              </div>
+
             ) : isErrorBranches ? (
               <p className="text-center mt-4 text-red-500 font-semibold">Error fetching branches</p>
             ) : branches.length === 0 ? (
@@ -215,9 +224,12 @@ export const HrEmployeeManagement = () => {
 
         {/* New Users */}
         {navId === "newusers" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto mt-[1rem]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto">
             {isLoadingPending ? (
-              <p className="text-center col-span-full mt-4 text-gray-600 font-semibold"><Loading /></p>
+              <div className="text-center col-span-full mt-4 text-gray-600 font-semibold">
+                <Loading />
+              </div>
+
             ) : isErrorPending ? (
               <p className="text-center col-span-full mt-4 text-red-500 font-semibold">Error fetching new users</p>
             ) : pendingEmployees.length === 0 ? (

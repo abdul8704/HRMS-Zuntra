@@ -7,7 +7,7 @@ export const EmployeeCard = ({
   email,
   phone,
   role,
-  image="https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png",
+  image = "https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png",
   inTime,
   outTime,
   workTime,
@@ -30,7 +30,7 @@ export const EmployeeCard = ({
       },
       {
         threshold: 0.1,
-        rootMargin: "0px 0px -50px 0px"
+        rootMargin: "0px 0px -50px 0px",
       }
     );
 
@@ -44,14 +44,12 @@ export const EmployeeCard = ({
   const showTooltipIfTruncated = (anchorRef, text) => {
     const element = anchorRef.current;
     if (element) {
-      // For the name (h6 element), check directly
-      if (element.tagName === 'H6') {
+      if (element.tagName === "H6") {
         if (element.scrollWidth > element.clientWidth) {
           setTooltip({ show: true, text, anchorRef });
         }
       } else {
-        // For email and phone containers, check the span inside
-        const spanElement = element.querySelector('span');
+        const spanElement = element.querySelector("span");
         if (spanElement && spanElement.scrollWidth > spanElement.clientWidth) {
           setTooltip({ show: true, text, anchorRef });
         }
@@ -67,15 +65,18 @@ export const EmployeeCard = ({
         ref={cardRef}
         className={`
           employee-card w-full rounded-2xl shadow-lg relative
-          transition-all duration-700 ease-out
-          ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+          transition-opacity duration-700 ease-out
+          ${isVisible ? "opacity-100" : "opacity-0"}
         `}
-        style={{ backgroundColor: bgColor }}
+        style={{ backgroundColor: bgColor, transition: "0.5s" }}
       >
-        <div className={`flex ${isNewUser ? "flex-row" : "flex-col"} lg:flex-row items-stretch w-full gap-4`}>
+        <div
+          className={`flex ${
+            isNewUser ? "flex-row" : "flex-col"
+          } lg:flex-row items-stretch w-full gap-4`}
+        >
           {/* Left Section */}
           <div className="flex items-center flex-[7] gap-4 min-w-0">
-            {/* Image - Option 1: Make image take full height of its container */}
             <div className="flex items-center sm:items-stretch justify-center sm:justify-start self-stretch max-w-[8rem]">
               <img
                 src={image}
@@ -84,7 +85,6 @@ export const EmployeeCard = ({
               />
             </div>
 
-            {/* Info */}
             <div className="flex flex-col flex-1 min-w-0 max-w-full items-center sm:items-start justify-center overflow-hidden py-4">
               <h6
                 ref={nameRef}
@@ -136,39 +136,37 @@ export const EmployeeCard = ({
           {/* Time Cards or Action Buttons */}
           {isNewUser ? (
             <div className="flex flex-col flex-wrap justify-center gap-3 flex-[1] p-2.5">
-                <button
-                  onClick={() => onApprove?.()}
-                  className="h-[3rem] bg-[#C1E8BD] text-black rounded-xl shadow hover:bg-[#C1FFBD] text-lg font-semibold"
-                >
-                  ✓
-                </button>
-                <button
-                  className="h-[3rem] bg-[#E1BEC5] text-black rounded-xl shadow hover:bg-[#FFBEC5] text-lg font-semibold"
-                >
-                  ✕
-                </button>
+              <button
+                onClick={() => onApprove?.()}
+                className="h-[3rem] bg-[#C1E8BD] text-black rounded-xl shadow hover:bg-[#C1FFBD] text-lg font-semibold"
+              >
+                ✓
+              </button>
+              <button
+                className="h-[3rem] bg-[#E1BEC5] text-black rounded-xl shadow hover:bg-[#FFBEC5] text-lg font-semibold"
+              >
+                ✕
+              </button>
             </div>
           ) : (
-            <>
-              <div className="flex flex-col flex-wrap justify-center gap-3 flex-[3] p-2.5">
-                <div className="flex gap-2.5 w-full flex-[1] justify-center">
-                  <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                    <TimeCard state="in" time={inTime} showLabel={false} color={true} />
-                  </div>
-                  <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                    <TimeCard state="out" time={outTime} showLabel={false} color={true} />
-                  </div>
+            <div className="flex flex-col flex-wrap justify-center gap-3 flex-[3] p-2.5">
+              <div className="flex gap-2.5 w-full flex-[1] justify-center">
+                <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                  <TimeCard state="in" time={inTime} showLabel={false} color={true} />
                 </div>
-                <div className="flex flex-[1] gap-2.5 w-full justify-center">
-                  <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                    <TimeCard state="break" time={breakTime} showLabel={false} color={true} />
-                  </div>
-                  <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                    <TimeCard state="work" time={workTime} showLabel={false} color={true} />
-                  </div>
+                <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                  <TimeCard state="out" time={outTime} showLabel={false} color={true} />
                 </div>
               </div>
-            </>
+              <div className="flex flex-[1] gap-2.5 w-full justify-center">
+                <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                  <TimeCard state="break" time={breakTime} showLabel={false} color={true} />
+                </div>
+                <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                  <TimeCard state="work" time={workTime} showLabel={false} color={true} />
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
