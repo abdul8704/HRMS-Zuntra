@@ -231,7 +231,7 @@ export const EmployeeManagement = () => {
   const bgColorList = getGridBgColors(employees.length, 3, bgClasses);
 
   return (
-    <div className="flex">
+    <div className="flex w-screen h-screen">
       <Sidebar />
       <div className="flex gap-[1rem] flex-col flex-1 p-[1rem] h-screen">
         <Navbar isFilterActive={isFilterActive} setIsFilterActive={setIsFilterActive} handleClearFilters={handleClearFilters} />

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Sidebar } from "../components/Sidebar";
+import { SidebarTwo } from '../components/SidebarTwo';
 import { jwtDecode } from 'jwt-decode';
 import { UserGreetings } from '../components/dashboard/UserGreetings';
 import { ProjectDeadline } from '../components/projectManagement/ProjectDeadline';
@@ -36,8 +37,8 @@ export const DashBoard = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
+    <div className="flex h-screen">
+      <SidebarTwo />
 
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 md:grid-cols-9 md:grid-rows-9 lg:grid-cols-9 lg:grid-rows-9 gap-[1rem] h-screen p-[1rem]">

@@ -12,7 +12,7 @@ export const ReminderCard = () => {
     <div className="w-full h-full rounded-2xl flex flex-col text-[clamp(0.7rem,1.2vw,1rem)] p-[clamp(0.5rem,1vw,1rem)]">
       {/* Header */}
       <div className="flex items-center justify-between font-semibold text-[1.1rem] mb-2">
-          <span className="font-semibold text-gray-800 text-[clamp(0.9rem,1.5vw,0.3rem)]">Reminder</span>
+        <span className="font-semibold text-gray-800 text-[clamp(0.9rem,1.5vw,0.3rem)]">Reminder</span>
 
         {/* Custom Plus Icon */}
         <button className="cursor-pointer p-1 hover:scale-110 transition-transform duration-200">
@@ -36,7 +36,10 @@ export const ReminderCard = () => {
       <div className="flex-1 overflow-y-auto pl-3">
         <ul className="list-disc pl-5 m-0">
           {reminders.map((item, index) => (
-            <li key={index} className="mb-2 text-gray-700 text-[clamp(0.7rem,1.1vw,0.9rem)]">
+            <li
+              key={index}
+              className="mb-2 text-gray-700 text-[clamp(0.7rem,1.1vw,0.9rem)] break-words"
+            >
               {item}
             </li>
           ))}
