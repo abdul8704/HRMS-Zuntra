@@ -31,14 +31,12 @@ const navItems = [
     ), path: 'geofencing'
   }
 ];
-
-export const EmployeeNavbar = () => {
+export const Navbar = ({ isFilterActive, setIsFilterActive, handleClearFilters }) => {
   const navigate = useNavigate();
   const { navId } = useParams();
   const [activeNavId, setActiveNavId] = useState(navId || navItems[0].path);
   const [hoveredNavId, setHoveredNavId] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
   const navRefs = useRef([]);
   const sliderRef = useRef(null);
   const tabContainerRef = useRef(null);
@@ -49,6 +47,8 @@ export const EmployeeNavbar = () => {
     setActiveNavId(path);
     navigate(`/employee/${encodeURIComponent(path)}`);
     setIsDropdownOpen(false);
+    setIsFilterActive(false); // Reset filter on tab change
+    handleClearFilters();
   };
 
   const updateSlider = (targetPath = activeNavId) => {
@@ -80,80 +80,94 @@ export const EmployeeNavbar = () => {
   }, [activeNavId]);
 
   return (
-    <div className="w-full relative bg-[#BBD3CC] rounded-xl">
-      {/* Desktop Navigation */}
-      <ul
-        className="relative hidden md:flex list-none m-0 p-0 rounded-xl overflow-hidden"
-        ref={tabContainerRef}
-      >
-        <div
-          ref={sliderRef}
-          className="absolute top-0 left-0 h-full bg-white/50 rounded-xl transition-all duration-500 ease-in-out z-[1]"
-        />
-        {navItems.map((item, index) => (
-          <li
-            key={item.path}
-            ref={(el) => (navRefs.current[index] = el)}
-            className={`flex-1 relative z-[2] flex items-center justify-center cursor-pointer font-medium py-4 select-none transition-colors duration-200 `}
-            onClick={() => handleNavigation(item.path)}
-            onMouseEnter={() => {
-              setHoveredNavId(item.path);
-              updateSlider(item.path);
-            }}
-            onMouseLeave={() => {
-              setHoveredNavId(null);
-              updateSlider(activeNavId);
-            }}
-          >
-            <span className="mr-2 flex items-center shrink-0">{item.icon}</span>
-            {item.label}
-          </li>
-        ))}
-      </ul>
-      {/* Mobile Navigation */}
-      <div className="md:hidden">
-        <div className="relative">
-          <button
-            className="w-full flex items-center justify-between p-4 bg-transparent border-none cursor-pointer font-medium rounded-xl"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          >
-            <span className="mr-2 flex items-center">{activeItem.icon}</span>
-            <span className="flex-1 text-left">{activeItem.label}</span>
-            <svg
-              className={`w-3 h-3 ml-2 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''
-                }`}
-              viewBox="0 0 12 12"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M3 4.5L6 7.5L9 4.5"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+    <>
+      <div className="w-full relative bg-[#BBD3CC] rounded-xl">
+        {/* Desktop Navigation */}
+        <ul
+          className="relative hidden md:flex list-none m-0 p-0 rounded-xl overflow-hidden"
+          ref={tabContainerRef}
+        >
+          <div
+            ref={sliderRef}
+            className="absolute top-0 left-0 h-full bg-white/50 rounded-xl transition-all duration-500 ease-in-out z-[1]"
+          />
 
-          {isDropdownOpen && (
-            <div className="absolute top-full left-0 right-0 bg-[#BBD3CC] rounded-lg mt-1 z-10 overflow-hidden">
-              {navItems
-                .filter((item) => item.path !== activeNavId)
-                .map((item) => (
-                  <button
-                    key={item.path}
-                    onClick={() => handleNavigation(item.path)}
-                    className="w-full flex items-center px-4 py-3 text-left font-medium hover:bg-black/5"
-                  >
-                    <span className="mr-2 flex items-center">{item.icon}</span>
-                    {item.label}
-                  </button>
-                ))}
-            </div>
-          )}
+          {/* Loop through navItems */}
+          {navItems.map((item, index) => (
+            <li
+              key={item.path}
+              ref={(el) => (navRefs.current[index] = el)}
+              className="flex-1 relative z-[2] flex items-center justify-center cursor-pointer font-medium py-4 select-none transition-colors duration-200"
+              onClick={() => handleNavigation(item.path)}
+              onMouseEnter={() => {
+                setHoveredNavId(item.path);
+                updateSlider(item.path);
+              }}
+              onMouseLeave={() => {
+                setHoveredNavId(null);
+                updateSlider(activeNavId);
+              }}
+            >
+              <span className="mr-2 flex items-center shrink-0">{item.icon}</span>
+              {item.label}
+            </li>
+          ))}
+
+          {/* Search Icon Button */}
+          <li
+            className={`relative z-[2] flex items-center justify-center cursor-pointer font-medium px-4 py-4 select-none duration-200 ${isFilterActive ? 'bg-white/40' : ''}`}
+            onClick={() => setIsFilterActive(prev => !prev)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="20" fill="none" viewBox="0 0 20 20">
+              <path fill="#000" d="M20 16.606a.75.75 0 0 1-.75.75h-5.1a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h7.74a2.93 2.93 0 0 1 5.66 0h5.1a.75.75 0 0 1 .75.75Zm0-13.21a.75.75 0 0 1-.75.75H16.8a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h10.39a2.93 2.93 0 0 1 5.66 0h2.45a.74.74 0 0 1 .75.75Zm0 6.6a.741.741 0 0 1-.75.75H7.55a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h1.14a2.93 2.93 0 0 1 5.66 0h11.7a.75.75 0 0 1 .75.75Z" />
+            </svg>
+          </li>
+        </ul>
+
+        {/* Mobile Navigation */}
+        <div className="md:hidden">
+          <div className="relative">
+            <button
+              className="w-full flex items-center justify-between p-4 bg-transparent border-none cursor-pointer font-medium rounded-xl"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <span className="mr-2 flex items-center">{activeItem.icon}</span>
+              <span className="flex-1 text-left">{activeItem.label}</span>
+              <svg
+                className={`w-3 h-3 ml-2 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                viewBox="0 0 12 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M3 4.5L6 7.5L9 4.5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+
+            {isDropdownOpen && (
+              <div className="absolute top-full left-0 right-0 bg-[#BBD3CC] rounded-lg mt-1 z-10 overflow-hidden">
+                {navItems
+                  .filter((item) => item.path !== activeNavId)
+                  .map((item) => (
+                    <button
+                      key={item.path}
+                      onClick={() => handleNavigation(item.path)}
+                      className="w-full flex items-center px-4 py-3 text-left font-medium hover:bg-black/5"
+                    >
+                      <span className="mr-2 flex items-center">{item.icon}</span>
+                      {item.label}
+                    </button>
+                  ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
