@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import zuntraLogo from "../assets/zuntra.png";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import { PopupCard } from '../components/PopupCard';
 
 export const Login = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -26,6 +27,15 @@ export const Login = () => {
   const [showResetConfirmPassword, setShowResetConfirmPassword] = useState(false);
 
   const [showLoginPassword, setShowLoginPassword] = useState(false);
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    type: 'info',
+    title: '',
+    message: '',
+    duration: 5000,
+  });
+
 
 
   const handleToggle = () => {
@@ -57,7 +67,7 @@ export const Login = () => {
         updated.confirmPassword = "Passwords do not match.";
       }
 
-      if (name === "phone" && value &&  !validatePhone(value)) {
+      if (name === "phone" && value && !validatePhone(value)) {
         updated.phone = "Enter a valid phone number.";
       }
 
@@ -106,7 +116,6 @@ export const Login = () => {
     if (!loginData.email) {
       errors.email = "Email is required.";
       valid = false;
-
     } else if (!validateEmail(loginData.email)) {
       errors.email = "Enter a valid email.";
       valid = false;
@@ -122,7 +131,11 @@ export const Login = () => {
 
     try {
       const response = await api.post("/auth/login", loginData);
-      if (response.status !== 200) return alert("Something went wrong");
+      if (response.status !== 200) {
+        setPopupContent({ type: 'error', title: 'Login Error', message: 'Something went wrong' });
+        setShowPopup(true);
+        return;
+      }
 
       const token = response.data.accessToken;
       localStorage.setItem("accessToken", token);
@@ -138,7 +151,8 @@ export const Login = () => {
             console.log("Attendance Marked");
             navigate("/dashboard");
           } else if (res.status === 206) {
-            alert("Your signup request is pending approval.");
+            setPopupContent({ type: 'info', title: 'Pending Approval', message: 'Your signup request is pending approval.' });
+            setShowPopup(true);
             navigate("/");
           }
         },
@@ -147,7 +161,12 @@ export const Login = () => {
     } catch (err) {
       if (err?.response?.status === 401) {
         const msg = err.response.data?.data?.message;
-        alert(msg === "Wrong Password" ? "Wrong Password!!" : "User not found!!");
+        setPopupContent({
+          type: 'error',
+          title: 'Login Failed',
+          message: msg === "Wrong Password" ? "Wrong Password!!" : "User not found!!"
+        });
+        setShowPopup(true);
       } else {
         console.log(err.response);
       }
@@ -158,9 +177,7 @@ export const Login = () => {
     e.preventDefault();
     const { name, email, phone, password, confirmPassword, otp } = signupData;
 
-    const errors = {
-      name: '', email: '', phone: '', password: '', confirmPassword: '', otp: ''
-    };
+    const errors = { name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' };
     let valid = true;
 
     if (!otpPhase) {
@@ -179,17 +196,25 @@ export const Login = () => {
 
       try {
         const userExist = await api.post("/auth/check", { email });
-        if (userExist.data.exists) return alert("User already exists");
+        if (userExist.data.exists) {
+          setPopupContent({ type: 'error', title: 'Signup Failed', message: 'User already exists' });
+          setShowPopup(true);
+          return;
+        }
 
         const sendotp = await api.post("/auth/signup/send-otp", { useremail: email });
         if (sendotp.status === 200) {
           setOtpPhase(true);
-          alert("OTP sent to your email/phone.");
-        } else alert("Failed to send OTP");
+          setPopupContent({ type: 'success', title: 'OTP Sent', message: 'OTP sent to your email/phone.' });
+          setShowPopup(true);
+        } else {
+          setPopupContent({ type: 'error', title: 'OTP Failed', message: 'Failed to send OTP' });
+          setShowPopup(true);
+        }
       } catch (error) {
-        alert("Something went wrong");
+        setPopupContent({ type: 'error', title: 'Signup Failed', message: 'Something went wrong' });
+        setShowPopup(true);
       }
-
     } else {
       if (!otp) {
         setFormErrors(prev => ({ ...prev, otp: "Please enter the OTP." }));
@@ -205,19 +230,24 @@ export const Login = () => {
 
           if (newUser.status === 200) {
             localStorage.setItem("accessToken", newUser.data.accessToken);
-            alert("Signup successful! Login to your account.");
+            setPopupContent({ type: 'success', title: 'Signup Successful', message: 'Signup successful! Login to your account.' });
+            setShowPopup(true);
             setSignupData({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });
             setFormErrors({});
             setIsSignup(false);
             setOtpPhase(false);
             navigate("/");
-          } else alert("Failed to create user");
+          } else {
+            setPopupContent({ type: 'error', title: 'Signup Failed', message: 'Failed to create user' });
+            setShowPopup(true);
+          }
         }
       } catch (error) {
         if (error.response?.data?.error === "Incorrect OTP") {
           setFormErrors(prev => ({ ...prev, otp: "Incorrect OTP" }));
         } else {
-          alert("Something went wrong");
+          setPopupContent({ type: 'error', title: 'Signup Failed', message: 'Something went wrong' });
+          setShowPopup(true);
         }
       }
     }
@@ -238,15 +268,24 @@ export const Login = () => {
 
       try {
         const userExist = await api.post("/auth/check", { email });
-        if (!userExist.data.exists) return alert("We couldn't find a user with this email");
+        if (!userExist.data.exists) {
+          setPopupContent({ type: 'error', title: 'Reset Failed', message: "We couldn't find a user with this email" });
+          setShowPopup(true);
+          return;
+        }
 
         const sendotp = await api.post("/auth/signup/send-otp", { useremail: email });
         if (sendotp.status === 200) {
           setOtpSent(true);
-          alert("OTP sent to your email/phone.");
-        } else alert("Failed to send OTP");
+          setPopupContent({ type: 'success', title: 'OTP Sent', message: 'OTP sent to your email/phone.' });
+          setShowPopup(true);
+        } else {
+          setPopupContent({ type: 'error', title: 'OTP Failed', message: 'Failed to send OTP' });
+          setShowPopup(true);
+        }
       } catch (error) {
-        alert("Something went wrong");
+        setPopupContent({ type: 'error', title: 'Reset Failed', message: 'Something went wrong' });
+        setShowPopup(true);
       }
     } else if (!otpVerified) {
       if (!otp) {
@@ -256,12 +295,19 @@ export const Login = () => {
 
       try {
         const verifyOtp = await api.post("/auth/signup/verify-otp", { useremail: email, otp });
-        if (verifyOtp.status === 200) setOtpVerified(true);
-        else alert("Something went wrong");
+        if (verifyOtp.status === 200) {
+          setOtpVerified(true);
+        } else {
+          setPopupContent({ type: 'error', title: 'OTP Verification', message: 'Something went wrong' });
+          setShowPopup(true);
+        }
       } catch (error) {
         if (error.response?.data?.error === "Incorrect OTP") {
           setFormErrors(prev => ({ ...prev, otp: "Incorrect OTP" }));
-        } else alert("Something went wrong");
+        } else {
+          setPopupContent({ type: 'error', title: 'OTP Verification', message: 'Something went wrong' });
+          setShowPopup(true);
+        }
       }
     } else {
       if (!password) { errors.password = "Password is required."; valid = false; }
@@ -276,14 +322,16 @@ export const Login = () => {
       try {
         const resetPass = await api.post("/auth/reset-password", { email, password });
         if (resetPass) {
-          alert("Password Changed Successfully");
+          setPopupContent({ type: 'success', title: 'Password Reset', message: 'Password Changed Successfully' });
+          setShowPopup(true);
           setShowReset(false);
           setOtpSent(false);
           setOtpVerified(false);
           setResetData({ email: '', otp: '', password: '', confirmPassword: '' });
         }
       } catch (error) {
-        alert("Something went wrong");
+        setPopupContent({ type: 'error', title: 'Reset Failed', message: 'Something went wrong' });
+        setShowPopup(true);
       }
     }
   };
@@ -300,6 +348,17 @@ export const Login = () => {
 
   return (
     <>
+      {showPopup && (
+        <PopupCard
+          isVisible={true}
+          onClose={() => setShowPopup(false)}
+          type={popupContent.type}
+          title={popupContent.title}
+          message={popupContent.message}
+          duration={popupContent.duration}
+        />
+      )}
+
       <div className="login-page">
         <img className="login-logo-container" src={zuntraLogo} alt="ZUNTRA" />
 
@@ -358,7 +417,7 @@ export const Login = () => {
                             </div>
 
                             <div className="password-field-container">
-                              <div className="password-input-flex">
+                              <div className="password-input-flex" style={{marginBottom:'0.7rem'}}>
                                 <input
                                   name="confirmPassword"
                                   value={signupData.confirmPassword}
@@ -383,6 +442,7 @@ export const Login = () => {
                                     </svg>
                                   )}
                                 </span>
+                                
                               </div>
                               {formErrors.confirmPassword && <p className="login-error-text">{formErrors.confirmPassword}</p>}
                             </div>
