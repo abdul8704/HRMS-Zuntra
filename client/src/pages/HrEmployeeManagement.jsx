@@ -118,12 +118,12 @@ export const HrEmployeeManagement = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <div className="flex-1 p-[1rem]">
+      <div className="flex gap-[1rem] flex-col flex-1 p-[1rem] h-screen">
         <EmpNavbar />
 
         {/* All Employees */}
         {navId === "all" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto h-[calc(100vh-7rem)] mt-[1rem]">
+          <div className="flex-1 px-[1rem] grid grid-cols-1 md:grid-cols-2 gap-[1rem] overflow-y-auto">
             {isLoadingEmployees ? (
               <p className="text-center col-span-full mt-4 text-gray-600 font-semibold"><Loading /></p>
             ) : isErrorEmployees ? (
@@ -152,7 +152,7 @@ export const HrEmployeeManagement = () => {
 
         {/* Roles */}
         {navId === "roles" && (
-          <div className="px-[1rem] mt-[1rem] h-[calc(100vh-7rem)] overflow-y-auto">
+          <div className="flex-1 px-[1rem] overflow-y-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[1rem] justify-items-center">
               {isLoadingRoles ? (
                 <p className="text-center col-span-full mt-4 text-gray-600 font-semibold"><Loading /></p>
@@ -190,7 +190,7 @@ export const HrEmployeeManagement = () => {
 
         {/* Geofencing */}
         {navId === "geofencing" && (
-          <div className="p-4 flex flex-col gap-4 overflow-y-auto h-[calc(100vh-7rem)]">
+          <div className="flex flex-col px-[1rem] gap-4 overflow-y-auto flex-1">
             {isLoadingBranches ? (
               <p className="text-center mt-4 text-gray-600 font-semibold"><Loading /></p>
             ) : isErrorBranches ? (
@@ -215,7 +215,7 @@ export const HrEmployeeManagement = () => {
 
         {/* New Users */}
         {navId === "newusers" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto mt-[1rem]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto">
             {isLoadingPending ? (
               <p className="text-center col-span-full mt-4 text-gray-600 font-semibold"><Loading /></p>
             ) : isErrorPending ? (
