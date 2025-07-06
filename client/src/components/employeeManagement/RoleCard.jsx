@@ -56,7 +56,7 @@ const darkenColor = (hex, percent = 20) => {
   return `#${toHex(r2)}${toHex(g2)}${toHex(b2)}`;
 };
 
-export const EmployeeRoleCard = ({ role, bgColor, onEdit }) => {
+export const RoleCard = ({ role, bgColor, onEdit }) => {
   const handleEditClick = () => {
     onEdit({ role, color: bgColor });
   };

@@ -81,7 +81,7 @@ export const EmployeeCard = ({
               <img
                 src={image}
                 alt="Profile"
-                className="w-full h-full object-cover block rounded-l-lg sm:rounded-l-lg sm:rounded-r-none rounded-t-lg sm:rounded-t-none"
+                className="w-full h-full object-cover block rounded-l-lg sm:rounded-l-lg sm:rounded-r-none sm:rounded-t-none"
               />
             </div>
 

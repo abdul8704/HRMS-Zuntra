@@ -81,9 +81,21 @@ const getEmployeeByRole = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, employees });
 });
 
+const getDetailsOfaEmployee= asyncHandler(async (req, res) => {
+    const { empId } = req.params;
+
+    if (!empId) 
+        throw new ApiError(400, "empId not provided");
+
+    const employeeDetail = await employeeService.getDetailsOfaEmployee(empId);
+    console.log(employeeDetail)
+    res.status(200).json({ success: true, employeeDetail });
+});
+
 module.exports = {
     handleLogout,
     getAttendanceData,
     fetchAllEmployees,
     getEmployeeByRole,
+    getDetailsOfaEmployee,
 };

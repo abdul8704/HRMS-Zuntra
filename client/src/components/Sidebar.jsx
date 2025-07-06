@@ -152,7 +152,7 @@ export const Sidebar = () => {
       <>
         {/* Mobile Menu Button */}
         <button
-          className={`fixed top-[3rem] -left-3 z-[9999] w-12 h-12 bg-[#bcd4cd] rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${mobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          className={`fixed top-[4rem] -left-3 z-[9999] w-12 h-12 bg-[#bcd4cd] rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${mobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
             }`}
           onClick={() => setMobileMenuOpen(true)}
         >

@@ -7,7 +7,7 @@ import { HrProjectDetails } from './pages/HrProjectDetails';
 import { HrProjectManagement } from './pages/HrProjectManagement';
 import { HrCourseManagement } from './pages/HrCourseManagement';
 import { EmployeeManagement } from './pages/EmployeeManagement';
-import { HrEmployeeDetail } from './pages/HrEmployeeDetail';
+import { EmployeeDetails } from './pages/EmployeeDetails';
 import  HrCreateCourse  from './pages/HrCreateCourse';
 import { HrOverviewLearning } from './pages/Hroverviewlearn';
 import { NewUser } from "./pages/NewUser";
@@ -35,14 +35,14 @@ function App() {
         <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
         <Route path="/project/:projectId/:navId" element={<HrProjectDetails/>}></Route>
         <Route path="/employee/:navId" element={<EmployeeManagement/>}></Route>
-        <Route path="/employee/details"  element={<HrEmployeeDetail/>}></Route>
+        <Route path="/employee/:empId/details/:navId"  element={<EmployeeDetails/>}></Route>
         <Route path="/courses/:navId" element={<HrCourseManagement/>}></Route>
         <Route path="/attendance" element={<HrPersonalAttendance/>}></Route>
         <Route path="/upskill/:navId" element={<Upskill/>}></Route>
         <Route path="/createcourse" element={<HrCreateCourse/>}></Route>
         <Route path="/overviewlearning" element={<HrOverviewLearning/>}></Route>
         <Route path="/hrupskillsidebar" element={<HrUpskillSideBar/>}></Route>
-        {/* <Route path="*" element={<NotFound />} /> */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
     </>
