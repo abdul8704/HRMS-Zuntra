@@ -6,7 +6,7 @@ import { NotFound } from './pages/NotFound';
 import { HrProjectDetails } from './pages/HrProjectDetails';
 import { HrProjectManagement } from './pages/HrProjectManagement';
 import { HrCourseManagement } from './pages/HrCourseManagement';
-import { HrEmployeeManagement } from './pages/HrEmployeeManagement';
+import { EmployeeManagement } from './pages/EmployeeManagement';
 import { HrEmployeeDetail } from './pages/HrEmployeeDetail';
 import  HrCreateCourse  from './pages/HrCreateCourse';
 import { HrOverviewLearning } from './pages/Hroverviewlearn';
@@ -34,7 +34,7 @@ function App() {
         <Route path="/dashboard" element={<DashBoard/>}></Route>
         <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
         <Route path="/project/:projectId/:navId" element={<HrProjectDetails/>}></Route>
-        <Route path="/employee/:navId" element={<HrEmployeeManagement/>}></Route>
+        <Route path="/employee/:navId" element={<EmployeeManagement/>}></Route>
         <Route path="/employee/details"  element={<HrEmployeeDetail/>}></Route>
         <Route path="/courses/:navId" element={<HrCourseManagement/>}></Route>
         <Route path="/attendance" element={<HrPersonalAttendance/>}></Route>
