@@ -22,6 +22,11 @@ export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [showResetConfirmPassword, setShowResetConfirmPassword] = useState(false);
+
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+
 
   const handleToggle = () => {
     setIsSignup(!isSignup);
@@ -31,6 +36,10 @@ export const Login = () => {
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const validatePhone = (phone) => {
+    return /^\d{10}$/.test(phone);
   };
 
   const handleSignupChange = (e) => {
@@ -46,6 +55,10 @@ export const Login = () => {
 
       if (name === "confirmPassword" && value !== signupData.password) {
         updated.confirmPassword = "Passwords do not match.";
+      }
+
+      if (name === "phone" && value &&  !validatePhone(value)) {
+        updated.phone = "Enter a valid phone number.";
       }
 
       return updated;
@@ -93,6 +106,7 @@ export const Login = () => {
     if (!loginData.email) {
       errors.email = "Email is required.";
       valid = false;
+
     } else if (!validateEmail(loginData.email)) {
       errors.email = "Enter a valid email.";
       valid = false;
@@ -303,11 +317,11 @@ export const Login = () => {
                           {formErrors.name && <p className="login-error-text">{formErrors.name}</p>}
                         </div>
                         <div>
-                          <input name="email" value={signupData.email} onChange={handleSignupChange} className="login-input" type="email" placeholder="Email" />
+                          <input name="email" value={signupData.email} onChange={handleSignupChange} className="login-input" type="text" placeholder="Email" />
                           {formErrors.email && <p className="login-error-text">{formErrors.email}</p>}
                         </div>
                         <div>
-                          <input name="phone" value={signupData.phone} onChange={handleSignupChange} className="login-input" type="tel" placeholder="Phone Number" />
+                          <input name="phone" value={signupData.phone} onChange={handleSignupChange} className="login-input" type="text" placeholder="Phone Number" />
                           {formErrors.phone && <p className="login-error-text">{formErrors.phone}</p>}
                         </div>
 
@@ -392,7 +406,7 @@ export const Login = () => {
                     <form className="login-form" onSubmit={handleLoginSubmit}>
                       <div className="login-input-container">
                         <div>
-                          <input name="email" value={loginData.email} onChange={handleLoginChange} className="login-input" type="email" placeholder="Email" />
+                          <input name="email" value={loginData.email} onChange={handleLoginChange} className="login-input" type="text" placeholder="Email" />
                           {formErrors.email && <p className="login-error-text">{formErrors.email}</p>}
                         </div>
                         <div className="password-field-container">
@@ -402,14 +416,14 @@ export const Login = () => {
                               value={loginData.password}
                               onChange={handleLoginChange}
                               className="login-input"
-                              type={showPassword ? "text" : "password"}
+                              type={showLoginPassword ? "text" : "password"}
                               placeholder="Password"
                             />
                             <span
                               className="eye-icon"
-                              onClick={() => setShowPassword(prev => !prev)}
+                              onClick={() => setShowLoginPassword(prev => !prev)}
                             >
-                              {showPassword ? (
+                              {showLoginPassword ? (
                                 // Show icon
                                 <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="rgba(45, 42, 42, 0.73)">
                                   <path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Z" />
@@ -441,7 +455,7 @@ export const Login = () => {
                     <div className="login-input-container">
                       {!otpSent && (
                         <div>
-                          <input name="email" value={resetData.email} onChange={handleResetChange} className="login-input" type="email" placeholder="Enter Email" />
+                          <input name="email" value={resetData.email} onChange={handleResetChange} className="login-input" type="text" placeholder="Enter Email" />
                           {formErrors.email && <p className="login-error-text">{formErrors.email}</p>}
                         </div>
                       )}
@@ -460,14 +474,14 @@ export const Login = () => {
                                 value={resetData.password}
                                 onChange={handleResetChange}
                                 className="login-input"
-                                type={showPassword ? "text" : "password"}
+                                type={showResetPassword ? "text" : "password"}
                                 placeholder="New Password"
                               />
                               <span
                                 className="eye-icon"
-                                onClick={() => setShowPassword(prev => !prev)}
+                                onClick={() => setShowResetPassword(prev => !prev)}
                               >
-                                {showPassword ? (
+                                {showResetPassword ? (
                                   // Show icon
                                   <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="rgba(45, 42, 42, 0.73)">
                                     <path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Z" />
@@ -490,14 +504,14 @@ export const Login = () => {
                                 value={resetData.confirmPassword}
                                 onChange={handleResetChange}
                                 className="login-input"
-                                type={showConfirmPassword ? "text" : "password"}
+                                type={showResetConfirmPassword ? "text" : "password"}
                                 placeholder="Confirm Password"
                               />
                               <span
                                 className="eye-icon"
-                                onClick={() => setShowConfirmPassword(prev => !prev)}
+                                onClick={() => setShowResetConfirmPassword(prev => !prev)}
                               >
-                                {showConfirmPassword ? (
+                                {showResetConfirmPassword ? (
                                   <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="rgba(45, 42, 42, 0.73)">
                                     <path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Z" />
                                   </svg>
@@ -817,8 +831,6 @@ export const Login = () => {
   align-items: center;
   justify-content: center;
 }
-
-
 
   /* Tablet and smaller desktop styles */
   @media (max-width: 1024px) {
