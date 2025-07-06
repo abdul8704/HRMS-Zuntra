@@ -89,7 +89,7 @@ const sidebarItems = [
   },
 ];
 
-export const SidebarTwo = () => {
+export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [userRole, setUserRole] = useState("HR");
