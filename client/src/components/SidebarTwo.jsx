@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import zuntraSquareLogo from '../assets/zuntra_square_no_text.png';
 import zuntraLogo from '../assets/zuntra.png';
@@ -94,9 +94,30 @@ export const SidebarTwo = () => {
   const location = useLocation();
   const [userRole, setUserRole] = useState("HR");
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const [sidebarState, setSidebarState] = useState(0); // 0: collapsed, 1: hover, 2: expanded, 3: pinned,
+  const [sidebarState, setSidebarState] = useState(0); // 0: collapsed, 1: hover, 2: expanded, 3: pinned
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const currentPath = location.pathname;
+
+  // Check if device is mobile/tablet
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    if (isMobile) {
+      setMobileMenuOpen(false);
+    }
+  }, [location.pathname, isMobile]);
 
   const visibleItems = sidebarItems.filter(item =>
     userRole === "HR" ? true : item.role === "EMP"
@@ -117,14 +138,83 @@ export const SidebarTwo = () => {
   const getPositionStyle = (index) => ({
     top: `${index * 72}px`,
   });
-  console.log(sidebarState)
+
+  const handleItemClick = (item) => {
+    navigate(item.path);
+    if (isMobile) {
+      setMobileMenuOpen(false);
+    }
+  };
+
+  // Mobile Arrow Button
+  if (isMobile) {
+    return (
+      <>
+        {/* Mobile Menu Button */}
+        <button
+          className={`fixed top-[3rem] -left-3 z-[9999] w-12 h-12 bg-[#bcd4cd] rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${mobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
+            }`}
+          onClick={() => setMobileMenuOpen(true)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="9,18 15,12 9,6"></polyline>
+          </svg>
+        </button>
+
+        {/* Mobile Sidebar Overlay */}
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 z-[9998] bg-black/50" onClick={() => setMobileMenuOpen(false)} />
+        )}
+
+        {/* Mobile Sidebar */}
+        <div
+          className={`fixed top-0 left-0 h-screen bg-[#bcd4cd] text-black transition-all duration-300 ease-in-out z-[9999] ${mobileMenuOpen ? 'w-screen' : 'w-0'
+            } overflow-hidden`}
+        >
+          <div className="flex flex-col h-full">
+            {/* Header with logo and close button */}
+            <div className="flex items-center justify-between p-4 border-b border-white/20">
+              <img src={zuntraLogo} alt="Logo" className="h-8" />
+              <button
+                className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Menu Items */}
+            <div className="flex-1 overflow-y-auto py-4">
+              {visibleItems.map((item, index) => (
+                <div
+                  key={index}
+                  className={`w-full px-6 py-4 cursor-pointer transition-all duration-200 flex items-center space-x-4 ${index === activeIndex ? 'bg-white/30' : 'hover:bg-white/20'
+                    }`}
+                  onClick={() => handleItemClick(item)}
+                >
+                  <div className="flex-shrink-0">
+                    {item.icon}
+                  </div>
+                  <span className="text-lg font-medium">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Desktop Sidebar (original behavior)
   return (
     <>
       <div
-        className={`relative bg-[#bcd4cd] h-screen flex flex-col items-start pt-4 text-black transition-all duration-500 ease-in-out
+        className={`relative bg-[#bcd4cd] h-screen flex flex-col items-start pt-4 text-black transition-all duration-200 ease-in-out
           ${sidebarState === 2 || sidebarState === 3 ? 'w-[21rem]' : 'w-[4.5rem]'}`}
-        onMouseEnter={() => { if (sidebarState === 0 ) setSidebarState(1); }}
-        onMouseLeave={() => { if (sidebarState !== 3 ) setSidebarState(0); }}
+        onMouseEnter={() => { if (sidebarState === 0) setSidebarState(1); }}
+        onMouseLeave={() => { if (sidebarState !== 3) setSidebarState(0); }}
       >
         {(sidebarState === 2 || sidebarState === 3) && (
           <div
@@ -150,14 +240,13 @@ export const SidebarTwo = () => {
           </div>
         )}
 
-
         {/*Logo*/}
         <div className="w-full h-10 mb-6 flex items-center justify-center relative overflow-hidden">
           <div
             className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out"
             style={{
               opacity: sidebarState === 2 || sidebarState === 3 ? 0 : 1,
-              transform: sidebarState === 2 || sidebarState ===3 ? 'scale(0.8)' : 'scale(1)',
+              transform: sidebarState === 2 || sidebarState === 3 ? 'scale(0.8)' : 'scale(1)',
               transitionDelay: sidebarState === 2 || sidebarState === 3 ? '0ms' : '100ms'
             }}
           >
