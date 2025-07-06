@@ -1,4 +1,5 @@
 const employeeService = require("../services/employeeService");
+const roleService = require("../services/rolesService");
 const ApiError = require("../errors/ApiError");
 const asyncHandler = require("express-async-handler");
 
@@ -38,9 +39,36 @@ const getAttendanceData = asyncHandler(async (req, res) => {
 });
 
 const fetchAllEmployees = asyncHandler(async (req, res) => {
-    const employees = await employeeService.getAllEmployees();
-    res.status(200).json({ success: true, employees });
+  const employees = await employeeService.getAllEmployees();
+
+  const roleColorCache = new Map();
+  const roleNameCache = new Map();
+
+  const formattedEmployees = await Promise.all(
+    employees.map(async (emp) => {
+      const roleId = emp.role._id.toString();
+
+      if (!roleColorCache.has(roleId)) {
+        const roleDetails = await roleService.getRoleDetailsById(roleId);
+        roleColorCache.set(roleId, roleDetails?.color || null);
+        roleNameCache.set(roleId, roleDetails?.role || null);
+      }
+
+      const employeeObject = emp.toObject?.() ?? emp;
+
+      return {
+        ...employeeObject,
+        role: {
+          name: roleNameCache.get(roleId),
+          color: roleColorCache.get(roleId),
+        },
+      };
+    })
+  );
+  res.status(200).json({ success: true, employees: formattedEmployees });
 });
+
+
 
 const getEmployeeByRole = asyncHandler(async (req, res) => {
     const { role } = req.params;

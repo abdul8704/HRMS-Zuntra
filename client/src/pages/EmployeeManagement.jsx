@@ -96,7 +96,6 @@ export const EmployeeManagement = () => {
     };
     fetchData();
   }, []);
-
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -403,12 +402,12 @@ export const EmployeeManagement = () => {
                   email={emp.email}
                   phone={emp.phoneNumber}
                   image={emp.profilePicture}
-                  role={emp.role?.role}
+                  role={emp.role.name}
                   inTime={emp.loginTime || "N/A"}
                   outTime={emp.logoutTime || "N/A"}
                   workTime="10:01"
                   breakTime="12:00"
-                  bgColor={bgColorList[index]}
+                  bgColor={emp.role.color}
                 />
               ))
             )}
