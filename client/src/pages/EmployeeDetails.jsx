@@ -42,25 +42,30 @@ const fetchUsersOfRole = async (roleId) => {
 }
 
 export const EmployeeDetails = ({ type }) => {
-  const { roleId } = useParams();
+  console.log(type)
+  const { roleId, navId } = useParams();
+  console.log(roleId, navId)
   const [roleProfiles, setRolesProfiles] = useState([])
-
-  useEffect(() => {
-    try{
-      const fetchData = async () => {
-        if (!roleId) {
-          console.error("Role ID is not provided");
-          return;
+  
+  if(type === "role"){
+    useEffect(() => {
+      try {
+        const fetchData = async () => {
+          if (!roleId) {
+            console.error("Role ID is not provided");
+            return;
+          }
+          const data = await fetchUsersOfRole(roleId);
+          setRolesProfiles(data);
         }
-      const data = await fetchUsersOfRole(roleId);
-      setRolesProfiles(data);
+        fetchData();
       }
-      fetchData();
-    }
-    catch(error){
-      console.log("Error fetching role profiles:", error);
-    }
-  }, [roleId]);
+      catch (error) {
+        console.log("Error fetching role profiles:", error);
+      }
+    }, [roleId]);
+  }
+
 
   return (
     <div className="flex h-screen overflow-hidden">
