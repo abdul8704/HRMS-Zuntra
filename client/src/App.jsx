@@ -7,6 +7,7 @@ import { NotFound } from './pages/NotFound';
 import { CourseManagement } from './pages/CourseManagement';
 import { CourseIntro } from './pages/CourseIntro';
 import { CourseLearn } from './pages/CourseLearn';
+import { ProjectOverview } from './pages/ProjectOverview';
 import { EmployeeDetails } from './pages/EmployeeDetails';
 import { EmployeeManagement } from './pages/EmployeeManagement';
 import { HrProjectDetails } from './pages/HrProjectDetails';
@@ -35,6 +36,7 @@ function App() {
         <Route path="/courses/:navId" element={<CourseManagement/>}></Route>
         <Route path="/course/:courseId/intro" element={<CourseIntro/>}></Route>
         <Route path="/course/learn/:courseId" element={<CourseLearn />}></Route>
+        <Route path="/projectoverview" element={<ProjectOverview />}></Route>
         <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
         <Route path="/project/:projectId/:navId" element={<HrProjectDetails/>}></Route>
         <Route path="/attendance" element={<HrPersonalAttendance/>}></Route>
