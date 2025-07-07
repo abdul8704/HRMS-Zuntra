@@ -4,25 +4,25 @@ import { VideoPlayer } from "../components/upskill/VideoPlayer";
 import { DescriptionSection } from "../components/upskill/DescriptionSection";
 import { AssignmentsSection } from "../components/upskill/AssignmentsSection";
 
-export const HrUpskillSideBar = () => {
+export const CourseLearn = () => {
   const progressMatrix = [
     [1, 1, 1, 1],         // Module 1: complete
-    [1, 0, 1],            // Module 2: incomplete
+    [1, 1, 1],            // Module 2: incomplete
     [1, 1, 1, 1, 1],      // Module 3: complete
     [0, 0, 0, 0, 0],      // Module 4: incomplete
-    [1, 1, 0, 1, 1],      // Module 5: incomplete
+    [1, 1, 1, 0, 1],      // Module 5: incomplete
   ];
 
   return (
-    <div className="flex overflow-x-hidden">
+    <div className="flex flex-col md:flex-row overflow-x-hidden min-h-screen">
       {/* Sidebar */}
       <UpskillSideBar progressMatrix={progressMatrix} />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col px-6 ml-[260px] bg-white font-sans">
-        <div className="h-[25px]" />
+      <div className="flex-1 flex flex-col px-4 md:px-6 md:ml-[260px] bg-white font-sans">
+        <div className="h-6" />
 
-        <div className="flex items-center text-xl font-bold text-black mb-4">
+        <div className="flex items-center text-lg md:text-xl font-bold text-black mb-4">
           <div className="w-1 h-6 bg-[#009688] rounded-sm mr-2" />
           Sub Module 2 Name
         </div>
