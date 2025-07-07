@@ -1,7 +1,7 @@
 import React from "react";
 import SidebarDetails from "../components/SidebarDetails";
-import AttendanceCalendar from "../components/attendance/AttendanceCalendar";
-import AttendanceCard from "../components/attendance/AttendanceCard";
+import { AttendanceCalendar } from "../components/attendance/AttendanceCalendar";
+import { AttendanceCard } from "../components/attendance/AttendanceCard";
 import ProgressCard from "../components/attendance/ProgressCard";
 import { Navbar } from "../components/Navbar";
 import { TimeCard } from "../components/dashboard/TimeCard";
