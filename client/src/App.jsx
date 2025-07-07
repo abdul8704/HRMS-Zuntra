@@ -2,20 +2,18 @@ import { useState, useEffect } from 'react'
 import {jwtDecode} from 'jwt-decode';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Login } from "./pages/Login";
+import { DashBoard } from './pages/DashBoard';
 import { NotFound } from './pages/NotFound';
+import { CourseManagement } from './pages/CourseManagement';
+import { CourseIntro } from './pages/CourseIntro';
+import { CourseLearn } from './pages/CourseLearn';
+import { EmployeeDetails } from './pages/EmployeeDetails';
+import { EmployeeManagement } from './pages/EmployeeManagement';
 import { HrProjectDetails } from './pages/HrProjectDetails';
 import { HrProjectManagement } from './pages/HrProjectManagement';
-import { HrCourseManagement } from './pages/HrCourseManagement';
-import { EmployeeManagement } from './pages/EmployeeManagement';
-import { EmployeeDetails } from './pages/EmployeeDetails';
 import  HrCreateCourse  from './pages/HrCreateCourse';
-import { HrOverviewLearning } from './pages/Hroverviewlearn';
-import { NewUser } from "./pages/NewUser";
-import { GeoFencing } from './components/employeeManagement/GeoFencing';
-import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
 import { Upskill } from './pages/Upskill';
-import { DashBoard } from './pages/DashBoard';
-import { HrUpskillSideBar } from './pages/HrUpskillSideBar';
+import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
 import './App.css'
 import './index.css'
 
@@ -30,18 +28,18 @@ function App() {
         {/* <Route path="*" element={<NotFound />} /> */}
         <Route path="/" element={<Login/>}></Route>
         {/* <Route path="/hrupskill" element={<HrUpskillLearn/>}></Route> */}
-        <Route path="/newuser" element={<NewUser/>} />
         <Route path="/dashboard" element={<DashBoard/>}></Route>
+        <Route path="/employee/:navId" element={<EmployeeManagement/>}></Route>
+        <Route path="/employee/:empId/details/:navId"  element={<EmployeeDetails type={"user"}/>}></Route>
+        <Route path="/employee/role/:roleId/details"  element={<EmployeeDetails type={"role"}/>}></Route>
+        <Route path="/courses/:navId" element={<CourseManagement/>}></Route>
+        <Route path="/course/:courseId/intro" element={<CourseIntro/>}></Route>
+        <Route path="/course/learn/:courseId" element={<CourseLearn />}></Route>
         <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
         <Route path="/project/:projectId/:navId" element={<HrProjectDetails/>}></Route>
-        <Route path="/employee/:navId" element={<EmployeeManagement/>}></Route>
-        <Route path="/employee/:empId/details/:navId"  element={<EmployeeDetails/>}></Route>
-        <Route path="/courses/:navId" element={<HrCourseManagement/>}></Route>
         <Route path="/attendance" element={<HrPersonalAttendance/>}></Route>
         <Route path="/upskill/:navId" element={<Upskill/>}></Route>
         <Route path="/createcourse" element={<HrCreateCourse/>}></Route>
-        <Route path="/overviewlearning" element={<HrOverviewLearning/>}></Route>
-        <Route path="/hrupskillsidebar" element={<HrUpskillSideBar/>}></Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

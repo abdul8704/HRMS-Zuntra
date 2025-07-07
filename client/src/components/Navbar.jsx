@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
-// Employee Management Nav Items
 const employeeManagementNavItems = [
   {
     label: 'Employee',
@@ -76,44 +75,56 @@ const employeeDetailsNavItems = [
   }
 ];
 
-export const Navbar = ({
-  type = 'employeeManagement',
-  showFilter = false,
-  isFilterActive,
-  setIsFilterActive,
-  handleClearFilters
-}) => {
+const courseManagementNavItems = [
+  {
+    label: 'All Courses',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+        <path d="M480-160q-48-38-104-59t-116-21q-42 0-82.5 11T100-198q-21 11-40.5-1T40-234v-482q0-11 5.5-21T62-752q46-24 96-36t102-12q58 0 113.5 15T480-740v484q51-32 107-48t113-16q36 0 70.5 6t69.5 18v-480q15 5 29.5 10.5T898-752q11 5 16.5 15t5.5 21v482q0 23-19.5 35t-40.5 1q-37-20-77.5-31T700-240q-60 0-116 21t-104 59Z" />
+      </svg>
+    ),
+    path: 'all',
+  },
+  {
+    label: 'Create Course',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 40 40">
+        <path fill="#000000" d="M40 17.776H28.303l10.13-5.849-2.224-3.854-10.13 5.849 5.847-10.13-3.854-2.225-5.847 10.129V0h-4.45v11.697l-5.85-10.13-3.852 2.225 5.848 10.129-10.13-5.848-2.224 3.853 10.13 5.849H0v4.45h11.695L1.567 28.072l2.224 3.854 10.13-5.848-5.85 10.13 3.855 2.224 5.848-10.13V40h4.45V28.304l5.847 10.13 3.854-2.225-5.849-10.13 10.13 5.848 2.225-3.854-10.129-5.848h11.696v-4.45H40ZM20 26.05a6.074 6.074 0 1 1 0-12.148 6.074 6.074 0 1 1 0 12.148Z" />
+      </svg>
+    ),
+    path: 'create'
+  },
+  {
+    label: 'Add Course',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+        <path d="M440-280h80v-160h160v-80H520v-160h-80v160H280v80h160v160Zm40 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
+      </svg>
+    ),
+    path: 'add',
+  }
+];
+
+
+
+export const Navbar = ({ type, showFilter = false, isFilterActive, setIsFilterActive, handleClearFilters, }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const params = useParams();
-  const navId = params.navId || '';
   const employeeId = params.empId || '';
 
-  const navItems = type === 'employeeManagement' ? employeeManagementNavItems : employeeDetailsNavItems;
-
-  const [activeNavId, setActiveNavId] = useState(
-    type === 'employeeManagement'
-      ? navId || navItems[0]?.path
-      : `/${navId}` || navItems[0]?.path
-  );
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navRefs = useRef([]);
   const sliderRef = useRef(null);
   const tabContainerRef = useRef(null);
 
-  const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];
+  let navItems = [];
+  if (type === 'employeeManagement') navItems = employeeManagementNavItems;
+  else if (type === 'employeeDetails') navItems = employeeDetailsNavItems;
+  else if (type === 'courseManagement') navItems = courseManagementNavItems;
 
-  const handleNavigation = (path) => {
-    setActiveNavId(path);
-    const finalPath =
-      type === 'employeeManagement'
-        ? path
-        : `/employee/${employeeId}/details${path}`;
+  const [activeNavId, setActiveNavId] = useState('');
 
-    navigate(finalPath);
-    setIsDropdownOpen(false);
-    setIsFilterActive?.(false);
-    handleClearFilters?.();
-  };
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const updateSlider = (targetPath = activeNavId) => {
     const index = navItems.findIndex(item => item.path === targetPath);
@@ -124,11 +135,45 @@ export const Navbar = ({
     }
   };
 
-  useEffect(() => {
-    if (!navItems.length) return;
-    updateSlider();
+  const handleNavigation = (path) => {
+    setActiveNavId(path);
 
-    const handleResize = () => updateSlider();
+    let finalPath;
+    if (type === 'employeeManagement') {
+      finalPath = path;
+    } else if (type === 'courseManagement') {
+      finalPath = `/courses/${path}`;
+    } else {
+      finalPath = `/employee/${employeeId}/details${path}`;
+    }
+
+    navigate(finalPath);
+    setIsDropdownOpen(false);
+    setIsFilterActive?.(false);
+    handleClearFilters?.();
+  };
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    let updatedNavId = '';
+
+    if (type === 'employeeManagement') {
+      updatedNavId =
+        navItems.find(item => currentPath.startsWith(item.path))?.path || navItems[0]?.path;
+    } else if (type === 'courseManagement') {
+      const courseSegment = currentPath.split('/courses/')[1]?.split('/')[0];
+      updatedNavId =
+        navItems.find(item => item.path === courseSegment)?.path || navItems[0]?.path;
+    } else if (type === 'employeeDetails') {
+      const detailsSegment = currentPath.split('/details')[1];
+      updatedNavId =
+        navItems.find(item => detailsSegment?.startsWith(item.path))?.path || navItems[0]?.path;
+    }
+
+    setActiveNavId(updatedNavId);
+    setTimeout(() => updateSlider(updatedNavId), 0);
+
+    const handleResize = () => updateSlider(updatedNavId);
     window.addEventListener('resize', handleResize);
 
     const observer = new ResizeObserver(handleResize);
@@ -136,16 +181,21 @@ export const Navbar = ({
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      if (tabContainerRef.current) observer.unobserve(tabContainerRef.current);
+      observer.disconnect();
     };
-  }, [activeNavId, navItems]);
+  }, [location.pathname, type]);
 
   if (!navItems.length) return null;
 
+  const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];
+
   return (
     <div className="w-full relative bg-[#BBD3CC] rounded-xl">
-      {/* Desktop */}
-      <ul className="relative hidden md:flex list-none p-0 rounded-xl overflow-hidden" ref={tabContainerRef}>
+      {/* Desktop Nav */}
+      <ul
+        className="relative hidden md:flex list-none p-0 rounded-xl overflow-hidden"
+        ref={tabContainerRef}
+      >
         <div
           ref={sliderRef}
           className="absolute top-0 left-0 h-full bg-white/50 rounded-xl transition-all duration-500 ease-in-out z-[1]"
@@ -165,7 +215,9 @@ export const Navbar = ({
         ))}
         {showFilter && (
           <li
-            className={`relative z-[2] flex items-center justify-center cursor-pointer font-medium px-4 py-4 select-none duration-200 ${isFilterActive ? 'bg-white/40' : ''}`}
+            className={`relative z-[2] flex items-center justify-center cursor-pointer font-medium px-4 py-4 select-none duration-200 ${
+              isFilterActive ? 'bg-white/40' : ''
+            }`}
             onClick={() => setIsFilterActive?.(prev => !prev)}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="20" fill="none" viewBox="0 0 20 20">
@@ -175,7 +227,7 @@ export const Navbar = ({
         )}
       </ul>
 
-      {/* Mobile Dropdown */}
+      {/* Mobile Dropdown Nav */}
       <div className="md:hidden">
         <div className="relative">
           <button
@@ -185,26 +237,36 @@ export const Navbar = ({
             <span className="mr-2 flex items-center">{activeItem?.icon}</span>
             <span className="flex-1 text-left">{activeItem?.label}</span>
             <svg
-              className={`w-3 h-3 ml-2 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+              className={`w-3 h-3 ml-2 transition-transform duration-200 ${
+                isDropdownOpen ? 'rotate-180' : ''
+              }`}
               viewBox="0 0 12 12"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M3 4.5L6 7.5L9 4.5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
           {isDropdownOpen && (
             <div className="absolute top-full left-0 right-0 bg-[#BBD3CC] rounded-lg mt-1 z-10 overflow-hidden">
-              {navItems.filter(item => item.path !== activeNavId).map(item => (
-                <button
-                  key={item.path}
-                  onClick={() => handleNavigation(item.path)}
-                  className="w-full flex items-center px-4 py-3 text-left font-medium hover:bg-black/5"
-                >
-                  <span className="mr-2 flex items-center">{item.icon}</span>
-                  {item.label}
-                </button>
-              ))}
+              {navItems
+                .filter(item => item.path !== activeNavId)
+                .map(item => (
+                  <button
+                    key={item.path}
+                    onClick={() => handleNavigation(item.path)}
+                    className="w-full flex items-center px-4 py-3 text-left font-medium hover:bg-black/5"
+                  >
+                    <span className="mr-2 flex items-center">{item.icon}</span>
+                    {item.label}
+                  </button>
+                ))}
             </div>
           )}
         </div>

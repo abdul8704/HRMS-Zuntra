@@ -4,7 +4,7 @@ import { TableOfContents } from "../components/upskill/TableContents";
 import { PageHeader } from "../components/upskill/PageHeader";
 import { VideoAndDescriptionContainer } from "../components/upskill/VideoAndDescription";
 
-export const HrOverviewLearning = () => {
+export const CourseIntro = () => {
   // Each array in progressMatrix corresponds to a module.
   // 1 = completed submodule, 0 = incomplete submodule.
   const progressMatrix = [

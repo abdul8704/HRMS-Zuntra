@@ -88,7 +88,6 @@ const getDetailsOfaEmployee= asyncHandler(async (req, res) => {
         throw new ApiError(400, "empId not provided");
 
     const employeeDetail = await employeeService.getDetailsOfaEmployee(empId);
-    console.log(employeeDetail)
     res.status(200).json({ success: true, employeeDetail });
 });
 

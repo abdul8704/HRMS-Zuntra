@@ -407,7 +407,7 @@ export const EmployeeManagement = () => {
                 <div
                   key={emp._id || index}
                   onClick={() => navigate(`/employee/${emp._id}/details/attendance`)}
-                  className="cursor-pointer transition-transform hover:scale-[1.01]"
+                  className="cursor-pointer transition-transform hover:scale-[1.01] w-full"
                 >
                   <EmployeeCard
                     key={emp._id || index}
@@ -442,12 +442,18 @@ export const EmployeeManagement = () => {
                 <p className="text-center col-span-full mt-4 text-gray-500 font-medium">No roles available</p>
               ) : (
                 // Filter roles based on search term
+                
                 rolesData
                   .filter((role) => {
                     if (!searchTerm.trim()) return true;
                     return role.role.toLowerCase().includes(searchTerm.toLowerCase());
                   })
                   .map((role, idx) => (
+                                    <div
+                  key={role._id || index}
+                  onClick={() => navigate(`/employee/role/${role._id}/details`)}
+                  className="cursor-pointer transition-transform hover:scale-[1.01] w-full"
+                >
                     <RoleCard
                       key={idx}
                       role={role.role}
@@ -460,7 +466,10 @@ export const EmployeeManagement = () => {
                         })
                       }
                     />
+                    </div>
                   ))
+
+
               )}
             </div>
             <div

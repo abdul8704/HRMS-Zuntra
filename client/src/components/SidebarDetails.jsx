@@ -1,19 +1,12 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import {
-  Users,
-  Mail,
-  Phone,
-  DollarSign,
-  Edit3,
-  ChevronRight,
-  X,
-} from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Users, Mail, Phone, DollarSign, Edit3, ChevronRight, X, } from "lucide-react";
 import ZuntraLogo from "../assets/Zuntra.svg";
 import EditProfileCard from "./employeeManagement/EditProfilePopup";
 import api from "../api/axios";
 
 export default function SidebarDetails({ type = "user" }) {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showEditCard, setShowEditCard] = useState(false);
@@ -21,7 +14,7 @@ export default function SidebarDetails({ type = "user" }) {
   const [loading, setLoading] = useState(false);
   const [apiMessage, setApiMessage] = useState("");
 
-  const { userId, roleId } = useParams();
+  const { empId, roleId } = useParams();
 
   const handleEditProfile = () => setShowEditCard(true);
 
@@ -33,10 +26,10 @@ export default function SidebarDetails({ type = "user" }) {
   }, []);
 
   useEffect(() => {
-    if (type === "user" && userId) {
-      fetchEmployee(userId);
+    if (type === "user" && empId) {
+      fetchEmployee(empId);
     }
-  }, [type, userId]);
+  }, [type, empId]);
 
   const fetchEmployee = async (empId) => {
     setLoading(true);
@@ -44,7 +37,7 @@ export default function SidebarDetails({ type = "user" }) {
     try {
       const res = await api.get(`/api/employee/${empId}`);
       if (res.data.success) {
-        setEmployeeData(res.data.data);
+        setEmployeeData(res.data.employeeDetail);
       } else {
         setApiMessage(res.data.message || "Failed to load employee.");
         setEmployeeData(null);
@@ -56,36 +49,43 @@ export default function SidebarDetails({ type = "user" }) {
       setLoading(false);
     }
   };
-  console.log(employeeData);
 
   const roleData = {
     roleName: "Admin",
     description: "Manages platform-level access and user settings.",
   };
 
-  if (type === "role") {
-    console.log("Role ID:", roleId);
-  }
-
   return (
     <>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-[999] transition-opacity duration-300 ${
-          isMobile && isOpen ? "block" : "hidden"
-        }`}
+        className={`fixed inset-0 bg-black bg-opacity-50 z-[999] transition-opacity duration-300 ${isMobile && isOpen ? "block" : "hidden"}`}
         onClick={() => setIsOpen(false)}
       ></div>
 
+      {/* Back Button */}
+      <div className="absolute top-4 left-4 z-10">
+        <button
+          className="text-2xl font-bold text-black hover:scale-110 transition"
+          onClick={() => {
+            if (type === "user") {
+              navigate("/employee/all");
+            } else if (type === "role") {
+              navigate("/employee/roles");
+            }
+          }}
+
+        >
+          ←
+        </button>
+      </div>
+
       {/* Sidebar */}
       <div
-        className={`${
-          isMobile
-            ? `fixed top-0 left-0 z-[1000] transform transition-transform duration-300 ${
-                isOpen ? "translate-x-0" : "-translate-x-full"
-              }`
-            : "relative"
-        } bg-[#BBD3CC] shadow-2xl w-full md:w-[320px] min-h-screen`}
+        className={`${isMobile
+          ? `fixed top-0 left-0 z-[1000] transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"}`
+          : "relative"
+          } bg-[#BBD3CC] shadow-2xl w-full md:w-[320px] min-h-screen`}
       >
         {/* Mobile Close Button */}
         {isMobile && isOpen && (
@@ -108,7 +108,7 @@ export default function SidebarDetails({ type = "user" }) {
           />
         </div>
 
-        {/* USER: Render dynamic data */}
+        {/* USER: */}
         {type === "user" && (
           <div className="px-6 pb-8">
             {loading ? (
@@ -121,10 +121,7 @@ export default function SidebarDetails({ type = "user" }) {
                   <div className="w-[140px] md:w-[160px] h-[140px] md:h-[160px] bg-white rounded-full p-1 shadow-xl">
                     <div className="w-full h-full rounded-full overflow-hidden bg-gray-300">
                       <img
-                        src={
-                          employeeData.profileImage ||
-                          "https://via.placeholder.com/160"
-                        }
+                        src={employeeData.profilePicture}
                         alt="Profile"
                         className="w-full h-full object-cover"
                       />
@@ -152,7 +149,7 @@ export default function SidebarDetails({ type = "user" }) {
                   </div>
                   <div className="flex items-center gap-3">
                     <Phone className="w-5 h-5" />
-                    <span>{employeeData.phone}</span>
+                    <span>{employeeData.phoneNumber}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <DollarSign className="w-5 h-5" />
@@ -174,10 +171,23 @@ export default function SidebarDetails({ type = "user" }) {
           </div>
         )}
 
-        {/* ROLE: Static Data */}
+        {/* ROLE */}
         {type === "role" && (
           <div className="px-6 pb-8 text-center text-black">
-            <h2 className="text-xl font-semibold mb-2">{roleData.roleName}</h2>
+            <div className="flex justify-center mb-6">
+              <div className="w-[140px] h-[140px] bg-white rounded-full p-4 shadow-xl flex items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="60"
+                  height="60"
+                  fill="#333"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5Zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5Z" />
+                </svg>
+              </div>
+            </div>
+            <h2 className="text-2xl font-semibold mb-2">Roles</h2>
             <p className="opacity-60">{roleData.description}</p>
           </div>
         )}
