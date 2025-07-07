@@ -271,7 +271,7 @@ const getEmployeeByRole = async (roleId) => {
     try {
         const userData = await User.find({ role: roleId }).populate(
             "role",
-            "roleName"
+            "role color baseSalary"
         );
         return userData;
     } catch (error) {
