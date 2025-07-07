@@ -1,8 +1,8 @@
 import React from 'react';
 import { TimeCard } from '../dashboard/TimeCard';
-import AttendanceCalendar from '../attendance/AttendanceCalendar';
+import { AttendanceCalendar } from '../attendance/AttendanceCalendar';
 import ProgressCard from '../attendance/ProgressCard';
-import AttendanceCard from '../attendance/AttendanceCard';
+import { AttendanceCard } from '../attendance/AttendanceCard';
 
 export const EmployeeDetailsAssignment = () => {
   return (
@@ -28,13 +28,12 @@ export const EmployeeDetailsAssignment = () => {
       </div>
 
       <div className="bg-black/20 col-start-6 col-end-10 row-start-1 row-end-7 rounded-lg p-4">
-            Attendance Calendar
-          {/* <AttendanceCalendar /> */}
+            {/* Attendance Calendar */}
+          <AttendanceCalendar />
       </div>
 
       <div className="bg-black/20 col-start-6 col-end-10 row-start-7 row-end-13 min-h-0 rounded-lg p-4">
           Leave
-          {/* <AttendanceCalendar /> */}
       </div>
 
       {/* <div className="col-start-1 col-end-5 row-start-6 row-end-9 min-h-0 overflow-hidden">
@@ -44,9 +43,9 @@ export const EmployeeDetailsAssignment = () => {
       </div> */}
 
       <div className=" bg-[#FFFF00] col-start-1 col-end-6 row-start-5 row-end-13 rounded-lg p-4">
-        Attendance Report
+        {/* Attendance Report */}
         {/* <div className="h-full overflow-auto"> */}
-          {/* <AttendanceCard /> */}
+          <AttendanceCard />
         {/* </div> */}
       </div>
     </div>
