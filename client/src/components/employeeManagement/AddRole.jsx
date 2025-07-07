@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { EmpCourseCard } from "./EmpCourseCard";
 
-const generateLightColors = () => {
-  const colors = [];
-  for (let i = 0; i < 50; i++) {
-    const hue = Math.floor((i * 360) / 50);
-    colors.push(`hsl(${hue}, 80%, 85%)`);
-  }
-  return colors;
-};
+const colors = [
+  "#F2F2F2", "#E8EAED", "#E6E6E6", "#D9D9D9", "#CCCCCC", "#BFBFBF", 
+  "#FFFFE6", "#FFFFCC", "#FFFFB3", "#FFFF99", "#FFFF00", "#E6E600",
+  "#E6FFE6", "#CCFFCC", "#B3FFB3", "#99FF99", "#00FF00", "#00CC00",
+  "#E6FFFF", "#CCFFFF", "#B3FFFF", "#00FFFF", "#00E6E6", "#00CCCC",
+  "#E6E6FF", "#CCCCFF", "#B3B3FF", "#9999FF", "#0000FF", "#0000CC",
+  "#FFE6FF", "#FFCCFF", "#FFB3FF", "#FF99FF", "#B300B3", "#990099",
+  "#FFE6E6", "#FFCCCC", "#FFB3B3", "#FF9999", "#B30000", "#CC0000",
+];
+
 
 const predefinedCourses = [
   { id: 1, courseName: "React Fundamentals", authorName: "John Doe", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
@@ -23,15 +25,13 @@ const predefinedCourses = [
   { id: 10, courseName: "Next.js Deep Dive", authorName: "Lily Carter", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
 ];
 
-export const AddRolePopup = ({ onClose }) => {
+export const AddRole = ({ onClose }) => {
   const [roleName, setRoleName] = useState("");
   const [roleColor, setRoleColor] = useState("#f5f5f5");
   const [showColors, setShowColors] = useState(false);
   const [courseCards, setCourseCards] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
-  const colors = generateLightColors();
   const availableCourses = predefinedCourses.filter(
     (course) =>
       !courseCards.find((c) => c.id === course.id) &&

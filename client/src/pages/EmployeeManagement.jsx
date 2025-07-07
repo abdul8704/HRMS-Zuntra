@@ -4,7 +4,7 @@ import { Sidebar } from "../components/Sidebar";
 import { Navbar } from '../components/Navbar';
 import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
 import { RoleCard } from '../components/employeeManagement/RoleCard';
-import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
+import { AddRole } from '../components/employeeManagement/AddRole';
 import { EditRolePopup } from '../components/employeeManagement/EditRolePopup';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmployeeAssignmentPopup';
@@ -550,7 +550,7 @@ export const EmployeeManagement = () => {
         )}
       </div>
 
-      {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
+      {showPopup && <AddRole onClose={() => setShowPopup(false)} />}
 
       {showAssignPopup && selectedEmployee && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-[2000]">
