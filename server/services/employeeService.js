@@ -252,7 +252,7 @@ const getDetailsOfaEmployee = async (userid) => {
         }
 
         const userCreds = await User.findById(userid, {passwordHash : 0})
-            .populate("role", "roleName")
+            .populate("role", "role")
             .populate("shift", "startTime endTime")
             .populate("campus", "campusName");
 

@@ -104,10 +104,48 @@ const courseManagementNavItems = [
     path: 'add',
   }
 ];
+const AttendanceNavItems = [
+  {
+    label: 'Attendance',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+        <path d="M480-160q-48-38-104-59t-116-21q-42 0-82.5 11T100-198q-21 11-40.5-1T40-234v-482q0-11 5.5-21T62-752q46-24 96-36t102-12q58 0 113.5 15T480-740v484q51-32 107-48t113-16q36 0 70.5 6t69.5 18v-480q15 5 29.5 10.5T898-752q11 5 16.5 15t5.5 21v482q0 23-19.5 35t-40.5 1q-37-20-77.5-31T700-240q-60 0-116 21t-104 59Z" />
+      </svg>
+    ),
+    role: "emp",
+    path: 'me',
+  },
+  {
+    label: 'Apply for Leave',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 40 40">
+        <path fill="#000000" d="M40 17.776H28.303l10.13-5.849-2.224-3.854-10.13 5.849 5.847-10.13-3.854-2.225-5.847 10.129V0h-4.45v11.697l-5.85-10.13-3.852 2.225 5.848 10.129-10.13-5.848-2.224 3.853 10.13 5.849H0v4.45h11.695L1.567 28.072l2.224 3.854 10.13-5.848-5.85 10.13 3.855 2.224 5.848-10.13V40h4.45V28.304l5.847 10.13 3.854-2.225-5.849-10.13 10.13 5.848 2.225-3.854-10.129-5.848h11.696v-4.45H40ZM20 26.05a6.074 6.074 0 1 1 0-12.148 6.074 6.074 0 1 1 0 12.148Z" />
+      </svg>
+    ),
+    role: "emp",
+    path: 'apply'
+  },
+  {
+    label: 'Work Schedule ',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+        <path d="M440-280h80v-160h160v-80H520v-160h-80v160H280v80h160v160Zm40 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
+      </svg>
+    ),
+    role: "hr",
+    path: 'schedule',
+  }
+];
 
 
-
-export const Navbar = ({ type, showFilter = false, isFilterActive, setIsFilterActive, handleClearFilters, }) => {
+export const Navbar = ({
+  type,
+  role,
+  showFilter = false,
+  isFilterActive,
+  setIsFilterActive,
+  handleClearFilters,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
@@ -118,12 +156,22 @@ export const Navbar = ({ type, showFilter = false, isFilterActive, setIsFilterAc
   const tabContainerRef = useRef(null);
 
   let navItems = [];
-  if (type === 'employeeManagement') navItems = employeeManagementNavItems;
-  else if (type === 'employeeDetails') navItems = employeeDetailsNavItems;
-  else if (type === 'courseManagement') navItems = courseManagementNavItems;
+
+  if (type === 'employeeManagement') {
+    navItems = employeeManagementNavItems;
+  } else if (type === 'employeeDetails') {
+    navItems = employeeDetailsNavItems;
+  } else if (type === 'courseManagement') {
+    navItems = courseManagementNavItems;
+  } else if (type === 'attendance') {
+    if (role === 'hr') {
+      navItems = AttendanceNavItems;
+    } else {
+      navItems = AttendanceNavItems.filter(item => item.role === 'emp');
+    }
+  }
 
   const [activeNavId, setActiveNavId] = useState('');
-
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const updateSlider = (targetPath = activeNavId) => {
@@ -139,12 +187,15 @@ export const Navbar = ({ type, showFilter = false, isFilterActive, setIsFilterAc
     setActiveNavId(path);
 
     let finalPath;
+
     if (type === 'employeeManagement') {
       finalPath = path;
     } else if (type === 'courseManagement') {
       finalPath = `/courses/${path}`;
-    } else {
+    } else if (type === 'employeeDetails') {
       finalPath = `/employee/${employeeId}/details${path}`;
+    } else if (type === 'attendance') {
+      finalPath = path;
     }
 
     navigate(finalPath);
@@ -168,7 +219,11 @@ export const Navbar = ({ type, showFilter = false, isFilterActive, setIsFilterAc
       const detailsSegment = currentPath.split('/details')[1];
       updatedNavId =
         navItems.find(item => detailsSegment?.startsWith(item.path))?.path || navItems[0]?.path;
+    } else if (type === 'attendance') {
+      const attendanceSegment = currentPath.split('/attendance/')[1]?.split('/')[0];
+      updatedNavId = navItems.find(item => item.path === attendanceSegment)?.path || navItems[0]?.path;
     }
+
 
     setActiveNavId(updatedNavId);
     setTimeout(() => updateSlider(updatedNavId), 0);
@@ -183,7 +238,8 @@ export const Navbar = ({ type, showFilter = false, isFilterActive, setIsFilterAc
       window.removeEventListener('resize', handleResize);
       observer.disconnect();
     };
-  }, [location.pathname, type]);
+  }, [location.pathname, type, role, navItems]);
+
 
   if (!navItems.length) return null;
 
@@ -215,9 +271,8 @@ export const Navbar = ({ type, showFilter = false, isFilterActive, setIsFilterAc
         ))}
         {showFilter && (
           <li
-            className={`relative z-[2] flex items-center justify-center cursor-pointer font-medium px-4 py-4 select-none duration-200 ${
-              isFilterActive ? 'bg-white/40' : ''
-            }`}
+            className={`relative z-[2] flex items-center justify-center cursor-pointer font-medium px-4 py-4 select-none duration-200 ${isFilterActive ? 'bg-white/40' : ''
+              }`}
             onClick={() => setIsFilterActive?.(prev => !prev)}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="20" fill="none" viewBox="0 0 20 20">
@@ -237,9 +292,8 @@ export const Navbar = ({ type, showFilter = false, isFilterActive, setIsFilterAc
             <span className="mr-2 flex items-center">{activeItem?.icon}</span>
             <span className="flex-1 text-left">{activeItem?.label}</span>
             <svg
-              className={`w-3 h-3 ml-2 transition-transform duration-200 ${
-                isDropdownOpen ? 'rotate-180' : ''
-              }`}
+              className={`w-3 h-3 ml-2 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''
+                }`}
               viewBox="0 0 12 12"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"

@@ -43,7 +43,7 @@ export const AttendanceCalendar = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-white relative">
+    <div className="w-full h-full flex flex-col bg-white relative border-2 rounded-lg">
       {/* Header */}
       <div className="flex items-center justify-between px-2 py-1 flex-shrink-0">
         <div className="flex items-center gap-2">
