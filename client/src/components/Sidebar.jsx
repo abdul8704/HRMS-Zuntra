@@ -48,7 +48,7 @@ const sidebarItems = [
   {
     role: "EMP",
     label: "Attendance",
-    path: "/attendance",
+    path: "/attendance/all",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="29" height="28" fill="none" viewBox="0 0 29 28">
         <g clipPath="url(#a)">

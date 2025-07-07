@@ -113,33 +113,34 @@ const AttendanceNavItems = [
       </svg>
     ),
     role: "emp",
-    path: '/attendance',
+    path: 'me',
   },
   {
-    label: 'Schedule',
+    label: 'Apply for Leave',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 40 40">
         <path fill="#000000" d="M40 17.776H28.303l10.13-5.849-2.224-3.854-10.13 5.849 5.847-10.13-3.854-2.225-5.847 10.129V0h-4.45v11.697l-5.85-10.13-3.852 2.225 5.848 10.129-10.13-5.848-2.224 3.853 10.13 5.849H0v4.45h11.695L1.567 28.072l2.224 3.854 10.13-5.848-5.85 10.13 3.855 2.224 5.848-10.13V40h4.45V28.304l5.847 10.13 3.854-2.225-5.849-10.13 10.13 5.848 2.225-3.854-10.129-5.848h11.696v-4.45H40ZM20 26.05a6.074 6.074 0 1 1 0-12.148 6.074 6.074 0 1 1 0 12.148Z" />
       </svg>
     ),
-    role: "hr",
-    path: '/attendance/schedule'
+    role: "emp",
+    path: 'apply'
   },
   {
-    label: 'Add Course',
+    label: 'Work Schedule ',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
         <path d="M440-280h80v-160h160v-80H520v-160h-80v160H280v80h160v160Zm40 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
       </svg>
     ),
-    path: 'add',
+    role: "hr",
+    path: 'schedule',
   }
 ];
 
 
 export const Navbar = ({
   type,
-  role, // <-- NEW PROP
+  role,
   showFilter = false,
   isFilterActive,
   setIsFilterActive,
@@ -156,7 +157,6 @@ export const Navbar = ({
 
   let navItems = [];
 
-  // 🌟 Determine navItems based on type and role
   if (type === 'employeeManagement') {
     navItems = employeeManagementNavItems;
   } else if (type === 'employeeDetails') {
@@ -165,7 +165,7 @@ export const Navbar = ({
     navItems = courseManagementNavItems;
   } else if (type === 'attendance') {
     if (role === 'hr') {
-      navItems = AttendanceNavItems; // show all
+      navItems = AttendanceNavItems;
     } else {
       navItems = AttendanceNavItems.filter(item => item.role === 'emp');
     }
@@ -220,9 +220,10 @@ export const Navbar = ({
       updatedNavId =
         navItems.find(item => detailsSegment?.startsWith(item.path))?.path || navItems[0]?.path;
     } else if (type === 'attendance') {
-      updatedNavId =
-        navItems.find(item => currentPath.startsWith(item.path))?.path || navItems[0]?.path;
+      const attendanceSegment = currentPath.split('/attendance/')[1]?.split('/')[0];
+      updatedNavId = navItems.find(item => item.path === attendanceSegment)?.path || navItems[0]?.path;
     }
+
 
     setActiveNavId(updatedNavId);
     setTimeout(() => updateSlider(updatedNavId), 0);
@@ -237,7 +238,8 @@ export const Navbar = ({
       window.removeEventListener('resize', handleResize);
       observer.disconnect();
     };
-  }, [location.pathname, type, role]);
+  }, [location.pathname, type, role, navItems]);
+
 
   if (!navItems.length) return null;
 
@@ -269,9 +271,8 @@ export const Navbar = ({
         ))}
         {showFilter && (
           <li
-            className={`relative z-[2] flex items-center justify-center cursor-pointer font-medium px-4 py-4 select-none duration-200 ${
-              isFilterActive ? 'bg-white/40' : ''
-            }`}
+            className={`relative z-[2] flex items-center justify-center cursor-pointer font-medium px-4 py-4 select-none duration-200 ${isFilterActive ? 'bg-white/40' : ''
+              }`}
             onClick={() => setIsFilterActive?.(prev => !prev)}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="20" fill="none" viewBox="0 0 20 20">
@@ -291,9 +292,8 @@ export const Navbar = ({
             <span className="mr-2 flex items-center">{activeItem?.icon}</span>
             <span className="flex-1 text-left">{activeItem?.label}</span>
             <svg
-              className={`w-3 h-3 ml-2 transition-transform duration-200 ${
-                isDropdownOpen ? 'rotate-180' : ''
-              }`}
+              className={`w-3 h-3 ml-2 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''
+                }`}
               viewBox="0 0 12 12"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
