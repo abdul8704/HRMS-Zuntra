@@ -36,7 +36,7 @@ export const Login = () => {
     duration: 5000,
   });
 
-
+  const [profileImage, setProfileImage] = useState(null);
 
   const handleToggle = () => {
     setIsSignup(!isSignup);
@@ -345,6 +345,13 @@ export const Login = () => {
       </button>
     </>
   );
+  const handleProfileImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+    }
+  };
+
 
   return (
     <>
@@ -371,6 +378,28 @@ export const Login = () => {
                     <h1 className="login-title">Sign up</h1>
                     <form className="login-form" onSubmit={handleSignupSubmit}>
                       <div className="login-input-container">
+                        <div className="profile-picture-wrapper">
+                          <div className="profile-picture-circle">
+                            {profileImage ? (
+                              <img src={URL.createObjectURL(profileImage)} alt="Profile" className="profile-picture-img" />
+                            ) : (
+                              <span className="profile-initial">
+                                {signupData.name?.[0]?.toUpperCase() || 'U'}
+                              </span>
+                            )}
+                          </div>
+                          <label htmlFor="profile-upload" className="profile-edit-icon">
+                            <span className="plus-icon">+</span>
+                            <input
+                              id="profile-upload"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleProfileImageUpload}
+                              hidden
+                            />
+                          </label>
+                        </div>
+
                         <div>
                           <input name="name" value={signupData.name} onChange={handleSignupChange} className="login-input" type="text" placeholder="Name" />
                           {formErrors.name && <p className="login-error-text">{formErrors.name}</p>}
@@ -417,7 +446,7 @@ export const Login = () => {
                             </div>
 
                             <div className="password-field-container">
-                              <div className="password-input-flex" style={{marginBottom:'0.7rem'}}>
+                              <div className="password-input-flex">
                                 <input
                                   name="confirmPassword"
                                   value={signupData.confirmPassword}
@@ -442,7 +471,7 @@ export const Login = () => {
                                     </svg>
                                   )}
                                 </span>
-                                
+
                               </div>
                               {formErrors.confirmPassword && <p className="login-error-text">{formErrors.confirmPassword}</p>}
                             </div>
@@ -450,7 +479,7 @@ export const Login = () => {
 
                           </>
                         ) : (
-                          <div>
+                          <div style={{ marginBottom: '0.7rem' }}>
                             <input name="otp" value={signupData.otp} onChange={handleSignupChange} className="login-input" type="text" placeholder="Enter OTP" />
                             {formErrors.otp && <p className="login-error-text">{formErrors.otp}</p>}
                           </div>
@@ -558,7 +587,7 @@ export const Login = () => {
                           </div>
 
                           <div className="password-field-container">
-                            <div className="password-input-flex">
+                            <div className="password-input-flex" style={{ marginBottom: '0.7rem' }}>
                               <input
                                 name="confirmPassword"
                                 value={resetData.confirmPassword}
@@ -621,268 +650,338 @@ export const Login = () => {
       </div>
 
       <style>{`
-  .login-page {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #fff;
-    position: relative;
-    padding: 1rem;
-    box-sizing: border-box;
-  }
 
-  .login-logo-container {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    width: 9rem;
-  }
+.profile-picture-wrapper {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 12px;
+}
 
-  .login-card {
-    background-color: #f2f1f1;
-    border-radius: 0.7rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
-    padding: 2rem;
-    width: 26rem;
-    max-width: 90vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-sizing: border-box;
-  }
+.profile-picture-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: bold;
+  color: #000;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
 
-  .login-title {
-    font-size: clamp(1.25rem, 4vw, 1.75rem);
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    text-align: center;
-    line-height: 1.2;
-  }
+.profile-picture-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-  .login-form {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .login-input-container{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem; 
-  }
+.profile-initial {
+  font-size: 32px;
+}
 
-  .login-input {
-    width: 100%;
-    font-size: clamp(0.9rem, 2.5vw, 1rem);
-    padding: clamp(0.5rem, 1.5vw, 0.6rem) clamp(0.7rem, 2vw, 0.9rem);
-    border-radius: 0.5rem;
-    border: 1px solid #aaa;
-    background-color: #fff;
-    box-sizing: border-box;
-  }
+.profile-edit-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: #000;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid white;
+}
 
-  .login-input:focus {
+.plus-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.login-page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  position: relative;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.login-logo-container {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  width: 7rem;
+  z-index: 10;
+}
+
+.login-card {
+  background-color: #f2f1f1;
+  border-radius: 0.6rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  padding: 1.5rem;
+  width: 20rem;
+  max-width: calc(100vw - 1rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.login-title {
+  font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-input-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.login-input {
+  width: 100%;
+  height: 2.5rem;
+  font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+  padding: 0 clamp(0.6rem, 2vw, 0.8rem);
+  border-radius: 0.4rem;
+  border: 1px solid #aaa;
+  background-color: #fff;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+.login-input:focus {
   border-color: #08BDB1;
   outline: none;
   border-width: 1.7px;
 }
 
-  .login-input::placeholder {
-    color: #888;
-  }
+.login-input::placeholder {
+  color: #888;
+}
 
-  .login-forgot-container {
-    display:flex;
-    // background-color: rgba(255, 32, 147, 0.44);
-    justify-content: flex-end;
-    align-items: center;
-    width: 100%;
-  }
+.login-forgot-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+}
 
-  .back-login-container {
-    margin-top: 0.9rem;
-    align-self: center;
-    text-align: center;
-    width: 100%;
-  }
-  
-  .login-forgot {
-    margin-top: 4px;
-    font-size: clamp(0.7rem, 2vw, 0.8rem);
-    color: #215E97;;
-    cursor: pointer;
-    text-align: right;
-    word-wrap: break-word;
-    flex: 1;
-  }
+.back-login-container {
+  margin-top: 0.6rem;
+  align-self: center;
+  text-align: center;
+  width: 100%;
+}
 
-  .back-login {
-    text-decoration: underline;
-    width: 100%;
-    text-align: center;
-    font-size: clamp(0.7rem, 2vw, 0.8rem);
-    color: #215E97;
-    margin-top: -0.5rem;
-    margin-bottom: 1rem;
-    cursor: pointer;
-    word-wrap: break-word;
-  }
+.login-forgot {
+  margin-top: 4px;
+  font-size: clamp(0.65rem, 2vw, 0.75rem);
+  color: #215E97;
+  cursor: pointer;
+  text-align: right;
+  word-wrap: break-word;
+  flex: 1;
+}
 
-  .login-button {
-    background-color: #08BDB1;
-    color: white;
-    padding: clamp(0.5rem, 1.5vw, 0.6rem) clamp(0.5rem, 1.5vw, 0.6rem);
-    font-size: clamp(0.9rem, 2.5vw, 1rem);
-    border: none;
-    border-radius: 2rem;
-    cursor: pointer;
-    width: 40%;
-    min-width: 6rem;
-    transition: background-color 0.3s;
-    margin-top: 1rem;
-  }
+.back-login {
+  text-decoration: underline;
+  width: 100%;
+  text-align: center;
+  font-size: clamp(0.65rem, 2vw, 0.75rem);
+  color: #215E97;
+  margin-top: -0.3rem;
+  margin-bottom: 0.7rem;
+  cursor: pointer;
+  word-wrap: break-word;
+}
 
-  .login-button:hover {
-    background-color: #07a599;
-  }
+.login-button {
+  background-color: #08BDB1;
+  color: white;
+  padding: 0.6rem 1.5rem; /* Increased horizontal padding */
+  font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+  border: none;
+  border-radius: 1.8rem;
+  cursor: pointer;
+  width: fit-content; /* Fits content with padding */
+  min-width: clamp(120px, 30vw, 180px); /* Responsive minimum width */
+  transition: background-color 0.3s;
+  margin-top: 0.7rem;
+}
 
-  .login-divider {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    margin: 1.5rem 0 1.5rem;
-  }
+.login-button:hover {
+  background-color: #07a599;
+}
 
-  .login-divider::before,
-  .login-divider::after {
-    content: "";
-    flex: 1;
-    border-top: 1px solid #ccc;
-  }
-
-  .login-divider span {
-    margin: 0 0.5rem;
-    font-size: clamp(0.75rem, 2vw, 0.85rem);
-    color: #999;
-    white-space: nowrap;
-  }
-
-  .login-google-button {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: clamp(0.45rem, 1.4vw, 0.55rem);
-    border: 1px solid #000;
-    border-radius: 2rem;
-    background-color: #fff;
-    cursor: pointer;
-    font-size: clamp(0.75rem, 2vw, 0.85rem);
-    margin-bottom: 1.8rem;
-    transition: background-color 0.3s;
-    box-sizing: border-box;
-  }
-
-  .login-google-button:hover {
-    background-color: #f0f0f0;
-  }
-
-  .login-google-icon {
-    width: clamp(1rem, 3vw, 1.25rem);
-    height: clamp(1rem, 3vw, 1.25rem);
-    flex-shrink: 0;
-  }
-
-  .login-switch {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(0.5rem, 2vw, 1rem);
-    font-size: clamp(0.75rem, 2vw, 0.85rem);
-    flex-wrap: wrap;
-  }
-
-  .login-switch-label {
-    font-weight: 500;
-    color: #333;
-    white-space: nowrap;
-  }
-
-  .login-switch-label-active {
-    text-decoration: underline;
-  }
-
-  .login-toggle {
-    width: clamp(2.5rem, 7vw, 3rem);
-    height: clamp(1.1rem, 3vw, 1.3rem);
-    background-color: #8c8c8c;
-    border-radius: 1rem;
-    position: relative;
-    transition: background-color 0.3s;
-    flex-shrink: 0;
-  }
-
-  .login-toggle-active {
-    background-color: #08bdb1;
-  }
-
-  .login-knob {
-    width: clamp(1rem, 3vw, 1.3rem);
-    height: clamp(1rem, 3vw, 1.3rem);
-    background-color: #fff;
-    border-radius: 50%;
-    position: absolute;
-    top: 0rem;
-    left: 0rem;
-    border: 0.2rem solid #8c8c8c;
-    transition: left 0.3s;
-    box-sizing: border-box;
-  }
-    
-  .login-knob-active {
-    width: clamp(1rem, 3vw, 1.3rem);
-    height: clamp(1rem, 3vw, 1.3rem);
-    background-color: #fff;
-    border-radius: 50%;
-    position: absolute;
-    top: 0rem;
-    transition: left 0.3s;
-    border: 0.2rem solid #08bdb1;
-    right: 0rem;
-    box-sizing: border-box;
-  }
-
-  .login-error-text {
-    color: #dc2626;
-    font-size: 0.675rem;
-    margin-top: 0.25rem;
-    margin-left: 0.25rem;
-  }
-
-
-.password-input-flex {
+.login-divider {
+  width: 100%;
   display: flex;
   align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding-left: 0.5rem;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid #ccc;
+}
+
+.login-divider span {
+  margin: 0 0.5rem;
+  font-size: clamp(0.7rem, 2vw, 0.8rem);
+  color: #999;
+  white-space: nowrap;
+}
+
+.login-google-button {
+  width: 100%;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid #000;
+  border-radius: 1.8rem;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: clamp(0.7rem, 2vw, 0.8rem);
+  margin-bottom: 1.2rem;
+  transition: background-color 0.3s;
+  box-sizing: border-box;
+}
+
+.login-google-button:hover {
+  background-color: #f0f0f0;
+}
+
+.login-google-icon {
+  width: clamp(0.9rem, 3vw, 1.1rem);
+  height: clamp(0.9rem, 3vw, 1.1rem);
+  flex-shrink: 0;
+}
+
+.login-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.4rem, 2vw, 0.8rem);
+  font-size: clamp(0.7rem, 2vw, 0.8rem);
+  flex-wrap: wrap;
+}
+
+.login-switch-label {
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+}
+
+.login-switch-label-active {
+  text-decoration: underline;
+}
+
+.login-toggle {
+  width: clamp(2.2rem, 6vw, 2.7rem);
+  height: clamp(1rem, 3vw, 1.2rem);
+  background-color: #8c8c8c;
+  border-radius: 1rem;
+  position: relative;
+  transition: background-color 0.3s;
+  flex-shrink: 0;
+}
+
+.login-toggle-active {
+  background-color: #08bdb1;
+}
+
+.login-knob {
+  width: clamp(0.9rem, 3vw, 1.2rem);
+  height: clamp(0.9rem, 3vw, 1.2rem);
+  background-color: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 0rem;
+  left: 0rem;
+  border: 0.15rem solid #8c8c8c;
+  transition: left 0.3s;
+  box-sizing: border-box;
+}
+
+.login-knob-active {
+  width: clamp(0.9rem, 3vw, 1.2rem);
+  height: clamp(0.9rem, 3vw, 1.2rem);
+  background-color: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 0rem;
+  transition: left 0.3s;
+  border: 0.15rem solid #08bdb1;
+  right: 0rem;
+  box-sizing: border-box;
+}
+
+.login-error-text {
+  color: #dc2626;
+  font-size: 0.6rem;
+  margin-top: 0.2rem;
+  margin-left: 0.2rem;
+}
+
+.password-input-flex {
+  width: 100%;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  border: 1px solid #aaa;
+  border-radius: 0.4rem;
   background: white;
-  padding-right: 1rem;
+  box-sizing: border-box;
+  padding: 0 clamp(0.6rem, 2vw, 0.8rem);
+}
+
+.password-input-flex:focus-within {
+  border-color: #08BDB1;
+  border-width: 1.7px;
 }
 
 .password-input-flex input {
   flex: 1;
   border: none;
   outline: none;
-  padding: 0.6rem 0.5rem;
-  font-size: 1rem;
+  font-size: clamp(0.85rem, 2.5vw, 0.95rem);
   background: transparent;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.password-input-flex input::placeholder {
+  color: #888;
 }
 
 .eye-icon {
@@ -890,117 +989,199 @@ export const Login = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
 }
 
-  /* Tablet and smaller desktop styles */
-  @media (max-width: 1024px) {
-    .login-logo-container {
-      width: 8rem;
-    }
+/* Tablet and smaller desktop styles */
+@media (max-width: 1024px) {
+  .login-logo-container {
+    width: 6.5rem;
+  }
+  
+  .login-card {
+    width: 18rem;
+    padding: 1.3rem;
+  }
+}
+
+/* Tablet styles */
+@media (max-width: 768px) {
+  .login-page {
+    padding: 0.3rem;
+  }
+  
+  .login-logo-container {
+    top: 0.3rem;
+    left: 0.3rem;
+    width: 6rem;
   }
 
-  /* Tablet styles */
-  @media (max-width: 768px) {
-    .login-page {
-      padding: 0.5rem;
-    }
-    
-    .login-logo-container {
-      top: 0.5rem;
-      left: 0.5rem;
-      width: 7rem;
-    }
-
-    .login-card {
-      padding: 1.5rem;
-      margin: 0.5rem;
-    }
-
-    .login-switch {
-      gap: 0.5rem;
-    }
+  .login-card {
+    padding: 1.2rem;
+    width: 16rem;
+    max-width: calc(100vw - 0.6rem);
   }
 
-  /* Mobile landscape */
-  @media (max-width: 640px) and (orientation: landscape) {
-    .login-page {
-      height: auto;
-      min-height: 100vh;
-      padding: 0.5rem;
-    }
-    
-    .login-card {
-      margin: 1rem 0;
-    }
+  .login-switch {
+    gap: 0.4rem;
+  }
+}
+
+/* Mobile landscape and portrait */
+@media (max-width: 480px) {
+  .login-page {
+    padding: 0.3rem;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 1rem;
+  }
+  
+  .login-logo-container {
+    top: 0.2rem;
+    left: 0.2rem;
+    width: 5rem;
   }
 
-  /* Mobile portrait */
-  @media (max-width: 480px) {
-    .login-page {
-      padding: 0.25rem;
-    }
-    
-    .login-logo-container {
-      top: 0.25rem;
-      left: 0.25rem;
-      width: 6rem;
-    }
-
-    .login-card {
-      padding: 1.25rem;
-      margin: 0.25rem;
-      border-radius: 0.5rem;
-    }
-
-    .login-input {
-      margin-bottom: 0.8rem;
-    }
-
-    .login-title {
-      margin-bottom: 1.25rem;
-    }
-
-    .login-google-button {
-      margin-bottom: 1.5rem;
-    }
-
-    .login-switch {
-      gap: 0.5rem;
-      text-align: center;
-    }
+  .login-card {
+    padding: 1rem;
+    width: 100%;
+    max-width: calc(100vw - 0.6rem);
+    margin-top: 1rem;
   }
 
-  /* Very small screens */
-  @media (max-width: 320px) {
-    .login-card {
-      padding: 1rem;
-    }
-    
-    .login-button {
-      width: 50%;
-      min-width: 5rem;
-    }
+  .login-title {
+    margin-bottom: 0.8rem;
   }
 
-  /* High DPI screens */
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .login-card {
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    }
+  .login-input-container {
+    gap: 0.6rem;
   }
 
-  /* Reduced motion preference */
-  @media (prefers-reduced-motion: reduce) {
-    .login-button,
-    .login-google-button,
-    .login-toggle,
-    .login-knob,
-    .login-knob-active {
-      transition: none;
-    }
+  .login-divider {
+    margin: 0.8rem 0;
   }
+
+  .login-google-button {
+    margin-bottom: 1rem;
+  }
+
+  .login-switch {
+    gap: 0.4rem;
+  }
+  
+  .profile-picture-wrapper {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 10px;
+  }
+  
+  .profile-initial {
+    font-size: 28px;
+  }
+  
+  .profile-edit-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  .login-card {
+    padding: 0.8rem;
+    max-width: calc(100vw - 0.4rem);
+  }
+  
+  .login-button {
+    width: 40%;
+    min-width: 4.5rem;
+  }
+  
+  .login-logo-container {
+    width: 4.5rem;
+  }
+  
+  .login-title {
+    margin-bottom: 0.7rem;
+  }
+  
+  .login-input-container {
+    gap: 0.5rem;
+  }
+  
+  .login-divider {
+    margin: 0.7rem 0;
+  }
+  
+  .login-google-button {
+    margin-bottom: 0.8rem;
+  }
+}
+
+/* Mobile landscape specific adjustments */
+@media (max-width: 640px) and (orientation: landscape) {
+  .login-page {
+    padding: 0.2rem;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0.5rem;
+  }
+  
+  .login-card {
+    width: 14rem;
+    padding: 0.8rem;
+    margin-top: 0;
+  }
+  
+  .login-title {
+    margin-bottom: 0.6rem;
+  }
+  
+  .login-input-container {
+    gap: 0.4rem;
+  }
+  
+  .login-divider {
+    margin: 0.6rem 0;
+  }
+  
+  .login-google-button {
+    margin-bottom: 0.8rem;
+  }
+  
+  .profile-picture-wrapper {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 8px;
+  }
+  
+  .profile-initial {
+    font-size: 24px;
+  }
+}
+
+/* High DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .login-card {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .login-button,
+  .login-google-button,
+  .login-toggle,
+  .login-knob,
+  .login-knob-active {
+    transition: none;
+  }
+}
 
 `}</style>
     </>
   );
 };
+
+
