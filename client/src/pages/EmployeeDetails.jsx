@@ -1,7 +1,7 @@
 import React from "react";
 import SidebarDetails from "../components/SidebarDetails";
-import AttendanceCalendar from "../components/attendance/AttendanceCalendar";
-import AttendanceCard from "../components/attendance/AttendanceCard";
+import { AttendanceCalendar } from "../components/attendance/AttendanceCalendar";
+import { AttendanceCard } from "../components/attendance/AttendanceCard";
 import ProgressCard from "../components/attendance/ProgressCard";
 import { Navbar } from "../components/Navbar";
 import { TimeCard } from "../components/dashboard/TimeCard";
@@ -9,6 +9,8 @@ import { CourseCard } from "../components/coursemanagement/CourseCard";
 import { EmployeeDetailsAssignment } from "../components/employeeManagement/EmployeeDetailsAssignment";
 import { EmpProfile } from "../components/employeeManagement/EmpProfile";
 import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import api from "../api/axios";
 
 const roleProfiles = [
   {
@@ -34,8 +36,31 @@ const roleProfiles = [
   },
 ];
 
+const fetchUsersOfRole = async (roleId) => {
+  const response = await api.get(`api/employee/role/${roleId}`);
+  return response.data.employees;
+}
+
 export const EmployeeDetails = ({ type }) => {
-  const { navId } = useParams();
+  const { roleId } = useParams();
+  const [roleProfiles, setRolesProfiles] = useState([])
+
+  useEffect(() => {
+    try{
+      const fetchData = async () => {
+        if (!roleId) {
+          console.error("Role ID is not provided");
+          return;
+        }
+      const data = await fetchUsersOfRole(roleId);
+      setRolesProfiles(data);
+      }
+      fetchData();
+    }
+    catch(error){
+      console.log("Error fetching role profiles:", error);
+    }
+  }, [roleId]);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -65,11 +90,11 @@ export const EmployeeDetails = ({ type }) => {
               {roleProfiles.map((profile, idx) => (
                 <EmpProfile
                   key={idx}
-                  name={profile.name}
-                  role={profile.role}
-                  avatar={profile.avatar}
-                  tl={profile.tl}
-                  color={profile.color}
+                  name={profile.username}
+                  role={profile.role.role}
+                  avatar={profile.profilePicture}
+                  tl={profile.role.role === "Team Leader"}
+                  color={profile.role.color}
                 />
               ))}
             </div>
