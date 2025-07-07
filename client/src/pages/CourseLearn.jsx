@@ -4,7 +4,7 @@ import { VideoPlayer } from "../components/upskill/VideoPlayer";
 import { DescriptionSection } from "../components/upskill/DescriptionSection";
 import { AssignmentsSection } from "../components/upskill/AssignmentsSection";
 
-export const HrUpskillSideBar = () => {
+export const CourseLearn = () => {
   const progressMatrix = [
     [1, 1, 1, 1],         // Module 1: complete
     [1, 1, 1],            // Module 2: incomplete

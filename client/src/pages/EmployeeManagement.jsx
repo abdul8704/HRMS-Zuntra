@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Sidebar } from "../components/Sidebar";
 import { Navbar } from '../components/Navbar';
 import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
-import { EmployeeRoleCard } from '../components/employeeManagement/EmployeeRoleCard';
-import { AddRolePopup } from '../components/employeeManagement/AddRolePopup';
+import { RoleCard } from '../components/employeeManagement/RoleCard';
+import { AddRole } from '../components/employeeManagement/AddRole';
 import { EditRolePopup } from '../components/employeeManagement/EditRolePopup';
 import { GeoFencing } from '../components/employeeManagement/GeoFencing';
 import { EmpAssignmentPopUp } from '../components/employeeManagement/EmployeeAssignmentPopup';
@@ -14,6 +14,7 @@ import api from '../api/axios';
 
 export const EmployeeManagement = () => {
   const { navId } = useParams();
+  const navigate = useNavigate();
 
   const [isFilterActive, setIsFilterActive] = useState(false);
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
@@ -45,6 +46,13 @@ export const EmployeeManagement = () => {
 
   const [isLoadingBranches, setIsLoadingBranches] = useState(true);
   const [isErrorBranches, setIsErrorBranches] = useState(false);
+  const validTabs = ["all", "roles", "newusers", "locations"];
+  useEffect(() => {
+    if (!validTabs.includes(navId)) {
+      navigate("/404");
+      return;
+    }
+  },[navId]);
   useEffect(() => {
     // Force component to acknowledge filter changes
     console.log('Filter state changed:', {
@@ -54,9 +62,9 @@ export const EmployeeManagement = () => {
       isFilterActive
     });
   }, [searchTerm, selectedRole, selectedLoginStatus, isFilterActive]);
-  useEffect(()=>{
+  useEffect(() => {
     handleClearFilters();
-  },[navId]);
+  }, [navId]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -143,7 +151,6 @@ export const EmployeeManagement = () => {
       if (selectedLoginStatus === "Present" && !isLoggedIn) return false;
       if (selectedLoginStatus === "Absent" && isLoggedIn) return false;
     }
-
     return true;
   });
   // Filter for new users (pending employees)
@@ -212,7 +219,7 @@ export const EmployeeManagement = () => {
   // Clear all filters
   const handleClearFilters = () => {
     setSearchTerm("");
-    setSelectedRole(navId === "newusers" ? "" : navId === "geofencing" ? "All Locations" : "All Roles");
+    setSelectedRole(navId === "newusers" ? "" : navId === "locations" ? "All Locations" : "All Roles");
     setRoleSearchTerm("All Roles");
     setSelectedLoginStatus("All Users");
     setShowRoleDropdown(false);
@@ -231,17 +238,18 @@ export const EmployeeManagement = () => {
   const bgColorList = getGridBgColors(employees.length, 3, bgClasses);
 
   return (
-    <div className="flex">
+    <div className="flex w-screen h-screen">
       <Sidebar />
       <div className="flex gap-[1rem] flex-col flex-1 p-[1rem] h-screen">
-        <Navbar isFilterActive={isFilterActive} setIsFilterActive={setIsFilterActive} handleClearFilters={handleClearFilters} />
+        <Navbar type="employeeManagement" showFilter={true} isFilterActive={isFilterActive} setIsFilterActive={setIsFilterActive} handleClearFilters={handleClearFilters}/>
+
         {isFilterActive && (
           <div className="w-full bg-[#BBD3CC] rounded-xl flex gap-[0.5rem] p-[0.5rem]">
             {/* Search Input - Show for all, newusers, and geofencing */}
-            {(navId === "all" || navId === "roles" || navId === "newusers" || navId === "geofencing") && (
+            {(navId === "all" || navId === "roles" || navId === "newusers" || navId === "locations") && (
               <input
                 type="text"
-                placeholder={navId === "roles" ? "Search roles" : navId === "geofencing" ? "Search locations" : "Search by name, email, or phone"}
+                placeholder={navId === "roles" ? "Search roles" : navId === "locations" ? "Search locations" : "Search by name, email, or phone"}
                 className="bg-white/50 flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A6C4BA]"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -366,7 +374,7 @@ export const EmployeeManagement = () => {
             <div>
               {navId === "all" && `Showing ${filteredEmployees.length} of ${employees.length} employees`}
               {navId === "newusers" && `Showing ${filteredPendingEmployees.length} of ${pendingEmployees.length} new users`}
-              {navId === "geofencing" && `Showing ${filteredBranches.length} of ${branches.length} locations`}
+              {navId === "locations" && `Showing ${filteredBranches.length} of ${branches.length} locations`}
               {navId === "roles" && `Showing ${rolesData.filter(role => {
                 if (!searchTerm.trim()) return true;
                 return role.role.toLowerCase().includes(searchTerm.toLowerCase());
@@ -376,7 +384,7 @@ export const EmployeeManagement = () => {
               {searchTerm && <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">Search: "{searchTerm}"</span>}
               {navId === "all" && selectedRole !== "All Roles" && <span className="px-2 py-1 bg-green-100 text-green-800 rounded">Role: {selectedRole}</span>}
               {navId === "newusers" && selectedRole && <span className="px-2 py-1 bg-green-100 text-green-800 rounded">Date: {selectedRole}</span>}
-              {navId === "geofencing" && selectedRole !== "All Locations" && selectedRole !== "All Roles" && <span className="px-2 py-1 bg-green-100 text-green-800 rounded">Location: {selectedRole}</span>}
+              {navId === "locations" && selectedRole !== "All Locations" && selectedRole !== "All Roles" && <span className="px-2 py-1 bg-green-100 text-green-800 rounded">Location: {selectedRole}</span>}
               {navId === "all" && selectedLoginStatus !== "All Users" && <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded">Status: {selectedLoginStatus}</span>}
             </div>
           </div>
@@ -396,19 +404,25 @@ export const EmployeeManagement = () => {
               </p>
             ) : (
               filteredEmployees.map((emp, index) => (
-                <EmployeeCard
-                  key={emp.id || index}
-                  name={emp.username}
-                  email={emp.email}
-                  phone={emp.phoneNumber}
-                  image={emp.profilePicture}
-                  role={emp.role.name}
-                  inTime={emp.loginTime || "N/A"}
-                  outTime={emp.logoutTime || "N/A"}
-                  workTime="10:01"
-                  breakTime="12:00"
-                  bgColor={emp.role.color}
-                />
+                <div
+                  key={emp._id || index}
+                  onClick={() => navigate(`/employee/${emp._id}/details/attendance`)}
+                  className="cursor-pointer transition-transform hover:scale-[1.01] w-full"
+                >
+                  <EmployeeCard
+                    key={emp._id || index}
+                    name={emp.username}
+                    email={emp.email}
+                    phone={emp.phoneNumber}
+                    image={emp.profilePicture}
+                    role={emp.role.name}
+                    inTime={emp.loginTime || "N/A"}
+                    outTime={emp.logoutTime || "N/A"}
+                    workTime="10:01"
+                    breakTime="12:00"
+                    bgColor={emp.role.color}
+                  />
+                </div>
               ))
             )}
           </div>
@@ -428,13 +442,19 @@ export const EmployeeManagement = () => {
                 <p className="text-center col-span-full mt-4 text-gray-500 font-medium">No roles available</p>
               ) : (
                 // Filter roles based on search term
+                
                 rolesData
                   .filter((role) => {
                     if (!searchTerm.trim()) return true;
                     return role.role.toLowerCase().includes(searchTerm.toLowerCase());
                   })
                   .map((role, idx) => (
-                    <EmployeeRoleCard
+                                    <div
+                  key={role._id || index}
+                  onClick={() => navigate(`/employee/role/${role._id}/details`)}
+                  className="cursor-pointer transition-transform hover:scale-[1.01] w-full"
+                >
+                    <RoleCard
                       key={idx}
                       role={role.role}
                       bgColor={role.color || "#e0e0e0"}
@@ -446,7 +466,10 @@ export const EmployeeManagement = () => {
                         })
                       }
                     />
+                    </div>
                   ))
+
+
               )}
             </div>
             <div
@@ -462,7 +485,7 @@ export const EmployeeManagement = () => {
 
 
         {/* Geofencing */}
-        {navId === "geofencing" && (
+        {navId === "locations" && (
           <div className="flex flex-col px-[1rem] gap-4 overflow-y-auto flex-1">
             {isLoadingBranches ? (
               <div className="text-center col-span-full mt-4 text-gray-600 font-semibold">
@@ -527,7 +550,7 @@ export const EmployeeManagement = () => {
         )}
       </div>
 
-      {showPopup && <AddRolePopup onClose={() => setShowPopup(false)} />}
+      {showPopup && <AddRole onClose={() => setShowPopup(false)} />}
 
       {showAssignPopup && selectedEmployee && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-[2000]">

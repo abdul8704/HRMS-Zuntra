@@ -36,7 +36,7 @@ export const DashBoard = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen">
       <Sidebar />
 
       <div className="flex-1 overflow-y-auto">

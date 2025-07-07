@@ -7,5 +7,6 @@ router.post("/logout", employeeController.handleLogout);
 router.get("/attendance", employeeController.getAttendanceData);
 router.get("/", employeeController.fetchAllEmployees);
 router.get("/role/:role", employeeController.getEmployeeByRole);
+router.get("/:empId", employeeController.getDetailsOfaEmployee);
 
 module.exports = router;
