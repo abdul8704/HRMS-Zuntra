@@ -1,415 +1,161 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react'
 
-export default function AttendanceCalendar({
-  initialYear = new Date().getFullYear(),
-  initialMonth = new Date().getMonth(),
-}) {
-  const getLocalISODate = () => {
-    const d = new Date();
-    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    return d.toISOString().slice(0, 10);
+export const AttendanceCalendar = () => {
+  const [selectedYear, setSelectedYear] = useState(2025);
+  const [selectedMonth, setSelectedMonth] = useState(2); // February
+  const [showYearDropdown, setShowYearDropdown] = useState(false);
+
+  const getDaysInMonth = (year, month) => {
+    return new Date(year, month, 0).getDate();
   };
 
-  const [year, setYear] = useState(initialYear);
-  const [month, setMonth] = useState(initialMonth);
-  const [attendance, setAttendance] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [showYearList, setShowYearList] = useState(false);
-  const [todayISO, setTodayISO] = useState(getLocalISODate());
-
-  const monthISO = `${year}-${String(month + 1).padStart(2, "0")}`;
-  const firstDay = new Date(year, month, 1);
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-  const fetchMonth = async (y, m) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const mockApiResponse = {
-        success: true,
-        attendanceData: {
-          success: true,
-          detailedData: [
-            { date: "2025-06-04", status: "absent" },
-            { date: "2025-06-10", status: "absent" },
-            { date: "2025-06-12", status: "absent" },
-            { date: "2025-06-19T18:30:00Z", status: "present" },
-            { date: "2025-06-20T18:30:00Z", status: "present" },
-            { date: "2025-06-22T18:30:00Z", status: "present" },
-          ],
-        },
-      };
-      await new Promise((r) => setTimeout(r, 400));
-      const data = mockApiResponse;
-      if (!data.success || !data.attendanceData?.success) {
-        throw new Error("Invalid server response");
-      }
-
-      const map = {};
-      data.attendanceData.detailedData.forEach(({ date, status }) => {
-        if (date && status) map[date.slice(0, 10)] = status.toLowerCase();
-      });
-      setAttendance(map);
-    } catch (err) {
-      setError(err.message || "Unknown error");
-    } finally {
-      setLoading(false);
-    }
+  const getFirstDayOfMonth = (year, month) => {
+    return new Date(year, month - 1, 1).getDay();
   };
 
-  useEffect(() => {
-    fetchMonth(year, month);
-  }, [monthISO]);
+  const years = Array.from({ length: 21 }, (_, i) => 2015 + i); // 2015-2035
+  const months = [
+    'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+    'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
+  ];
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const localDate = getLocalISODate();
-      if (localDate !== todayISO) {
-        setTodayISO(localDate);
-        const now = new Date();
-        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-        if (now.getFullYear() !== year || now.getMonth() !== month) {
-          setYear(now.getFullYear());
-          setMonth(now.getMonth());
-          fetchMonth(now.getFullYear(), now.getMonth());
-        }
-      }
-    }, 60000);
-    return () => clearInterval(timer);
-  }, [todayISO, year, month]);
+  const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
+  const firstDay = getFirstDayOfMonth(selectedYear, selectedMonth);
 
-  const blanks = [...Array(firstDay.getDay())].map((_, i) => (
-    <div key={`blank-${i}`} className="cell empty" />
-  ));
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const dateCells = [...Array(daysInMonth)].map((_, i) => {
-    const day = i + 1;
-    const iso = `${monthISO}-${String(day).padStart(2, "0")}`;
-    const dow = new Date(year, month, day).getDay();
-    const status = attendance[iso];
-    const isSunday = dow === 0;
-    const isToday = iso === todayISO;
-    const dayClass = status || (isSunday ? "sunday" : "");
-    return (
-      <div
-        key={iso}
-        className={`cell date ${dayClass} ${isToday ? "today" : ""}`}
-      >
-        {day}
-      </div>
-    );
-  });
+  // Create array of calendar days
+  const calendarDays = [];
+  
+  // Add empty cells for days before month starts
+  for (let i = 0; i < firstDay; i++) {
+    calendarDays.push(null);
+  }
+  
+  // Add days of the month
+  for (let day = 1; day <= daysInMonth; day++) {
+    calendarDays.push(day);
+  }
+
+  const handleYearClick = (year) => {
+    setSelectedYear(year);
+    setShowYearDropdown(false);
+  };
 
   return (
-    <div className="calendar-card">
-      <div className="header">
-        <button className="burger" onClick={() => setMenuOpen(!menuOpen)}>
-          ☰
-        </button>
-        <h2 className="title">
-          {new Date(year, month).toLocaleString("default", {
-            month: "long",
-          }).toUpperCase()}{" "}
-          {year}
-        </h2>
-        <div className="spacer" />
-      </div>
-
-      <div className={`sidebar-wrapper ${menuOpen ? "open" : ""}`}>
-        <div className="sidebar">
-          <div className="sidebar-header">
-            <button onClick={() => setYear((y) => y - 1)}>‹</button>
-            <span style={{ cursor: "pointer" }} onClick={() => setShowYearList(!showYearList)}>
-              {year}
+    <div className="w-full h-full flex flex-col bg-white relative border-2 rounded-lg">
+      {/* Header */}
+      <div className="flex items-center justify-between px-2 py-1 flex-shrink-0">
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setShowYearDropdown(!showYearDropdown)}
+            className="flex items-center gap-1 text-sm font-medium text-gray-700"
+          >
+            <div className="flex flex-col gap-0.5">
+              <div className="w-3 h-0.5 bg-gray-600"></div>
+              <div className="w-3 h-0.5 bg-gray-600"></div>
+              <div className="w-3 h-0.5 bg-gray-600"></div>
+            </div>
+            <span className="text-base font-bold tracking-wide">
+              {months[selectedMonth - 1]} {selectedYear}
             </span>
-            <button onClick={() => setYear((y) => y + 1)}>›</button>
-          </div>
-
-          {showYearList && (
-            <ul className="year-list">
-              {Array.from({ length: 21 }, (_, i) => year - 10 + i).map((y) => (
-                <li
-                  key={y}
-                  className={y === year ? "active" : ""}
-                  onClick={() => {
-                    setYear(y);
-                    setShowYearList(false);
-                  }}
-                >
-                  {y}
-                </li>
-              ))}
-            </ul>
-          )}
-
-          <ul className="month-list">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <li
-                key={i}
-                className={i === month ? "active" : ""}
-                onClick={() => {
-                  setMonth(i);
-                  setMenuOpen(false);
-                }}
-              >
-                {new Date(0, i).toLocaleString("default", { month: "long" })}
-              </li>
-            ))}
-          </ul>
+          </button>
         </div>
+
+        {/* Year Dropdown */}
+        {showYearDropdown && (
+          <div className="absolute top-12 left-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+            <div className="p-2">
+              <div className="text-xs font-medium text-gray-500 mb-2">SELECT YEAR</div>
+              <div className="grid grid-cols-3 gap-1">
+                {years.map((year) => (
+                  <button
+                    key={year}
+                    onClick={() => handleYearClick(year)}
+                    className={`px-3 py-1 text-sm rounded ${
+                      year === selectedYear
+                        ? 'bg-blue-500 text-white'
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    {year}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="border-t p-2">
+              <div className="text-xs font-medium text-gray-500 mb-2">SELECT MONTH</div>
+              <div className="grid grid-cols-1 gap-1">
+                {months.map((month, index) => (
+                  <button
+                    key={month}
+                    onClick={() => {
+                      setSelectedMonth(index + 1);
+                      setShowYearDropdown(false);
+                    }}
+                    className={`px-3 py-1 text-xs text-left rounded ${
+                      index + 1 === selectedMonth
+                        ? 'bg-blue-500 text-white'
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    {month}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {error && <p className="error">Error: {error}</p>}
-
-      {loading ? (
-        <p>Loading…</p>
-      ) : (
-        <>
-          <div className="grid">
-            {weekdays.map((d) => (
-              <div key={d} className="cell header">
-                {d}
+      {/* Calendar Grid */}
+      <div className="flex-1 px-2 py-1 min-h-0">
+        <div className="h-full grid grid-rows-7 gap-1">
+          {/* Day headers */}
+          <div className="grid grid-cols-7 gap-1">
+            {days.map((day) => (
+              <div
+                key={day}
+                className="flex items-center justify-center text-xs font-medium text-gray-600 h-8"
+              >
+                {day}
               </div>
             ))}
           </div>
 
-          <div className="grid">{[...blanks, ...dateCells]}</div>
-
-          <div className="legend">
-            <span><span className="dot present" /> Present</span>
-            <span><span className="dot absent" /> Absent</span>
-            <span><span className="dot on-site" /> On-site</span>
-            <span><span className="dot remote" /> Remote</span>
-            <span><span className="dot leave" /> Leave</span>
-          </div>
-        </>
-      )}
-
-      <style>{`
-        .calendar-card {
-          position: relative;
-          height: 100%;
-          width: 100%;
-          padding: 1rem;
-          background: #fff;
-          border-radius: 0.75rem;
-          box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.1);
-          font-family: sans-serif;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .header {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          margin-bottom: 1rem;
-        }
-
-        .title {
-          font-size: 1.2rem;
-          font-weight: bold;
-        }
-
-        .burger {
-          font-size: 1.4rem;
-          background: none;
-          border: none;
-          cursor: pointer;
-        }
-
-        .spacer {
-          width: 1.4rem;
-        }
-
-        .grid {
-          display: grid;
-          grid-template-columns: repeat(7, 1fr);
-          gap: 0.25rem;
-          margin-bottom: 0.25rem;
-        }
-
-        .cell {
-          height: 2rem;
-          width: 2rem;
-          font-size: 0.75rem;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          position: relative;
-          border-radius: 50%;
-          margin: 0 auto;
-        }
-
-        .cell.header {
-          font-weight: bold;
-          background: #f0f0f0;
-          height: 2rem;
-          width: auto;
-          border-radius: 0.375rem;
-          margin: 0;
-        }
-
-        .cell.empty {
-          background: transparent;
-        }
-
-        .present {
-          background: #d8f7d2;
-          color: #225522;
-          border: none;
-        }
-
-        .absent {
-          background: #ffecec;
-          color: #771111;
-          border: none;
-        }
-
-        .on-site {
-          background: #d8f7d2;
-          color: #225522;
-          border: none;
-        }
-
-        .remote {
-          background: #cfeeff;
-          color: #004466;
-          border: none;
-        }
-
-        .leave {
-          background: #ffecec;
-          color: #771111;
-          border: none;
-        }
-
-        .sunday {
-          background: #ffecec;
-          color: #771111;
-          border: none;
-        }
-
-        .today::after {
-          content: "";
-          position: absolute;
-          width: 1.75rem;
-          height: 1.75rem;
-          border: 0.1rem solid #ff8c00;
-          border-radius: 50%;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          pointer-events: none;
-        }
-
-        .legend {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: space-evenly;
-          margin-top: 0.5rem;
-          font-size: 0.7rem;
-        }
-
-        .dot {
-          width: 0.5rem;
-          height: 0.5rem;
-          display: inline-block;
-          border-radius: 50%;
-          margin-right: 0.25rem;
-        }
-
-        .dot.present {
-          background: #d8f7d2;
-        }
-
-        .dot.absent {
-          background: #ffd9d9;
-        }
-
-        .dot.on-site {
-          background: #d8f7d2;
-        }
-
-        .dot.remote {
-          background: #cfeeff;
-        }
-
-        .dot.leave {
-          background: #ffd9d9;
-        }
-
-        .sidebar-wrapper {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 0;
-          height: 100%;
-          overflow: hidden;
-          transition: width 0.3s ease;
-          z-index: 10;
-        }
-
-        .sidebar-wrapper.open {
-          width: 11.875rem;
-        }
-
-        .sidebar {
-          background: #f4dfbe;
-          height: 100%;
-          padding: 1rem;
-          box-shadow: 0.125rem 0 0.375rem rgba(0, 0, 0, 0.2);
-        }
-
-        .sidebar-header {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          font-weight: bold;
-          margin-bottom: 1rem;
-        }
-
-        .sidebar-header button {
-          font-size: 1.2rem;
-          background: none;
-          border: none;
-          cursor: pointer;
-        }
-
-        .year-list,
-        .month-list {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          overflow-y: auto;
-        }
-
-        .year-list li,
-        .month-list li {
-          padding: 0.3rem 0;
-          cursor: pointer;
-          color: #333;
-        }
-
-        .year-list li:hover,
-        .year-list li.active,
-        .month-list li:hover,
-        .month-list li.active {
-          background: #e3cba1;
-          border-radius: 0.25rem;
-          font-weight: bold;
-        }
-
-        .error {
-          color: red;
-          margin-top: 0.5rem;
-        }
-      `}</style>
+          {/* Calendar days - 6 rows */}
+          {Array.from({ length: 6 }, (_, weekIndex) => (
+            <div key={weekIndex} className="grid grid-cols-7 gap-1">
+              {Array.from({ length: 7 }, (_, dayIndex) => {
+                const dayNumber = calendarDays[weekIndex * 7 + dayIndex];
+                const isHighlighted = dayNumber === 1 || dayNumber === 9 || dayNumber === 16 || dayNumber === 23;
+                
+                return (
+                  <div
+                    key={dayIndex}
+                    className="flex items-center justify-center h-8 w-8 mx-auto"
+                  >
+                    {dayNumber && (
+                      <div
+                        className={`
+                          w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium cursor-pointer
+                          transition-colors duration-200
+                          ${isHighlighted 
+                            ? 'bg-pink-200 text-pink-800 hover:bg-pink-300' 
+                            : 'text-gray-700 hover:bg-gray-100'
+                          }
+                        `}
+                      >
+                        {dayNumber}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
-}
+};

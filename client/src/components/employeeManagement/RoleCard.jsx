@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { ToolTip } from "../dashboard/ToolTip";
+import { ToolTip } from "../ToolTip";
 
 const darkenColor = (hex, percent = 20) => {
   let color = hex.startsWith("#") ? hex.slice(1) : hex;
@@ -55,7 +55,8 @@ const darkenColor = (hex, percent = 20) => {
 
   return `#${toHex(r2)}${toHex(g2)}${toHex(b2)}`;
 };
-export const EmpRoleCard = ({ role, bgColor, onEdit }) => {
+
+export const RoleCard = ({ role, bgColor, onEdit }) => {
   const handleEditClick = () => {
     onEdit({ role, color: bgColor });
   };
@@ -96,10 +97,15 @@ export const EmpRoleCard = ({ role, bgColor, onEdit }) => {
   return (
     <div
       ref={cardRef}
-      className={`w-full h-full flex items-center rounded-xl shadow-md font-sans p-4 bg-opacity-90 transition-all duration-700 ease-out ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
-      style={{ backgroundColor: bgColor }}
+      className={`
+        w-full h-full flex items-center rounded-xl shadow-md font-sans p-4 bg-opacity-90
+        transition-opacity ease-out
+        ${isVisible ? "opacity-100" : "opacity-0"}
+      `}
+      style={{
+        backgroundColor: bgColor,
+        transitionDuration: "1.2s", // fade-in duration
+      }}
     >
       <div className="flex items-center justify-between gap-4 w-full h-full">
         <svg

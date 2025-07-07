@@ -5,6 +5,7 @@ import { DescriptionSection } from "../components/upskill/DescriptionSection";
 import { AssignmentsSection } from "../components/upskill/AssignmentsSection";
 import { courseData } from "../data/courseData";
 
+<<<<<<< HEAD:client/src/pages/HrUpskillSideBar.jsx
 export const HrUpskillSideBar = () => {
   const [selectedModuleIndex, setSelectedModuleIndex] = useState(0);
   const [selectedSubmoduleIndex, setSelectedSubmoduleIndex] = useState(0);
@@ -12,6 +13,9 @@ export const HrUpskillSideBar = () => {
   const selectedSubmodule =
     courseData.modules[selectedModuleIndex]?.submodules[selectedSubmoduleIndex];
 
+=======
+export const CourseLearn = () => {
+>>>>>>> 9e24787d3a218a8ca95c595ad5b8380f61efdb49:client/src/pages/CourseLearn.jsx
   const progressMatrix = [
     [1, 1, 1],
     [1, 0, 1],

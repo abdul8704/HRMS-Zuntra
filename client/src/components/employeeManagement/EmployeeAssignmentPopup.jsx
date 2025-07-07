@@ -141,7 +141,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
       <div className="popup-container">
         {/* Left */}
         <div className="popup-left">
-          <img src={employee.image} alt="Profile" />
+          <img src={employee.image || "https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png"} alt="Profile" />
           <h3 className="emp-emp-name">{employee.name}</h3>
           <p className="emp-info emp-email-bg">{employee.email}</p>
           <p className="emp-info">{employee.phone}</p>

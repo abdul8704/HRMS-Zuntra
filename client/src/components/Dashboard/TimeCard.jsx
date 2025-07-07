@@ -47,13 +47,13 @@ export const TimeCard = ({ state, time = "09:00", showLabel, color}) => {
 
   return (
     <div className={`w-full h-full ${appliedBg} rounded-xl overflow-hidden p-1 flex items-center justify-center gap-3`}>
-      <div>{icon}</div>
+      <div className={`opacity-850`}>{icon}</div>
       <div className="flex flex-col items-center justify-center text-center h-full">
-        <span className="text-[clamp(0.85rem,3vw,1rem)] font-semibold">
+        <span className="text-[clamp(0.85rem,3vw,1rem)] font-semibold opacity-70">
           {time}
         </span>
         {showLabel && (
-          <span className="text-[clamp(0.6rem,2.5vw,0.8rem)] text-[#333] opacity-85 truncate max-w-full">
+          <span className="text-[clamp(0.6rem,2.5vw,0.8rem)] text-[#333] opacity-50 truncate max-w-full">
             {label}
           </span>
         )}

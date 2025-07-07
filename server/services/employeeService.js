@@ -247,21 +247,31 @@ const getAllEmployees = async () => {
 // @desc Get details of a user
 const getDetailsOfaEmployee = async (userid) => {
     try {
-        const userCreds = await User.findById(userid)
+        if (!userid) {
+            throw new ApiError(400, "Employee ID is required");
+        }
+
+        const userCreds = await User.findById(userid, {passwordHash : 0})
             .populate("role", "roleName")
-            .populate("shift", "startTime startTime")
+            .populate("shift", "startTime endTime")
             .populate("campus", "campusName");
+
+        if (!userCreds) {
+            throw new ApiError(404, "Employee not found");
+        }
+
         return userCreds;
     } catch (error) {
-        throw new ApiError(500, "Failed to fetch user details: ", error.message);
+        throw new ApiError(500, `Failed to fetch user details: ${error.message}`);
     }
 };
+
 
 const getEmployeeByRole = async (roleId) => {
     try {
         const userData = await User.find({ role: roleId }).populate(
             "role",
-            "roleName"
+            "role color baseSalary"
         );
         return userData;
     } catch (error) {
