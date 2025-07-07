@@ -1,22 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import { UpskillSideBar } from "../components/upskill/UpskillSideBar";
 import { VideoPlayer } from "../components/upskill/VideoPlayer";
 import { DescriptionSection } from "../components/upskill/DescriptionSection";
 import { AssignmentsSection } from "../components/upskill/AssignmentsSection";
+import { courseData } from "../data/courseData";
 
+<<<<<<< HEAD:client/src/pages/HrUpskillSideBar.jsx
+export const HrUpskillSideBar = () => {
+  const [selectedModuleIndex, setSelectedModuleIndex] = useState(0);
+  const [selectedSubmoduleIndex, setSelectedSubmoduleIndex] = useState(0);
+
+  const selectedSubmodule =
+    courseData.modules[selectedModuleIndex]?.submodules[selectedSubmoduleIndex];
+
+=======
 export const CourseLearn = () => {
+>>>>>>> 9e24787d3a218a8ca95c595ad5b8380f61efdb49:client/src/pages/CourseLearn.jsx
   const progressMatrix = [
-    [1, 1, 1, 1],         // Module 1: complete
-    [1, 1, 1],            // Module 2: incomplete
-    [1, 1, 1, 1, 1],      // Module 3: complete
-    [0, 0, 0, 0, 0],      // Module 4: incomplete
-    [1, 1, 1, 0, 1],      // Module 5: incomplete
+    [1, 1, 1],
+    [1, 0, 1],
+    [1, 1, 1],
   ];
+
+  const formattedModules = courseData.modules.map((mod) => ({
+    title: mod.moduleTitle,
+    submodules: mod.submodules.map((sub) => sub.submoduleTitle),
+  }));
 
   return (
     <div className="flex flex-col md:flex-row overflow-x-hidden min-h-screen">
       {/* Sidebar */}
-      <UpskillSideBar progressMatrix={progressMatrix} />
+      <UpskillSideBar
+        modules={formattedModules}
+        progressMatrix={progressMatrix}
+        onSubmoduleClick={(modIdx, subIdx) => {
+          setSelectedModuleIndex(modIdx);
+          setSelectedSubmoduleIndex(subIdx);
+        }}
+      />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col px-4 md:px-6 md:ml-[260px] bg-white font-sans">
@@ -24,12 +45,12 @@ export const CourseLearn = () => {
 
         <div className="flex items-center text-lg md:text-xl font-bold text-black mb-4">
           <div className="w-1 h-6 bg-[#009688] rounded-sm mr-2" />
-          Sub Module 2 Name
+          {selectedSubmodule?.submoduleTitle || "Select a submodule"}
         </div>
 
-        <VideoPlayer />
-        <DescriptionSection />
-        <AssignmentsSection />
+        <VideoPlayer videoUrl={selectedSubmodule?.video.videoUrl} />
+        <DescriptionSection description={selectedSubmodule?.description} />
+        <AssignmentsSection quiz={selectedSubmodule?.quiz} />
       </div>
     </div>
   );

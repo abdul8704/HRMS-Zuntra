@@ -2,31 +2,12 @@ import React, { useState } from "react";
 import zuntraLogo from "../../assets/zuntra.png";
 import { Menu } from "lucide-react";
 
-export const UpskillSideBar = ({ progressMatrix = [] }) => {
+export const UpskillSideBar = ({
+  modules = [],
+  progressMatrix = [],
+  onSubmoduleClick = () => {},
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-
-  const modules = [
-    {
-      title: "Module 1 Name",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3", "Sub Module 4"],
-    },
-    {
-      title: "Module 2",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3"],
-    },
-    {
-      title: "Module 3",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3", "Sub Module 4", "Sub Module 5"],
-    },
-    {
-      title: "Module 4",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3", "Sub Module 4", "Sub Module 5"],
-    },
-    {
-      title: "Module 5",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3", "Sub Module 4", "Sub Module 5"],
-    },
-  ];
 
   const isModuleCompleted = (moduleIndex) =>
     progressMatrix[moduleIndex]?.length &&
@@ -108,17 +89,22 @@ export const UpskillSideBar = ({ progressMatrix = [] }) => {
               </div>
               <ul className="pl-4 space-y-1">
                 {module.submodules.map((sub, subIdx) => (
-                  <li key={subIdx} className="text-sm flex items-center gap-2">
-                    <span
-                      className="w-[4px] h-[14px] rounded-sm"
-                      style={{
-                        backgroundColor: isSubmoduleCompleted(idx, subIdx)
-                          ? "#00cfd1"
-                          : "#B5A6A8",
-                      }}
-                    />
-                    {sub}
-                  </li>
+                  <li
+  key={subIdx}
+  className="text-sm flex items-center gap-2 cursor-pointer hover:underline"
+  onClick={() => onSubmoduleClick(idx, subIdx)}
+>
+  <span
+    className="w-[4px] h-[14px] rounded-sm"
+    style={{
+      backgroundColor: isSubmoduleCompleted(idx, subIdx)
+        ? "#00cfd1"
+        : "#B5A6A8",
+    }}
+  />
+  {sub}
+</li>
+
                 ))}
               </ul>
             </div>
