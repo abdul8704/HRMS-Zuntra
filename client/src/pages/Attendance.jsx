@@ -3,6 +3,7 @@ import { Sidebar } from '../components/Sidebar'
 import { Navbar } from '../components/Navbar'
 import { TimeCard } from '../components/dashboard/TimeCard'
 import { AttendanceCalendar } from '../components/attendance/AttendanceCalendar'
+import WorkBreakComposition from '../components/dashboard/WorkBreakComposititon'
 export const Attendance = () => {
     return (
         <>
@@ -29,7 +30,7 @@ export const Attendance = () => {
                         </div>
                         {/* chart */}
                         <div className="row-start-1 col-start-5 col-span-4 row-span-3 bg-[#BFBFF7] rounded-xl p-4">
-                            place for chart
+                            <WorkBreakComposition />
                         </div>
                         {/* calendar */}
                         <div className="row-start-3 col-start-1 col-span-4 row-span-6 bg-[#BFBFF7] rounded-xl">
