@@ -17,6 +17,7 @@ import { Upskill } from './pages/Upskill';
 import { Attendance } from './pages/Attendance';
 import './App.css'
 import './index.css'
+import { NewUser } from './pages/NewUser';
 
 
 function App() {
@@ -26,7 +27,6 @@ function App() {
     <>
     <BrowserRouter>
       <Routes>
-        {/* <Route path="*" element={<NotFound />} /> */}
         <Route path="/" element={<Login/>}></Route>
         {/* <Route path="/hrupskill" element={<HrUpskillLearn/>}></Route> */}
         <Route path="/dashboard" element={<DashBoard/>}></Route>
@@ -42,6 +42,7 @@ function App() {
         <Route path="/attendance" element={<Attendance/>}></Route>
         <Route path="/upskill/:navId" element={<Upskill/>}></Route>
         <Route path="/createcourse" element={<HrCreateCourse/>}></Route>
+        <Route path="/newuser" element={<NewUser/>}></Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
