@@ -14,7 +14,7 @@ import { HrProjectDetails } from './pages/HrProjectDetails';
 import { HrProjectManagement } from './pages/HrProjectManagement';
 import  HrCreateCourse  from './pages/HrCreateCourse';
 import { Upskill } from './pages/Upskill';
-import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
+import { Attendance } from './pages/Attendance';
 import './App.css'
 import './index.css'
 
@@ -39,7 +39,7 @@ function App() {
         <Route path="/projectoverview" element={<ProjectOverview />}></Route>
         <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
         <Route path="/project/:projectId/:navId" element={<HrProjectDetails/>}></Route>
-        <Route path="/attendance" element={<HrPersonalAttendance/>}></Route>
+        <Route path="/attendance" element={<Attendance/>}></Route>
         <Route path="/upskill/:navId" element={<Upskill/>}></Route>
         <Route path="/createcourse" element={<HrCreateCourse/>}></Route>
         <Route path="*" element={<NotFound />} />
