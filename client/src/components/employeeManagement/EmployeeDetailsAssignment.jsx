@@ -27,7 +27,7 @@ export const EmployeeDetailsAssignment = () => {
         LEAVE SPACE FOR CHART
       </div>
 
-      <div className="bg-black/20 col-start-6 col-end-10 row-start-1 row-end-7 rounded-lg p-4">
+      <div className="bg-black/20 col-start-6 col-end-10 row-start-1 row-end-7 rounded-lg ">
             {/* Attendance Calendar */}
           <AttendanceCalendar />
       </div>

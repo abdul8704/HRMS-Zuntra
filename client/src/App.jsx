@@ -7,15 +7,17 @@ import { NotFound } from './pages/NotFound';
 import { CourseManagement } from './pages/CourseManagement';
 import { CourseIntro } from './pages/CourseIntro';
 import { CourseLearn } from './pages/CourseLearn';
+import { ProjectOverview } from './pages/ProjectOverview';
 import { EmployeeDetails } from './pages/EmployeeDetails';
 import { EmployeeManagement } from './pages/EmployeeManagement';
 import { HrProjectDetails } from './pages/HrProjectDetails';
 import { HrProjectManagement } from './pages/HrProjectManagement';
 import  HrCreateCourse  from './pages/HrCreateCourse';
 import { Upskill } from './pages/Upskill';
-import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
+import { Attendance } from './pages/Attendance';
 import './App.css'
 import './index.css'
+import { NewUser } from './pages/NewUser';
 
 
 function App() {
@@ -25,7 +27,6 @@ function App() {
     <>
     <BrowserRouter>
       <Routes>
-        {/* <Route path="*" element={<NotFound />} /> */}
         <Route path="/" element={<Login/>}></Route>
         {/* <Route path="/hrupskill" element={<HrUpskillLearn/>}></Route> */}
         <Route path="/dashboard" element={<DashBoard/>}></Route>
@@ -35,11 +36,13 @@ function App() {
         <Route path="/courses/:navId" element={<CourseManagement/>}></Route>
         <Route path="/course/:courseId/intro" element={<CourseIntro/>}></Route>
         <Route path="/course/learn/:courseId" element={<CourseLearn />}></Route>
+        <Route path="/projectoverview" element={<ProjectOverview />}></Route>
         <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
         <Route path="/project/:projectId/:navId" element={<HrProjectDetails/>}></Route>
-        <Route path="/attendance" element={<HrPersonalAttendance/>}></Route>
+        <Route path="/attendance" element={<Attendance/>}></Route>
         <Route path="/upskill/:navId" element={<Upskill/>}></Route>
         <Route path="/createcourse" element={<HrCreateCourse/>}></Route>
+        <Route path="/newuser" element={<NewUser/>}></Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
