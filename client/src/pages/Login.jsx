@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import zuntraLogo from "../assets/zuntra.png";
+import userIcon from "../assets/user-icon.jpg";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { PopupCard } from '../components/PopupCard';
@@ -37,6 +38,7 @@ export const Login = () => {
   });
 
   const [profileImage, setProfileImage] = useState(null);
+  const [profileImageError, setProfileImageError] = useState(false);
 
   const handleToggle = () => {
     setIsSignup(!isSignup);
@@ -189,6 +191,18 @@ export const Login = () => {
       if (!confirmPassword || confirmPassword !== password) {
         errors.confirmPassword = "Passwords do not match.";
         valid = false;
+      }
+
+      if (valid && !profileImage) {
+        setPopupContent({
+          type: 'error',
+          title: 'Submission Denied',
+          message: 'Please upload profile picture'
+        });
+        setShowPopup(true);
+        valid = false;
+      } else {
+        setProfileImageError(false);
       }
 
       setFormErrors(errors);
@@ -345,13 +359,14 @@ export const Login = () => {
       </button>
     </>
   );
+
   const handleProfileImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       setProfileImage(file);
+      setProfileImageError(false);
     }
   };
-
 
   return (
     <>
@@ -381,15 +396,24 @@ export const Login = () => {
                         <div className="profile-picture-wrapper">
                           <div className="profile-picture-circle">
                             {profileImage ? (
-                              <img src={URL.createObjectURL(profileImage)} alt="Profile" className="profile-picture-img" />
+                              <img
+                                src={URL.createObjectURL(profileImage)}
+                                alt="Profile"
+                                className="profile-picture-img"
+                              />
                             ) : (
-                              <span className="profile-initial">
-                                {signupData.name?.[0]?.toUpperCase() || 'U'}
-                              </span>
+                              <img
+                                src={userIcon}
+                                alt="Default Profile"
+                                className="profile-picture-img"
+                              />
                             )}
                           </div>
+
                           <label htmlFor="profile-upload" className="profile-edit-icon">
-                            <span className="plus-icon">+</span>
+                            <span className="edit-icon">
+                              {profileImage ? '✎' : '+'}
+                            </span>
                             <input
                               id="profile-upload"
                               type="file"
@@ -687,7 +711,7 @@ export const Login = () => {
   position: absolute;
   bottom: 0;
   right: 0;
-  background-color: #000;
+  background-color: #08BDB1;
   color: white;
   border-radius: 50%;
   width: 24px;
@@ -822,13 +846,14 @@ export const Login = () => {
 .login-button {
   background-color: #08BDB1;
   color: white;
-  padding: 0.6rem 1.5rem; /* Increased horizontal padding */
   font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
   border: none;
   border-radius: 1.8rem;
   cursor: pointer;
   width: fit-content; /* Fits content with padding */
-  min-width: clamp(120px, 30vw, 180px); /* Responsive minimum width */
+  width: clamp(120px, 8vw, 180px); /* Responsive minimum width */
   transition: background-color 0.3s;
   margin-top: 0.7rem;
 }
@@ -1032,7 +1057,7 @@ export const Login = () => {
 @media (max-width: 480px) {
   .login-page {
     padding: 0.3rem;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
     padding-top: 1rem;
   }
@@ -1177,6 +1202,18 @@ export const Login = () => {
   .login-knob-active {
     transition: none;
   }
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #000 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
 }
 
 `}</style>
