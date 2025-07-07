@@ -16,7 +16,13 @@ const geoLocationSchema = new mongoose.Schema({
     radius: {
         type: Number,
         required: true
+    },
+    embedURL:{
+        type: String,
+        required: true
     }
 });
 
-module.exports = mongoose.model('GeoLocation', geoLocationSchema);
+const geoLocationModel = mongoose.model('GeoLocation', geoLocationSchema);
+
+module.exports = geoLocationModel;

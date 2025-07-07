@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const projectService = require("../services/projectService");
-const userService = require("../services/user");
+const EmployeeService = require("../services/employeeService");
 const ApiError = require("../errors/ApiError");
 const dateUtils = require("../utils/dateUtils");
 const roleService = require("../services/rolesService")
@@ -10,6 +10,7 @@ const roleService = require("../services/rolesService")
 // @route GET /api/project/ongoing
 const getAllOnGoingProjects = asyncHandler(async (req, res) => {
     const projectsList = await projectService.getAllOnGoingProjects();
+    console.log(projectsList);
 
     if (projectsList.length === 0) {
         throw new ApiError(404, "No Ongoing Projects Available");
@@ -17,8 +18,9 @@ const getAllOnGoingProjects = asyncHandler(async (req, res) => {
 
     const formattedResult = await Promise.all(
         projectsList.map(async (project) => {
-            const teamLeaderDetail = await userService.getDetailsOfaUser(project.teamLeader);
-            const roleDetail = await roleService.getRoleDetailsByName(teamLeaderDetail.role);
+            const teamLeaderDetail = await EmployeeService.getDetailsOfaEmployee(project.teamLeader);
+            console.log(teamLeaderDetail);
+            const roleDetail = teamLeaderDetail.role;
             const roleColor = roleDetail?.color || "#000000";
 
             const diffArray = dateUtils.dateDiff(project.endDate);
@@ -58,7 +60,7 @@ const getAllFinishedProjects = asyncHandler(async (req, res) => {
 
     const formattedResult = await Promise.all(
         projectsList.map(async (project) => {
-            const teamLeaderDetail = await userService.getDetailsOfaUser(project.teamLeader);
+            const teamLeaderDetail = await EmployeeService.getDetailsOfaEmployee(project.teamLeader);
             const roleDetail = await roleService.getRoleDetailsByName(teamLeaderDetail.role);
             const roleColor = roleDetail?.color || "#000000";
 
@@ -118,13 +120,15 @@ const getAllProjectsOnDate = asyncHandler(async (req, res) => {
 const getAProject = asyncHandler(async (req, res) => {
   const projectDetails = await projectService.getAProject(req.params.projectId);
 
-  const teamLeaderDetail = await userService.getDetailsOfaUser(projectDetails.teamLeader);
+  const teamLeaderDetail = await EmployeeService.getDetailsOfaEmployee(
+      projectDetails.teamLeader
+  );
   const roleDetail = await roleService.getRoleDetailsByName(teamLeaderDetail.role);
   const roleColor = roleDetail?.color || "#000000";
 
   const teamMembersDetails = await Promise.all(
     projectDetails.teamMembers.map((memberId) =>
-      userService.getDetailsOfaUser(memberId)
+      EmployeeService.getDetailsOfaEmployee(memberId)
     )
   );
 

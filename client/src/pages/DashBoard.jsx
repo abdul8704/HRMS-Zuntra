@@ -1,126 +1,147 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Sidebar } from "../components/Sidebar";
-import { ProjectDeadline } from "../components/projectManagement/ProjectDeadline";
-import { UserGreetings } from "../components/projectManagement/UserGreetings";
-import { TimeCard } from "../components/attendance/TimeCard";
 import { jwtDecode } from 'jwt-decode';
+import { UserGreetings } from '../components/dashboard/UserGreetings';
+import { ProjectDeadline } from '../components/projectManagement/ProjectDeadline';
+import { ReminderCard } from '../components/dashboard/ReminderCard';
+import { NotificationCard } from '../components/dashboard/NotificationCard';
+import { TimeCard } from '../components/dashboard/TimeCard';
+import WorkBreakComposition from '../components/dashboard/WorkBreakComposititon';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
-  const userDetails = jwtDecode(token);
+  const userDetails = jwtDecode(token); // Make sure token contains name & profileImageURL
+  const [showReminderForm, setShowReminderForm] = useState(false);
+  const [reminderText, setReminderText] = useState('');
+  const [reminderDate, setReminderDate] = useState('');
+
+  const motivationalQuotes = [
+    "Hope you make the most of your time today!",
+    "Wishing you a day where every minute counts!",
+    "May your productivity flow effortlessly today!",
+    "Hope you stay focused and purpose-driven today!",
+    "Wishing you the discipline to turn goals into achievements!",
+    "Start strong and stick to your plan today!",
+    "Wishing you the kind of success that comes from deep focus!",
+    "Hope you invest your time wisely and feel proud at the end of the day!",
+    "Don't just count the hours — make them amazing!",
+    "May your day be full of plans that work and work that matters!"
+  ];
+  const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+
+  const toggleReminderForm = () => {
+    setReminderText('');
+    setReminderDate('');
+    setShowReminderForm(prev => !prev);
+  };
 
   return (
-    <>
-      <div className="website-container">
-        <Sidebar />
-        <div className="website-module">
-          <div className='dash-grid'>
-            <div className='greetings'>
-              <UserGreetings name={userDetails.username} profileImageURL={userDetails.profilePicture} />
-            </div>
-            <div className='intime'>
-              <TimeCard state="in" time={"9:20"} />
-            </div>
-            <div className='worktime'>
-              <TimeCard state="work" time={"9:20"} />
-            </div>
-            <div className='outtime'>
-              <TimeCard state="out" time={"9:20"} />
-            </div>
-            <div className='breaktime'>
-              <TimeCard state="break" time={"9:20"} />
-            </div>
-            <div className='remainder'>Remainder</div>
-            <div className='workbreak'>Work Break Composition</div>
-            <div className='deadline'>
-              <ProjectDeadline />
-            </div>
-            <div className='notification'>Notification</div>
-            <div className='leave'>Employee on Leave</div>
+    <div className="flex h-screen">
+      <Sidebar />
+
+      <div className="flex-1 overflow-y-auto">
+        <div className="grid grid-cols-2 md:grid-cols-9 md:grid-rows-9 lg:grid-cols-9 lg:grid-rows-9 gap-[1rem] h-screen p-[1rem]">
+
+          {/* 1. UserGreetings */}
+          <div className="h-[10vh] md:h-full col-span-2 md:col-span-4 md:row-span-1 rounded-2xl flex items-center overflow-hidden px-[0.3rem] animate-slide-in-left overflow-hidden">
+            <UserGreetings name={userDetails.username} profileImageURL={userDetails.profilePicture} marqueeText={quote} />
+          </div>
+
+          {/* 2. TimeCard In */}
+          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:row-span-1 rounded-2xl bg-[#c0e8bc] flex items-center justify-center animate-slide-in-left overflow-hidden">
+            <TimeCard state={"in"} time={"09:20"} showLabel={true} color={true} />
+          </div>
+
+          {/* 3. TimeCard Out */}
+          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:col-start-1 md:row-start-3 md:row-span-1 rounded-2xl bg-[#c3e4ee] flex items-center justify-center animate-slide-in-left overflow-hidden">
+            <TimeCard state={"out"} time={"09:20"} showLabel={true} color={true} />
+          </div>
+
+          {/* 4. TimeCard Work */}
+          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:col-start-3 md:row-span-1 rounded-2xl bg-[#e1bec5] flex items-center justify-center animate-slide-in-left overflow-hidden">
+            <TimeCard state={"work"} time={"09:20"} showLabel={true} color={true} />
+          </div>
+
+          {/* 5. TimeCard Break */}
+          <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:col-start-3 md:row-start-3 md:row-span-1 rounded-2xl bg-[#deceb9] flex items-center justify-center animate-slide-in-left overflow-hidden">
+            <TimeCard state={"break"} time={"09:20"} showLabel={true} color={true} />
+          </div>
+
+          {/* 6. Project Deadline */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-5 md:col-start-5 md:row-start-1 md:row-span-3 rounded-2xl bg-[#f2c3b9] flex items-center justify-center animate-slide-in-right overflow-hidden">
+            <ProjectDeadline />
+          </div>
+
+          {/* 7. Reminders */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-5 md:col-start-1 md:row-start-4 md:row-span-3 rounded-2xl bg-[#bfbff7] flex items-center justify-center animate-slide-in-left overflow-hidden">
+            <ReminderCard />
+          </div>
+
+          {/* 8. Notifications */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-4 md:col-start-6 md:row-start-4 md:row-span-3 rounded-2xl bg-[#f6e0bf] flex items-center justify-center animate-slide-in-right overflow-hidden">
+            <NotificationCard />
+          </div>
+
+          {/* 9. Work Break Stats */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-3 md:col-start-1 md:row-start-7 md:row-span-3 rounded-2xl bg-[#ddb3dd] flex items-center justify-center animate-slide-in-left overflow-hidden">
+            <WorkBreakComposition />
+          </div>
+
+          {/* 10. Employees on Leave */}
+          <div className="h-[30vh] md:h-full col-span-2 md:col-span-6 md:col-start-4 md:row-start-7 md:row-span-3 rounded-2xl bg-[#adc0da] flex items-center justify-center animate-slide-in-right overflow-hidden">
+            <span className="text-gray-800">Employees on Leave</span>
           </div>
         </div>
       </div>
 
-      <style>
-        {`
-          .dash-grid {
-            display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            grid-template-rows: repeat(9, 1fr);
-            place-content: center;
-            gap: 1rem;
-            width: 100%;
-            height: 100%;
+      {/* Enhanced Animation Styles */}
+      <style>{`
+        @keyframes slideInLeft {
+          0% {
+            opacity: 0;
+            transform: translateX(-30px) scale(0.95);
           }
-          .greetings {
-            grid-column: 1/5;
-            grid-row: 1/2;
-            border-radius: 20px;
+          100% {
+            opacity: 1;
+            transform: translateX(0) scale(1);
           }
-          .intime {
-            grid-column: 1/3;
-            grid-row: 2/3;
-            background-color: #C1E8BD;
-            border-radius: 20px;
+        }
+
+        @keyframes slideInRight {
+          0% {
+            opacity: 0;
+            transform: translateX(30px) scale(0.95);
           }
-          .outtime {
-            grid-column: 1/3;
-            grid-row: 3/4;
-            background-color: #E1BEC5;
-            border-radius: 20px;
+          100% {
+            opacity: 1;
+            transform: translateX(0) scale(1);
           }
-          .worktime {
-            grid-column: 3/5;
-            grid-row: 2/3;
-            background-color: #C3E4EE;
-            border-radius: 20px;
+        }
+
+        .animate-slide-in-left {
+          animation: slideInLeft 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          animation-fill-mode: both;
+        }
+
+        .animate-slide-in-right {
+          animation: slideInRight 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          animation-fill-mode: both;
+        }
+
+        /* Reduced motion for users who prefer it */
+        @media (prefers-reduced-motion: reduce) {
+          .animate-slide-in-left,
+          .animate-slide-in-right {
+            animation: none;
+            opacity: 1;
+            transform: none;
           }
-          .breaktime {
-            grid-column: 3/5;
-            grid-row: 3/4;
-            background-color: #DECEB9;
-            border-radius: 20px;
+          
+          .grid > div {
+            transition: none;
           }
-          .remainder {
-            grid-column: 1/6;
-            grid-row: 4/7;
-            background-color: #BFBFF7;
-            border-radius: 20px;
-          }
-          .workbreak {
-            grid-column: 1/4;
-            grid-row: 7/10;
-            background-color: #DDB3DD;
-            border-radius: 20px;
-          }
-          .deadline {
-            grid-column: 5/10;
-            grid-row: 1/4;
-            background-color: #F2C3B9;
-            border-radius: 20px;
-          }
-          .notification {
-            grid-column: 6/10;
-            grid-row: 4/7;
-            background-color: #F6E0BF;
-            border-radius: 20px;
-          }
-          .leave {
-            grid-column: 4/10;
-            grid-row: 7/10;
-            background-color: #ADC0DA;
-            border-radius: 20px;
-          }
-          .greetings,
-          .remainder,
-          .workbreak,
-          .deadline,
-          .notification,
-          .leave {
-            padding: 1rem;
-          }
-        `}
-      </style>
-    </>
+        }
+      `}</style>
+    </div>
   );
 };

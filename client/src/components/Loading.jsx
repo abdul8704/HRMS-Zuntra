@@ -1,7 +1,102 @@
-import React from 'react'
+import React from 'react';
 
-export const Loading = () => {
+export const Loading = ({ useGif = false, variant = "pulse" }) => {
   return (
-    <div>Loading...</div>
-  )
-}
+    <div className="w-full h-full flex items-center justify-center z-50">
+      {useGif ? (
+        <img
+          src={require('../assets/loader.gif')}
+          alt="Loading..."
+          className="w-full h-full object-contain"
+        />
+      ) : (
+        <div className="text-gray-600 text-lg font-medium">
+          <span className={`loading-text loading-text-${variant}`}>
+            {"Loading".split("").map((char, i) => (
+              <span className="letter" key={i} style={{ "--delay": `${i * 0.1}s` }}>
+                {char}
+              </span>
+            ))}
+            <span className="dots ml-1 inline-block w-6 text-left">
+              <span className="dot-1">.</span>
+              <span className="dot-2">.</span>
+              <span className="dot-3">.</span>
+            </span>
+          </span>
+        </div>
+      )}
+
+      <style>{`
+        .loading-text {
+          display: inline-block;
+        }
+
+        .loading-text-pulse .letter {
+          display: inline-block;
+          animation: letterPulse 2s infinite;
+          animation-delay: var(--delay);
+        }
+
+        @keyframes letterPulse {
+          0%, 50%, 100% {
+            transform: scale(1);
+            opacity: 0.6;
+          }
+          25% {
+            transform: scale(1.1);
+            opacity: 1;
+          }
+        }
+
+        .loading-text-wave .letter {
+          display: inline-block;
+          animation: letterWave 2s infinite;
+          animation-delay: var(--delay);
+        }
+
+        @keyframes letterWave {
+          0%, 60%, 100% {
+            transform: translateY(0);
+          }
+          30% {
+            transform: translateY(-10px);
+          }
+        }
+
+        .loading-text-glow .letter {
+          display: inline-block;
+          animation: letterGlow 2s infinite;
+          animation-delay: var(--delay);
+        }
+
+        @keyframes letterGlow {
+          0%, 100% {
+            text-shadow: 0 0 5px rgba(107, 114, 128, 0.3);
+            color: #6b7280;
+          }
+          50% {
+            text-shadow: 0 0 15px rgba(107, 114, 128, 0.8);
+            color: #374151;
+          }
+        }
+
+        .dots .dot-1,
+        .dots .dot-2,
+        .dots .dot-3 {
+          opacity: 0;
+          animation: dotFade 1.5s infinite;
+        }
+
+        .dot-1 { animation-delay: 0.7s; }
+        .dot-2 { animation-delay: 1s; }
+        .dot-3 { animation-delay: 1.3s; }
+
+        @keyframes dotFade {
+          0%, 20% { opacity: 0; }
+          40%, 80% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+      `}</style>
+    </div>
+  );
+};

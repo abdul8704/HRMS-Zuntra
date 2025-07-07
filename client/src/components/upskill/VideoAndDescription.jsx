@@ -2,11 +2,11 @@ import React from "react";
 
 export const VideoAndDescriptionContainer = () => {
   return (
-    <div className="video-desc-wrapper">
+    <div className="w-full h-[56.25rem] bg-white rounded-xl shadow-md overflow-y-auto flex flex-col p-5 gap-5 scrollbar-thin scrollbar-thumb-slate-300">
       {/* Video */}
       <video
         controls
-        className="video-element"
+        className="w-full h-[90%] object-cover rounded-xl"
         poster="https://via.placeholder.com/800x450.png?text=Course+Thumbnail"
       >
         <source
@@ -17,9 +17,9 @@ export const VideoAndDescriptionContainer = () => {
       </video>
 
       {/* Description */}
-      <div className="description-box">
-        <h3 className="desc-title">Description</h3>
-        <p className="desc-text">
+      <div className="h-1/2 p-4 bg-gray-50 rounded-lg">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
+        <p className="text-sm text-gray-700 leading-relaxed">
           This course provides a comprehensive introduction to key concepts,
           tools, and techniques in theoretical knowledge with practical
           applications to help learners gain real-world skills.
@@ -47,57 +47,6 @@ export const VideoAndDescriptionContainer = () => {
           Join now to begin your journey into modern tech!
         </p>
       </div>
-
-      <style>{`
-        .video-desc-wrapper {
-          width: 100%;
-          height: 900px;
-          background-color: #ffffff;
-          border-radius: 12px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          overflow-y: auto;
-          display: flex;
-          flex-direction: column;
-          padding: 20px;
-          gap: 20px;
-        }
-
-        .video-element {
-          width: 100%;
-          height: 90%;
-          object-fit: cover;
-          border-radius: 12px;
-        }
-
-        .description-box {
-          height: 50%;
-          padding: 16px;
-          background: #f9fafb;
-          border-radius: 8px;
-        }
-
-        .desc-title {
-          font-size: 18px;
-          font-weight: 600;
-          color: #111827;
-          margin-bottom: 8px;
-        }
-
-        .desc-text {
-          font-size: 14px;
-          line-height: 1.6;
-          color: #374151;
-        }
-
-        .video-desc-wrapper::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        .video-desc-wrapper::-webkit-scrollbar-thumb {
-          background-color: #cbd5e1;
-          border-radius: 6px;
-        }
-      `}</style>
     </div>
   );
 };

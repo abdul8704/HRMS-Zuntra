@@ -1,47 +1,68 @@
 const UserCredentials = require("../models/userCredentials");
-const UserPersonal = require('../models/userPersonal')
-const UserCourse = require('../models/userCourse')
-const attendanceHelper = require('../utils/attendanceHelper')
+const UserPersonal = require("../models/userPersonal");
+const UserCourse = require("../models/userCourse");
+const attendanceHelper = require("../utils/attendanceHelper");
+const ApiError = require("../errors/ApiError");
 
-const updateUserData = async (email, shiftStart, shiftEnd, campus, role) => {
-    const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart)
-    const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
-    
-    const update = await UserCredentials.updateOne(
-        { email: email },
-        {
-            $set: {
-                shiftStart: shiftStartTime,
-                shiftEnd: shiftEndTime,
-                campus: campus,
-                role: role,
-            },
-        }
-    );
 
-    return update;
+const updateUserData = async (email, shiftId, campusId, roleId) => {
+    try {
+        console.log(
+            "Updating user data for email:",
+            email,
+            shiftId,
+            campusId,
+            roleId
+        );
+        const update = await UserCredentials.updateOne(
+            { email: email },
+            {
+                $set: {
+                    shift: shiftId,
+                    campus: campusId,
+                    role: roleId,
+                },
+            }
+        );
+
+        return update;
+    } catch (error) {
+        throw new ApiError(500, `Failed to update user data for ${email}`, error.message);
+    }
 };
 
 const getPendingUsers = async () => {
-    const users = await UserCredentials.find({ role: "unassigned" });
-    return users;
-}
+    try {
+        const users = await UserCredentials.find({ role: { $exists: false } });
+        return users;
+    } catch (error) {
+        throw new ApiError(`Failed to fetch pending users`, error.message);
+    }
+};
 
 const creatUserPersonal = async (userid) => {
-    const userPersonal = new UserPersonal({
-        _id: userid,
-    });
+    try {
+        const userPersonal = new UserPersonal({
+            _id: userid,
+        });
 
-    await userPersonal.save();
-}
+        await userPersonal.save();
+    } catch (error) {
+        throw new ApiError(500, `Failed to create user personal data for ${userid}`, error.message);
+    }
+};
 
 const createUserCourse = async (userid) => {
-    const userCourse = new UserCourse({
-        _id: userid,
-    });
+    try {
+        const userCourse = new UserCourse({
+            _id: userid,
+        });
 
-    await userCourse.save();
-}
+        await userCourse.save();
+    } catch (error) {
+        throw new ApiError(500, `Failed to create user course data for ${userid}`, error.message);
+    }
+};
 
 module.exports = {
     updateUserData,

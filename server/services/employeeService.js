@@ -1,7 +1,7 @@
 const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
-const attendanceHelper = require("../utils/attendanceHelper.js")
+const attendanceHelper = require("../utils/attendanceHelper.js");
 const asyncHandler = require("express-async-handler");
 
 const getAttendanceDataByUserId = async (
@@ -85,13 +85,16 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
     const today = attendanceHelper.normalizeToUTCDate(new Date());
 
     try {
-        const shiftData = await User.findById(userid);
-        const shiftStart = new Date(shiftData.shiftStart);
-        const shiftEnd = new Date(shiftData.shiftEnd);
+        const shiftData = await User.findById(userid).populate(
+            "shift",
+            "startTime endTime"
+        );
+        const shiftStart = new Date(shiftData.shift.shiftStart);
+        const shiftEnd = new Date(shiftData.shift.shiftEnd);
 
         const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart);
         const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
-        
+
         const now = new Date();
 
         let attendance = await Attendance.findOne({ userid, date: today });
@@ -112,7 +115,7 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
                 ],
                 workingMinutes: 0,
                 breakMinutes: 0,
-                status: (mode === "remote") ? "remote": "present", 
+                status: mode === "remote" ? "remote" : "present",
             });
 
             await attendance.save();
@@ -122,7 +125,7 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
                 message: "Attendance marked (first login of the day)",
             };
         }
- 
+
         // ✅ If status was remote and new mode is present, update status
         if (attendance.status === "remote" && mode === "onsite") {
             attendance.status = "onsite";
@@ -168,6 +171,8 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
             message: "Attendance updated (subsequent login)",
         };
     } catch (error) {
+        console.log(error.response.data)
+
         throw new ApiError(
             500,
             "Failed to mark attendance on login",
@@ -176,9 +181,8 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
     }
 });
 
-
 const markEndOfSession = async (userid, logoutTime) => {
-    try{
+    try {
         const today = attendanceHelper.normalizeToUTCDate(new Date());
         const attendance = await Attendance.findOne({ userid, date: today });
 
@@ -190,7 +194,7 @@ const markEndOfSession = async (userid, logoutTime) => {
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
-        
+
         if (lastSession && !lastSession.logoutTime) {
             const logout = new Date(logoutTime);
             lastSession.logoutTime = logout;
@@ -216,13 +220,75 @@ const markEndOfSession = async (userid, logoutTime) => {
             success: false,
             message: "No active session to log out from",
         };
-    } catch(error){
+    } catch (error) {
         throw new ApiError(500, "Failed to mark end of session", error.message);
     }
 };
+
+const getAllEmployees = async () => {
+    const employees = await User.find({ role: { $exists: true } })
+        .select("username email role shift phoneNumber campus profilePicture")
+        .populate({
+            path: "shift",
+            select: "startTime endTime shiftName",
+        })
+        .populate({
+            path: "role",
+            select: "role", // Assuming role schema has a 'role' field
+        })
+        .populate({
+            path: "campus",
+            select: "locationName", // Adjust based on your GeoLocation schema
+        });
+
+    return employees;
+};
+
+// @desc Get details of a user
+const getDetailsOfaEmployee = async (userid) => {
+    try {
+        if (!userid) {
+            throw new ApiError(400, "Employee ID is required");
+        }
+
+        const userCreds = await User.findById(userid, {passwordHash : 0})
+            .populate("role", "roleName")
+            .populate("shift", "startTime endTime")
+            .populate("campus", "campusName");
+
+        if (!userCreds) {
+            throw new ApiError(404, "Employee not found");
+        }
+
+        return userCreds;
+    } catch (error) {
+        throw new ApiError(500, `Failed to fetch user details: ${error.message}`);
+    }
+};
+
+
+const getEmployeeByRole = async (roleId) => {
+    try {
+        const userData = await User.find({ role: roleId }).populate(
+            "role",
+            "roleName"
+        );
+        return userData;
+    } catch (error) {
+        throw new ApiError(
+            500,
+            "Failed to fetch users by role: ",
+            error.message
+        );
+    }
+};
+  
 
 module.exports = {
     getAttendanceDataByUserId,
     markAttendanceOnLogin,
     markEndOfSession,
+    getAllEmployees,
+    getDetailsOfaEmployee,
+    getEmployeeByRole,
 };

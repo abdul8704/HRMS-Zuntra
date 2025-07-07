@@ -1,249 +1,184 @@
-import React, { useState } from "react";
-import { TimeCard } from "../attendance/TimeCard";
-
-const darkenColor = (hex, percent = 10) => {
-  if (!hex || typeof hex !== "string") return "#888";
-  let col = hex.replace("#", "");
-  if (col.length === 3) col = col.split("").map((c) => c + c).join("");
-  const r = parseInt(col.substring(0, 2), 16);
-  const g = parseInt(col.substring(2, 4), 16);
-  const b = parseInt(col.substring(4, 6), 16);
-
-  const toHSL = (r, g, b) => {
-    r /= 255;
-    g /= 255;
-    b /= 255;
-    const max = Math.max(r, g, b),
-      min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-    if (max === min) {
-      h = s = 0;
-    } else {
-      const d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r:
-          h = (g - b) / d + (g < b ? 6 : 0);
-          break;
-        case g:
-          h = (b - r) / d + 2;
-          break;
-        case b:
-          h = (r - g) / d + 4;
-          break;
-      }
-      h /= 6;
-    }
-    return { h, s, l };
-  };
-
-  const hsl = toHSL(r, g, b);
-  hsl.l = Math.max(0, hsl.l - percent / 100);
-  const h = Math.round(hsl.h * 360);
-  const s = Math.round(hsl.s * 100);
-  const l = Math.round(hsl.l * 100);
-  return `hsl(${h}, ${s}%, ${l}%)`;
-};
-
-const styles = {
-  card: (bgColor) => ({
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    backgroundColor: bgColor,
-    borderRadius: "16px",
-    padding: "16px",
-    gap: "16px",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
-    width: "100%",
-    position: "relative",
-  }),
-  cardContent: {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  width: "100%",
-},
-timeCardWrapper: {
-    width: "100%", 
-    display: "flex",
-    containerType: "inline-size",
-},
-
-
- leftSection: {
-  display: "flex",
-  flexDirection: "row",
-  gap: "12px",
-  alignItems: "center",         // Vertically center image + text block
-  justifyContent: "flex-start",
-},
-
-
-
-imageContainer: {
-  display: "flex",
-  alignItems: "center",       // Center vertically within the section
-  justifyContent: "flex-start", // Align image to the left inside the container
-  width: "60px",
-  height: "100%",              // Full height of parent container
-  padding: 0,                  // Ensure no internal padding pushes image
-},
-
-image: {
-  width: "60px",               // Maintain fixed width
-  height: "80px",              // Or height as desired
-  objectFit: "contain",        // Prevent distortion
-  display: "block",
-  marginLeft: "0",             // Explicitly remove margin if exists
-},
-
-
-
-
-
-
-
-
-  infoContainer: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "6px",
-    flex: 1,
-    minWidth: 0,
-    overflow: "hidden",
-  },
-  name: {
-  fontSize: "18px",
-  margin: 0,
-  cursor: "pointer",
-},
-row: {
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-  fontSize: "14px",
-  color: "#333",
-  maxWidth: "100%",
-  flexWrap: "nowrap", // Prevent wrapping
-  overflow: "hidden", // Hide overflow
-},
-
-  icon: {
-    fontSize: "16px",
-    flexShrink: 0,
-  },
-  text: {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    maxWidth: "180px",
-    display: "inline-block",
-  },
-  role: (bg) => ({
-    marginTop: "4px",
-    padding: "4px 8px",
-    backgroundColor: bg,
-    borderRadius: "12px",
-    width: "fit-content",
-    fontSize: "13px",
-    color: "black",
-  }),
-  timeContainer: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, 1fr)",
-    gap: "10px",
-    minWidth: "300px",
-    marginLeft: "auto",
-  },
-
-};
+import React, { useState, useEffect, useRef } from "react";
+import { TimeCard } from "../dashboard/TimeCard";
+import { ToolTip } from "../ToolTip";
 
 export const EmployeeCard = ({
   name,
   email,
   phone,
   role,
-  image,
+  image = "https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png",
   inTime,
   outTime,
   workTime,
   breakTime,
   bgColor = "#cfd9ea",
+  isNewUser = false,
+  onApprove,
 }) => {
-  const [tooltip, setTooltip] = useState({ show: false, text: "", top: 0, left: 0 });
-  const cardColor = darkenColor(bgColor);
-  const lightAccentColor = darkenColor(bgColor, 6);
+  const [tooltip, setTooltip] = useState({ show: false, text: "", anchorRef: null });
+  const [isVisible, setIsVisible] = useState(false);
+  const cardRef = useRef(null);
+  const nameRef = useRef(null);
+  const emailRef = useRef(null);
+  const phoneRef = useRef(null);
 
-  const showTooltip = (e, text) => {
-    const rect = e.target.getBoundingClientRect();
-    setTooltip({
-      show: true,
-      text,
-      top: rect.top + window.scrollY - 40,
-      left: rect.left + window.scrollX,
-    });
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      }
+    );
+
+    if (cardRef.current) observer.observe(cardRef.current);
+
+    return () => {
+      if (cardRef.current) observer.unobserve(cardRef.current);
+    };
+  }, []);
+
+  const showTooltipIfTruncated = (anchorRef, text) => {
+    const element = anchorRef.current;
+    if (element) {
+      if (element.tagName === "H6") {
+        if (element.scrollWidth > element.clientWidth) {
+          setTooltip({ show: true, text, anchorRef });
+        }
+      } else {
+        const spanElement = element.querySelector("span");
+        if (spanElement && spanElement.scrollWidth > spanElement.clientWidth) {
+          setTooltip({ show: true, text, anchorRef });
+        }
+      }
+    }
   };
 
-  const hideTooltip = () => setTooltip({ show: false, text: "", top: 0, left: 0 });
+  const hideTooltip = () => setTooltip({ show: false, text: "", anchorRef: null });
 
   return (
     <>
-      <div className="employee-card" style={styles.card(cardColor)}>
-        <div className="card-content" style={styles.cardContent}>
-          <div className="left-section" style={styles.leftSection}>
-            <div style={styles.imageContainer}>
-              <img src={image} alt="Profile" style={styles.image} />
+      <div
+        ref={cardRef}
+        className={`
+          employee-card w-full rounded-2xl shadow-lg relative
+          transition-opacity duration-700 ease-out
+          ${isVisible ? "opacity-100" : "opacity-0"}
+        `}
+        style={{ backgroundColor: bgColor, transition: "0.5s" }}
+      >
+        <div
+          className={`flex ${
+            isNewUser ? "flex-row" : "flex-col"
+          } lg:flex-row items-stretch w-full gap-4`}
+        >
+          {/* Left Section */}
+          <div className="flex items-center flex-[7] gap-4 min-w-0">
+            <div className="flex items-center sm:items-stretch justify-center sm:justify-start self-stretch max-w-[8rem]">
+              <img
+                src={image}
+                alt="Profile"
+                className="w-full h-full object-cover block rounded-l-lg sm:rounded-l-lg sm:rounded-r-none sm:rounded-t-none"
+              />
             </div>
-            <div style={styles.infoContainer}>
-              <h2
-                style={styles.name}
-                onMouseEnter={(e) => showTooltip(e, name)}
+
+            <div className="flex flex-col flex-1 min-w-0 max-w-full items-center sm:items-start justify-center overflow-hidden py-4">
+              <h6
+                ref={nameRef}
+                className="text-md m-0 cursor-pointer truncate w-full max-w-full text-center sm:text-left"
+                onMouseEnter={() => showTooltipIfTruncated(nameRef, name)}
                 onMouseLeave={hideTooltip}
               >
-                <span style={styles.text}>{name}</span>
-              </h2>
-              <div style={styles.row} onMouseEnter={(e) => showTooltip(e, email)} onMouseLeave={hideTooltip}>
-                <span style={styles.icon}>📧</span>
-                <span style={styles.text}>{email}</span>
+                {name}
+              </h6>
+
+              <div
+                ref={emailRef}
+                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden cursor-pointer"
+                onMouseEnter={() => showTooltipIfTruncated(emailRef, email)}
+                onMouseLeave={hideTooltip}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="12" fill="none" viewBox="0 0 18 12">
+                  <path
+                    fill="#000"
+                    fillOpacity=".5"
+                    d="M1.72 11.775c-.474 0-.878-.144-1.215-.432-.336-.288-.504-.634-.505-1.04V1.472C0 1.067.168.72.505.432A1.81 1.81 0 0 1 1.72 0h13.754c.473 0 .878.144 1.215.433.337.288.505.635.505 1.039v8.831c0 .405-.169.752-.505 1.04a1.801 1.801 0 0 1-1.215.432H1.72Zm6.876-5.151 6.877-3.68V1.472l-6.877 3.68-6.877-3.68v1.472l6.877 3.68Z"
+                  />
+                </svg>
+                <span className="truncate">{email}</span>
               </div>
-              <div style={styles.row} onMouseEnter={(e) => showTooltip(e, phone)} onMouseLeave={hideTooltip}>
-                <span style={styles.icon}>📞</span>
-                <span style={styles.text}>{phone}</span>
+
+              <div
+                ref={phoneRef}
+                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden cursor-pointer"
+                onMouseEnter={() => showTooltipIfTruncated(phoneRef, phone)}
+                onMouseLeave={hideTooltip}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="12" fill="none" viewBox="0 0 13 12">
+                  <path
+                    fill="#000"
+                    fillOpacity=".5"
+                    d="M2.536 5.166C3.544 7.018 5.169 8.53 7.15 9.477l1.541-1.439a.732.732 0 0 1 .715-.157 8.507 8.507 0 0 0 2.5.373c.386 0 .7.294.7.654v2.283c0 .36-.314.654-.7.654C5.33 11.845 0 6.867 0 .726 0 .364.315.07.7.07h2.452c.385 0 .7.295.7.654 0 .818.14 1.603.4 2.336a.626.626 0 0 1-.175.667l-1.541 1.44Z"
+                  />
+                </svg>
+                <span className="truncate">{phone}</span>
               </div>
-              <div style={styles.role(lightAccentColor)}>{role}</div>
+
+              <div className="mt-1 py-1 px-2 rounded-xl w-fit text-xs text-black bg-white/40 truncate">
+                {role}
+              </div>
             </div>
           </div>
 
-          <div className="time-container" style={styles.timeContainer}>
-            <div style={styles.timeCardWrapper}><TimeCard state="in" time={inTime} /></div>
-            <div style={styles.timeCardWrapper}><TimeCard state="out" time={outTime} /></div>
-            <div style={styles.timeCardWrapper}><TimeCard state="break" time={breakTime} /></div>
-            <div style={styles.timeCardWrapper}><TimeCard state="work" time={workTime} /></div>
-          </div>
+          {/* Time Cards or Action Buttons */}
+          {isNewUser ? (
+            <div className="flex flex-col flex-wrap justify-center gap-3 flex-[1] p-2.5">
+              <button
+                onClick={() => onApprove?.()}
+                className="h-[3rem] bg-[#C1E8BD] text-black rounded-xl shadow hover:bg-[#C1FFBD] text-lg font-semibold"
+              >
+                ✓
+              </button>
+              <button
+                className="h-[3rem] bg-[#E1BEC5] text-black rounded-xl shadow hover:bg-[#FFBEC5] text-lg font-semibold"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col flex-wrap justify-center gap-3 flex-[3] p-2.5">
+              <div className="flex gap-2.5 w-full flex-[1] justify-center">
+                <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                  <TimeCard state="in" time={inTime} showLabel={false} color={true} />
+                </div>
+                <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                  <TimeCard state="out" time={outTime} showLabel={false} color={true} />
+                </div>
+              </div>
+              <div className="flex flex-[1] gap-2.5 w-full justify-center">
+                <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                  <TimeCard state="break" time={breakTime} showLabel={false} color={true} />
+                </div>
+                <div className="flex-1 min-w-[6rem] flex justify-center items-center">
+                  <TimeCard state="work" time={workTime} showLabel={false} color={true} />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
+      {/* Tooltip */}
       {tooltip.show && (
-        <div
-          style={{
-            position: "absolute",
-            top: `${tooltip.top}px`,
-            left: `${tooltip.left}px`,
-            backgroundColor: "#333",
-            color: "#fff",
-            padding: "6px 12px",
-            borderRadius: "6px",
-            fontSize: "14px",
-            whiteSpace: "nowrap",
-            zIndex: 9999,
-            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-          }}
-        >
-          {tooltip.text}
-        </div>
+        <ToolTip
+          text={tooltip.text}
+          anchorRef={tooltip.anchorRef}
+          position="top"
+          offset={10}
+        />
       )}
     </>
   );

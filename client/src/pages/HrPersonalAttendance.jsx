@@ -1,66 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Sidebar } from "../components/Sidebar";
-import { useParams } from 'react-router-dom';
+import { LeaveForm } from '../components/attendance/LeaveForm';
 
 export const HrPersonalAttendance = () => {
+  const [showPopup, setShowPopup] = useState(false);
 
   return (
-    <>
-      <div className="website-container flex">
-        <Sidebar />
+    <div className="website-container flex min-h-screen relative">
+      <Sidebar />
 
-        <div className="website-module flex-grow flex justify-center items-center">
-          <div
-            style={{
-              padding: "3rem 5rem",
-              borderRadius: "1.5rem",
-              background: "rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              textAlign: "center",
-              fontFamily: "'Poppins', sans-serif",
-            }}
-          >
-            <style>{`
-              @keyframes pulse {
-                0%, 100% {
-                  text-shadow: 0 0 10px #BBD3CC, 0 0 20px #BBD3CC;
-                }
-                50% {
-                  text-shadow: 0 0 20px #BBD3CC, 0 0 40px #BBD3CC;
-                }
-              }
-            `}</style>
+      <div className="website-module flex-grow flex justify-center items-center relative">
+        {/* Floating Plus Button */}
+        <button
+          className="fixed bottom-6 right-6 w-12 h-12 rounded-full shadow-md transition-all duration-300 flex items-center justify-center z-50"
+          style={{
+            backgroundColor: '#BBD3CC',
+            color: 'rgba(0, 0, 0, 0.5)',
+            fontSize: '2.2rem',
+            fontWeight: 'bold',
+          }}
+          onClick={() => setShowPopup(true)}
+        >
+          +
+        </button>
 
-            <h1
-              style={{
-                fontSize: "5rem",
-                fontWeight: "700",
-                color: "rgb(153, 153, 153)",
-                textShadow: "0 0 10px #BBD3CC, 0 0 20px #BBD3CC",
-                animation: "pulse 2s infinite ease-in-out",
-                margin: 0,
-              }}
-            >
-              🚀 Under Development, Coming Soon
-            </h1>
+        {/* Popup Overlay */}
+        {showPopup && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40">
+            <div className="bg-white p-6 rounded-xl shadow-lg w-[720px] max-w-full relative">
+              <LeaveForm
+                name="Anu"
+                religion="Hindu"
+                role="HR Manager"
+                handleClose={() => setShowPopup(false)}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
-
-      <style>{`
-        .project-cards-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1.5rem;
-          justify-content: center;
-          align-items: center;
-          margin-top: 1.5rem;
-          max-height: 100%;
-          overflow-y: auto;
-          overflow-x: hidden;
-        }
-      `}</style>
-    </>
+    </div>
   );
 };

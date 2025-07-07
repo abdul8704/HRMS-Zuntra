@@ -41,6 +41,15 @@ const courseDetailsSchema = new mongoose.Schema({
         videoTitle: { type: String, required: true },
         videoUrl: { type: String, required: true },
     },
+    deadline:{
+        type: Number,
+        required: true,
+        default: 0,
+    },
+    deadlineUnits:{
+        type: String,
+        required: true,
+    }
 });
 
 module.exports = mongoose.model("CourseDetails", courseDetailsSchema);

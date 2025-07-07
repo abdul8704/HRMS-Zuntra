@@ -1,21 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 
 export default function ProgressCard() {
-  /* --------------------------------------------------
-   * State & refs
-   * -------------------------------------------------- */
   const [filter, setFilter] = useState("range");
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [tasks, setTasks] = useState([]);
   const btnRef = useRef(null);
   const menuRef = useRef(null);
 
-  /* --------------------------------------------------
-   * Close dropdown on outside‑click
-   * -------------------------------------------------- */
   useEffect(() => {
     function handleOutside(e) {
       if (
@@ -32,9 +25,6 @@ export default function ProgressCard() {
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [open]);
 
-  /* --------------------------------------------------
-   * Mock fetch
-   * -------------------------------------------------- */
   useEffect(() => {
     setTimeout(() => {
       setTasks([
@@ -48,9 +38,6 @@ export default function ProgressCard() {
     }, 400);
   }, []);
 
-  /* --------------------------------------------------
-   * Helpers
-   * -------------------------------------------------- */
   const formatDate = (iso) =>
     new Date(iso).toLocaleDateString("en-GB", {
       day: "2-digit",
@@ -69,16 +56,12 @@ export default function ProgressCard() {
     return (!fromDate || d >= fromDate) && (!toDate || d <= toDate);
   };
 
-  /* --------------------------------------------------
-   * Filtering & grouping
-   * -------------------------------------------------- */
   const filtered = tasks.filter((t) => {
-    const matchesQuery = t.description.toLowerCase().includes(query.toLowerCase());
     const inRange = isInRange(t.date);
     const typeMatch =
       filter === "positive" ? t.completed :
       filter === "negative" ? !t.completed : true;
-    return matchesQuery && inRange && typeMatch;
+    return inRange && typeMatch;
   });
 
   const grouped = filtered.reduce((acc, task) => {
@@ -88,37 +71,17 @@ export default function ProgressCard() {
     return acc;
   }, {});
 
-  /* --------------------------------------------------
-   * CSV exporter
-   * -------------------------------------------------- */
-  const exportCSV = () => {
-    const csv = filtered
-      .map((t) => `${t.date},${t.description},${t.completed ? "Yes" : "No"}`)
-      .join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "progress.csv";
-    a.click();
-  };
-
   const setAndClose = (val) => {
     setFilter(val);
     setOpen(false);
   };
 
-  /* --------------------------------------------------
-   * Render
-   * -------------------------------------------------- */
   return (
     <div className="card">
-      {/* title */}
       <div className="title-wrapper">
         <h2 className="title">Progress</h2>
       </div>
 
-      {/* dropdown trigger */}
       <div className="dropdown-wrapper">
         <button ref={btnRef} className="icon-btn" onClick={() => setOpen((p) => !p)}>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="14" viewBox="0 0 21 16" fill="none">
@@ -144,21 +107,7 @@ export default function ProgressCard() {
         )}
       </div>
 
-      {/* search + export */}
-      <div className="header">
-        <input
-          className="search"
-          type="text"
-          placeholder="Search task..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <button onClick={exportCSV} className="download">
-          Export CSV
-        </button>
-      </div>
-
-      {/* list */}
+      {/* task list */}
       {filtered.length === 0 ? (
         <p className="empty">No tasks match this view.</p>
       ) : (
@@ -201,7 +150,6 @@ export default function ProgressCard() {
           padding-left: 0.25rem;
         }
 
-        /* dropdown */
         .dropdown-wrapper {
           position: absolute;
           top: 1rem;
@@ -247,37 +195,6 @@ export default function ProgressCard() {
           font-size: 0.85rem;
         }
 
-        /* search + export */
-        .header {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 0.6rem;
-          align-items: center;
-          justify-content: space-between;
-          margin-bottom: 1.2rem;
-        }
-        .search {
-          flex: 1 1 200px;
-          padding: 0.5rem 0.75rem;
-          border-radius: 8px;
-          border: 1px solid #ccc;
-          font-size: 0.9rem;
-        }
-        .download {
-          padding: 0.5rem 1rem;
-          background: #ff9f43;
-          color: #fff;
-          font-weight: 700;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          white-space: nowrap;
-        }
-        .download:hover {
-          background: #ff9900;
-        }
-
-        /* month section */
         .month-section {
           margin-bottom: 1.2rem;
         }
@@ -290,7 +207,6 @@ export default function ProgressCard() {
           padding-bottom: 0.2rem;
         }
 
-        /* task chip */
         .task {
           margin: 0.4rem 0;
           padding: 0.65rem 1rem;

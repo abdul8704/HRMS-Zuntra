@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
-import { CourseNavbar } from "../components/coursemanagement/CourseNavbar";
 import { CourseCard } from "../components/coursemanagement/CourseCard";
-import { CreateCourse } from "../components/courseManagement/CreateCourse";
 import AddCourse from "../components/coursemanagement/AddCourse";
 import Module from "../components/coursemanagement/Module";
 import SubModule from "../components/coursemanagement/SubModule";
 import AssignmentModule from "../components/coursemanagement/AssignmentModule";
+import { Navbar } from "../components/Navbar";
 
-const courseList = [
+const staticCourseList = [
   {
     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
     title: "Introduction to Git & GitHub",
@@ -22,7 +21,7 @@ const courseList = [
     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
     title: "MongoDB - Advanced",
     instructor: "Mr. Abdul Aziz M A",
-    duration: "at your own pace",
+    duration: "At your own pace",
     badgeColor: "#C7F3D0",
     rating: 3.5,
   },
@@ -30,7 +29,7 @@ const courseList = [
     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
     title: "Introduction to Data Science",
     instructor: "Ms. Harini S",
-    duration: "in 3 months",
+    duration: "In 3 months",
     badgeColor: "#FFEFB2",
     rating: 3.5,
   },
@@ -54,7 +53,7 @@ const courseList = [
     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
     title: "MongoDB - Advanced",
     instructor: "Mr. Abdul Aziz M A",
-    duration: "at your own pace",
+    duration: "At your own pace",
     badgeColor: "#C7F3D0",
     rating: 3.5,
   },
@@ -62,7 +61,7 @@ const courseList = [
     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
     title: "Introduction to Data Science",
     instructor: "Ms. Harini S",
-    duration: "in 3 months",
+    duration: "In 3 months",
     badgeColor: "#FFEFB2",
     rating: 3.5,
   },
@@ -70,6 +69,14 @@ const courseList = [
     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
     title: "A Complete Guide to your DL",
     instructor: "Mr. Joseph Daniel H",
+    duration: "In 2 months",
+    badgeColor: "#FFD9D9",
+    rating: 3.5,
+  },
+  {
+    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+    title: "Introduction to Git & GitHub",
+    instructor: "Mr. Jai Atithya A",
     duration: "In 2 months",
     badgeColor: "#FFD9D9",
     rating: 3.5,
@@ -78,7 +85,7 @@ const courseList = [
     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
     title: "MongoDB - Advanced",
     instructor: "Mr. Abdul Aziz M A",
-    duration: "at your own pace",
+    duration: "At your own pace",
     badgeColor: "#C7F3D0",
     rating: 3.5,
   },
@@ -86,7 +93,7 @@ const courseList = [
     image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
     title: "Introduction to Data Science",
     instructor: "Ms. Harini S",
-    duration: "in 3 months",
+    duration: "In 3 months",
     badgeColor: "#FFEFB2",
     rating: 3.5,
   },
@@ -98,11 +105,76 @@ const courseList = [
     badgeColor: "#FFD9D9",
     rating: 3.5,
   },
-
+  {
+    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+    title: "Introduction to Git & GitHub",
+    instructor: "Mr. Jai Atithya A",
+    duration: "In 2 months",
+    badgeColor: "#FFD9D9",
+    rating: 3.5,
+  },
+  {
+    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+    title: "MongoDB - Advanced",
+    instructor: "Mr. Abdul Aziz M A",
+    duration: "At your own pace",
+    badgeColor: "#C7F3D0",
+    rating: 3.5,
+  },
+  {
+    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+    title: "Introduction to Data Science",
+    instructor: "Ms. Harini S",
+    duration: "In 3 months",
+    badgeColor: "#FFEFB2",
+    rating: 3.5,
+  },
+  {
+    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+    title: "A Complete Guide to your DL",
+    instructor: "Mr. Joseph Daniel H",
+    duration: "In 2 months",
+    badgeColor: "#FFD9D9",
+    rating: 3.5,
+  },
+  {
+    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+    title: "Introduction to Git & GitHub",
+    instructor: "Mr. Jai Atithya A",
+    duration: "In 2 months",
+    badgeColor: "#FFD9D9",
+    rating: 3.5,
+  },
+  {
+    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+    title: "MongoDB - Advanced",
+    instructor: "Mr. Abdul Aziz M A",
+    duration: "At your own pace",
+    badgeColor: "#C7F3D0",
+    rating: 3.5,
+  },
+  {
+    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+    title: "Introduction to Data Science",
+    instructor: "Ms. Harini S",
+    duration: "In 3 months",
+    badgeColor: "#FFEFB2",
+    rating: 3.5,
+  },
+  {
+    image: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png",
+    title: "A Complete Guide to your DL",
+    instructor: "Mr. Joseph Daniel H",
+    duration: "In 2 months",
+    badgeColor: "#FFD9D9",
+    rating: 3.5,
+  },
 ];
 
-export const HrCourseManagement = () => {
+export const CourseManagement = () => {
   const { navId } = useParams();
+  const navigate = useNavigate();
+  const [courseList] = useState(staticCourseList);
 
   const [courseInfo, setCourseInfo] = useState({
     courseName: "",
@@ -240,22 +312,47 @@ export const HrCourseManagement = () => {
   const isError = (fieldId) => submitted && errorFields.includes(fieldId);
 
   return (
-    <div className="website-container" style={{ display: "flex", height: "100vh", overflow: "hidden", position: "relative" }}>
+    <div className="flex h-screen overflow-hidden relative">
       <Sidebar />
-      <div className="website-module" style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-        <CourseNavbar />
+      <div className="flex flex-col flex-grow p-[1rem] gap-[1rem]">
+        <Navbar type="courseManagement" showFilter={true} />
 
         {navId === "all" && (
-          <div className="scrollable-content">
-            <div className="card-flex">
+          <div className="flex-grow overflow-y-auto">
+            <div className="flex flex-wrap justify-center gap-[1rem] px-[1rem]">
               {courseList.map((course, index) => (
-                <CourseCard key={index} {...course} />
+                <div
+                  key={index}
+                  onClick={() => navigate(`/course/${index}/intro`)}
+                  className="cursor-pointer"
+                  style={{ display: "contents" }} // ensures no layout shift
+                >
+                  <CourseCard key={index} {...course} />
+                </div>
               ))}
             </div>
           </div>
         )}
 
-        {navId === "create" && <CreateCourse />}
+        {navId === "create" && (
+          <div className="h-[calc(100vh-80px)] flex flex-col justify-center items-center text-center p-8">
+            <h1 className="text-2xl font-semibold mb-8">Record with Loom</h1>
+
+            <button className="bg-[#A6C4BA] hover:bg-[#BBD3CC] text-white font-bold text-base h-12 w-72 rounded-full flex items-center justify-center gap-2 mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" viewBox="0 0 40 40">
+                <path fill="#625DF5" d="M40 17.776H28.303l10.13-5.849-2.224-3.854-10.13 5.849 5.847-10.13-3.854-2.225-5.847 10.129V0h-4.45v11.697l-5.85-10.13-3.852 2.225 5.848 10.129-10.13-5.848-2.224 3.853 10.13 5.849H0v4.45h11.695L1.567 28.072l2.224 3.854 10.13-5.848-5.85 10.13 3.855 2.224 5.848-10.13V40h4.45V28.304l5.847 10.13 3.854-2.225-5.849-10.13 10.13 5.848 2.225-3.854-10.129-5.848h11.696v-4.45H40ZM20 26.05a6.074 6.074 0 1 1 0-12.148 6.074 6.074 0 1 1 0 12.148Z" />
+              </svg>
+              Go to Loom Website
+            </button>
+
+            <button className="bg-[#A6C4BA] hover:bg-[#BBD3CC] text-white font-bold text-base h-12 w-72 rounded-full flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+                <path d="M352-120H200q-33 0-56.5-23.5T120-200v-152q48 0 84-30.5t36-77.5q0-47-36-77.5T120-568v-152q0-33 23.5-56.5T200-800h160q0-42 29-71t71-29q42 0 71 29t29 71h160q33 0 56.5 23.5T800-720v160q42 0 71 29t29 71q0 42-29 71t-71 29v160q0 33-23.5 56.5T720-120H568q0-50-31.5-85T460-240q-45 0-76.5 35T352-120Zm-152-80h85q24-66 77-93t98-27q45 0 98 27t77 93h85v-240h80q8 0 14-6t6-14q0-8-6-14t-14-6h-80v-240H480v-80q0-8-6-14t-14-6q-8 0-14 6t-6 14v80H200v88q54 20 87 67t33 105q0 57-33 104t-87 68v88Zm260-260Z" />
+              </svg>
+              Install Loom Extension
+            </button>
+          </div>
+        )}
 
         {navId === "add" && (
           <div className="flex flex-col items-center px-4 py-4 space-y-6 max-w-5xl mx-auto overflow-y-auto">
@@ -316,39 +413,6 @@ export const HrCourseManagement = () => {
           </div>
         )}
       </div>
-
-      <style>
-        {`
-          .scrollable-content {
-            flex-grow: 1;
-            overflow-y: auto;
-            margin-top: 1.5rem;
-          }
-
-          .card-flex {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1.5rem;
-            box-sizing: border-box;
-            padding: 1rem;
-          }
-
-          @media (max-width: 768px) {
-            .card-flex {
-              justify-content: center;
-            }
-          }
-
-          @media (max-width: 480px) {
-            .card-flex {
-              flex-direction: column;
-              align-items: center;
-              padding: 1rem 0.5rem;
-            }
-          }
-        `}
-      </style>
     </div>
   );
 };

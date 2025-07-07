@@ -1,28 +1,70 @@
 import React, { useState, useEffect, useRef } from "react";
+import api from '../../api/axios'
 
 export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
-  const roles = {
-    'Software Engineer': '80000',
-    'Senior Software Engineer': '120000',
-    'Team Lead': '150000',
-    'Project Manager': '180000',
-    'HR Executive': '600000',
-    'Business Analyst': '100000',
-    'UI/UX Designer': '750000',
-    'QA Engineer': '605000',
-    'DevOps Engineer': '110000',
-    'Data Analyst': '900000',
+  const getRoles = async () => {
+    try {
+      const response = await api.get('/api/roles');
+      const roleSalary = {};
+      const roleId = {};
+
+      response.data.forEach(role => {
+        roleSalary[role.role] = role.baseSalary;
+        roleId[role.role] = role._id;
+      });
+      return { role: roleId, salary: roleSalary };
+    }
+    catch (error) {
+      alert("Error fetching roles. Please try again later.");
+      console.error("Error fetching roles:", error);
+      return [];
+    }
   };
 
-  const shifts = [
-    'Morning (9:00 AM - 6:00 PM)',
-    'Evening (2:00 PM - 11:00 PM)',
-    'Night (10:00 PM - 7:00 AM)',
-    'Flexible',
-  ];
+  const getShifts = async () => {
+    try {
+      const response = await api.get('/api/shifts');
 
-  const branches = ['Chennai', 'Bangalore', 'Hyderabad', 'Mumbai'];
+      return response.data;
+    }
+    catch (error) {
+      alert("Error fetching shifts. Please try again later.");
+      console.error("Error fetching shifts:", error);
+      return [];
+    }
+  };
 
+  const getBranches = async () => {
+    try {
+      const response = await api.get('/api/branch');
+      return response.data.branches;
+    }
+    catch (error) {
+      alert("Error fetching branches. Please try again later.");
+      console.error("Error fetching branches:", error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const roles = await getRoles();
+      const shifts = await getShifts();
+      const branches = await getBranches();
+
+      setRoles(roles.role);
+      setRoleBaseSalary(roles.salary)
+      setShifts(shifts);
+      setBranches(branches);
+    };
+
+    fetchData();
+  }, []);
+
+  const [roles, setRoles] = useState([]);
+  const [roleBaseSalary, setRoleBaseSalary] = useState({});
+  const [shifts, setShifts] = useState([]);
+  const [branches, setBranches] = useState([]);
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedShift, setSelectedShift] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
@@ -33,8 +75,8 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
   const roleInputRef = useRef(null);
 
   useEffect(() => {
-    if (!manualSalary && roles[selectedRole]) {
-      setSalary(roles[selectedRole]);
+    if (!manualSalary && roleBaseSalary[selectedRole]) {
+      setSalary(roleBaseSalary[selectedRole]);
     }
   }, [selectedRole]);
 
@@ -50,16 +92,25 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (isFormValid) {
-      onSave({
-        role: selectedRole,
-        shift: selectedShift,
-        branch: selectedBranch,
-        salary,
-      });
-    }
-  };
+      try {
+        await api.post('/api/hr/accept', {
+          email: employee.email,
+          shiftId: selectedShift,
+          campusId: selectedBranch,
+          roleId: roles[selectedRole],
+        });
+        alert("Employee assigned successfully");
+        onSave();
+        onClose();
+        window.location.reload();
+      }
+      catch (err) {
+        alert("Error assigning employee:", err);
+      }
+    };
+  }
 
   const filteredRoles = Object.keys(roles).filter((role) =>
     role.toLowerCase().includes(selectedRole.toLowerCase())
@@ -76,9 +127,12 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
     setManualSalary(true);
   };
 
+  const formatTime = (time) => {
+    return new Date(time).toLocaleTimeString();
+  }
+
   const isFormValid =
     selectedRole.trim() &&
-    selectedShift.trim() &&
     selectedBranch.trim() &&
     salary.toString().trim();
 
@@ -87,7 +141,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
       <div className="popup-container">
         {/* Left */}
         <div className="popup-left">
-          <img src={employee.image} alt="Profile" />
+          <img src={employee.image || "https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png"} alt="Profile" />
           <h3 className="emp-emp-name">{employee.name}</h3>
           <p className="emp-info emp-email-bg">{employee.email}</p>
           <p className="emp-info">{employee.phone}</p>
@@ -128,7 +182,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
             <select value={selectedShift} onChange={(e) => setSelectedShift(e.target.value)} required>
               <option value="" disabled hidden>Select shift</option>
               {shifts.map((shift) => (
-                <option key={shift} value={shift}>{shift}</option>
+                <option key={shift.shiftName} value={shift._id}>{shift.shiftName + " (" + formatTime(shift.startTime) + " - " + formatTime(shift.endTime) + ")"}</option>
               ))}
             </select>
           </label>
@@ -138,7 +192,7 @@ export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
             <select value={selectedBranch} onChange={(e) => setSelectedBranch(e.target.value)} required>
               <option value="" disabled hidden>Select branch</option>
               {branches.map((branch) => (
-                <option key={branch} value={branch}>{branch}</option>
+                <option key={branch} value={branch._id}>{branch.campusName}</option>
               ))}
             </select>
           </label>
