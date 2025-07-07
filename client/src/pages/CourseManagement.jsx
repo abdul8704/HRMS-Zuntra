@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
 import { CourseCard } from "../components/coursemanagement/CourseCard";
@@ -7,6 +7,8 @@ import Module from "../components/coursemanagement/Module";
 import SubModule from "../components/coursemanagement/SubModule";
 import AssignmentModule from "../components/coursemanagement/AssignmentModule";
 import { Navbar } from "../components/Navbar";
+import { Loading } from "../components/Loading";
+import api from "../api/axios";
 
 const staticCourseList = [
   {
@@ -202,6 +204,44 @@ export const CourseManagement = () => {
   const [errorFields, setErrorFields] = useState([]);
   const [submitted, setSubmitted] = useState(false);
 
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [apiMessage, setApiMessage] = useState("");
+
+   useEffect(() => {
+    const validTabs = ["all", "create", "add"];
+    if (!validTabs.includes(navId)) {
+      navigate("/404");
+      return;
+    }
+  
+    if (navId === "create" || navId=== "add") return;
+  
+    const fetchCourses = async () => {
+      setLoading(true);
+      setApiMessage("");
+  
+      try {
+        const res = await api.get(`/api/course/`);
+        console.log(res);
+        if (res.data.success) {
+          setCourses(Array.isArray(res.data.data) ? res.data.data : []);
+        } else {
+          setApiMessage(res.data.message || "Something went wrong.");
+          setCourses([]);
+        }
+      } catch (error) {
+        setApiMessage("Error fetching projects.");
+        setCourses([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchCourses();
+  
+  }, [navId, navigate]);
+
   const handleModuleTitleChange = (moduleIndex, newTitle) => {
     const updatedModules = [...modules];
     updatedModules[moduleIndex].moduleTitle = newTitle;
@@ -308,7 +348,7 @@ export const CourseManagement = () => {
     alert("✅ Course Submitted!");
     console.log({ courseInfo, modules });
   };
-
+  console.log(loading);
   const isError = (fieldId) => submitted && errorFields.includes(fieldId);
 
   return (
@@ -316,11 +356,11 @@ export const CourseManagement = () => {
       <Sidebar />
       <div className="flex flex-col flex-grow p-[1rem] gap-[1rem]">
         <Navbar type="courseManagement" showFilter={true} />
-
-        {navId === "all" && (
+        { loading && (<Loading/>) }
+        {!loading && navId === "all" && (
           <div className="flex-grow overflow-y-auto">
             <div className="flex flex-wrap justify-center gap-[1rem] px-[1rem]">
-              {courseList.map((course, index) => (
+              {courses.map((course, index) => (
                 <div
                   key={index}
                   onClick={() => navigate(`/course/${index}/intro`)}
