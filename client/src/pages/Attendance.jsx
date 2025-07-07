@@ -29,7 +29,7 @@ export const Attendance = () => {
                             <TimeCard state="break" time="09:20" showLabel={false} color={true} />
                         </div>
                         {/* chart */}
-                        <div className="row-start-1 col-start-5 col-span-4 row-span-3 bg-[#BFBFF7] rounded-xl p-4">
+                        <div className="row-start-1 col-start-5 col-span-4 row-span-3 bg-[#BFBFF7] rounded-xl">
                             <WorkBreakComposition />
                         </div>
                         {/* calendar */}
