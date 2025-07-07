@@ -74,55 +74,63 @@ const WorkBreakComposition = () => {
   ];
 
   return (
-    <div className="w-full h-full relative p-4 overflow-hidden bg-purple-200 rounded-xl">
+    <div className="w-full h-full relative overflow-hidden bg-purple-200 rounded-xl">
       {/* Filter Icon */}
       <button
         onClick={() => setShowFilters(!showFilters)}
-        className="absolute top-4 right-4 p-2 rounded-full transition-transform duration-200 transform hover:scale-110"
+        className="absolute top-0 right-0 m-2 p-2 rounded-full transition-transform duration-200 transform hover:scale-110 focus:outline-none"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="20" fill="none" viewBox="0 0 20 20">
-          <path fill="#000" d="M20 16.606a.75.75 0 0 1-.75.75h-5.1a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h7.74a2.93 2.93 0 0 1 5.66 0h5.1a.75.75 0 0 1 .75.75Zm0-13.21a.75.75 0 0 1-.75.75H16.8a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h10.39a2.93 2.93 0 0 1 5.66 0h2.45a.74.74 0 0 1 .75.75Zm0 6.6a.741.741 0 0 1-.75.75H7.55a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h1.14a2.93 2.93 0 0 1 5.66 0h11.7a.75.75 0 0 1 .75.75Z"></path>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="25"
+          height="20"
+          fill="none"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fill="#000"
+            d="M20 16.606a.75.75 0 0 1-.75.75h-5.1a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h7.74a2.93 2.93 0 0 1 5.66 0h5.1a.75.75 0 0 1 .75.75Zm0-13.21a.75.75 0 0 1-.75.75H16.8a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h10.39a2.93 2.93 0 0 1 5.66 0h2.45a.74.74 0 0 1 .75.75Zm0 6.6a.741.741 0 0 1-.75.75H7.55a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h1.14a2.93 2.93 0 0 1 5.66 0h11.7a.75.75 0 0 1 .75.75Z"
+          />
         </svg>
       </button>
 
       {/* Chart Container */}
       <div className="flex h-full items-center justify-start ml-[-16px]">
-        <div className="h-[90%] w-full">
+        <div className="h-[80%] w-[90%]">
           <ResponsiveContainer width="100%" height="100%">
-  <LineChart
-    data={data[selectedOption]}
-    margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
-  >
-    <XAxis
-      dataKey="name"
-      axisLine={false}
-      tickLine={false}
-      tick={{ fontSize: 12, fill: "#6B7280" }}
-    />
-    <YAxis
-      domain={[0, getYAxisMax()]}
-      axisLine={false}
-      tickLine={false}
-      tick={{ fontSize: 12, fill: "#6B7280" }}
-    />
-    <Tooltip content={<CustomTooltip />} />
-    <Line
-      dataKey="work"
-      stroke="#10B981"
-      strokeWidth={3}
-      dot={{ fill: "#10B981", strokeWidth: 2, r: 4 }}
-      activeDot={{ r: 6, fill: "#10B981" }}
-    />
-    <Line
-      dataKey="break"
-      stroke="#EF4444"
-      strokeWidth={3}
-      dot={{ fill: "#EF4444", strokeWidth: 2, r: 4 }}
-      activeDot={{ r: 6, fill: "#EF4444" }}
-    />
-  </LineChart>
-</ResponsiveContainer>
-
+            <LineChart
+              data={data[selectedOption]}
+              margin={{ top: 10, right: 20, left: 10, bottom: 0 }}
+            >
+              <XAxis
+                dataKey="name"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: "#6B7280" }}
+              />
+              <YAxis
+                domain={[0, getYAxisMax()]}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12, fill: "#6B7280" }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Line
+                dataKey="work"
+                stroke="#10B981"
+                strokeWidth={3}
+                dot={{ fill: "#10B981", strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, fill: "#10B981" }}
+              />
+              <Line
+                dataKey="break"
+                stroke="#EF4444"
+                strokeWidth={3}
+                dot={{ fill: "#EF4444", strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, fill: "#EF4444" }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
@@ -156,3 +164,4 @@ const WorkBreakComposition = () => {
 };
 
 export default WorkBreakComposition;
+
