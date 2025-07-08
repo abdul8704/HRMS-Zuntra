@@ -3,7 +3,7 @@ import { Sidebar } from '../components/Sidebar'
 import { Navbar } from '../components/Navbar'
 import { TimeCard } from '../components/dashboard/TimeCard'
 import { AttendanceCalendar } from '../components/attendance/AttendanceCalendar'
-import WorkBreakComposition from '../components/dashboard/WorkBreakComposititon'
+import { WorkBreakComposition } from '../components/dashboard/WorkBreakComposititon'
 export const Attendance = () => {
     return (
         <>
