@@ -8,7 +8,7 @@ import {
   Tooltip,
 } from "recharts";
 
-const WorkBreakComposition = () => {
+export const WorkBreakComposition = () => {
   const [selectedOption, setSelectedOption] = useState("this-week");
   const [showFilters, setShowFilters] = useState(false);
 
@@ -74,43 +74,43 @@ const WorkBreakComposition = () => {
   ];
 
   return (
-    <div className="w-full h-full relative overflow-hidden bg-purple-200 rounded-xl">
-      {/* Filter Icon */}
-      <button
-        onClick={() => setShowFilters(!showFilters)}
-        className="absolute top-0 right-0 m-2 p-2 rounded-full transition-transform duration-200 transform hover:scale-110 focus:outline-none"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="25"
-          height="20"
-          fill="none"
-          viewBox="0 0 20 20"
+    <>
+      <div className="w-full h-full relative overflow-hidden bg-purple-200 rounded-xl">
+        {/* Filter Icon */}
+        <button
+          onClick={() => setShowFilters(true)}
+          className="absolute top-0 right-0 m-2 p-2 rounded-full transition-transform duration-200 transform hover:scale-110 focus:outline-none z-20"
         >
-          <path
-            fill="#000"
-            d="M20 16.606a.75.75 0 0 1-.75.75h-5.1a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h7.74a2.93 2.93 0 0 1 5.66 0h5.1a.75.75 0 0 1 .75.75Zm0-13.21a.75.75 0 0 1-.75.75H16.8a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h10.39a2.93 2.93 0 0 1 5.66 0h2.45a.74.74 0 0 1 .75.75Zm0 6.6a.741.741 0 0 1-.75.75H7.55a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h1.14a2.93 2.93 0 0 1 5.66 0h11.7a.75.75 0 0 1 .75.75Z"
-          />
-        </svg>
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="25"
+            height="20"
+            fill="none"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill="#000"
+              d="M20 16.606a.75.75 0 0 1-.75.75h-5.1a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h7.74a2.93 2.93 0 0 1 5.66 0h5.1a.75.75 0 0 1 .75.75Zm0-13.21a.75.75 0 0 1-.75.75H16.8a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h10.39a2.93 2.93 0 0 1 5.66 0h2.45a.74.74 0 0 1 .75.75Zm0 6.6a.741.741 0 0 1-.75.75H7.55a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h1.14a2.93 2.93 0 0 1 5.66 0h11.7a.75.75 0 0 1 .75.75Z"
+            />
+          </svg>
+        </button>
 
-      {/* Chart Container */}
-      <div className="flex h-full items-center justify-start ml-[-16px]">
-        <div className="h-[80%] w-[90%]">
-          <ResponsiveContainer width="100%" height="100%">
+        {/* Chart */}
+        <div className="flex h-full items-center justify-center">
+          <ResponsiveContainer width="90%" height="90%">
             <LineChart
               data={data[selectedOption]}
-              margin={{ top: 10, right: 20, left: 10, bottom: 0 }}
+              margin={{ top: 10, right: 10, bottom: 10, left: 5 }}
             >
               <XAxis
                 dataKey="name"
-                axisLine={false}
+                axisLine={true}
                 tickLine={false}
                 tick={{ fontSize: 12, fill: "#6B7280" }}
               />
               <YAxis
                 domain={[0, getYAxisMax()]}
-                axisLine={false}
+                axisLine={true}
                 tickLine={false}
                 tick={{ fontSize: 12, fill: "#6B7280" }}
               />
@@ -132,36 +132,48 @@ const WorkBreakComposition = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
-      </div>
 
-      {/* Transparent Dropdown (Overlaid) */}
-      {showFilters && (
-        <div className="absolute top-12 right-4 w-36 bg-white/10 backdrop-blur-sm rounded-xl shadow-md z-50">
-          <div className="p-3 max-h-48 overflow-y-auto">
-            <div className="space-y-2">
-              {filterOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => {
-                    setSelectedOption(option.value);
-                    setShowFilters(false);
-                  }}
-                  className={`w-full text-left p-2 text-sm rounded-lg transition-all duration-200 ${
-                    selectedOption === option.value
-                      ? "bg-purple-100 border border-purple-300 text-purple-800"
-                      : "bg-gray-20 hover:bg-gray-50 border border-transparent text-gray-700"
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
+        {/* Sidebar Overlay */}
+        <div
+          className={`absolute top-0 right-0 h-full w-48 rounded-l-xl backdrop-blur-md bg-white/30 border-l border-white/40 shadow-lg transition-transform duration-300 z-30 ${
+            showFilters ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          <div className="p-4 border-b border-white/30 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-gray-800">Filter</h2>
+            <button
+              onClick={() => setShowFilters(false)}
+              className="text-gray-600 hover:text-gray-900 text-sm"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="p-4 space-y-2">
+            {filterOptions.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => {
+                  setSelectedOption(option.value);
+                  setShowFilters(false);
+                }}
+                className={`w-full text-left p-2 text-sm rounded-lg transition-all duration-200 ${
+                  selectedOption === option.value
+                    ? "bg-purple-100 border border-purple-300 text-purple-800"
+                    : "hover:bg-white/50 border border-transparent text-gray-700"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
           </div>
         </div>
-      )}
-    </div>
+      </div>
+
+      <style>{`
+        .recharts-surface:focus {
+          outline: none;
+        }
+      `}</style>
+    </>
   );
 };
-
-export default WorkBreakComposition;
-

@@ -6,7 +6,7 @@ import { ProjectDeadline } from '../components/projectManagement/ProjectDeadline
 import { ReminderCard } from '../components/dashboard/ReminderCard';
 import { NotificationCard } from '../components/dashboard/NotificationCard';
 import { TimeCard } from '../components/dashboard/TimeCard';
-import WorkBreakComposition from '../components/dashboard/WorkBreakComposititon';
+import { WorkBreakComposition } from '../components/dashboard/WorkBreakComposititon';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
