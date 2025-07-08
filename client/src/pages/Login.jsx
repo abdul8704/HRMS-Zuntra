@@ -509,7 +509,7 @@ export const Login = () => {
                           </div>
                         )}
                       </div>
-                      <button type="submit" className="login-button">{otpPhase ? "Submit" : "Sign Up"}</button>
+                      <button type="submit" className="login-button" style={{marginTop: '1rem'}}>{otpPhase ? "Submit" : "Sign Up"}</button>
                     </form>
                     {renderGoogleButton()}
                   </>
@@ -642,7 +642,7 @@ export const Login = () => {
                         </>
                       )}
                     </div>
-                    <button type="submit" className="login-button">
+                    <button type="submit" className="login-button" style={{marginTop: '1rem'}}>
                       {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
                     </button>
                     <div className="back-login-container">
