@@ -39,15 +39,15 @@ const roleProfiles = [
 const fetchUsersOfRole = async (roleId) => {
   const response = await api.get(`api/employee/role/${roleId}`);
   return response.data.employees;
-}
+};
 
 export const EmployeeDetails = ({ type }) => {
-  console.log(type)
+  console.log(type);
   const { roleId, navId } = useParams();
-  console.log(roleId, navId)
-  const [roleProfiles, setRolesProfiles] = useState([])
-  
-  if(type === "role"){
+  console.log(roleId, navId);
+  const [roleProfiles, setRolesProfiles] = useState([]);
+
+  if (type === "role") {
     useEffect(() => {
       try {
         const fetchData = async () => {
@@ -57,15 +57,13 @@ export const EmployeeDetails = ({ type }) => {
           }
           const data = await fetchUsersOfRole(roleId);
           setRolesProfiles(data);
-        }
+        };
         fetchData();
-      }
-      catch (error) {
+      } catch (error) {
         console.log("Error fetching role profiles:", error);
       }
     }, [roleId]);
   }
-
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -76,16 +74,14 @@ export const EmployeeDetails = ({ type }) => {
           <>
             <Navbar type="employeeDetails" showFilter={false} />
 
-
             {navId === "attendance" && (
-              <EmployeeDetailsAssignment />
+              <>
+                <EmployeeDetailsAssignment />
+                {/* <AttendanceCard /> */}
+              </>
             )}
-            {navId === "project" && (
-              <p>PROJECT</p>
-            )}
-            {navId === "courses" && (
-              <p>Courses</p>
-            )}
+            {navId === "project" && <p>PROJECT</p>}
+            {navId === "courses" && <p>Courses</p>}
           </>
         )}
 
@@ -105,9 +101,6 @@ export const EmployeeDetails = ({ type }) => {
             </div>
           </div>
         )}
-
-
-
       </div>
     </div>
   );
