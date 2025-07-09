@@ -3,7 +3,7 @@ class ApiError extends Error {
         super(message);
         this.statusCode = statusCode;
         if (details) this.details = details;
-
+        console.log("Api Error", message, statusCode, details);
         Error.captureStackTrace(this, this.constructor);
     }
 }
