@@ -45,6 +45,9 @@ const addNewCampusLocation = async (
         await newLocation.save();
         return newLocation;
     } catch (error) {
+        if(error instanceof ApiError)
+            throw error
+
         throw new ApiError(
             500,
             "Failed to add new campus location",
