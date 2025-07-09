@@ -5,17 +5,10 @@ import { DescriptionSection } from "../components/upskill/DescriptionSection";
 import { AssignmentsSection } from "../components/upskill/AssignmentsSection";
 import { courseData } from "../data/courseData";
 
-<<<<<<< HEAD:client/src/pages/HrUpskillSideBar.jsx
-export const HrUpskillSideBar = () => {
-  const [selectedModuleIndex, setSelectedModuleIndex] = useState(0);
-  const [selectedSubmoduleIndex, setSelectedSubmoduleIndex] = useState(0);
-
-  const selectedSubmodule =
-    courseData.modules[selectedModuleIndex]?.submodules[selectedSubmoduleIndex];
-
-=======
 export const CourseLearn = () => {
->>>>>>> 9e24787d3a218a8ca95c595ad5b8380f61efdb49:client/src/pages/CourseLearn.jsx
+  const [selectedModuleIndex, setSelectedModuleIndex] = useState(null);
+  const [selectedSubmoduleIndex, setSelectedSubmoduleIndex] = useState(null);
+
   const progressMatrix = [
     [1, 1, 1],
     [1, 0, 1],
@@ -27,6 +20,11 @@ export const CourseLearn = () => {
     submodules: mod.submodules.map((sub) => sub.submoduleTitle),
   }));
 
+  const selectedSubmodule =
+    selectedModuleIndex !== null && selectedSubmoduleIndex !== null
+      ? courseData.modules[selectedModuleIndex]?.submodules[selectedSubmoduleIndex]
+      : null;
+
   return (
     <div className="flex flex-col md:flex-row overflow-x-hidden min-h-screen">
       {/* Sidebar */}
@@ -34,6 +32,7 @@ export const CourseLearn = () => {
         modules={formattedModules}
         progressMatrix={progressMatrix}
         onSubmoduleClick={(modIdx, subIdx) => {
+          console.log("Clicked submodule:", modIdx, subIdx); // Debug
           setSelectedModuleIndex(modIdx);
           setSelectedSubmoduleIndex(subIdx);
         }}
@@ -48,9 +47,17 @@ export const CourseLearn = () => {
           {selectedSubmodule?.submoduleTitle || "Select a submodule"}
         </div>
 
-        <VideoPlayer videoUrl={selectedSubmodule?.video.videoUrl} />
-        <DescriptionSection description={selectedSubmodule?.description} />
-        <AssignmentsSection quiz={selectedSubmodule?.quiz} />
+        {selectedSubmodule ? (
+          <>
+            <VideoPlayer videoUrl={selectedSubmodule.video.videoUrl} />
+            <DescriptionSection description={selectedSubmodule.description} />
+            <AssignmentsSection quiz={selectedSubmodule.quiz} />
+          </>
+        ) : (
+          <div className="text-center text-gray-500 mt-20 text-lg">
+            📘 Please select a submodule from the sidebar to start learning.
+          </div>
+        )}
       </div>
     </div>
   );
