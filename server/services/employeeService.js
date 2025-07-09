@@ -2,7 +2,7 @@ const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
 const attendanceHelper = require("../utils/attendanceHelper.js");
-const asyncHandler = require("express-async-handler");
+const { insertMany } = require("../models/reminder.js");
 
 const getAttendanceDataByUserId = async (
     userid,
@@ -81,7 +81,7 @@ const getAttendanceDataByUserId = async (
     }
 };
 
-const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
+const markAttendanceOnLogin = async (userid, mode) => {
     const today = attendanceHelper.normalizeToUTCDate(new Date());
 
     try {
@@ -89,11 +89,22 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
             "shift",
             "startTime endTime"
         );
+        if (!shiftData) {
+            throw new ApiError(404, "User not found");
+        }
+        if (!shiftData.shift) {
+            throw new ApiError(400, "User does not have a shift assigned");
+        }
+
         const shiftStart = new Date(shiftData.shift.shiftStart);
         const shiftEnd = new Date(shiftData.shift.shiftEnd);
 
         const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart);
         const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
+
+        if (isNaN(shiftStartTime.getTime()) || isNaN(shiftEndTime.getTime())) {
+            throw new ApiError(500, "Invalid shift start/end time");
+        }
 
         const now = new Date();
 
@@ -171,18 +182,20 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
             message: "Attendance updated (subsequent login)",
         };
     } catch (error) {
-        console.log(error)
+        if(error instanceof ApiError)
+            throw error;
         throw new ApiError(
             500,
             "Failed to mark attendance on login",
             error.message
         );
     }
-});
+};
 
 const markEndOfSession = async (userid, logoutTime) => {
+    const today = attendanceHelper.normalizeToUTCDate(new Date());
+
     try {
-        const today = attendanceHelper.normalizeToUTCDate(new Date());
         const attendance = await Attendance.findOne({ userid, date: today });
 
         if (!attendance) {
@@ -194,32 +207,51 @@ const markEndOfSession = async (userid, logoutTime) => {
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
 
-        if (lastSession && !lastSession.logoutTime) {
-            const logout = new Date(logoutTime);
-            lastSession.logoutTime = logout;
-
-            const login = new Date(lastSession.loginTime);
-
-            const sessionDurationMs = logout - login;
-            const sessionDurationMinutes = sessionDurationMs / (1000 * 60); // convert ms to minutes
-
-            attendance.workingMinutes += sessionDurationMinutes;
-
-            await attendance.save();
-
+        if (!lastSession) {
             return {
-                success: true,
-                message: "Logout recorded and working minutes updated",
-                sessionDurationMinutes: Math.round(sessionDurationMinutes),
-                totalWorkingMinutes: Math.round(attendance.workingMinutes),
+                success: false,
+                message: "No sessions found for today",
             };
         }
 
+        if (lastSession.logoutTime) {
+            return {
+                success: false,
+                message: "Session already logged out",
+            };
+        }
+
+        const logout = new Date(logoutTime);
+        if (isNaN(logout.getTime())) {
+            throw new ApiError(400, "Invalid 'logoutTime' format");
+        }
+
+        const login = new Date(lastSession.loginTime);
+
+        if (logout < login) {
+            return {
+                success: false,
+                message: "Logout time cannot be before login time",
+            };
+        }
+
+        const sessionDurationMs = logout - login;
+        const sessionDurationMinutes = sessionDurationMs / (1000 * 60);
+
+        lastSession.logoutTime = logout;
+        attendance.workingMinutes += sessionDurationMinutes;
+
+        await attendance.save();
+
         return {
-            success: false,
-            message: "No active session to log out from",
+            success: true,
+            message: "Logout recorded and working minutes updated",
+            sessionDurationMinutes: Math.round(sessionDurationMinutes),
+            totalWorkingMinutes: Math.round(attendance.workingMinutes),
         };
     } catch (error) {
+        if (error instanceof ApiError) 
+            throw error;
         throw new ApiError(500, "Failed to mark end of session", error.message);
     }
 };
@@ -245,43 +277,36 @@ const getAllEmployees = async () => {
 
 // @desc Get details of a user
 const getDetailsOfaEmployee = async (userid) => {
-    try {
+    try{
         if (!userid) {
             throw new ApiError(400, "Employee ID is required");
         }
-
-        const userCreds = await User.findById(userid, {passwordHash : 0})
+    
+        const userCreds = await User.findById(userid, { passwordHash: 0 })
             .populate("role", "role")
             .populate("shift", "startTime endTime")
             .populate("campus", "campusName");
-
+    
         if (!userCreds) {
             throw new ApiError(404, "Employee not found");
         }
-
+    
         return userCreds;
-    } catch (error) {
-        throw new ApiError(500, `Failed to fetch user details: ${error.message}`);
+    }
+    catch(error){
+        if(error instanceof ApiError)
+            throw error;
+        throw new ApiError(500, "Error while fetching details of a user", error.message);
     }
 };
-
 
 const getEmployeeByRole = async (roleId) => {
-    try {
-        const userData = await User.find({ role: roleId }).populate(
-            "role",
-            "role color baseSalary"
-        );
-        return userData;
-    } catch (error) {
-        throw new ApiError(
-            500,
-            "Failed to fetch users by role: ",
-            error.message
-        );
-    }
+    const userData = await User.find({ role: roleId }).populate(
+        "role",
+        "role color baseSalary"
+    );
+    return userData;
 };
-  
 
 module.exports = {
     getAttendanceDataByUserId,

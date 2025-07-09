@@ -114,7 +114,6 @@ export const Login = () => {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    console.log("hi");
     const errors = { email: '', password: '' };
     let valid = true;
 
@@ -162,8 +161,8 @@ export const Login = () => {
         (error) => console.error("Error getting location:", error)
       );
     } catch (err) {
-      if (err?.response?.status === 500) {
-        const msg = err.response.data?.data?.details;
+      if (err?.response?.status === 400) {
+        const msg = err.response.data?.data?.message;
         setPopupContent({
           type: 'error',
           title: 'Login Failed',

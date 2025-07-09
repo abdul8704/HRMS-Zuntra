@@ -52,8 +52,9 @@ const handleLogin = asyncHandler(async (req, res) => {
             message: "Login successful",
         });
     } 
-    else if (verifyLogin.message === "Wrong Password") 
+    else if (verifyLogin.message === "Wrong Password") {
         throw new ApiError(401, "Wrong Password");
+    }
 
     else if (verifyLogin.message === "User not found") 
         throw new ApiError(401, "User not found");
