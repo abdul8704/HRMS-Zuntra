@@ -4,6 +4,7 @@ import userIcon from "../assets/user-icon.jpg";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { PopupCard } from '../components/PopupCard';
+import { Loading } from "../components/Loading";
 
 export const Login = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -38,7 +39,8 @@ export const Login = () => {
   });
 
   const [profileImage, setProfileImage] = useState(null);
-  const [profileImageError, setProfileImageError] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const handleToggle = () => {
     setIsSignup(!isSignup);
@@ -130,7 +132,7 @@ export const Login = () => {
 
     setFormErrors(errors);
     if (!valid) return;
-
+    setLoading(true);
     try {
       const response = await api.post("/auth/login", loginData);
       if (response.status !== 200) {
@@ -151,12 +153,10 @@ export const Login = () => {
 
           if (res.status === 200) {
             console.log("Attendance Marked");
-            navigate("/dashboard");
           } else if (res.status === 206) {
-            setPopupContent({ type: 'info', title: 'Pending Approval', message: 'Your signup request is pending approval.' });
-            setShowPopup(true);
-            navigate("/");
+            console.log("Request Pending Approval");
           }
+          navigate("/dashboard");
         },
         (error) => console.error("Error getting location:", error)
       );
@@ -172,6 +172,9 @@ export const Login = () => {
       } else {
         console.log(err.response);
       }
+    }
+    finally{
+      setLoading(false);
     }
   };
 
@@ -207,7 +210,7 @@ export const Login = () => {
 
       setFormErrors(errors);
       if (!valid) return;
-
+      setLoading(true);
       try {
         const userExist = await api.post("/auth/check", { email });
         if (userExist.data.exists) {
@@ -228,13 +231,17 @@ export const Login = () => {
       } catch (error) {
         setPopupContent({ type: 'error', title: 'Signup Failed', message: 'Something went wrong' });
         setShowPopup(true);
+      }finally{
+        setLoading(false);
       }
+      
     } else {
       if (!otp) {
         setFormErrors(prev => ({ ...prev, otp: "Please enter the OTP." }));
         return;
       }
-
+      
+      setLoading(true);
       try {
         const verifyOtp = await api.post("/auth/signup/verify-otp", { useremail: email, otp });
         if (verifyOtp.status === 200) {
@@ -263,6 +270,9 @@ export const Login = () => {
           setPopupContent({ type: 'error', title: 'Signup Failed', message: 'Something went wrong' });
           setShowPopup(true);
         }
+      }
+      finally{
+        setLoading(false);
       }
     }
   };
@@ -509,7 +519,7 @@ export const Login = () => {
                           </div>
                         )}
                       </div>
-                      <button type="submit" className="login-button" style={{marginTop: '1rem'}}>{otpPhase ? "Submit" : "Sign Up"}</button>
+                      <button type="submit" className="login-button" style={{ marginTop: '1rem' }}>{otpPhase ? "Submit" : "Sign Up"}</button>
                     </form>
                     {renderGoogleButton()}
                   </>
@@ -642,7 +652,7 @@ export const Login = () => {
                         </>
                       )}
                     </div>
-                    <button type="submit" className="login-button" style={{marginTop: '1rem'}}>
+                    <button type="submit" className="login-button" style={{ marginTop: '1rem' }}>
                       {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
                     </button>
                     <div className="back-login-container">
