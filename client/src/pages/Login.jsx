@@ -114,6 +114,7 @@ export const Login = () => {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    console.log("hi");
     const errors = { email: '', password: '' };
     let valid = true;
 
@@ -161,19 +162,19 @@ export const Login = () => {
         (error) => console.error("Error getting location:", error)
       );
     } catch (err) {
-      if (err?.response?.status === 401) {
-        const msg = err.response.data?.data?.message;
+      if (err?.response?.status === 500) {
+        const msg = err.response.data?.data?.details;
         setPopupContent({
           type: 'error',
           title: 'Login Failed',
-          message: msg === "Wrong Password" ? "Wrong Password!!" : "User not found!!"
+          message: msg === "Wrong Password" ? "Wrong Password!!" : "User not found with this email!!"
         });
         setShowPopup(true);
       } else {
         console.log(err.response);
       }
     }
-    finally{
+    finally {
       setLoading(false);
     }
   };
@@ -204,8 +205,6 @@ export const Login = () => {
         });
         setShowPopup(true);
         valid = false;
-      } else {
-        setProfileImageError(false);
       }
 
       setFormErrors(errors);
@@ -231,16 +230,16 @@ export const Login = () => {
       } catch (error) {
         setPopupContent({ type: 'error', title: 'Signup Failed', message: 'Something went wrong' });
         setShowPopup(true);
-      }finally{
+      } finally {
         setLoading(false);
       }
-      
+
     } else {
       if (!otp) {
         setFormErrors(prev => ({ ...prev, otp: "Please enter the OTP." }));
         return;
       }
-      
+
       setLoading(true);
       try {
         const verifyOtp = await api.post("/auth/signup/verify-otp", { useremail: email, otp });
@@ -271,7 +270,7 @@ export const Login = () => {
           setShowPopup(true);
         }
       }
-      finally{
+      finally {
         setLoading(false);
       }
     }
@@ -289,12 +288,13 @@ export const Login = () => {
       else if (!validateEmail(email)) { errors.email = "Enter a valid email."; valid = false; }
       setFormErrors(errors);
       if (!valid) return;
-
+      setLoading(true);
       try {
         const userExist = await api.post("/auth/check", { email });
         if (!userExist.data.exists) {
           setPopupContent({ type: 'error', title: 'Reset Failed', message: "We couldn't find a user with this email" });
           setShowPopup(true);
+          setLoading(false);
           return;
         }
 
@@ -311,12 +311,16 @@ export const Login = () => {
         setPopupContent({ type: 'error', title: 'Reset Failed', message: 'Something went wrong' });
         setShowPopup(true);
       }
+      finally{
+        setLoading(false);
+      }
     } else if (!otpVerified) {
       if (!otp) {
+        setLoading(false);
         setFormErrors(prev => ({ ...prev, otp: "Please enter the OTP." }));
         return;
       }
-
+      setLoading(true);
       try {
         const verifyOtp = await api.post("/auth/signup/verify-otp", { useremail: email, otp });
         if (verifyOtp.status === 200) {
@@ -333,6 +337,9 @@ export const Login = () => {
           setShowPopup(true);
         }
       }
+      finally{
+        setLoading(false);
+      }
     } else {
       if (!password) { errors.password = "Password is required."; valid = false; }
       if (!confirmPassword || confirmPassword !== password) {
@@ -342,7 +349,7 @@ export const Login = () => {
 
       setFormErrors(errors);
       if (!valid) return;
-
+      setLoading(true);
       try {
         const resetPass = await api.post("/auth/reset-password", { email, password });
         if (resetPass) {
@@ -356,6 +363,9 @@ export const Login = () => {
       } catch (error) {
         setPopupContent({ type: 'error', title: 'Reset Failed', message: 'Something went wrong' });
         setShowPopup(true);
+      }
+      finally{
+        setLoading(false);
       }
     }
   };
@@ -374,7 +384,6 @@ export const Login = () => {
     const file = e.target.files[0];
     if (file) {
       setProfileImage(file);
-      setProfileImageError(false);
     }
   };
 
@@ -519,14 +528,19 @@ export const Login = () => {
                           </div>
                         )}
                       </div>
-                      <button type="submit" className="login-button" style={{ marginTop: '1rem' }}>{otpPhase ? "Submit" : "Sign Up"}</button>
+                      {loading ? <button className={`login-button ${loading? 'cursor-disabled':''}`}><Loading useGif={true}/></button> :<button type="submit" className="login-button" style={{ marginTop: '1rem' }}>{otpPhase ? "Submit" : "Sign Up"}</button>}
                     </form>
                     {renderGoogleButton()}
                   </>
                 ) : (
                   <>
                     <h1 className="login-title">Login</h1>
-                    <form className="login-form" onSubmit={handleLoginSubmit}>
+                    <form className="login-form" onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!loading) {
+                        handleLoginSubmit(e);
+                      }
+                    }}>
                       <div className="login-input-container">
                         <div>
                           <input name="email" value={loginData.email} onChange={handleLoginChange} className="login-input" type="text" placeholder="Email" />
@@ -566,7 +580,8 @@ export const Login = () => {
                         {formErrors.password && <p className="login-error-text flex-[1]">{formErrors.password}</p>}
                         <label className="login-forgot" onClick={() => setShowReset(true)}>Forgot Password?</label>
                       </div>
-                      <button type="submit" className="login-button">Clock in</button>
+                      {loading ? <button className={`login-button ${loading? 'cursor-none':'cursor-pointer'}`} disabled={loading}><Loading useGif={true}/></button> :
+                        <button type="submit" className="login-button">Clock in</button>}
                     </form>
                     {renderGoogleButton()}
                   </>
@@ -861,7 +876,6 @@ export const Login = () => {
   padding-bottom: 0.5rem;
   border: none;
   border-radius: 1.8rem;
-  cursor: pointer;
   width: fit-content; /* Fits content with padding */
   width: clamp(120px, 8vw, 180px); /* Responsive minimum width */
   transition: background-color 0.3s;
