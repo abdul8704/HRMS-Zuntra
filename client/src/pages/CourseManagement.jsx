@@ -10,10 +10,30 @@ import { Navbar } from "../components/Navbar";
 import { Loading } from "../components/Loading";
 import api from "../api/axios";
 
-
 export const CourseManagement = () => {
   const { navId } = useParams();
   const navigate = useNavigate();
+
+  // Filter states
+  const [isFilterActive, setIsFilterActive] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showInstructorDropdown, setShowInstructorDropdown] = useState(false);
+  const [instructorSearchTerm, setInstructorSearchTerm] = useState("All Instructors");
+  const [selectedInstructor, setSelectedInstructor] = useState("All Instructors");
+  const [showCourseTypeDropdown, setShowCourseTypeDropdown] = useState(false);
+  const [selectedCourseType, setSelectedCourseType] = useState("All Types");
+
+  // Declare instructors array (you can replace this with API data later)
+  const instructors = [
+    "John Smith",
+    "Sarah Johnson", 
+    "Michael Chen",
+    "Emily Davis",
+    "Robert Wilson",
+    "Lisa Anderson"
+  ];
+
+  const courseTypes = ["Self Paced", "Scheduled Time"];
 
   const [courseInfo, setCourseInfo] = useState({
     courseName: "",
@@ -41,23 +61,40 @@ export const CourseManagement = () => {
   const [errorFields, setErrorFields] = useState([]);
   const [submitted, setSubmitted] = useState(false);
 
-    const [courses, setCourses] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [apiMessage, setApiMessage] = useState("");
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [apiMessage, setApiMessage] = useState("");
 
-   useEffect(() => {
-    const validTabs = ["all", "create", "add"];
+  const validTabs = ["all", "create", "add"];
+
+  useEffect(() => {
     if (!validTabs.includes(navId)) {
       navigate("/404");
       return;
     }
-  
-    if (navId === "create" || navId=== "add") return;
-  
+  }, [navId]);
+
+  useEffect(() => {
+    // Force component to acknowledge filter changes
+    console.log('Filter state changed:', {
+      searchTerm,
+      selectedInstructor,
+      selectedCourseType,
+      isFilterActive
+    });
+  }, [searchTerm, selectedInstructor, selectedCourseType, isFilterActive]);
+
+  useEffect(() => {
+    handleClearFilters();
+  }, [navId]);
+
+  useEffect(() => {
+    if (navId === "create" || navId === "add") return;
+
     const fetchCourses = async () => {
       setLoading(true);
       setApiMessage("");
-  
+
       try {
         const res = await api.get(`/api/course/`);
         console.log(res);
@@ -68,16 +105,80 @@ export const CourseManagement = () => {
           setCourses([]);
         }
       } catch (error) {
-        setApiMessage("Error fetching projects.");
+        setApiMessage("Error fetching courses.");
         setCourses([]);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchCourses();
-  
   }, [navId, navigate]);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.instructor-dropdown')) {
+        setShowInstructorDropdown(false);
+      }
+      if (!event.target.closest('.course-type-dropdown')) {
+        setShowCourseTypeDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const allInstructorsList = ["All Instructors", ...instructors];
+  const allCourseTypesList = ["All Types", ...courseTypes];
+
+  // Show all instructors when dropdown is opened or when search is empty
+  const filteredInstructors = instructorSearchTerm.trim() === "" || instructorSearchTerm === selectedInstructor
+    ? allInstructorsList
+    : allInstructorsList.filter((instructor) =>
+        instructor.toLowerCase().includes(instructorSearchTerm.toLowerCase())
+      );
+
+  // Filter courses based on all active filters
+  const filteredCourses = courses.filter((course) => {
+    // Search filter (course name, description, tags)
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      const matchesSearch =
+        course.courseName?.toLowerCase().includes(term) ||
+        course.courseDescription?.toLowerCase().includes(term) ||
+        course.tags?.toLowerCase().includes(term);
+      if (!matchesSearch) return false;
+    }
+
+    // Instructor filter
+    if (selectedInstructor !== "All Instructors" && course.instructor !== selectedInstructor) {
+      return false;
+    }
+
+    // Course type filter (you may need to adjust this based on your course data structure)
+    if (selectedCourseType !== "All Types") {
+      // Assuming you have a courseType field in your course data
+      // If not, you'll need to add this field to your course data
+      if (course.courseType !== selectedCourseType) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  // Clear all filters
+  const handleClearFilters = () => {
+    setSearchTerm("");
+    setSelectedInstructor("All Instructors");
+    setInstructorSearchTerm("All Instructors");
+    setSelectedCourseType("All Types");
+    setShowInstructorDropdown(false);
+    setShowCourseTypeDropdown(false);
+    setIsFilterActive(false);
+  };
 
   const handleModuleTitleChange = (moduleIndex, newTitle) => {
     const updatedModules = [...modules];
@@ -185,28 +286,166 @@ export const CourseManagement = () => {
     alert("✅ Course Submitted!");
     console.log({ courseInfo, modules });
   };
-  console.log(loading);
+
   const isError = (fieldId) => submitted && errorFields.includes(fieldId);
 
   return (
     <div className="flex h-screen overflow-hidden relative">
       <Sidebar />
       <div className="flex flex-col flex-grow p-[1rem] gap-[1rem]">
-        <Navbar type="courseManagement" showFilter={true} />
-        { loading && (<Loading/>) }
+        <Navbar 
+          type="courseManagement" 
+          showFilter={true} 
+          isFilterActive={isFilterActive} 
+          setIsFilterActive={setIsFilterActive} 
+          handleClearFilters={handleClearFilters}
+        />
+
+        {/* Filter Section */}
+        {isFilterActive && navId === "all" && (
+          <div className="w-full bg-[#BBD3CC] rounded-xl flex gap-[0.5rem] p-[0.5rem]">
+            {/* Search Input */}
+            <input
+              type="text"
+              placeholder="Search by course name, description, or tags"
+              className="bg-white/50 flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A6C4BA]"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+
+            {/* Instructor Dropdown */}
+            <div className="relative flex-1 instructor-dropdown">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search instructors..."
+                  className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg bg-white/50 focus:outline-none focus:ring-2 focus:ring-[#A6C4BA]"
+                  value={instructorSearchTerm}
+                  onChange={(e) => {
+                    setInstructorSearchTerm(e.target.value);
+                    setShowInstructorDropdown(true);
+                  }}
+                  onFocus={() => setShowInstructorDropdown(true)}
+                />
+                <button
+                  type="button"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-200 rounded"
+                  onClick={() => {
+                    setShowInstructorDropdown(!showInstructorDropdown);
+                    if (!showInstructorDropdown) {
+                      setInstructorSearchTerm("");
+                    }
+                  }}
+                >
+                  <svg className={`w-4 h-4 transition-transform ${showInstructorDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+              {showInstructorDropdown && (
+                <div className="absolute z-50 mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {filteredInstructors.length === 0 ? (
+                    <div className="px-3 py-2 text-gray-500">No instructors found</div>
+                  ) : (
+                    filteredInstructors.map((instructor, idx) => (
+                      <div
+                        key={idx}
+                        className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${
+                          selectedInstructor === instructor ? 'bg-[#BBD3CC]' : ''
+                        }`}
+                        onClick={() => {
+                          setSelectedInstructor(instructor);
+                          setInstructorSearchTerm(instructor);
+                          setShowInstructorDropdown(false);
+                        }}
+                      >
+                        {instructor}
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Course Type Dropdown */}
+            <div className="relative flex-1 course-type-dropdown">
+              <div
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white/50 cursor-pointer select-none focus:outline-none focus:ring-2 focus:ring-[#A6C4BA] flex items-center justify-between"
+                onClick={() => setShowCourseTypeDropdown((prev) => !prev)}
+              >
+                <span>{selectedCourseType}</span>
+                <svg className={`w-4 h-4 transition-transform ${showCourseTypeDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+              {showCourseTypeDropdown && (
+                <div className="absolute z-50 mt-1 w-full bg-white border rounded-lg shadow-lg">
+                  {allCourseTypesList.map((type) => (
+                    <div
+                      key={type}
+                      className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${
+                        selectedCourseType === type ? 'bg-[#BBD3CC]' : ''
+                      }`}
+                      onClick={() => {
+                        setSelectedCourseType(type);
+                        setShowCourseTypeDropdown(false);
+                      }}
+                    >
+                      {type}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Clear Filters Button */}
+            <button
+              onClick={handleClearFilters}
+              className="px-4 py-2 bg-white/70 text-gray-700 rounded-lg hover:bg-white/90 transition-colors flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Clear
+            </button>
+          </div>
+        )}
+
+        {/* Filter Summary */}
+        {isFilterActive && navId === "all" && (
+          <div className="px-[1rem] flex items-center justify-between text-sm text-gray-600">
+            <div>
+              Showing {filteredCourses.length} of {courses.length} courses
+            </div>
+            <div className="flex gap-2">
+              {searchTerm && <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">Search: "{searchTerm}"</span>}
+              {selectedInstructor !== "All Instructors" && <span className="px-2 py-1 bg-green-100 text-green-800 rounded">Instructor: {selectedInstructor}</span>}
+              {selectedCourseType !== "All Types" && <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded">Type: {selectedCourseType}</span>}
+            </div>
+          </div>
+        )}
+
+        {loading && <Loading />}
+        
         {!loading && navId === "all" && (
           <div className="flex-grow overflow-y-auto">
             <div className="flex flex-wrap justify-center gap-[1rem] px-[1rem]">
-              {courses.map((course, index) => (
-                <div
-                  key={index}
-                  onClick={() => navigate(`/course/${index}/intro`)}
-                  className="cursor-pointer"
-                  style={{ display: "contents" }} // ensures no layout shift
-                >
-                  <CourseCard key={index} {...course} />
-                </div>
-              ))}
+              {filteredCourses.length === 0 ? (
+                <p className="text-center col-span-full mt-4 text-gray-500 font-medium">
+                  {courses.length === 0 ? "No courses available" : "No courses match the current filters"}
+                </p>
+              ) : (
+                filteredCourses.map((course, index) => (
+                  <div
+                    key={index}
+                    onClick={() => navigate(`/course/${index}/intro`)}
+                    className="cursor-pointer"
+                    style={{ display: "contents" }}
+                  >
+                    <CourseCard key={index} {...course} />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}
