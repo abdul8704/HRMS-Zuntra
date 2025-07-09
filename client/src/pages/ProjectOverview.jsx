@@ -5,7 +5,7 @@ import HRManagement from '../components/HRmanagement';
 import PercentageStatus from '../components/PercentageStatus';
 import ReviewMeeting from '../components/ReviewMeeting';
 import ProgressStatus from '../components/ProgressStatus';
-
+import TeamDetails from '../components/TeamDetails';
 
 
 export const ProjectOverview = () => {
@@ -53,14 +53,14 @@ export const ProjectOverview = () => {
 
 
                     {/* 5. Progress */}
-                    <div className="row-start-6 row-end-[10] col-start-6 col-end-10">
+                    <div className="row-start-7 row-end-9 col-start-6 col-end-10">
 
                         <ProgressStatus />
                     </div>
 
                     {/* 6. Team Details */}
-                    <div className="row-start-4 row-end-9 col-start-1 col-end-6 bg-[#ADC0DA] rounded-xl flex justify-center items-center">
-                        <p className="text-lg font-medium">Team Details</p>
+                    <div className="row-start-4 row-end-9 col-start-1 col-end-6">
+                        <TeamDetails />
                     </div>
                 </div>
             </div>
