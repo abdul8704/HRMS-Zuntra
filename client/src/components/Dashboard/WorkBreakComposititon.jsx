@@ -23,7 +23,7 @@ export const WorkBreakComposition = () => {
       { name: "SAT", work: 10, break: 0 },
     ],
     "this-month": [
-      { name: "Week 1", work: 25, break: 15 },
+      { name: "Week 1", work: 75, break: 15 },
       { name: "Week 2", work: 30, break: 10 },
       { name: "Week 3", work: 28, break: 12 },
       { name: "Week 4", work: 32, break: 8 },
@@ -75,44 +75,58 @@ export const WorkBreakComposition = () => {
 
   return (
     <>
-      <div className="w-full h-full relative overflow-hidden bg-purple-200 rounded-xl">
-        {/* Filter Icon */}
-        <button
-          onClick={() => setShowFilters(true)}
-          className="absolute top-0 right-0 m-2 p-2 rounded-full transition-transform duration-200 transform hover:scale-110 focus:outline-none z-20"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="25"
-            height="20"
-            fill="none"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill="#000"
-              d="M20 16.606a.75.75 0 0 1-.75.75h-5.1a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h7.74a2.93 2.93 0 0 1 5.66 0h5.1a.75.75 0 0 1 .75.75Zm0-13.21a.75.75 0 0 1-.75.75H16.8a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h10.39a2.93 2.93 0 0 1 5.66 0h2.45a.74.74 0 0 1 .75.75Zm0 6.6a.741.741 0 0 1-.75.75H7.55a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h1.14a2.93 2.93 0 0 1 5.66 0h11.7a.75.75 0 0 1 .75.75Z"
-            />
-          </svg>
-        </button>
+    <div className="w-full h-full rounded-2xl flex flex-col text-[clamp(0.7rem,1.2vw,1rem)] p-[clamp(0.5rem,1vw,1rem)] bg-purple-200">
+  {/* Header */}
+  <div className="flex items-center justify-between font-semibold text-[1.1rem] mb-2">
+    <span className="font-semibold text-gray-800 text-[clamp(0.9rem,1.5vw,0.3rem)]">
+      Work Break Composition
+    </span>
+
+    {/* Filter Icon */}
+    <button
+      onClick={() => setShowFilters(true)}
+      className="cursor-pointer p-1 hover:scale-110 transition-transform duration-200"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="10"
+        height="10"
+        fill="none"
+        viewBox="0 0 24 24"
+        className="w-4 h-4"
+      >
+        <path
+          fill="#000"
+          d="M20 16.606a.75.75 0 0 1-.75.75h-5.1a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h7.74a2.93 2.93 0 0 1 5.66 0h5.1a.75.75 0 0 1 .75.75Zm0-13.21a.75.75 0 0 1-.75.75H16.8a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h10.39a2.93 2.93 0 0 1 5.66 0h2.45a.74.74 0 0 1 .75.75Zm0 6.6a.741.741 0 0 1-.75.75H7.55a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h1.14a2.93 2.93 0 0 1 5.66 0h11.7a.75.75 0 0 1 .75.75Z"
+        />
+      </svg>
+    </button>
+  </div>
+
+  {/* Chart content goes here */}
+
+
+  {/* Your chart or content goes here */}
+
 
         {/* Chart */}
-        <div className="flex h-full items-center justify-center">
+        <div className="flex w-full  h-full items-center justify-center">
           <ResponsiveContainer width="90%" height="90%">
             <LineChart
               data={data[selectedOption]}
-              margin={{ top: 10, right: 10, bottom: 10, left: 5 }}
+              margin={{ top: 0, right: 20, bottom: 0, left: -30 }}
             >
               <XAxis
                 dataKey="name"
                 axisLine={true}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: "#6B7280" }}
+                tick={{ fontSize: 12, fill: "#6B7280",  dy: 8}}
               />
               <YAxis
                 domain={[0, getYAxisMax()]}
                 axisLine={true}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: "#6B7280" }}
+                tick={{ fontSize: 12, fill: "#6B7280",dx: -10 }}
               />
               <Tooltip content={<CustomTooltip />} />
               <Line
