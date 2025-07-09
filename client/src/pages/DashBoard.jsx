@@ -10,7 +10,8 @@ import { WorkBreakComposition } from '../components/dashboard/WorkBreakCompositi
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
-  const userDetails = jwtDecode(token); // Make sure token contains name & profileImageURL
+  const userDetails = jwtDecode(token);
+  console.log("hello",userDetails);
   const [showReminderForm, setShowReminderForm] = useState(false);
   const [reminderText, setReminderText] = useState('');
   const [reminderDate, setReminderDate] = useState('');
