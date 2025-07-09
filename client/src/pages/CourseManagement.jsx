@@ -10,6 +10,7 @@ import { Navbar } from "../components/Navbar";
 import { Loading } from "../components/Loading";
 import api from "../api/axios";
 
+
 export const CourseManagement = () => {
   const { navId } = useParams();
   const navigate = useNavigate();
