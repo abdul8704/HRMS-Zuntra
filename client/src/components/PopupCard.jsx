@@ -14,10 +14,10 @@ export const PopupCard = ({
 
   const defaultColors = {
     success: '#b4edb2',
-    info: '#5aabe8',
+    info: '#c1e3f5',
     warning: '#fcc190',
     error: '#f5a19f',
-    notification: '#f1f5bc'
+    notification: '#fafca7'
   };
 
   const resolvedColor = color || defaultColors[type] || '#444';
