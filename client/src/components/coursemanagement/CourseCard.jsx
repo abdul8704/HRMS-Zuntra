@@ -1,8 +1,14 @@
 import React from "react";
+import {useEffect, useState } from "react";
 
-export const CourseCard = ({ courseImage, courseName, courseInstructor, deadline, rating =10 }) => {
-  console.log(courseImage, courseName, courseInstructor, deadline, rating);
-  const isSelfPaced = true
+export const CourseCard = ({ courseImage, courseName, courseInstructor, deadline, deadlineUnits, rating = 5 }) => {
+  // console.log(courseImage, courseName, courseInstructor, deadline, rating);
+  const [isSelfPaced, setIsSelfPaced] = useState(false);
+  useEffect(() => {
+    if (deadline === 0) {
+      setIsSelfPaced(true);
+    }
+  }, [deadline]);
   const badgeStyle = isSelfPaced
     ? "bg-[#08BD1D1F] text-[#2e7d32]"
     : "bg-[#BD080821] text-[#d35400]";
@@ -30,7 +36,7 @@ export const CourseCard = ({ courseImage, courseName, courseInstructor, deadline
           <span
             className={`rounded-xl font-medium whitespace-nowrap px-2 py-1 text-[clamp(0.625rem,2.5vw,0.75rem)] ${badgeStyle}`}
           >
-            {deadline}
+            {deadline === 0 ? "At your own pace" : `in ${deadline} ${deadlineUnits}`}
           </span>
           <span className="flex items-center gap-1">
             <span className="font-bold text-[clamp(0.6875rem,2.5vw,0.8125rem)] text-black">
