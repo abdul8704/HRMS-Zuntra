@@ -227,7 +227,7 @@ const UpskillNavItems = [
     ),
     filter: true,
     role: "hr",
-    path: 'schedule',
+    path: 'hello',
   }
 ];
 
