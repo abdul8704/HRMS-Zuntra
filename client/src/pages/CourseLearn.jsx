@@ -32,7 +32,6 @@ export const CourseLearn = () => {
         modules={formattedModules}
         progressMatrix={progressMatrix}
         onSubmoduleClick={(modIdx, subIdx) => {
-          console.log("Clicked submodule:", modIdx, subIdx); // Debug
           setSelectedModuleIndex(modIdx);
           setSelectedSubmoduleIndex(subIdx);
         }}

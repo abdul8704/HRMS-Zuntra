@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
 import { ProjectCard } from "../components/projectManagement/ProjectCard";
-import { ProjectNavbar } from "../components/projectManagement/ProjectNavbar";
+import { Navbar } from "../components/Navbar";
 import { ProjectPopup } from "../components/projectManagement/ProjectPopup";
 import { Loading } from "../components/Loading";
 import api from "../api/axios";
@@ -14,38 +14,38 @@ export const HrProjectManagement = () => {
   const [loading, setLoading] = useState(true);
   const [apiMessage, setApiMessage] = useState("");
 
- useEffect(() => {
-  const validTabs = ["overview", "ongoing", "finished"];
-  if (!validTabs.includes(navId)) {
-    navigate("/404");
-    return;
-  }
-
-  if (navId === "overview") return;
-
-  const fetchProjects = async () => {
-    setLoading(true);
-    setApiMessage("");
-
-    try {
-      const res = await api.get(`/api/project/all/${navId}`);
-      if (res.data.success) {
-        setProjects(Array.isArray(res.data.data) ? res.data.data : []);
-      } else {
-        setApiMessage(res.data.message || "Something went wrong.");
-        setProjects([]);
-      }
-    } catch (error) {
-      setApiMessage("Error fetching projects.");
-      setProjects([]);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    const validTabs = ["overview", "ongoing", "finished"];
+    if (!validTabs.includes(navId)) {
+      navigate("/404");
+      return;
     }
-  };
 
-  fetchProjects();
+    if (navId === "overview") return;
 
-}, [navId, navigate]);
+    const fetchProjects = async () => {
+      setLoading(true);
+      setApiMessage("");
+
+      try {
+        const res = await api.get(`/api/project/all/${navId}`);
+        if (res.data.success) {
+          setProjects(Array.isArray(res.data.data) ? res.data.data : []);
+        } else {
+          setApiMessage(res.data.message || "Something went wrong.");
+          setProjects([]);
+        }
+      } catch (error) {
+        setApiMessage("Error fetching projects.");
+        setProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+
+  }, [navId, navigate]);
 
 
   return (
@@ -53,7 +53,10 @@ export const HrProjectManagement = () => {
       <div className="website-container flex">
         <Sidebar />
         <div className="website-module flex-grow">
-          <ProjectNavbar />
+          <Navbar
+            type="projectManagement"
+            role="hr"
+          />
 
           {navId === "overview" ? (
             <div

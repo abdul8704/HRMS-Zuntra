@@ -83,18 +83,23 @@ export const Loading = ({ useGif = false, variant = "pulse" }) => {
         .dots .dot-1,
         .dots .dot-2,
         .dots .dot-3 {
-          opacity: 0;
-          animation: dotFade 1.5s infinite;
+          display: inline-block;
+          animation: dotPulse 1.5s infinite;
         }
 
-        .dot-1 { animation-delay: 0.7s; }
-        .dot-2 { animation-delay: 1s; }
-        .dot-3 { animation-delay: 1.3s; }
+        .dot-1 { animation-delay: 0s; }
+        .dot-2 { animation-delay: 0.2s; }
+        .dot-3 { animation-delay: 0.4s; }
 
-        @keyframes dotFade {
-          0%, 20% { opacity: 0; }
-          40%, 80% { opacity: 1; }
-          100% { opacity: 0; }
+        @keyframes dotPulse {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.5;
+            transform: scale(1.2);
+          }
         }
       `}</style>
     </div>

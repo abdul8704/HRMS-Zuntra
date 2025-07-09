@@ -6,11 +6,14 @@ import { ProjectDeadline } from '../components/projectManagement/ProjectDeadline
 import { ReminderCard } from '../components/dashboard/ReminderCard';
 import { NotificationCard } from '../components/dashboard/NotificationCard';
 import { TimeCard } from '../components/dashboard/TimeCard';
-import WorkBreakComposition from '../components/dashboard/WorkBreakComposititon';
+import { WorkBreakComposition } from '../components/dashboard/WorkBreakComposititon';
+import { NewUser } from '../pages/NewUser';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
-  const userDetails = jwtDecode(token); // Make sure token contains name & profileImageURL
+  const userDetails = jwtDecode(token);
+  console.log("hello",userDetails);
+  if(!userDetails.role) return (<NewUser/>)
   const [showReminderForm, setShowReminderForm] = useState(false);
   const [reminderText, setReminderText] = useState('');
   const [reminderDate, setReminderDate] = useState('');

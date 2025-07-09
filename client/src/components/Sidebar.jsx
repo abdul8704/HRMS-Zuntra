@@ -48,7 +48,7 @@ const sidebarItems = [
   {
     role: "EMP",
     label: "Attendance",
-    path: "/attendance",
+    path: "/attendance/all",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="29" height="28" fill="none" viewBox="0 0 29 28">
         <g clipPath="url(#a)">
@@ -99,11 +99,9 @@ export const Sidebar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const currentPath = location.pathname;
-
-  // Check if device is mobile/tablet
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+      setIsMobile(window.innerWidth < 1024);
     };
 
     checkMobile();
@@ -112,7 +110,6 @@ export const Sidebar = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Close mobile menu when route changes
   useEffect(() => {
     if (isMobile) {
       setMobileMenuOpen(false);
