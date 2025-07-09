@@ -139,9 +139,9 @@ export const Login = () => {
       if (response.status !== 200) {
         setPopupContent({ type: 'error', title: 'Login Error', message: 'Something went wrong' });
         setShowPopup(true);
+        setLoading(false);
         return;
       }
-
       const token = response.data.accessToken;
       localStorage.setItem("accessToken", token);
 
@@ -292,7 +292,7 @@ export const Login = () => {
       try {
         const userExist = await api.post("/auth/check", { email });
         if (!userExist.data.exists) {
-          setPopupContent({ type: 'error', title: 'Reset Failed', message: "We couldn't find a user with this email" });
+          setPopupContent({ type: 'error', title: 'OTP not sent!', message: "We couldn't find a user with this email" });
           setShowPopup(true);
           setLoading(false);
           return;
@@ -311,7 +311,7 @@ export const Login = () => {
         setPopupContent({ type: 'error', title: 'Reset Failed', message: 'Something went wrong' });
         setShowPopup(true);
       }
-      finally{
+      finally {
         setLoading(false);
       }
     } else if (!otpVerified) {
@@ -337,7 +337,7 @@ export const Login = () => {
           setShowPopup(true);
         }
       }
-      finally{
+      finally {
         setLoading(false);
       }
     } else {
@@ -364,7 +364,7 @@ export const Login = () => {
         setPopupContent({ type: 'error', title: 'Reset Failed', message: 'Something went wrong' });
         setShowPopup(true);
       }
-      finally{
+      finally {
         setLoading(false);
       }
     }
@@ -528,7 +528,7 @@ export const Login = () => {
                           </div>
                         )}
                       </div>
-                      {loading ? <button className={`login-button ${loading? 'cursor-disabled':''}`}><Loading useGif={true}/></button> :<button type="submit" className="login-button" style={{ marginTop: '1rem' }}>{otpPhase ? "Submit" : "Sign Up"}</button>}
+                      {loading ? <button className={`login-button ${loading ? 'cursor-none' : 'cursor-pointer'}`}><Loading useGif={true} /></button> : <button type="submit" className="login-button" style={{ marginTop: '1rem' }}>{otpPhase ? "Submit" : "Sign Up"}</button>}
                     </form>
                     {renderGoogleButton()}
                   </>
@@ -580,7 +580,7 @@ export const Login = () => {
                         {formErrors.password && <p className="login-error-text flex-[1]">{formErrors.password}</p>}
                         <label className="login-forgot" onClick={() => setShowReset(true)}>Forgot Password?</label>
                       </div>
-                      {loading ? <button className={`login-button ${loading? 'cursor-none':'cursor-pointer'}`} disabled={loading}><Loading useGif={true}/></button> :
+                      {loading ? <button className={`login-button ${loading ? 'cursor-none' : 'cursor-pointer'}`} disabled={loading}><Loading useGif={true} /></button> :
                         <button type="submit" className="login-button">Clock in</button>}
                     </form>
                     {renderGoogleButton()}
@@ -667,9 +667,10 @@ export const Login = () => {
                         </>
                       )}
                     </div>
-                    <button type="submit" className="login-button" style={{ marginTop: '1rem' }}>
-                      {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
-                    </button>
+                    {loading ? <button className={`login-button ${loading ? 'cursor-none' : 'cursor-pointer'}`}><Loading useGif={true} /></button>
+                      : <button type="submit" className="login-button" style={{ marginTop: '1rem' }}>
+                        {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
+                      </button>}
                     <div className="back-login-container">
                       <label className="back-login" onClick={() => {
                         setShowReset(false);
