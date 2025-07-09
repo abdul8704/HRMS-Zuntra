@@ -199,7 +199,7 @@ export const Login = () => {
 
       if (valid && !profileImage) {
         setPopupContent({
-          type: 'error',
+          type: 'notification',
           title: 'Submission Denied',
           message: 'Please upload profile picture'
         });

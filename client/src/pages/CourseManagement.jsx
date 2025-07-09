@@ -290,7 +290,7 @@ export const CourseManagement = () => {
   const isError = (fieldId) => submitted && errorFields.includes(fieldId);
 
   return (
-    <div className="flex h-screen overflow-hidden relative">
+    <div className="flex h-screen relative">
       <Sidebar />
       <div className="flex flex-col flex-grow p-[1rem] gap-[1rem]">
         <Navbar 

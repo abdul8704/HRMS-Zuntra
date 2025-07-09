@@ -13,11 +13,11 @@ export const PopupCard = ({
   const [animate, setAnimate] = useState(false);
 
   const defaultColors = {
-    success: '#4CAF50',
-    info: '#2196F3',
-    warning: '#FF9800',
-    error: '#F44336',
-    notification: '#9C27B0'
+    success: '#b4edb2',
+    info: '#c1e3f5',
+    warning: '#fcc190',
+    error: '#f5a19f',
+    notification: '#fafca7'
   };
 
   const resolvedColor = color || defaultColors[type] || '#444';

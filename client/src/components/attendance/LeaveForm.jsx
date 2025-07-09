@@ -187,3 +187,4 @@ export const LeaveForm = ({ name, religion, role, handleClose }) => {
     </form>
   );
 };
+

@@ -4,6 +4,7 @@ import { Navbar } from '../components/Navbar'
 import { TimeCard } from '../components/dashboard/TimeCard'
 import { AttendanceCalendar } from '../components/attendance/AttendanceCalendar'
 import { WorkBreakComposition } from '../components/dashboard/WorkBreakComposititon'
+import { AttendanceCard } from '../components/attendance/AttendanceCard'
 export const Attendance = () => {
     return (
         <>
@@ -37,8 +38,8 @@ export const Attendance = () => {
                             <AttendanceCalendar />
                         </div>
                         {/* attendance log */}
-                        <div className="row-start-4 col-start-5 col-span-4 row-span-5 bg-[#BFBFF7] rounded-xl p-4">
-                            place for attendance log
+                        <div className="row-start-4 col-start-5 col-span-4 row-span-5 bg-[#0ff00] rounded-xl">
+                            <AttendanceCard />
                         </div>
 
 

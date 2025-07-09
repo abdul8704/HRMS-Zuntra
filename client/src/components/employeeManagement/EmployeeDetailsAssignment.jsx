@@ -29,7 +29,7 @@ export const EmployeeDetailsAssignment = () => {
 
       <div className="bg-black/20 col-start-6 col-end-10 row-start-1 row-end-7 rounded-lg ">
             {/* Attendance Calendar */}
-          <AttendanceCalendar />
+          <AttendanceCard />
       </div>
 
       <div className="bg-black/20 col-start-6 col-end-10 row-start-7 row-end-13 min-h-0 rounded-lg p-4">
@@ -42,10 +42,10 @@ export const EmployeeDetailsAssignment = () => {
         </div>
       </div> */}
 
-      <div className=" bg-[#FFFF00] col-start-1 col-end-6 row-start-5 row-end-13 rounded-lg p-4">
+      <div className=" bg-[#FFFF00] col-start-1 col-end-6 row-start-5 row-end-13 rounded-lg">
         {/* Attendance Report */}
         {/* <div className="h-full overflow-auto"> */}
-          <AttendanceCard />
+          <AttendanceCalendar/>
         {/* </div> */}
       </div>
     </div>

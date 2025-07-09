@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { Sidebar } from "../components/Sidebar";
-import { UpskillNavbar } from "../components/upskill/UpskillNavbar";
+import { Navbar } from "../components/Navbar";
 import { CourseCard } from "../components/coursemanagement/CourseCard";
 import { ChevronLeft, ChevronRight, Download, RefreshCw } from "lucide-react";
 
@@ -364,7 +364,7 @@ export const Upskill = () => {
         }}
       >
         <div className="navbar-fixed">
-          <UpskillNavbar />
+          <Navbar  type={"upskill"}/>
         </div>
 
         <div className="scrollable-content">
