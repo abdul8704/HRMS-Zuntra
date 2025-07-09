@@ -171,8 +171,7 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
             message: "Attendance updated (subsequent login)",
         };
     } catch (error) {
-        console.log(error.response.data)
-
+        console.log(error)
         throw new ApiError(
             500,
             "Failed to mark attendance on login",
