@@ -1,81 +1,69 @@
-import React, { useState } from 'react';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import React from 'react';
+import { Sidebar } from '../components/Sidebar';
+import { Navbar } from '../components/Navbar';
+import HRManagement from '../components/HRmanagement';
+import PercentageStatus from '../components/PercentageStatus';
+import ReviewMeeting from '../components/ReviewMeeting';
+import ProgressStatus from '../components/ProgressStatus';
 
-const data = [
-  { day: 'SUN', value: 0 },
-  { day: 'MON', value: 15 },
-  { day: 'TUE', value: 9 },
-  { day: 'WED', value: 10 },
-  { day: 'THU', value: 25 },
-  { day: 'FRI', value: 0 },
-  { day: 'SAT', value: 0 },
-];
 
-const ProgressStatus = () => {
-  const [selected, setSelected] = useState('WEEK');
-  const [open, setOpen] = useState(false);
 
-  const options = ['WEEK', 'MONTH'];
+export const ProjectOverview = () => {
+    return (
+        <div className="flex w-screen h-screen">
+            <Sidebar />
+            <div className="flex gap-[1rem] flex-col flex-1 p-[1rem] h-screen">
+                <Navbar type="employeeManagement" />
 
-  return (
-    <div className="w-full h-full bg-[#DDB3DD] rounded-xl p-4 flex flex-col justify-between relative">
-      {/* Header Row */}
-      <div className="flex justify-between items-center mb-2 relative">
-        <h2 className="text-[14px] font-semibold text-black">Progress</h2>
+                <div className="flex-1 bg-[#FFFFFF] grid grid-cols-8 grid-rows-8 gap-[1rem] overflow-hidden">
+                    {/* 1. HR Management */}
+                    <div className="col-span-5 row-span-3">
+                        <HRManagement />
+                    </div>
 
-        <div className="relative">
-          <button
-            onClick={() => setOpen(!open)}
-            className="text-xs bg-[#E9C6E9] px-3 py-[2px] rounded-md text-black"
-          >
-            {selected} ▼
-          </button>
+                    {/* 2. Percentage */}
+                    <div className="row-start-1 row-end-3 col-start-6 col-end-10">
+                        <PercentageStatus />
+                    </div>
 
-          {open && (
-            <div className="absolute right-0 mt-1 bg-white border rounded shadow-md z-10">
-              {options.map((option) => (
-                <div
-                  key={option}
-                  onClick={() => {
-                    setSelected(option);
-                    setOpen(false);
-                  }}
-                  className="px-4 py-1 text-sm text-black hover:bg-[#E9C6E9] cursor-pointer"
-                >
-                  {option}
+
+
+                    {/* 3. Project Deadline */}
+                    <div className="row-start-3 row-end-4 col-start-6 col-end-10 bg-[#F6E0BF] rounded-xl flex p-4 gap-[1rem] items-center">
+                        <div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" viewBox="0 0 40 40">
+                                <path
+                                    fill="#000"
+                                    fillRule="evenodd"
+                                    d="M21.55 5.396V0h-3.531v5.396h1.765c-4.448 0-8.713 1.8-11.859 5.004-3.145 3.204-4.912 7.55-4.912 12.082 0 4.531 1.767 8.877 4.912 12.081 3.145 3.205 7.411 5.005 11.859 5.005s8.713-1.8 11.858-5.005c3.146-3.204 4.912-7.55 4.912-12.081 0-4.532-1.766-8.878-4.912-12.082-3.145-3.204-7.41-5.004-11.858-5.004h1.765ZM2.495 11.164 10.44 3.07 7.944.527 0 8.62l2.496 2.544ZM29.128 3.07l7.944 8.094 2.496-2.544L31.624.527 29.128 3.07Zm-11.11 9.52v10.79h7.945v-3.597h-4.414V12.59h-3.53Z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        </div>
+                        <div className="flex-1 flex flex-col justify-center items-start">
+                            <div className="text-sm font-medium">Project Deadline: 20-10-2010</div>
+                            <div className="text-xs text-gray-700">10 Days Left to meet the deadline</div>
+                        </div>
+                    </div>
+
+                    {/* 4. Review Meeting */}
+                    <div className="row-start-4 row-end-7 col-start-6 col-end-10">
+                        <ReviewMeeting />
+                    </div>
+
+
+                    {/* 5. Progress */}
+                    <div className="row-start-6 row-end-[10] col-start-6 col-end-10">
+
+                        <ProgressStatus />
+                    </div>
+
+                    {/* 6. Team Details */}
+                    <div className="row-start-4 row-end-9 col-start-1 col-end-6 bg-[#ADC0DA] rounded-xl flex justify-center items-center">
+                        <p className="text-lg font-medium">Team Details</p>
+                    </div>
                 </div>
-              ))}
             </div>
-          )}
         </div>
-      </div>
-
-      {/* Line Chart */}
-      <div className="flex-1">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 10, right: 10, bottom: 0, left: -10 }}>
-            <XAxis dataKey="day" stroke="#000" tick={{ fontSize: 10 }} />
-            <YAxis stroke="#000" tick={{ fontSize: 10 }} />
-            <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="blue"
-              strokeWidth={2}
-              dot={{ r: 3, stroke: '#fff', strokeWidth: 2 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  );
+    );
 };
-
-export default ProgressStatus;
