@@ -39,7 +39,7 @@ export const ReviewMeeting = () => {
   };
 
   return (
-    <div className="w-80 bg-[#F2C3B9] rounded-xl p-4 shadow-lg">
+    <div className="w-full h-full overflow-hidden  bg-[#F2C3B9] rounded-xl p-4 shadow-lg">
       {/* Header with close button */}
       <div className="flex justify-between items-start mb-3">
         <h2 className="text-lg font-bold text-black">{current.title}</h2>
