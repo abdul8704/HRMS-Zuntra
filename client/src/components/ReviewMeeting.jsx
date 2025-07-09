@@ -22,7 +22,7 @@ const meetings = [
   },
 ];
 
-const ReviewMeeting = () => {
+export const ReviewMeeting = () => {
   const [index, setIndex] = useState(0);
   const current = meetings[index];
 
