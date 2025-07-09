@@ -57,9 +57,11 @@ const darkenColor = (hex, percent = 20) => {
 };
 
 export const RoleCard = ({ role, bgColor, onEdit }) => {
-  const handleEditClick = () => {
+  const handleEditClick = (e) => {
+    e.stopPropagation();
     onEdit({ role, color: bgColor });
   };
+
 
   const textRef = useRef(null);
   const cardRef = useRef(null);
@@ -136,7 +138,7 @@ export const RoleCard = ({ role, bgColor, onEdit }) => {
           )}
         </div>
 
-        <span className="cursor-pointer shrink-0" onClick={handleEditClick}>
+        <span className="cursor-pointer shrink-0 hover:scale-150 duration-150" onClick={handleEditClick}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="1rem"
