@@ -1,6 +1,5 @@
 const UserCreds = require("../models/userCredentials");
 const bcrypt = require("bcrypt");
-const asyncHandler = require("express-async-handler");
 const ApiError = require("../errors/ApiError");
 
 require("dotenv").config();
@@ -24,6 +23,7 @@ const verifyLogin = async (email, password) => {
 
         if (!verify) 
             throw new ApiError(400, "Wrong Password");
+        
         return {
             success: true,
             message: "credentials matched.",
@@ -35,6 +35,9 @@ const verifyLogin = async (email, password) => {
             },
         };
     } catch (err) {
+        if (err instanceof ApiError) 
+            throw err;
+        
         throw new ApiError(500, "Failed to verify login", err.message);
     }
 };
