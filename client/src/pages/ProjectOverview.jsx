@@ -53,7 +53,7 @@ export const ProjectOverview = () => {
 
 
                     {/* 5. Progress */}
-                    <div className="row-start-6 row-end-[10] col-start-6 col-end-10">
+                    <div className="row-start-7 row-end-9 col-start-6 col-end-10">
 
                         <ProgressStatus />
                     </div>
