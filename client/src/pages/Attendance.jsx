@@ -3,14 +3,14 @@ import { Sidebar } from '../components/Sidebar'
 import { Navbar } from '../components/Navbar'
 import { TimeCard } from '../components/dashboard/TimeCard'
 import { AttendanceCalendar } from '../components/attendance/AttendanceCalendar'
-import WorkBreakComposition from '../components/dashboard/WorkBreakComposititon'
+import { WorkBreakComposition } from '../components/dashboard/WorkBreakComposititon'
 export const Attendance = () => {
     return (
         <>
             <div className="flex w-screen h-screen">
                 <Sidebar />
                 <div className="flex gap-[1rem] flex-col flex-1 p-[1rem] h-screen">
-                    <Navbar type="employeeManagement" />
+                    <Navbar type="attendance" role="hr" />
                     <div className="flex-1 bg-[#FFFFFF] grid grid-cols-8 grid-rows-8 gap-[1rem] overflow-hidden">
                         {/* Time Card IN */}
                         <div className="row-start-1 col-start-1 col-span-2 row-span-1 bg-[#BFBFF7] rounded-xl">

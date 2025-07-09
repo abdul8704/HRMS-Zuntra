@@ -1,6 +1,8 @@
 import React from 'react';
 
-export const AssignmentsSection = () => {
+export const AssignmentsSection = ({ quiz }) => {
+  if (!quiz || !quiz.questions) return null;
+
   return (
     <div className="p-4">
       <h4 className="flex items-center text-lg font-bold mb-4">
@@ -8,48 +10,26 @@ export const AssignmentsSection = () => {
         Assignments
       </h4>
 
-      {/* Question 1 */}
-      <div className="bg-gray-300 p-4 mb-4 rounded-lg">
-        <p className="font-medium mb-2">1. Answer for question 1 is option b. Okay?</p>
-        <form>
-          <label className="block mb-1 text-sm">
-            <input type="radio" name="q1" className="mr-2" /> option 1
-          </label>
-          <label className="block mb-1 text-sm">
-            <input type="radio" name="q1" className="mr-2" /> option 2
-          </label>
-          <label className="block mb-1 text-sm">
-            <input type="radio" name="q1" className="mr-2" defaultChecked /> option 3
-          </label>
-          <label className="block mb-1 text-sm">
-            <input type="radio" name="q1" className="mr-2" /> option 4
-          </label>
-        </form>
-      </div>
+      {quiz.questions.map((q, idx) => (
+        <div key={idx} className="bg-gray-300 p-4 mb-4 rounded-lg">
+          <p className="font-medium mb-2">
+            {idx + 1}. {q.questionText}
+          </p>
+          <form>
+            {q.options.map((option, i) => (
+              <label key={i} className="block mb-1 text-sm">
+                <input type="radio" name={`q${idx}`} className="mr-2" />
+                {option}
+              </label>
+            ))}
+          </form>
+        </div>
+      ))}
 
-      {/* Question 2 */}
-      <div className="bg-gray-300 p-4 mb-4 rounded-lg">
-        <p className="font-medium mb-2">2. Answer for question 2 is option b. Okay?</p>
-        <form>
-          <label className="block mb-1 text-sm">
-            <input type="radio" name="q2" className="mr-2" defaultChecked /> option 1
-          </label>
-          <label className="block mb-1 text-sm">
-            <input type="radio" name="q2" className="mr-2" /> option 2
-          </label>
-          <label className="block mb-1 text-sm">
-            <input type="radio" name="q2" className="mr-2" /> option 3
-          </label>
-          <label className="block mb-1 text-sm">
-            <input type="radio" name="q2" className="mr-2" /> option 4
-          </label>
-        </form>
-      </div>
-
-      {/* Submit Button */}
       <button className="mt-4 px-6 py-2 border border-teal-600 rounded-full bg-white text-teal-600 font-medium hover:bg-teal-600 hover:text-white transition duration-300">
         Submit
       </button>
     </div>
   );
 };
+

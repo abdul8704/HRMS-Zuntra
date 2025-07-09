@@ -18,6 +18,7 @@ import { Attendance } from './pages/Attendance';
 import './App.css'
 import './index.css'
 import { NewUser } from './pages/NewUser';
+import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
 
 
 function App() {
@@ -39,7 +40,8 @@ function App() {
         <Route path="/projectoverview" element={<ProjectOverview />}></Route>
         <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
         <Route path="/project/:projectId/:navId" element={<HrProjectDetails/>}></Route>
-        <Route path="/attendance" element={<Attendance/>}></Route>
+        <Route path="/attendance/:navId" element={<Attendance/>}></Route>
+        <Route path="/attendance/" element={<HrPersonalAttendance/>}></Route>
         <Route path="/upskill/:navId" element={<Upskill/>}></Route>
         <Route path="/createcourse" element={<HrCreateCourse/>}></Route>
         <Route path="/newuser" element={<NewUser/>}></Route>

@@ -4,6 +4,7 @@ import userIcon from "../assets/user-icon.jpg";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { PopupCard } from '../components/PopupCard';
+import { Loading } from "../components/Loading";
 
 export const Login = () => {
   const [isSignup, setIsSignup] = useState(false);
@@ -38,7 +39,8 @@ export const Login = () => {
   });
 
   const [profileImage, setProfileImage] = useState(null);
-  const [profileImageError, setProfileImageError] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const handleToggle = () => {
     setIsSignup(!isSignup);
@@ -112,6 +114,7 @@ export const Login = () => {
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
+    console.log("hi");
     const errors = { email: '', password: '' };
     let valid = true;
 
@@ -130,15 +133,15 @@ export const Login = () => {
 
     setFormErrors(errors);
     if (!valid) return;
-
+    setLoading(true);
     try {
       const response = await api.post("/auth/login", loginData);
       if (response.status !== 200) {
         setPopupContent({ type: 'error', title: 'Login Error', message: 'Something went wrong' });
         setShowPopup(true);
+        setLoading(false);
         return;
       }
-
       const token = response.data.accessToken;
       localStorage.setItem("accessToken", token);
 
@@ -151,27 +154,28 @@ export const Login = () => {
 
           if (res.status === 200) {
             console.log("Attendance Marked");
-            navigate("/dashboard");
           } else if (res.status === 206) {
-            setPopupContent({ type: 'info', title: 'Pending Approval', message: 'Your signup request is pending approval.' });
-            setShowPopup(true);
-            navigate("/");
+            console.log("Request Pending Approval");
           }
+          navigate("/dashboard");
         },
         (error) => console.error("Error getting location:", error)
       );
     } catch (err) {
-      if (err?.response?.status === 401) {
-        const msg = err.response.data?.data?.message;
+      if (err?.response?.status === 500) {
+        const msg = err.response.data?.data?.details;
         setPopupContent({
           type: 'error',
           title: 'Login Failed',
-          message: msg === "Wrong Password" ? "Wrong Password!!" : "User not found!!"
+          message: msg === "Wrong Password" ? "Wrong Password!!" : "User not found with this email!!"
         });
         setShowPopup(true);
       } else {
         console.log(err.response);
       }
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -201,13 +205,11 @@ export const Login = () => {
         });
         setShowPopup(true);
         valid = false;
-      } else {
-        setProfileImageError(false);
       }
 
       setFormErrors(errors);
       if (!valid) return;
-
+      setLoading(true);
       try {
         const userExist = await api.post("/auth/check", { email });
         if (userExist.data.exists) {
@@ -228,13 +230,17 @@ export const Login = () => {
       } catch (error) {
         setPopupContent({ type: 'error', title: 'Signup Failed', message: 'Something went wrong' });
         setShowPopup(true);
+      } finally {
+        setLoading(false);
       }
+
     } else {
       if (!otp) {
         setFormErrors(prev => ({ ...prev, otp: "Please enter the OTP." }));
         return;
       }
 
+      setLoading(true);
       try {
         const verifyOtp = await api.post("/auth/signup/verify-otp", { useremail: email, otp });
         if (verifyOtp.status === 200) {
@@ -264,6 +270,9 @@ export const Login = () => {
           setShowPopup(true);
         }
       }
+      finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -279,12 +288,13 @@ export const Login = () => {
       else if (!validateEmail(email)) { errors.email = "Enter a valid email."; valid = false; }
       setFormErrors(errors);
       if (!valid) return;
-
+      setLoading(true);
       try {
         const userExist = await api.post("/auth/check", { email });
         if (!userExist.data.exists) {
-          setPopupContent({ type: 'error', title: 'Reset Failed', message: "We couldn't find a user with this email" });
+          setPopupContent({ type: 'error', title: 'OTP not sent!', message: "We couldn't find a user with this email" });
           setShowPopup(true);
+          setLoading(false);
           return;
         }
 
@@ -301,12 +311,16 @@ export const Login = () => {
         setPopupContent({ type: 'error', title: 'Reset Failed', message: 'Something went wrong' });
         setShowPopup(true);
       }
+      finally {
+        setLoading(false);
+      }
     } else if (!otpVerified) {
       if (!otp) {
+        setLoading(false);
         setFormErrors(prev => ({ ...prev, otp: "Please enter the OTP." }));
         return;
       }
-
+      setLoading(true);
       try {
         const verifyOtp = await api.post("/auth/signup/verify-otp", { useremail: email, otp });
         if (verifyOtp.status === 200) {
@@ -323,6 +337,9 @@ export const Login = () => {
           setShowPopup(true);
         }
       }
+      finally {
+        setLoading(false);
+      }
     } else {
       if (!password) { errors.password = "Password is required."; valid = false; }
       if (!confirmPassword || confirmPassword !== password) {
@@ -332,7 +349,7 @@ export const Login = () => {
 
       setFormErrors(errors);
       if (!valid) return;
-
+      setLoading(true);
       try {
         const resetPass = await api.post("/auth/reset-password", { email, password });
         if (resetPass) {
@@ -346,6 +363,9 @@ export const Login = () => {
       } catch (error) {
         setPopupContent({ type: 'error', title: 'Reset Failed', message: 'Something went wrong' });
         setShowPopup(true);
+      }
+      finally {
+        setLoading(false);
       }
     }
   };
@@ -364,7 +384,6 @@ export const Login = () => {
     const file = e.target.files[0];
     if (file) {
       setProfileImage(file);
-      setProfileImageError(false);
     }
   };
 
@@ -509,14 +528,19 @@ export const Login = () => {
                           </div>
                         )}
                       </div>
-                      <button type="submit" className="login-button">{otpPhase ? "Submit" : "Sign Up"}</button>
+                      {loading ? <button className={`login-button ${loading ? 'cursor-none' : 'cursor-pointer'}`}><Loading useGif={true} /></button> : <button type="submit" className="login-button" style={{ marginTop: '1rem' }}>{otpPhase ? "Submit" : "Sign Up"}</button>}
                     </form>
                     {renderGoogleButton()}
                   </>
                 ) : (
                   <>
                     <h1 className="login-title">Login</h1>
-                    <form className="login-form" onSubmit={handleLoginSubmit}>
+                    <form className="login-form" onSubmit={(e) => {
+                      e.preventDefault();
+                      if (!loading) {
+                        handleLoginSubmit(e);
+                      }
+                    }}>
                       <div className="login-input-container">
                         <div>
                           <input name="email" value={loginData.email} onChange={handleLoginChange} className="login-input" type="text" placeholder="Email" />
@@ -556,7 +580,8 @@ export const Login = () => {
                         {formErrors.password && <p className="login-error-text flex-[1]">{formErrors.password}</p>}
                         <label className="login-forgot" onClick={() => setShowReset(true)}>Forgot Password?</label>
                       </div>
-                      <button type="submit" className="login-button">Clock in</button>
+                      {loading ? <button className={`login-button ${loading ? 'cursor-none' : 'cursor-pointer'}`} disabled={loading}><Loading useGif={true} /></button> :
+                        <button type="submit" className="login-button">Clock in</button>}
                     </form>
                     {renderGoogleButton()}
                   </>
@@ -642,9 +667,10 @@ export const Login = () => {
                         </>
                       )}
                     </div>
-                    <button type="submit" className="login-button">
-                      {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
-                    </button>
+                    {loading ? <button className={`login-button ${loading ? 'cursor-none' : 'cursor-pointer'}`}><Loading useGif={true} /></button>
+                      : <button type="submit" className="login-button" style={{ marginTop: '1rem' }}>
+                        {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
+                      </button>}
                     <div className="back-login-container">
                       <label className="back-login" onClick={() => {
                         setShowReset(false);
@@ -851,7 +877,6 @@ export const Login = () => {
   padding-bottom: 0.5rem;
   border: none;
   border-radius: 1.8rem;
-  cursor: pointer;
   width: fit-content; /* Fits content with padding */
   width: clamp(120px, 8vw, 180px); /* Responsive minimum width */
   transition: background-color 0.3s;

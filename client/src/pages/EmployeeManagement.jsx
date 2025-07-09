@@ -87,6 +87,7 @@ export const EmployeeManagement = () => {
 
         setRolesData(roles.data);
         setEmployees(emps.data.employees);
+        console.log(emps.data.employees)
         setPendingEmployees(pending.data.pendingEmployees);
         setBranches(brs.data.branches);
       } catch (err) {
