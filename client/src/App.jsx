@@ -35,11 +35,7 @@ function App() {
         <Route path="/employee/:empId/details/:navId"  element={<EmployeeDetails type={"user"}/>}></Route>
         <Route path="/employee/role/:roleId/details"  element={<EmployeeDetails type={"role"}/>}></Route>
         <Route path="/courses/:navId" element={<CourseManagement/>}></Route>
-        <Route path="
-        
-        
-        
-        " element={<CourseIntro/>}></Route>
+        <Route path="/course/:courseId/intro" element={<CourseIntro/>}></Route>
         <Route path="/course/learn/:courseId" element={<CourseLearn />}></Route>
         <Route path="/projectoverview" element={<ProjectOverview />}></Route>
         <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
