@@ -3,7 +3,7 @@ import { Sidebar } from '../components/Sidebar';
 import { Navbar } from '../components/Navbar';
 import HRManagement from '../components/HRmanagement';
 import PercentageStatus from '../components/PercentageStatus';
-import {ReviewMeeting} from '../components/ReviewMeeting';
+import {ReviewMeeting}from '../components/ReviewMeeting';
 import ProgressStatus from '../components/ProgressStatus';
 import TeamDetails from '../components/TeamDetails';
 
