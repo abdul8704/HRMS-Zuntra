@@ -6,11 +6,8 @@ import { AssignmentsSection } from "../components/upskill/AssignmentsSection";
 import { courseData } from "../data/courseData";
 
 export const CourseLearn = () => {
-  const [selectedModuleIndex, setSelectedModuleIndex] = useState(0);
-  const [selectedSubmoduleIndex, setSelectedSubmoduleIndex] = useState(0);
-
-  const selectedSubmodule =
-    courseData.modules[selectedModuleIndex]?.submodules[selectedSubmoduleIndex];
+  const [selectedModuleIndex, setSelectedModuleIndex] = useState(null);
+  const [selectedSubmoduleIndex, setSelectedSubmoduleIndex] = useState(null);
 
   const progressMatrix = [
     [1, 1, 1],
@@ -22,6 +19,11 @@ export const CourseLearn = () => {
     title: mod.moduleTitle,
     submodules: mod.submodules.map((sub) => sub.submoduleTitle),
   }));
+
+  const selectedSubmodule =
+    selectedModuleIndex !== null && selectedSubmoduleIndex !== null
+      ? courseData.modules[selectedModuleIndex]?.submodules[selectedSubmoduleIndex]
+      : null;
 
   return (
     <div className="flex flex-col md:flex-row overflow-x-hidden min-h-screen">
@@ -44,9 +46,17 @@ export const CourseLearn = () => {
           {selectedSubmodule?.submoduleTitle || "Select a submodule"}
         </div>
 
-        <VideoPlayer videoUrl={selectedSubmodule?.video.videoUrl} />
-        <DescriptionSection description={selectedSubmodule?.description} />
-        <AssignmentsSection quiz={selectedSubmodule?.quiz} />
+        {selectedSubmodule ? (
+          <>
+            <VideoPlayer videoUrl={selectedSubmodule.video.videoUrl} />
+            <DescriptionSection description={selectedSubmodule.description} />
+            <AssignmentsSection quiz={selectedSubmodule.quiz} />
+          </>
+        ) : (
+          <div className="text-center text-gray-500 mt-20 text-lg">
+            📘 Please select a submodule from the sidebar to start learning.
+          </div>
+        )}
       </div>
     </div>
   );
