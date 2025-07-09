@@ -428,25 +428,22 @@ export const CourseManagement = () => {
         {loading && <Loading />}
         
         {!loading && navId === "all" && (
-          <div className="flex-grow overflow-y-auto">
-            <div className="flex flex-wrap justify-center gap-[1rem] px-[1rem]">
-              {filteredCourses.length === 0 ? (
-                <p className="text-center col-span-full mt-4 text-gray-500 font-medium">
-                  {courses.length === 0 ? "No courses available" : "No courses match the current filters"}
-                </p>
-              ) : (
-                filteredCourses.map((course, index) => (
-                  <div
-                    key={index}
-                    onClick={() => navigate(`/course/${index}/intro`)}
-                    className="cursor-pointer"
-                    style={{ display: "contents" }}
-                  >
-                    <CourseCard key={index} {...course} />
-                  </div>
-                ))
-              )}
-            </div>
+          <div className="px-[1rem] flex flex-wrap gap-[1rem] overflow-y-auto">
+            {filteredCourses.length === 0 ? (
+              <div className="w-full text-center mt-4 text-gray-500 font-medium">
+                {courses.length === 0 ? "No courses available" : "No courses match the current filters"}
+              </div>
+            ) : (
+              filteredCourses.map((course, index) => (
+                <div
+                  key={index}
+                  onClick={() => navigate(`/course/${index}/intro`)}
+                  className="cursor-pointer w-full sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.67rem)] lg:w-[calc(25%-0.75rem)] xl:w-[calc(20%-0.8rem)] min-w-[280px] max-w-[320px] flex-shrink-0"
+                >
+                  <CourseCard key={index} {...course} />
+                </div>
+              ))
+            )}
           </div>
         )}
 
