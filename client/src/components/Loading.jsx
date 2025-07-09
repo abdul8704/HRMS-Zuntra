@@ -1,17 +1,15 @@
 import React from 'react';
 
-export const Loading = ({ useGif = false, variant = "pulse" }) => {
+export const Loading = ({ useGif = false }) => {
   return (
     <div className="w-full h-full flex items-center justify-center z-50">
       {useGif ? (
-        <img
-          src={require('../assets/loader.gif')}
-          alt="Loading..."
-          className="w-full h-full object-contain"
-        />
+        <div className='w-full h-full'>
+          <div className="login-spinner mx-auto"></div>
+        </div>
       ) : (
         <div className="text-gray-600 text-lg font-medium">
-          <span className={`loading-text loading-text-${variant}`}>
+          <span className={`loading-text loading-text-pulse`}>
             {"Loading".split("").map((char, i) => (
               <span className="letter" key={i} style={{ "--delay": `${i * 0.1}s` }}>
                 {char}
@@ -27,6 +25,25 @@ export const Loading = ({ useGif = false, variant = "pulse" }) => {
       )}
 
       <style>{`
+
+        .login-spinner {
+          width: 20px;
+          height: 20px;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-top: 2px solid white;
+          border-radius: 50%;
+          animation: login-spin 1s linear infinite;
+        }
+
+        @keyframes login-spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+
         .loading-text {
           display: inline-block;
         }
