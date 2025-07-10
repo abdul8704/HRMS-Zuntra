@@ -1,159 +1,198 @@
 import React, { useState } from 'react';
 
-export const LeaveForm = ({ name, religion, role, handleClose }) => {
-  const [typeOfLeave, setTypeOfLeave] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+export const LeaveForm = ({ handleClose }) => {
+  const [leaveCategory, setLeaveCategory] = useState('');
+  const [durationType, setDurationType] = useState('single');
+  const [singleDate, setSingleDate] = useState('');
+  const [rangeStart, setRangeStart] = useState('');
+  const [rangeEnd, setRangeEnd] = useState('');
+  const [specificDates, setSpecificDates] = useState([]);
   const [reason, setReason] = useState('');
 
-  const leaveOptions = [
+  const leaveCategories = [
+    'Medical Leave',
+    'Informed Leave',
+    'Emergency Leave',
     'Sick Leave',
     'Casual Leave',
-    'Earned Leave',
-    'Maternity Leave',
-    'Paternity Leave',
   ];
 
-  const handleOptionSelect = (option) => {
-    setTypeOfLeave(option);
-    setSearchTerm('');
-    setDropdownOpen(false);
+  const handleSpecificDateChange = (index, value) => {
+    const updatedDates = [...specificDates];
+    updatedDates[index] = value;
+    setSpecificDates(updatedDates);
   };
 
-  const handleDropdownToggle = () => {
-    setDropdownOpen((prev) => !prev);
+  const addSpecificDateField = () => {
+    setSpecificDates([...specificDates, '']);
+  };
+
+  const removeSpecificDateField = (index) => {
+    const updated = [...specificDates];
+    updated.splice(index, 1);
+    setSpecificDates(updated);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ name, religion, role, typeOfLeave, startDate, endDate, reason });
+    const data = {
+      leaveCategory,
+      durationType,
+      dates:
+        durationType === 'single'
+          ? [singleDate]
+          : durationType === 'range'
+            ? [rangeStart, rangeEnd]
+            : specificDates,
+      reason,
+    };
+    console.log(data);
     if (handleClose) handleClose();
   };
 
-  const handleCancel = (e) => {
-    e.preventDefault();
-    setTypeOfLeave('');
-    setSearchTerm('');
-    setStartDate('');
-    setEndDate('');
+  const handleCancel = () => {
+    setLeaveCategory('');
+    setDurationType('single');
+    setSingleDate('');
+    setRangeStart('');
+    setRangeEnd('');
+    setSpecificDates([]);
     setReason('');
-    setDropdownOpen(false);
     if (handleClose) handleClose();
   };
-
-  const filteredOptions = leaveOptions.filter((option) =>
-    option.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full text-gray-700">
-
-      {/* Row 1: Name, Role, Religion */}
-      <div className="flex flex-wrap gap-x-4">
-        <div className="flex flex-col w-[31%]">
-          <label className="text-sm font-medium mb-1">Name</label>
-          <input
-            type="text"
-            value={name}
-            readOnly
-            className="border rounded px-3 py-2 bg-slate-100 text-gray-700 cursor-not-allowed"
-          />
-        </div>
-        <div className="flex flex-col w-[31%]">
-          <label className="text-sm font-medium mb-1">Role</label>
-          <input
-            type="text"
-            value={role}
-            readOnly
-            className="border rounded px-3 py-2 bg-slate-100 text-gray-700 cursor-not-allowed"
-          />
-        </div>
-        <div className="flex flex-col w-[31%]">
-          <label className="text-sm font-medium mb-1">Religion</label>
-          <input
-            type="text"
-            value={religion}
-            readOnly
-            className="border rounded px-3 py-2 bg-slate-100 text-gray-700 cursor-not-allowed"
-          />
-        </div>
-      </div>
-
-      {/* Row 2: Type of Leave, Start Date, End Date */}
-      <div className="flex flex-wrap gap-x-4">
-        <div className="flex flex-col w-[31%] relative">
-          <label className="text-sm font-medium mb-1">Type of Leave</label>
-          <input
-            type="text"
-            value={searchTerm || typeOfLeave}
-            onClick={handleDropdownToggle}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setTypeOfLeave('');
-              if (!dropdownOpen) setDropdownOpen(true);
-            }}
-            placeholder="Search leave type"
-            className="border rounded px-3 py-2 w-full cursor-pointer bg-slate-100 text-gray-700 placeholder-gray-400"
-          />
-          <span
-            onClick={handleDropdownToggle}
-            className="absolute right-3 top-[60%] transform -translate-y-1/2 text-gray-500 cursor-pointer text-xs"
-          >
-            ▼
-          </span>
-          {dropdownOpen && (
-            <ul className="absolute top-full left-0 right-0 bg-white border mt-1 rounded shadow z-20 max-h-40 overflow-y-auto text-left">
-              {filteredOptions.length > 0 ? (
-                filteredOptions.map((option, index) => (
-                  <li
-                    key={index}
-                    onClick={() => handleOptionSelect(option)}
-                    className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    {option}
-                  </li>
-                ))
-              ) : (
-                <li className="px-3 py-2 text-gray-400">No results</li>
-              )}
-            </ul>
-          )}
-        </div>
-
-        <div className="flex flex-col w-[31%]">
-          <label className="text-sm font-medium mb-1">Start Date</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="border rounded px-3 py-2 bg-slate-100 text-gray-700"
-          />
-        </div>
-
-        <div className="flex flex-col w-[31%]">
-          <label className="text-sm font-medium mb-1">End Date</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="border rounded px-3 py-2 bg-slate-100 text-gray-700"
-          />
-        </div>
-      </div>
-
-      {/* Row 3: Reason for Leave */}
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4 text-gray-700 w-full h-full overflow-x-auto"
+    >
+      {/* Leave Category */}
       <div className="flex flex-col">
-  <label className="text-sm font-medium mb-1">Reason for Leave</label>
-  <textarea
-    value={reason}
-    onChange={(e) => setReason(e.target.value)}
-    rows={1} // Reduced from 3
-    placeholder="Enter reason..."
-    className="border rounded px-3 py-1.5 bg-slate-100 text-gray-700 resize-none"
-  />
-</div>
+        <select
+          value={leaveCategory}
+          onChange={(e) => setLeaveCategory(e.target.value)}
+          className="border rounded px-3 py-2 bg-slate-100 text-gray-700"
+          required
+        >
+          <option value="">Select Leave Category</option>
+          {leaveCategories.map((category, i) => (
+            <option key={i} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Duration Type */}
+      <div className="flex gap-4">
+        {['single', 'range', 'specific'].map((type) => (
+          <div key={type} className="relative">
+            <input
+              type="radio"
+              name="duration"
+              id={type}
+              value={type}
+              checked={durationType === type}
+              onChange={() => setDurationType(type)}
+              className="peer hidden"
+            />
+            <label
+              htmlFor={type}
+              className={`px-4 py-1 border rounded-full cursor-pointer transition-colors
+          peer-checked:bg-[#bcd4cd] peer-checked:text-white 
+          text-gray-600 border-gray-300 hover:bg-[#bcd4cd]`}
+            >
+              {type === 'single'
+                ? 'Single Day'
+                : type === 'range'
+                  ? 'Date Range'
+                  : 'Specific Dates'}
+            </label>
+          </div>
+        ))}
+      </div>
+
+
+      {/* Date Inputs Based on Type */}
+      {durationType === 'single' && (
+        <div className="flex flex-col">
+          <label className="text-sm font-medium mb-1">Date</label>
+          <input
+            type="date"
+            value={singleDate}
+            onChange={(e) => setSingleDate(e.target.value)}
+            className="border rounded px-3 py-2 bg-slate-100"
+            required
+          />
+        </div>
+      )}
+
+      {durationType === 'range' && (
+        <div className="flex gap-4">
+          <div className="flex flex-col flex-1">
+            <label className="text-sm font-medium mb-1">From</label>
+            <input
+              type="date"
+              value={rangeStart}
+              onChange={(e) => setRangeStart(e.target.value)}
+              className="border rounded px-3 py-2 bg-slate-100"
+              required
+            />
+          </div>
+          <div className="flex flex-col flex-1">
+            <label className="text-sm font-medium mb-1">To</label>
+            <input
+              type="date"
+              value={rangeEnd}
+              onChange={(e) => setRangeEnd(e.target.value)}
+              className="border rounded px-3 py-2 bg-slate-100"
+              required
+            />
+          </div>
+        </div>
+      )}
+
+      {durationType === 'specific' && (
+        <div className="flex flex-col gap-2">
+          {specificDates.map((date, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => handleSpecificDateChange(index, e.target.value)}
+                className="border rounded px-3 py-2 bg-slate-100 flex-1"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => removeSpecificDateField(index)}
+                className="text-red-500 hover:text-red-700 text-sm"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addSpecificDateField}
+            className="text-blue-500 hover:underline text-sm w-fit"
+          >
+            + Add another date
+          </button>
+        </div>
+      )}
+
+      {/* Reason (Scrollable & min height) */}
+      <div className="flex flex-col flex-1 min-h-[150px] overflow-y-auto">
+        <label className="text-sm font-medium mb-1">Reason for Leave</label>
+        <textarea
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder="Enter reason..."
+          className="border rounded px-3 py-2 bg-slate-100 text-gray-700 resize-none flex-1"
+          required
+        />
+      </div>
 
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
@@ -187,4 +226,3 @@ export const LeaveForm = ({ name, religion, role, handleClose }) => {
     </form>
   );
 };
-
