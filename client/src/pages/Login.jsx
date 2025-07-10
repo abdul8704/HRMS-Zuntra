@@ -152,7 +152,7 @@ export const Login = () => {
           if (res.status === 200) {
             console.log("Attendance Marked");
             localStorage.setItem("accessToken", token);
-            
+
             setLoading(false);
             navigate("/dashboard");
           }
@@ -161,10 +161,26 @@ export const Login = () => {
             alert("Wait for aproval")
           }
         },
-        (error) => console.error("Error getting location:", error)
+        (error) => {
+          console.error("Error getting location:", error);
+          setPopupContent({
+            type: 'error',
+            title: 'Location Access Denied',
+            message: 'We couldn’t access your location.'
+          });
+          setShowPopup(true);
+        }
       );
     } catch (err) {
-      if (err?.response?.status === 400) {
+      if (!err.response) {
+        setPopupContent({
+          type: 'error',
+          title: 'Server Unreachable',
+          message: 'We couldn’t reach the server. Please check your internet or try again later.'
+        });
+        setShowPopup(true);
+      }
+      else if (err?.response?.status === 400) {
         const msg = err.response.data?.data?.message;
         setPopupContent({
           type: 'error',
@@ -230,8 +246,18 @@ export const Login = () => {
           setShowPopup(true);
         }
       } catch (error) {
-        setPopupContent({ type: 'error', title: 'Signup Failed', message: 'Something went wrong' });
-        setShowPopup(true);
+        if (!error.response) {
+          setPopupContent({
+            type: 'error',
+            title: 'Server Unreachable',
+            message: 'We couldn’t reach the server. Please check your internet or try again later.'
+          });
+          setShowPopup(true);
+        }
+        else {
+          setPopupContent({ type: 'error', title: 'Signup Failed', message: 'Something went wrong' });
+          setShowPopup(true);
+        }
       } finally {
         setLoading(false);
       }
@@ -265,7 +291,15 @@ export const Login = () => {
           }
         }
       } catch (error) {
-        if (error.response?.data?.error === "Incorrect OTP") {
+        if (!error.response) {
+          setPopupContent({
+            type: 'error',
+            title: 'Server Unreachable',
+            message: 'We couldn’t reach the server. Please check your internet or try again later.'
+          });
+          setShowPopup(true);
+        }
+        else if (error.response?.data?.error === "Incorrect OTP") {
           setFormErrors(prev => ({ ...prev, otp: "Incorrect OTP" }));
         } else {
           setPopupContent({ type: 'error', title: 'Signup Failed', message: 'Something went wrong' });
@@ -310,8 +344,18 @@ export const Login = () => {
           setShowPopup(true);
         }
       } catch (error) {
-        setPopupContent({ type: 'error', title: 'Reset Failed', message: 'Something went wrong' });
-        setShowPopup(true);
+        if (!error.response) {
+          setPopupContent({
+            type: 'error',
+            title: 'Server Unreachable',
+            message: 'We couldn’t reach the server. Please check your internet or try again later.'
+          });
+          setShowPopup(true);
+        }
+        else {
+          setPopupContent({ type: 'error', title: 'Reset Failed', message: 'Something went wrong' });
+          setShowPopup(true);
+        }
       }
       finally {
         setLoading(false);
@@ -332,7 +376,15 @@ export const Login = () => {
           setShowPopup(true);
         }
       } catch (error) {
-        if (error.response?.data?.error === "Incorrect OTP") {
+        if (!error.response) {
+          setPopupContent({
+            type: 'error',
+            title: 'Server Unreachable',
+            message: 'We couldn’t reach the server. Please check your internet or try again later.'
+          });
+          setShowPopup(true);
+        }
+        else if (error.response?.data?.error === "Incorrect OTP") {
           setFormErrors(prev => ({ ...prev, otp: "Incorrect OTP" }));
         } else {
           setPopupContent({ type: 'error', title: 'OTP Verification', message: 'Something went wrong' });
@@ -363,8 +415,18 @@ export const Login = () => {
           setResetData({ email: '', otp: '', password: '', confirmPassword: '' });
         }
       } catch (error) {
-        setPopupContent({ type: 'error', title: 'Reset Failed', message: 'Something went wrong' });
-        setShowPopup(true);
+        if (!error.response) {
+          setPopupContent({
+            type: 'error',
+            title: 'Server Unreachable',
+            message: 'We couldn’t reach the server. Please check your internet or try again later.'
+          });
+          setShowPopup(true);
+        }
+        else {
+          setPopupContent({ type: 'error', title: 'Reset Failed', message: 'Something went wrong' });
+          setShowPopup(true);
+        }
       }
       finally {
         setLoading(false);
