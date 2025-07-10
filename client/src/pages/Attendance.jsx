@@ -5,13 +5,16 @@ import { TimeCard } from '../components/dashboard/TimeCard'
 import { AttendanceCalendar } from '../components/attendance/AttendanceCalendar'
 import { WorkBreakComposition } from '../components/dashboard/WorkBreakComposititon'
 import { AttendanceCard } from '../components/attendance/AttendanceCard'
+import { useParams } from 'react-router-dom'
 export const Attendance = () => {
+    const { navId } = useParams();
     return (
         <>
             <div className="flex w-screen h-screen">
                 <Sidebar />
                 <div className="flex gap-[1rem] flex-col flex-1 p-[1rem] h-screen">
                     <Navbar type="attendance" role="hr" />
+                    {navId === 'me' && (
                     <div className="flex-1 bg-[#FFFFFF] grid grid-cols-8 grid-rows-8 gap-[1rem] overflow-hidden">
                         {/* Time Card IN */}
                         <div className="row-start-1 col-start-1 col-span-2 row-span-1 rounded-lg">
@@ -41,9 +44,8 @@ export const Attendance = () => {
                         <div className="row-start-4 col-start-5 col-span-4 row-span-5 rounded-lg">
                             <AttendanceCard />
                         </div>
-
-
                     </div>
+                    )}
                 </div>
             </div>
         </>
