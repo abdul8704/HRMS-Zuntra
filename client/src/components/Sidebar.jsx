@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import zuntraSquareLogo from '../assets/zuntra_square_no_text.png';
 import zuntraLogo from '../assets/zuntra.png';
+import { Logout } from './Logout';
 
 const sidebarItems = [
   {
@@ -97,7 +98,7 @@ export const Sidebar = () => {
   const [sidebarState, setSidebarState] = useState(0); // 0: collapsed, 1: hover, 2: expanded, 3: pinned
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const [open,setOpen]=useState(false);
   const currentPath = location.pathname;
   useEffect(() => {
     const checkMobile = () => {
@@ -137,16 +138,25 @@ export const Sidebar = () => {
   });
 
   const handleItemClick = (item) => {
+    if(item.label==="Logout"){
+      setOpen(true);
+    }
+    else{
     navigate(item.path);
+    }
     if (isMobile) {
       setMobileMenuOpen(false);
     }
   };
 
+
+
+
   // Mobile Arrow Button
   if (isMobile) {
     return (
       <>
+        <Logout isOpen={open} onClose={() => setOpen(false)}/>
         {/* Mobile Menu Button */}
         <button
           className={`fixed top-[4rem] -left-3 z-[9999] w-12 h-12 bg-[#bcd4cd] rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${mobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
@@ -207,6 +217,7 @@ export const Sidebar = () => {
   // Desktop Sidebar (original behavior)
   return (
     <>
+      <Logout isOpen={open} onClose={() => setOpen(false)}/>
       <div
         className={`relative bg-[#bcd4cd] h-screen flex flex-col items-start pt-4 text-black transition-all duration-200 ease-in-out
           ${sidebarState === 2 || sidebarState === 3 ? 'w-[21rem]' : 'w-[4.5rem]'}`}
@@ -284,7 +295,7 @@ export const Sidebar = () => {
                   flex items-center`}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
-                onClick={() => navigate(item.path)}
+                onClick={() => handleItemClick(item)}
               >
                 {/* Fixed icon container - always stays in the same position */}
                 <div className="w-[4.5rem] h-full flex items-center justify-center flex-shrink-0">

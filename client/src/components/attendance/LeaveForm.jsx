@@ -61,162 +61,160 @@ export const LeaveForm = ({ handleClose }) => {
     if (handleClose) handleClose();
   };
 
+  const adjustTextareaHeight = (e) => {
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.max(textarea.scrollHeight, 50) + 'px';
+    setReason(textarea.value);
+  };
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col gap-4 text-gray-700 w-full h-full overflow-x-auto"
-    >
-      {/* Leave Category */}
-      <div className="flex flex-col">
-        <select
-          value={leaveCategory}
-          onChange={(e) => setLeaveCategory(e.target.value)}
-          className="border rounded px-3 py-2 bg-slate-100 text-gray-700"
-          required
-        >
-          <option value="">Select Leave Category</option>
-          {leaveCategories.map((category, i) => (
-            <option key={i} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Duration Type */}
-      <div className="flex gap-6">
-        {['single', 'range', 'specific'].map((type) => (
-          <label
-            key={type}
-            className="flex items-center gap-2 cursor-pointer text-sm text-gray-700"
-          >
-            <input
-              type="radio"
-              name="duration"
-              value={type}
-              checked={durationType === type}
-              onChange={() => setDurationType(type)}
-              className="accent-[#bcd4cd] h-4 w-4"
-            />
-            {type === 'single'
-              ? 'Single Day'
-              : type === 'range'
-              ? 'Date Range'
-              : 'Specific Dates'}
-          </label>
-        ))}
-      </div>
-
-      {/* Date Inputs Based on Type */}
-      {durationType === 'single' && (
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">Date</label>
-          <input
-            type="date"
-            value={singleDate}
-            onChange={(e) => setSingleDate(e.target.value)}
-            className="border rounded px-3 py-2 bg-slate-100"
-            required
-          />
-        </div>
-      )}
-
-      {durationType === 'range' && (
-        <div className="flex gap-4">
-          <div className="flex flex-col flex-1">
-            <label className="text-sm font-medium mb-1">From</label>
-            <input
-              type="date"
-              value={rangeStart}
-              onChange={(e) => setRangeStart(e.target.value)}
-              className="border rounded px-3 py-2 bg-slate-100"
+    <div className="w-full h-full flex flex-col overflow-hidden">
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="flex flex-col gap-4 text-gray-700 max-w-2xl mx-auto">
+          <h1 className="text-xl font-semibold text-gray-800">Apply for Leave</h1>
+          
+          {/* Leave Category */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1 text-gray-700">Leave Category</label>
+            <select
+              value={leaveCategory}
+              onChange={(e) => setLeaveCategory(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
-            />
+            >
+              <option value="">Select Leave Category</option>
+              {leaveCategories.map((category, i) => (
+                <option key={i} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="flex flex-col flex-1">
-            <label className="text-sm font-medium mb-1">To</label>
-            <input
-              type="date"
-              value={rangeEnd}
-              onChange={(e) => setRangeEnd(e.target.value)}
-              className="border rounded px-3 py-2 bg-slate-100"
-              required
-            />
-          </div>
-        </div>
-      )}
 
-      {durationType === 'specific' && (
-        <div className="flex flex-col gap-2">
-          {specificDates.map((date, index) => (
-            <div key={index} className="flex items-center gap-2">
+          {/* Duration Type */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-gray-700">Duration Type</label>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
+              {['single', 'range', 'specific'].map((type) => (
+                <label
+                  key={type}
+                  className="flex items-center gap-2 cursor-pointer text-sm text-gray-700"
+                >
+                  <input
+                    type="radio"
+                    name="duration"
+                    value={type}
+                    checked={durationType === type}
+                    onChange={() => setDurationType(type)}
+                    className="accent-blue-500 h-4 w-4"
+                  />
+                  {type === 'single'
+                    ? 'Single Day'
+                    : type === 'range'
+                    ? 'Date Range'
+                    : 'Specific Dates'}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Date Inputs Based on Type */}
+          {durationType === 'single' && (
+            <div className="flex flex-col">
+              <label className="text-sm font-medium mb-1 text-gray-700">Date</label>
               <input
                 type="date"
-                value={date}
-                onChange={(e) => handleSpecificDateChange(index, e.target.value)}
-                className="border rounded px-3 py-2 bg-slate-100 flex-1"
+                value={singleDate}
+                onChange={(e) => setSingleDate(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               />
+            </div>
+          )}
+
+          {durationType === 'range' && (
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col flex-1">
+                <label className="text-sm font-medium mb-1 text-gray-700">From</label>
+                <input
+                  type="date"
+                  value={rangeStart}
+                  onChange={(e) => setRangeStart(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div className="flex flex-col flex-1">
+                <label className="text-sm font-medium mb-1 text-gray-700">To</label>
+                <input
+                  type="date"
+                  value={rangeEnd}
+                  onChange={(e) => setRangeEnd(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  required
+                />
+              </div>
+            </div>
+          )}
+
+          {durationType === 'specific' && (
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">Specific Dates</label>
+              {specificDates.map((date, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => handleSpecificDateChange(index, e.target.value)}
+                    className="border border-gray-300 rounded-lg px-3 py-2 bg-white flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeSpecificDateField(index)}
+                    className="text-red-500 hover:text-red-700 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
               <button
                 type="button"
-                onClick={() => removeSpecificDateField(index)}
-                className="text-red-500 hover:text-red-700 text-sm"
+                onClick={addSpecificDateField}
+                className="text-blue-500 hover:text-blue-700 text-sm w-fit hover:underline transition-colors"
               >
-                ✕
+                + Add another date
               </button>
             </div>
-          ))}
-          <button
-            type="button"
-            onClick={addSpecificDateField}
-            className="text-blue-500 hover:underline text-sm w-fit"
-          >
-            + Add another date
-          </button>
+          )}
+
+          {/* Reason (Auto-expanding textarea) */}
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1 text-gray-700">Reason for Leave</label>
+            <textarea
+              value={reason}
+              onChange={adjustTextareaHeight}
+              placeholder="Enter reason for leave..."
+              className="border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              style={{ minHeight: '50px', height: 'auto' }}
+              rows="2"
+              required
+            />
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex justify-center mt-6 pb-4">
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="bg-blue-500 text-white px-8 py-2 rounded-lg hover:bg-blue-600 transition-colors w-full sm:w-auto font-medium"
+            >
+              Apply for Leave
+            </button>
+          </div>
         </div>
-      )}
-
-      {/* Reason (Scrollable & min height) */}
-      <div className="flex flex-col flex-1 min-h-[150px] overflow-x-auto">
-        <label className="text-sm font-medium mb-1">Reason for Leave</label>
-        <textarea
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          placeholder="Enter reason..."
-          className="border rounded px-3 py-2 bg-slate-100 text-gray-700 resize-none flex-1 min-h-[150px]"
-          required
-        />
       </div>
-
-      {/* Buttons */}
-      <div className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
-        <button
-          type="button"
-          onClick={handleCancel}
-          className="bg-gray-200 text-black px-6 py-2 rounded hover:bg-red-500 hover:text-white transition-all w-full sm:w-auto"
-        >
-          Cancel
-        </button>
-
-        <button
-          type="submit"
-          className="px-6 py-2 rounded transition-all w-full sm:w-auto"
-          style={{
-            backgroundColor: 'rgba(140, 221, 132, 0.8)',
-            color: 'black',
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#16a34a';
-            e.target.style.color = 'white';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = 'rgba(140, 221, 132, 0.8)';
-            e.target.style.color = 'black';
-          }}
-        >
-          Apply
-        </button>
-      </div>
-    </form>
+    </div>
   );
 };

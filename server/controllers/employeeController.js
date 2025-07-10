@@ -92,10 +92,33 @@ const getDetailsOfaEmployee= asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, employeeDetail });
 });
 
+const applyForLeave = asyncHandler(async (req, res) => {
+  const { userid } = req.user;
+  const { leaveCategory, startDate, endDate, reason } = req.body;
+  console.log(leaveCategory, startDate, endDate, reason)
+
+  if(!leaveCategory || !startDate || !endDate || !reason){
+    throw new ApiError(400, "please send all data reqd to apply leave")
+  }
+
+  const applyLeave = await employeeService.applyLeave(userid, leaveCategory, startDate, endDate, reason);
+
+  return res.status(201).json({ success: true, message: "Request sent successfully" })
+})
+
+const getEmployeeRequests = asyncHandler(async (req, res) => {
+  const { userid } = req.user;
+
+  const applicationData = await employeeService.getLeaveRequests(userid);
+  return res.status(200).json({ success: true, leaveRequests: applicationData })
+})
+
 module.exports = {
     handleLogout,
     getAttendanceData,
     fetchAllEmployees,
     getEmployeeByRole,
     getDetailsOfaEmployee,
+    applyForLeave,
+    getEmployeeRequests,
 };

@@ -15,41 +15,109 @@ import { HrProjectManagement } from './pages/HrProjectManagement';
 import  HrCreateCourse  from './pages/HrCreateCourse';
 import { Upskill } from './pages/Upskill';
 import { Attendance } from './pages/Attendance';
+import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
+import { ProtectRoute } from './hooks/ProtectRoute';
 import './App.css'
 import './index.css'
-import { NewUser } from './pages/NewUser';
-import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
 
 
 function App() {
   const [userid, setUserid] = useState('');
 
-  return (
-    <>
+ return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login/>}></Route>
-        {/* <Route path="/hrupskill" element={<HrUpskillLearn/>}></Route> */}
-        <Route path="/dashboard" element={<DashBoard/>}></Route>
-        <Route path="/employee/:navId" element={<EmployeeManagement/>}></Route>
-        <Route path="/employee/:empId/details/:navId"  element={<EmployeeDetails type={"user"}/>}></Route>
-        <Route path="/employee/role/:roleId/details"  element={<EmployeeDetails type={"role"}/>}></Route>
-        <Route path="/courses/:navId" element={<CourseManagement/>}></Route>
-        <Route path="/course/:courseId/intro" element={<CourseIntro/>}></Route>
-        <Route path="/course/learn/:courseId" element={<CourseLearn />}></Route>
-        <Route path="/projectoverview" element={<ProjectOverview />}></Route>
-        <Route path="/projects/:navId" element={<HrProjectManagement/>}></Route>
-        <Route path="/project/:projectId/:navId" element={<HrProjectDetails/>}></Route>
-        <Route path="/attendance/:navId" element={<Attendance/>}></Route>
-        <Route path="/attendance/" element={<HrPersonalAttendance/>}></Route>
-        <Route path="/upskill/:navId" element={<Upskill/>}></Route>
-        <Route path="/createcourse" element={<HrCreateCourse/>}></Route>
-        <Route path="/newuser" element={<NewUser/>}></Route>
+        <Route path="/" element={<Login />} />
+
+        <Route path="/dashboard" element={
+          <ProtectRoute>
+            <DashBoard />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/employee/:navId" element={
+          <ProtectRoute>
+            <EmployeeManagement />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/employee/:empId/details/:navId" element={
+          <ProtectRoute>
+            <EmployeeDetails type="user" />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/employee/role/:roleId/details" element={
+          <ProtectRoute>
+            <EmployeeDetails type="role" />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/courses/:navId" element={
+          <ProtectRoute>
+            <CourseManagement />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/course/:courseId/intro" element={
+          <ProtectRoute>
+            <CourseIntro />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/course/learn/:courseId" element={
+          <ProtectRoute>
+            <CourseLearn />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/projectoverview" element={
+          <ProtectRoute>
+            <ProjectOverview />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/projects/:navId" element={
+          <ProtectRoute>
+            <HrProjectManagement />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/project/:projectId/:navId" element={
+          <ProtectRoute>
+            <HrProjectDetails />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/attendance/:navId" element={
+          <ProtectRoute>
+            <Attendance />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/attendance/" element={
+          <ProtectRoute>
+            <HrPersonalAttendance />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/upskill/:navId" element={
+          <ProtectRoute>
+            <Upskill />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/createcourse" element={
+          <ProtectRoute>
+            <HrCreateCourse />
+          </ProtectRoute>
+        }/>
+
+        {/* Not Found Route */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
-    </>
-  )
+  );
 }
 
 export default App
