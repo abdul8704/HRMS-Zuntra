@@ -309,7 +309,7 @@ const applyLeave = async (userid, leaveCategory, startDate, endDate, reason) => 
     
     const leaveType = leaveCategory.toUpperCase();
     const leave = new LeaveApplication({
-        employee: userid,
+        userid: userid,
         leaveType: leaveType,
         startDate: startDate,
         endDate: endDate,

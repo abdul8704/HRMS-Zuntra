@@ -24,6 +24,10 @@ const leaveApplicationSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        appliedOn: {
+            type: Date,
+            default: Date.now(),
+        },
         status: {
             type: String,
             enum: ["PENDING", "APPROVED", "REJECTED"],
@@ -38,8 +42,16 @@ const leaveApplicationSchema = new mongoose.Schema(
         },
         reviewComment: {
             type: String,
-            deafult: "",
+            default: "",
         },
+        superAdminAction: {
+            type: Boolean,
+            default: false
+        },
+        adminAction: {
+            type: Boolean,
+            default: false
+        }
     },
     { timestamps: true }
 );
