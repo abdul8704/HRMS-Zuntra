@@ -2,6 +2,7 @@ const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
 const attendanceHelper = require("../utils/attendanceHelper.js");
+const LeaveApplication = require('../models/leaveApplication.js')
 
 const getAttendanceDataByUserId = async (
     userid,
@@ -303,6 +304,27 @@ const getEmployeeByRole = async (roleId) => {
     return userData;
 };
 
+// TODO: if employee sends multiple request for same day, handle it
+const applyLeave = async (userid, leaveCategory, startDate, endDate, reason) => {
+    
+    const leaveType = leaveCategory.toUpperCase();
+    const leave = new LeaveApplication({
+        employee: userid,
+        leaveType: leaveType,
+        startDate: startDate,
+        endDate: endDate,
+        reason: reason,
+        status: "PENDING",
+    });
+
+    await leave.save();
+}
+
+const getLeaveRequests = async (userid) => {
+    const leaveRequests = LeaveApplication.find({ userid: userid });
+    return leaveRequests
+}
+
 module.exports = {
     getAttendanceDataByUserId,
     markAttendanceOnLogin,
@@ -310,4 +332,6 @@ module.exports = {
     getAllEmployees,
     getDetailsOfaEmployee,
     getEmployeeByRole,
+    applyLeave,
+    getLeaveRequests
 };
