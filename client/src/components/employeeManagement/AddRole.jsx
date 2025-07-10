@@ -362,4 +362,4 @@ export const AddRole = ({ onClose }) => {
       `}</style>
     </div>
   );
-};
+};  
