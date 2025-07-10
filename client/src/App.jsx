@@ -15,11 +15,10 @@ import { HrProjectManagement } from './pages/HrProjectManagement';
 import  HrCreateCourse  from './pages/HrCreateCourse';
 import { Upskill } from './pages/Upskill';
 import { Attendance } from './pages/Attendance';
-import './App.css'
-import './index.css'
-import { NewUser } from './pages/NewUser';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
 import { ProtectRoute } from './ProtectRoute';
+import './App.css'
+import './index.css'
 
 
 function App() {
@@ -111,12 +110,6 @@ function App() {
         <Route path="/createcourse" element={
           <ProtectRoute>
             <HrCreateCourse />
-          </ProtectRoute>
-        }/>
-
-        <Route path="/newuser" element={
-          <ProtectRoute>
-            <NewUser />
           </ProtectRoute>
         }/>
 
