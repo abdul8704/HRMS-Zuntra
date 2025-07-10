@@ -28,10 +28,8 @@ function App() {
  return (
     <BrowserRouter>
       <Routes>
-        {/* Public Route */}
         <Route path="/" element={<Login />} />
 
-        {/* Protected Routes */}
         <Route path="/dashboard" element={
           <ProtectRoute>
             <DashBoard />
