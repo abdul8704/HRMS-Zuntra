@@ -48,16 +48,26 @@ export const ReviewMeeting = () => {
   const meeting = ReviewMeetings[currentIndex];
 
   return (
-    <div className="w-full h-full p-4 flex flex-1">
+    <div className="w-full h-full p-4 flex">
       {/* Meeting Details */}
-      {ReviewMeetings.length>1 && <button onClick={prev} className="text-xl px-2 flex-1 rounded-l-lg hover:opacity-90 bg-gradient-to-r from-[#F2C3B9] to-white">&lt;</button>}
-      <div className="rounded-lg p-4 bg-[#F2C3B9] flex-8 flex-col">
-        <div className="mb-2 flex-9">
+      {ReviewMeetings.length > 1 && (
+        <button 
+          onClick={prev} 
+          className="text-xl px-2 flex-1 rounded-l-lg hover:opacity-90 bg-gradient-to-r from-[#F2C3B9] to-white"
+        >
+          &lt;
+        </button>
+      )}
+      
+      <div className="rounded-lg p-4 bg-[#F2C3B9] flex-[9] flex flex-col h-full">
+        {/* Top section - 90% */}
+        <div className="flex-[9] mb-2 overflow-auto">
           <h1 className="text-lg font-semibold">{meeting.title}</h1>
           <p className="text-sm text-gray-700">{meeting.desc}</p>
         </div>
 
-        <div className="flex flex-wrap gap-2 text-sm font-medium flex-1">
+        {/* Bottom section - 10% */}
+        <div className="flex-[1] gap-2 text-sm font-medium flex items-center flex-wrap">
           <span className="px-3 py-1 rounded-lg bg-white/50">{meeting.type}</span>
           <span className="px-3 py-1 rounded-lg bg-white/50">{meeting.date}</span>
           <span className="px-3 py-1 rounded-lg bg-white/50">
@@ -66,10 +76,15 @@ export const ReviewMeeting = () => {
           <span className="px-3 py-1 rounded-lg bg-white/50">{meeting.spot}</span>
         </div>
       </div>
-          {/* <span className="absolute text-sm text-gray-600">
-            {currentIndex + 1} / {ReviewMeetings.length}
-          </span> */}
-      {ReviewMeetings.length>1 && <button onClick={next} className="text-xl px-2 flex-1 rounded-r-lg hover:opacity-90 bg-gradient-to-l from-[#F2C3B9] to-white">&gt;</button>}
+
+      {ReviewMeetings.length > 1 && (
+        <button 
+          onClick={next} 
+          className="text-xl px-2 flex-1 rounded-r-lg hover:opacity-90 bg-gradient-to-l from-[#F2C3B9] to-white"
+        >
+          &gt;
+        </button>
+      )}
     </div>
   );
 };

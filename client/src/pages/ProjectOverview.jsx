@@ -47,7 +47,7 @@ export const ProjectOverview = () => {
                     </div>
 
                     {/* 4. Review Meeting */}
-                    <div className="row-start-4 row-end-7 col-start-6 col-end-10 rounded-lg">
+                    <div className="row-start-4 row-end-7 col-start-6 col-end-10 rounded-lg overflow-hidden">
                         <ReviewMeeting />
                     </div>
 
