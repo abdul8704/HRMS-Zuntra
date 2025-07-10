@@ -84,34 +84,28 @@ export const LeaveForm = ({ handleClose }) => {
       </div>
 
       {/* Duration Type */}
-      <div className="flex gap-4">
+      <div className="flex gap-6">
         {['single', 'range', 'specific'].map((type) => (
-          <div key={type} className="relative">
+          <label
+            key={type}
+            className="flex items-center gap-2 cursor-pointer text-sm text-gray-700"
+          >
             <input
               type="radio"
               name="duration"
-              id={type}
               value={type}
               checked={durationType === type}
               onChange={() => setDurationType(type)}
-              className="peer hidden"
+              className="accent-[#bcd4cd] h-4 w-4"
             />
-            <label
-              htmlFor={type}
-              className={`px-4 py-1 border rounded-full cursor-pointer transition-colors
-          peer-checked:bg-[#bcd4cd] peer-checked:text-white 
-          text-gray-600 border-gray-300 hover:bg-[#bcd4cd]`}
-            >
-              {type === 'single'
-                ? 'Single Day'
-                : type === 'range'
-                  ? 'Date Range'
-                  : 'Specific Dates'}
-            </label>
-          </div>
+            {type === 'single'
+              ? 'Single Day'
+              : type === 'range'
+              ? 'Date Range'
+              : 'Specific Dates'}
+          </label>
         ))}
       </div>
-
 
       {/* Date Inputs Based on Type */}
       {durationType === 'single' && (
@@ -183,13 +177,13 @@ export const LeaveForm = ({ handleClose }) => {
       )}
 
       {/* Reason (Scrollable & min height) */}
-      <div className="flex flex-col flex-1 min-h-[150px] overflow-y-auto">
+      <div className="flex flex-col flex-1 min-h-[150px] overflow-x-auto">
         <label className="text-sm font-medium mb-1">Reason for Leave</label>
         <textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="Enter reason..."
-          className="border rounded px-3 py-2 bg-slate-100 text-gray-700 resize-none flex-1"
+          className="border rounded px-3 py-2 bg-slate-100 text-gray-700 resize-none flex-1 min-h-[150px]"
           required
         />
       </div>
