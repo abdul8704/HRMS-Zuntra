@@ -2,7 +2,6 @@ const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
 const attendanceHelper = require("../utils/attendanceHelper.js");
-const { insertMany } = require("../models/reminder.js");
 
 const getAttendanceDataByUserId = async (
     userid,
@@ -46,14 +45,16 @@ const getAttendanceDataByUserId = async (
             if (holidays.includes(currentDateStr)) {
                 holidayCount++;
                 result.push({ date: currentDateStr, status: "holiday" });
-            } else if (attendanceMap.has(currentDateStr)) {
+            } 
+            else if (attendanceMap.has(currentDateStr)) {
                 presentCount++;
                 result.push({
                     date: currentDateStr,
                     status: "present",
                     ...attendanceMap.get(currentDateStr)._doc,
                 });
-            } else {
+            } 
+            else {
                 absentCount++;
                 result.push({ date: currentDateStr, status: "absent" });
             }
@@ -93,6 +94,7 @@ const markAttendanceOnLogin = async (userid, mode) => {
         if (!shiftData) {
             throw new ApiError(404, "User not found");
         }
+
         if (!shiftData.shift) {
             throw new ApiError(400, "User does not have a shift assigned or assigned shift is invalid");
         }
@@ -103,15 +105,15 @@ const markAttendanceOnLogin = async (userid, mode) => {
         const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart);
         const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
 
-        if (isNaN(shiftStartTime.getTime(), isNaN(shiftEndTime.getTime())))
+        if (isNaN(shiftStartTime.getTime(), isNaN(shiftEndTime.getTime()))){
             throw new ApiError(400, "Unable to process shift timings");
+        }
 
         const now = attendanceHelper.toUTCTimeOnly(new Date());
 
         let attendance = await Attendance.findOne({ userid, date: today });
 
-        // FIRST LOGIN OF THE DAY
-        if (!attendance) {
+        if (!attendance) {      // this statement determines if, this is the first session of the day. create a record, mark present.
             attendance = new Attendance({
                 userid,
                 date: today,
@@ -137,14 +139,14 @@ const markAttendanceOnLogin = async (userid, mode) => {
             };
         }
 
-        // ✅ If status was remote and new mode is present, update status
+        // if employee previously logged in remotely, then starts another session onsite, update attendance type of day to onsite.
         if (attendance.status === "remote" && mode === "onsite") {
             attendance.status = "onsite";
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
 
-        // 🕓 Previous session exists and has no logout time
+        // Previous session exists and has no logout time
         if (lastSession && !lastSession.logoutTime) {
             const sessionDurationMs = now - new Date(lastSession.loginTime);
             const sessionDurationMinutes = sessionDurationMs / (1000 * 60);
@@ -153,7 +155,7 @@ const markAttendanceOnLogin = async (userid, mode) => {
             attendance.workingMinutes += sessionDurationMinutes;
         }
 
-        // 🕒 If previous session had logoutTime, calculate break only if within shift hours
+        // If previous session had logoutTime, calculate break only if within shift hours
         if (lastSession?.logoutTime) {
             const breakDurationMs = now - new Date(lastSession.logoutTime);
             const breakDurationMinutes = breakDurationMs / (1000 * 60);
@@ -165,7 +167,7 @@ const markAttendanceOnLogin = async (userid, mode) => {
                 mode: isWithinShift ? mode : "extra",
             });
 
-            if (isWithinShift && breakDurationMinutes > 1) {
+            if (isWithinShift && breakDurationMinutes > 1) {        // TODO: update this to whatever client wants
                 attendance.breakMinutes += breakDurationMinutes;
             }
         } else {
@@ -201,40 +203,29 @@ const markEndOfSession = async (userid, logoutTime) => {
         const attendance = await Attendance.findOne({ userid, date: today });
 
         if (!attendance) {
-            return {
-                success: false,
-                message: "No attendance found for today",
-            };
+            throw new ApiError(400, "No attendance found for today", today)
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
 
         if (!lastSession) {
-            return {
-                success: false,
-                message: "No sessions found for today",
-            };
+            throw new ApiError(400, "No sessions found for today, cant close a session that doesnt exist");
         }
 
         if (lastSession.logoutTime) {
-            return {
-                success: false,
-                message: "Session already logged out",
-            };
+              throw new ApiError(400, "Session already logged out");
         }
 
-        const logout = new Date(logoutTime);
+        const logout = attendanceHelper.toUTCTimeOnly(new Date(logoutTime));
+        
         if (isNaN(logout.getTime())) {
             throw new ApiError(400, "Invalid 'logoutTime' format");
         }
 
-        const login = new Date(lastSession.loginTime);
+        const login = attendanceHelper.toUTCTimeOnly(new Date(lastSession.loginTime));
 
         if (logout < login) {
-            return {
-                success: false,
-                message: "Logout time cannot be before login time",
-            };
+            throw new Error(400, "How did u even logout before u logged in? Time Travel?")
         }
 
         const sessionDurationMs = logout - login;
