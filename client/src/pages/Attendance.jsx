@@ -6,6 +6,7 @@ import { AttendanceCalendar } from '../components/attendance/AttendanceCalendar'
 import { WorkBreakComposition } from '../components/dashboard/WorkBreakComposititon'
 import { AttendanceCard } from '../components/attendance/AttendanceCard'
 import { useParams } from 'react-router-dom'
+import { LeaveForm } from '../components/attendance/LeaveForm'
 export const Attendance = () => {
     const { navId } = useParams();
     return (
@@ -45,6 +46,24 @@ export const Attendance = () => {
                             <AttendanceCard />
                         </div>
                     </div>
+                    )}
+                    {navId === "apply" && (
+                        <div className="flex flex-row w-full h-full overflow-hidden gap-[1rem]">
+                            <div className='flex-1'>
+                                <AttendanceCard />
+                            </div>
+                            <div className='flex-1'>
+                                <LeaveForm />
+                            </div>
+                        </div>
+                    )}
+                    {navId === "schedule" && (
+                        <div className="flex flex-row w-full h-full overflow-hidden gap-[1rem]">
+                            <div className='flex-1'>
+                                <AttendanceCalendar />
+                            </div>
+                            <div className='bg-[#00ffff] flex-1'></div>
+                        </div>
                     )}
                 </div>
             </div>

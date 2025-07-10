@@ -81,7 +81,7 @@ export const AttendanceCard = () => {
     : new Date().getFullYear();
 
   return (
-    <div className="w-full h-full bg-purple-100 p-6 rounded-xl overflow-hidden relative">
+    <div className="w-full h-full bg-purple-100 p-4 rounded-xl overflow-hidden relative">
       {/* Header */}
       <div className="flex items-start justify-between mb-2">
         {/* Left Title */}
@@ -154,7 +154,7 @@ export const AttendanceCard = () => {
       </div>
 
       {/* Attendance Data */}
-      <div className="max-h-[180px] overflow-y-auto">
+      <div className="h-full overflow-y-auto">
         {filteredDates.map((entry, idx) => (
           <div
             key={idx}
