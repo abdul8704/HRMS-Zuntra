@@ -290,9 +290,9 @@ export const CourseManagement = () => {
   const isError = (fieldId) => submitted && errorFields.includes(fieldId);
 
   return (
-    <div className="flex h-screen relative">
+    <div className="flex h-screen">
       <Sidebar />
-      <div className="flex flex-col flex-grow p-[1rem] gap-[1rem]">
+      <div className="flex flex-col flex-1 min-w-0 p-4 gap-4 overflow-hidden">
         <Navbar 
           type="courseManagement" 
           showFilter={true} 
@@ -303,7 +303,7 @@ export const CourseManagement = () => {
 
         {/* Filter Section */}
         {isFilterActive && navId === "all" && (
-          <div className="w-full bg-[#BBD3CC] rounded-xl flex gap-[0.5rem] p-[0.5rem]">
+          <div className="w-full bg-[#BBD3CC] rounded-xl flex gap-2 p-2">
             {/* Search Input */}
             <input
               type="text"
@@ -413,7 +413,7 @@ export const CourseManagement = () => {
 
         {/* Filter Summary */}
         {isFilterActive && navId === "all" && (
-          <div className="px-[1rem] flex items-center justify-between text-sm text-gray-600">
+          <div className="flex items-center justify-between text-sm text-gray-600">
             <div>
               Showing {filteredCourses.length} of {courses.length} courses
             </div>
@@ -427,28 +427,31 @@ export const CourseManagement = () => {
 
         {loading && <Loading />}
         
+        {/* Updated Grid Layout for Course Cards */}
         {!loading && navId === "all" && (
-          <div className="px-[1rem] flex flex-wrap gap-[1rem] overflow-y-auto">
+          <div className="flex-1 overflow-y-auto">
             {filteredCourses.length === 0 ? (
-              <div className="w-full text-center mt-4 text-gray-500 font-medium">
+              <div className="flex items-center justify-center h-full text-gray-500 font-medium">
                 {courses.length === 0 ? "No courses available" : "No courses match the current filters"}
               </div>
             ) : (
-              filteredCourses.map((course, index) => (
-                <div
-                  key={index}
-                  onClick={() => navigate(`/course/${index}/intro`)}
-                  className="cursor-pointer w-full sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.67rem)] lg:w-[calc(25%-0.75rem)] xl:w-[calc(20%-0.8rem)] min-w-[280px] max-w-[320px] flex-shrink-0"
-                >
-                  <CourseCard key={index} {...course} />
-                </div>
-              ))
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 p-4">
+                {filteredCourses.map((course, index) => (
+                  <div
+                    key={index}
+                    onClick={() => navigate(`/course/${index}/intro`)}
+                    className="cursor-pointer h-full"
+                  >
+                    <CourseCard {...course} />
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         )}
 
         {navId === "create" && (
-          <div className="h-[calc(100vh-80px)] flex flex-col justify-center items-center text-center p-8">
+          <div className="flex-1 flex flex-col justify-center items-center text-center overflow-y-auto">
             <h1 className="text-2xl font-semibold mb-8">Record with Loom</h1>
 
             <button className="bg-[#A6C4BA] hover:bg-[#BBD3CC] text-white font-bold text-base h-12 w-72 rounded-full flex items-center justify-center gap-2 mb-2">
@@ -468,7 +471,7 @@ export const CourseManagement = () => {
         )}
 
         {navId === "add" && (
-          <div className="flex flex-col items-center px-4 py-4 space-y-6 max-w-5xl mx-auto overflow-y-auto">
+          <div className="flex-1 flex flex-col items-center space-y-6 max-w-5xl mx-auto overflow-y-auto p-4">
             <AddCourse courseData={courseInfo} onChange={setCourseInfo} errors={errorFields} submitted={submitted} />
 
             {modules.map((mod, modIndex) => (
