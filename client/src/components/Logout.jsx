@@ -1,12 +1,19 @@
 import React from 'react';
+import api from '../api/axios'
 
 export const Logout = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  const handleLogout = () => {
-    localStorage.clear();
+  const handleLogout = async () => {
+    await api.post('/api/employee/logout', {
+      logoutTime: Date.now()
+    })
+
+    localStorage.removeItem('accessToken');
+    console.log("Done")
     window.location.href = '/';
-  };
+    return;
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">

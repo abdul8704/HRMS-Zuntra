@@ -196,8 +196,9 @@ const markAttendanceOnLogin = async (userid, mode) => {
     }
 };
 
-const markEndOfSession = async (userid, logoutTime) => {
+const markEndOfSession = async (userid, logout) => {
     const today = attendanceHelper.normalizeToUTCDate(new Date());
+    const logoutTime = attendanceHelper.toUTCTimeOnly(new Date(logout));
 
     try {
         const attendance = await Attendance.findOne({ userid, date: today });
