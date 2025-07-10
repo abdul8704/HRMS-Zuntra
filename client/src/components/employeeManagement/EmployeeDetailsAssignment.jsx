@@ -24,8 +24,8 @@ export const EmployeeDetailsAssignment = () => {
         <TimeCard state="break" time="09:20" showLabel={false} color={true} />
       </div>
 
-      <div className="bg-black/10 col-start-3 col-end-6 row-start-1 row-end-5 rounded-lg">
-        {/* <WorkBreakComposition /> */}
+      <div className="bg-black/10 col-start-3 col-end-6 row-start-1 row-end-5 rounded-lg overflow-hidden">
+        <WorkBreakComposition />
       </div>
 
       <div className="col-start-6 col-end-10 row-start-1 row-end-7 rounded-lg ">

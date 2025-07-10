@@ -75,7 +75,7 @@ export const WorkBreakComposition = () => {
 
   return (
     <>
-    <div className="w-full h-full rounded-2xl flex flex-col text-[clamp(0.7rem,1.2vw,1rem)] p-[clamp(0.5rem,1vw,1rem)] bg-purple-200">
+    <div className="relative w-full h-full rounded-2xl flex flex-col text-[clamp(0.7rem,1.2vw,1rem)] p-[clamp(0.5rem,1vw,1rem)] bg-purple-200">
   {/* Header */}
   <div className="flex items-center justify-between font-semibold text-[1.1rem] mb-2">
     <span className="font-semibold text-gray-800 text-[clamp(0.9rem,1.5vw,0.3rem)]">

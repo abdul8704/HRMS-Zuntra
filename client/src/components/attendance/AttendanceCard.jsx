@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { SlidersHorizontal } from "lucide-react";
 
 const getStatus = () => {
   const statuses = ["ontime", "late", "absent", "remote"];
@@ -10,12 +9,12 @@ const statusStyles = {
   ontime: "bg-green-400 text-white",
   late: "bg-orange-400 text-white",
   absent: "bg-red-400 text-white",
-  remote: "bg-blue-400 text-white"
+  remote: "bg-blue-400 text-white",
 };
 
 const months = [
   "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+  "July", "August", "September", "October", "November", "December",
 ];
 
 export const AttendanceCard = () => {
@@ -52,7 +51,7 @@ export const AttendanceCard = () => {
     while (current <= end) {
       dates.push({
         date: new Date(current),
-        status: getStatus()
+        status: getStatus(),
       });
       current.setDate(current.getDate() + 1);
     }
@@ -82,62 +81,79 @@ export const AttendanceCard = () => {
     : new Date().getFullYear();
 
   return (
-    <div className="w-full h-full bg-purple-100 p-6 rounded-xl shadow-xl overflow-hidden">
-      {/* Header Row */}
-      <div className="flex justify-between items-center mb-2 relative">
-        <div className="text-center w-full">
-          {/* UPDATED FONT STYLE FOR ATTENDANCE RECORD */}
+    <div className="w-full h-full bg-purple-100 p-6 rounded-xl overflow-hidden relative">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-2">
+        {/* Left Title */}
+        <div className="text-left">
           <h2 className="text-base font-bold tracking-wide text-gray-800">
             ATTENDANCE RECORD
           </h2>
-          <p className="text-sm text-gray-700 font-medium mt-1">
+        </div>
+
+        {/* Centered Month-Year */}
+        <div className="text-center mb-4">
+          <p className="text-sm text-gray-700 font-medium">
             {headingMonth.toUpperCase()} {headingYear}
           </p>
         </div>
 
-        <div className="absolute top-0 right-0">
-          <button
-            onClick={() => setShowFilter(!showFilter)}
-            className="p-2 rounded-full bg-white shadow hover:bg-purple-200"
+        {/* Right Filter Button */}
+        <button
+          onClick={() => setShowFilter(!showFilter)}
+          className="p-1 hover:scale-110 transition-transform"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            fill="none"
+            viewBox="0 0 24 24"
+            className="w-4 h-4"
           >
-            <SlidersHorizontal size={18} />
-          </button>
-        </div>
+            <path
+              fill="#000"
+              d="M20 16.606a.75.75 0 0 1-.75.75h-5.1a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h7.74a2.93 2.93 0 0 1 5.66 0h5.1a.75.75 0 0 1 .75.75Zm0-13.21a.75.75 0 0 1-.75.75H16.8a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h10.39a2.93 2.93 0 0 1 5.66 0h2.45a.74.74 0 0 1 .75.75Zm0 6.6a.741.741 0 0 1-.75.75H7.55a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h1.14a2.93 2.93 0 0 1 5.66 0h11.7a.75.75 0 0 1 .75.75Z"
+            />
+          </svg>
+        </button>
       </div>
-
-      {/* From-To Date Inputs (toggle visible with filter) */}
+      {/* filter drop down  */}
       {showFilter && (
-        <div className="flex gap-4 mb-3 mt-4">
-          <div>
-            <label className="text-sm font-semibold block mb-1 text-gray-600">From</label>
+        <div className="flex gap-4 mb-3 mt-2">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-semibold text-gray-600 whitespace-nowrap">
+              From
+            </label>
             <input
-              type="text"
+              type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="px-3 py-1 border rounded w-full text-sm"
-              placeholder="DD/MM/YYYY"
+              className="px-3 py-1 border rounded text-sm"
             />
           </div>
-          <div>
-            <label className="text-sm font-semibold block mb-1 text-gray-600">To</label>
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-semibold text-gray-600 whitespace-nowrap">
+              To
+            </label>
             <input
-              type="text"
+              type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="px-3 py-1 border rounded w-full text-sm"
-              placeholder="DD/MM/YYYY"
+              className="px-3 py-1 border rounded text-sm"
             />
           </div>
         </div>
       )}
 
+
       {/* Table Header */}
-      <div className="grid grid-cols-2 bg-purple-300 px-4 py-1.5 rounded font-semibold text-sm mb-1 mt-2">
+      <div className="grid grid-cols-2 bg-purple-300 px-4 py-1.5 rounded font-semibold text-sm mb-1">
         <div>Date</div>
         <div>Report</div>
       </div>
 
-      {/* Scrollable Report Table */}
+      {/* Attendance Data */}
       <div className="max-h-[180px] overflow-y-auto">
         {filteredDates.map((entry, idx) => (
           <div
@@ -150,10 +166,10 @@ export const AttendanceCard = () => {
                 {entry.status === "ontime"
                   ? "On Time"
                   : entry.status === "late"
-                  ? "Off Time"
-                  : entry.status === "absent"
-                  ? "Absent"
-                  : "Remote"}
+                    ? "Off Time"
+                    : entry.status === "absent"
+                      ? "Absent"
+                      : "Remote"}
               </span>
             </div>
           </div>
