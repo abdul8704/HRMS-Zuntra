@@ -292,7 +292,7 @@ export const Navbar = ({
     } else if (type === 'employeeDetails') {
       finalPath = `/employee/${employeeId}/details${path}`;
     } else if (type === 'attendance') {
-      finalPath = path;
+      finalPath = `/attendance/${path}`;
     }
 
     navigate(finalPath);
