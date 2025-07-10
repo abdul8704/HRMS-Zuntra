@@ -16,7 +16,7 @@ import  HrCreateCourse  from './pages/HrCreateCourse';
 import { Upskill } from './pages/Upskill';
 import { Attendance } from './pages/Attendance';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
-import { ProtectRoute } from './ProtectRoute';
+import { ProtectRoute } from './hooks/ProtectRoute';
 import './App.css'
 import './index.css'
 
