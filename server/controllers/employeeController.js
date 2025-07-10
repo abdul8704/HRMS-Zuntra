@@ -8,7 +8,6 @@ const handleLogout = asyncHandler(async (req, res) => {
     const { logoutTime } = req.body;
 
     if (!logoutTime) throw new ApiError(400, "Logout time not provided");
-    const logout = await employeeService.markEndOfSession(userid, logoutTime);
 
     res.clearCookie("refreshToken", {
         httpOnly: true,
@@ -16,7 +15,9 @@ const handleLogout = asyncHandler(async (req, res) => {
         sameSite: "None",
     });
 
-    if (logout.success === false)
+    const logout = await employeeService.markEndOfSession(userid, logoutTime);
+
+    if (logout.success !== true)
         return res
             .status(400)
             .json({ success: false, message: logout.message });
