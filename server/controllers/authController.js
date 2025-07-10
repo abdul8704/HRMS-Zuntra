@@ -89,6 +89,7 @@ const geoFenceLogin = asyncHandler(async (req, res) => {
     else
         await employeeService.markAttendanceOnLogin(userid, "remote");
 
+    console.log("ALL DONE")
     res.status(200).json({ success: true, message: "Attendance marked" });
 })
 

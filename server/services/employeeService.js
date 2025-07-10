@@ -89,24 +89,24 @@ const markAttendanceOnLogin = async (userid, mode) => {
             "shift",
             "startTime endTime"
         );
+
         if (!shiftData) {
             throw new ApiError(404, "User not found");
         }
         if (!shiftData.shift) {
-            throw new ApiError(400, "User does not have a shift assigned");
+            throw new ApiError(400, "User does not have a shift assigned or assigned shift is invalid");
         }
 
-        const shiftStart = new Date(shiftData.shift.shiftStart);
-        const shiftEnd = new Date(shiftData.shift.shiftEnd);
+        const shiftStart = new Date(shiftData.shift.startTime);
+        const shiftEnd = new Date(shiftData.shift.endTime);
 
         const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart);
         const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
 
-        if (isNaN(shiftStartTime.getTime()) || isNaN(shiftEndTime.getTime())) {
-            throw new ApiError(500, "Invalid shift start/end time");
-        }
+        if (isNaN(shiftStartTime.getTime(), isNaN(shiftEndTime.getTime())))
+            throw new ApiError(400, "Unable to process shift timings");
 
-        const now = new Date();
+        const now = attendanceHelper.toUTCTimeOnly(new Date());
 
         let attendance = await Attendance.findOne({ userid, date: today });
 
@@ -172,7 +172,10 @@ const markAttendanceOnLogin = async (userid, mode) => {
             // No previous session? Just push a new session (shouldn’t occur, but safe fallback)
             attendance.sessions.push({
                 loginTime: now,
-                mode: now >= shiftStart && now <= shiftEnd ? mode : "extra",
+                mode:
+                    now >= shiftStartTime && now <= shiftEndTime
+                        ? mode
+                        : "extra",
             });
         }
 
@@ -182,8 +185,7 @@ const markAttendanceOnLogin = async (userid, mode) => {
             message: "Attendance updated (subsequent login)",
         };
     } catch (error) {
-        if(error instanceof ApiError)
-            throw error;
+        if (error instanceof ApiError) throw error;
         throw new ApiError(
             500,
             "Failed to mark attendance on login",
@@ -250,8 +252,7 @@ const markEndOfSession = async (userid, logoutTime) => {
             totalWorkingMinutes: Math.round(attendance.workingMinutes),
         };
     } catch (error) {
-        if (error instanceof ApiError) 
-            throw error;
+        if (error instanceof ApiError) throw error;
         throw new ApiError(500, "Failed to mark end of session", error.message);
     }
 };
@@ -277,26 +278,28 @@ const getAllEmployees = async () => {
 
 // @desc Get details of a user
 const getDetailsOfaEmployee = async (userid) => {
-    try{
+    try {
         if (!userid) {
             throw new ApiError(400, "Employee ID is required");
         }
-    
+
         const userCreds = await User.findById(userid, { passwordHash: 0 })
             .populate("role", "role")
             .populate("shift", "startTime endTime")
             .populate("campus", "campusName");
-    
+
         if (!userCreds) {
             throw new ApiError(404, "Employee not found");
         }
-    
+
         return userCreds;
-    }
-    catch(error){
-        if(error instanceof ApiError)
-            throw error;
-        throw new ApiError(500, "Error while fetching details of a user", error.message);
+    } catch (error) {
+        if (error instanceof ApiError) throw error;
+        throw new ApiError(
+            500,
+            "Error while fetching details of a user",
+            error.message
+        );
     }
 };
 

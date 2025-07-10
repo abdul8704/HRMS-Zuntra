@@ -138,11 +138,9 @@ export const Login = () => {
       if (response.status !== 200) {
         setPopupContent({ type: 'error', title: 'Login Error', message: 'Something went wrong' });
         setShowPopup(true);
-        setLoading(false);
         return;
       }
       const token = response.data.accessToken;
-      localStorage.setItem("accessToken", token);
 
       navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -153,10 +151,15 @@ export const Login = () => {
 
           if (res.status === 200) {
             console.log("Attendance Marked");
-          } else if (res.status === 206) {
-            console.log("Request Pending Approval");
+            localStorage.setItem("accessToken", token);
+            
+            setLoading(false);
+            navigate("/dashboard");
           }
-          navigate("/dashboard");
+          else if (res.status === 206) {
+            console.log("Request Pending Approval");
+            alert("Wait for aproval")
+          }
         },
         (error) => console.error("Error getting location:", error)
       );
