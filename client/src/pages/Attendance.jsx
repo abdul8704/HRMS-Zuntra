@@ -8,6 +8,7 @@ import { AttendanceCard } from '../components/attendance/AttendanceCard'
 import { useParams } from 'react-router-dom'
 import { LeaveForm } from '../components/attendance/LeaveForm'
 import { ScheduleForm } from '../components/attendance/ScheduleForm'
+import { LeaveFormHistory } from '../components/attendance/LeaveFormHistory'
 export const Attendance = () => {
     const { navId } = useParams();
     return (
@@ -53,8 +54,13 @@ export const Attendance = () => {
                             <div className='flex-1'>
                                 <AttendanceCard />
                             </div>
-                            <div className='flex-1 p-4'>
-                                <LeaveForm />
+                            <div className='flex-1 p-4 flex flex-col gap-[1rem]'>
+                                <div className="flex-[4] overflow-hidden">
+                                    <LeaveFormHistory />
+                                </div>
+                                <div className="flex-[6] overflow-hidden">
+                                    <LeaveForm />
+                                </div>
                             </div>
                         </div>
                     )}
