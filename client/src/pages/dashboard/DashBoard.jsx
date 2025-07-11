@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Sidebar } from "../../components/Sidebar";
 import { jwtDecode } from 'jwt-decode';
 
-import UserGreetings from "./components/UserGreetings";
-import TimeCard from "./components/TimeCard";
-import ReminderCard from "./components/ReminderCard";
-import NotificationCard from "./components/NotificationCard";
-import WorkBreakComposition from "./components/WorkBreakComposititon";
-import EmployeesOnLeave from "./components/EmployeesOnLeave";
-import RemainderPopup from "./components/RemainderPopup";
+import {UserGreetings} from "./components/UserGreetings";
+import {TimeCard} from "./components/TimeCard";
+import {ReminderCard} from "./components/ReminderCard";
+import {NotificationCard} from "./components/NotificationCard";
+import {WorkBreakComposition} from "./components/WorkBreakComposititon";
+import { EmployeesOnLeave } from "./components/EmployeesOnLeave";
+import {RemainderPopup} from "./components/RemainderPopup";
 
 
 import { NewUser } from './NewUser';

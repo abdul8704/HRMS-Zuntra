@@ -105,11 +105,6 @@ function App() {
           </ProtectRoute>
         }/>
 
-        <Route path="/createcourse" element={
-          <ProtectRoute>
-            <HrCreateCourse />
-          </ProtectRoute>
-        }/>
 
         {/* Not Found Route */}
         <Route path="*" element={<NotFound />} />
