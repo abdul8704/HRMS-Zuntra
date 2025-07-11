@@ -2,9 +2,8 @@ const mongoose = require("mongoose");
 
 const courseContentSchema = new mongoose.Schema({
     courseId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
-        unique: true,
     },
     modules: {
         type: [

@@ -1,32 +1,15 @@
 import React, { useState } from "react";
 import zuntraLogo from "../../assets/zuntra.png";
-import { Menu } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 
-export const UpskillSideBar = ({ progressMatrix = [] }) => {
+export const UpskillSideBar = ({
+  modules = [],
+  progressMatrix = [],
+  onSubmoduleClick = () => { },
+}) => {
+  const { courseId } = useParams();
   const [isOpen, setIsOpen] = useState(false);
-
-  const modules = [
-    {
-      title: "Module 1 Name",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3", "Sub Module 4"],
-    },
-    {
-      title: "Module 2",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3"],
-    },
-    {
-      title: "Module 3",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3", "Sub Module 4", "Sub Module 5"],
-    },
-    {
-      title: "Module 4",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3", "Sub Module 4", "Sub Module 5"],
-    },
-    {
-      title: "Module 5",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3", "Sub Module 4", "Sub Module 5"],
-    },
-  ];
+  const navigate = useNavigate();
 
   const isModuleCompleted = (moduleIndex) =>
     progressMatrix[moduleIndex]?.length &&
@@ -62,6 +45,12 @@ export const UpskillSideBar = ({ progressMatrix = [] }) => {
         className={`fixed top-0 left-0 h-screen w-[260px] bg-[#cde8e6] p-4 overflow-y-auto z-[1000] transition-transform duration-300 
         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
+        <button
+          className="text-2xl font-bold text-black hover:scale-110 transition"
+          onClick={() => { navigate(`/course/${courseId}/intro`) }}
+        >
+          ←
+        </button>
         {/* Logo + Close */}
         <div className="relative">
           {/* Logo */}
@@ -108,7 +97,11 @@ export const UpskillSideBar = ({ progressMatrix = [] }) => {
               </div>
               <ul className="pl-4 space-y-1">
                 {module.submodules.map((sub, subIdx) => (
-                  <li key={subIdx} className="text-sm flex items-center gap-2">
+                  <li
+                    key={subIdx}
+                    className="text-sm flex items-center gap-2 cursor-pointer hover:underline"
+                    onClick={() => onSubmoduleClick(idx, subIdx)}
+                  >
                     <span
                       className="w-[4px] h-[14px] rounded-sm"
                       style={{
@@ -119,6 +112,7 @@ export const UpskillSideBar = ({ progressMatrix = [] }) => {
                     />
                     {sub}
                   </li>
+
                 ))}
               </ul>
             </div>

@@ -8,7 +8,6 @@ const handleLogout = asyncHandler(async (req, res) => {
     const { logoutTime } = req.body;
 
     if (!logoutTime) throw new ApiError(400, "Logout time not provided");
-    const logout = await employeeService.markEndOfSession(userid, logoutTime);
 
     res.clearCookie("refreshToken", {
         httpOnly: true,
@@ -16,7 +15,9 @@ const handleLogout = asyncHandler(async (req, res) => {
         sameSite: "None",
     });
 
-    if (logout.success === false)
+    const logout = await employeeService.markEndOfSession(userid, logoutTime);
+
+    if (logout.success !== true)
         return res
             .status(400)
             .json({ success: false, message: logout.message });
@@ -91,10 +92,33 @@ const getDetailsOfaEmployee= asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, employeeDetail });
 });
 
+const applyForLeave = asyncHandler(async (req, res) => {
+  const { userid } = req.user;
+  const { leaveCategory, startDate, endDate, reason } = req.body;
+  console.log(userid, leaveCategory, startDate, endDate, reason)
+
+  if(!leaveCategory || !startDate || !endDate || !reason){
+    throw new ApiError(400, "please send all data reqd to apply leave")
+  }
+
+  const applyLeave = await employeeService.applyLeave(userid, leaveCategory, startDate, endDate, reason);
+
+  return res.status(201).json({ success: true, message: "Request sent successfully" })
+})
+
+const getEmployeeRequests = asyncHandler(async (req, res) => {
+  const { userid } = req.user;
+
+  const applicationData = await employeeService.getLeaveRequests(userid);
+  return res.status(200).json({ success: true, leaveRequests: applicationData })
+})
+
 module.exports = {
     handleLogout,
     getAttendanceData,
     fetchAllEmployees,
     getEmployeeByRole,
     getDetailsOfaEmployee,
+    applyForLeave,
+    getEmployeeRequests,
 };

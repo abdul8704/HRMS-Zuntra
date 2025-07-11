@@ -105,6 +105,7 @@ export const AddLocationForm = ({ isOpen = false, onClose = () => { }, onSubmit 
               <div>
                 <input
                   type="Number"
+                  min="0"
                   placeholder="Enter radius (in meters)"
                   value={formData.radius}
                   onChange={(e) => handleInputChange('radius', e.target.value)}

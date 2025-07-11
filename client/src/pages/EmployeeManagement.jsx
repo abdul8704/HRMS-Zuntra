@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Sidebar } from "../components/Sidebar";
 import { Navbar } from '../components/Navbar';
@@ -16,68 +16,79 @@ export const EmployeeManagement = () => {
   const { navId } = useParams();
   const navigate = useNavigate();
 
+  // Filter states
   const [isFilterActive, setIsFilterActive] = useState(false);
-  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [roleSearchTerm, setRoleSearchTerm] = useState("All Roles");
   const [selectedRole, setSelectedRole] = useState("All Roles");
-  const [showLoginDropdown, setShowLoginDropdown] = useState(false);
   const [selectedLoginStatus, setSelectedLoginStatus] = useState("All Users");
+  
+  // Role dropdown states
+  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [roleSearchTerm, setRoleSearchTerm] = useState("All Roles");
+  const [showLoginDropdown, setShowLoginDropdown] = useState(false);
 
+  // Popup states
   const [showPopup, setShowPopup] = useState(false);
   const [showAssignPopup, setShowAssignPopup] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showLocationForm, setShowLocationForm] = useState(false);
   const [editRoleData, setEditRoleData] = useState(null);
 
-  const [pendingEmployees, setPendingEmployees] = useState([]);
+  // Data states
   const [employees, setEmployees] = useState([]);
+  const [pendingEmployees, setPendingEmployees] = useState([]);
   const [rolesData, setRolesData] = useState([]);
   const [branches, setBranches] = useState([]);
 
-  const [isLoadingRoles, setIsLoadingRoles] = useState(true);
-  const [isErrorRoles, setIsErrorRoles] = useState(false);
+  // Loading states
+  const [loading, setLoading] = useState({
+    employees: true,
+    pending: true,
+    roles: true,
+    branches: true
+  });
 
-  const [isLoadingEmployees, setIsLoadingEmployees] = useState(true);
-  const [isErrorEmployees, setIsErrorEmployees] = useState(false);
+  // Error states
+  const [errors, setErrors] = useState({
+    employees: false,
+    pending: false,
+    roles: false,
+    branches: false
+  });
 
-  const [isLoadingPending, setIsLoadingPending] = useState(true);
-  const [isErrorPending, setIsErrorPending] = useState(false);
-
-  const [isLoadingBranches, setIsLoadingBranches] = useState(true);
-  const [isErrorBranches, setIsErrorBranches] = useState(false);
   const validTabs = ["all", "roles", "newusers", "locations"];
+
+  // Validate navId
   useEffect(() => {
     if (!validTabs.includes(navId)) {
       navigate("/404");
       return;
     }
-  },[navId]);
-  useEffect(() => {
-    // Force component to acknowledge filter changes
-    console.log('Filter state changed:', {
-      searchTerm,
-      selectedRole,
-      selectedLoginStatus,
-      isFilterActive
-    });
-  }, [searchTerm, selectedRole, selectedLoginStatus, isFilterActive]);
+  }, [navId, navigate]);
+
+  // Clear filters when navId changes
   useEffect(() => {
     handleClearFilters();
   }, [navId]);
+
+  // Fetch data
   useEffect(() => {
     const fetchData = async () => {
+      setLoading({
+        employees: true,
+        pending: true,
+        roles: true,
+        branches: true
+      });
+
+      setErrors({
+        employees: false,
+        pending: false,
+        roles: false,
+        branches: false
+      });
+
       try {
-        setIsLoadingRoles(true);
-        setIsLoadingEmployees(true);
-        setIsLoadingPending(true);
-        setIsLoadingBranches(true);
-
-        setIsErrorRoles(false);
-        setIsErrorEmployees(false);
-        setIsErrorPending(false);
-        setIsErrorBranches(false);
-
         const [roles, emps, pending, brs] = await Promise.all([
           api.get('/api/roles'),
           api.get('/api/employee'),
@@ -85,25 +96,31 @@ export const EmployeeManagement = () => {
           api.get('/api/branch'),
         ]);
 
-        setRolesData(roles.data);
-        setEmployees(emps.data.employees);
-        setPendingEmployees(pending.data.pendingEmployees);
-        setBranches(brs.data.branches);
+        setRolesData(roles.data || []);
+        setEmployees(emps.data.employees || []);
+        setPendingEmployees(pending.data.pendingEmployees || []);
+        setBranches(brs.data.branches || []);
       } catch (err) {
         console.error("Error fetching data:", err);
-        setIsErrorRoles(true);
-        setIsErrorEmployees(true);
-        setIsErrorPending(true);
-        setIsErrorBranches(true);
+        setErrors({
+          employees: true,
+          pending: true,
+          roles: true,
+          branches: true
+        });
       } finally {
-        setIsLoadingRoles(false);
-        setIsLoadingEmployees(false);
-        setIsLoadingPending(false);
-        setIsLoadingBranches(false);
+        setLoading({
+          employees: false,
+          pending: false,
+          roles: false,
+          branches: false
+        });
       }
     };
+
     fetchData();
   }, []);
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -119,92 +136,148 @@ export const EmployeeManagement = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const allRolesList = ["All Roles", ...rolesData.map((r) => r.role)];
+  // Memoized role list
+  const allRolesList = useMemo(() => {
+    return ["All Roles", ...rolesData.map((r) => r.role || r.name)];
+  }, [rolesData]);
 
-  // Show all roles when dropdown is opened or when search is empty
-  const filteredRoles = roleSearchTerm.trim() === "" || roleSearchTerm === selectedRole
-    ? allRolesList
-    : allRolesList.filter((role) =>
+  // Memoized filtered roles for dropdown
+  const filteredRoleDropdown = useMemo(() => {
+    if (roleSearchTerm.trim() === "" || roleSearchTerm === selectedRole) {
+      return allRolesList;
+    }
+    return allRolesList.filter((role) =>
       role.toLowerCase().includes(roleSearchTerm.toLowerCase())
     );
+  }, [allRolesList, roleSearchTerm, selectedRole]);
 
-  // Filter employees based on all active filters
-  const filteredEmployees = employees.filter((emp) => {
-    // Role filter
-    if (selectedRole !== "All Roles" && emp.role?.role !== selectedRole) {
-      return false;
-    }
+  // Utility function to check if string includes search term
+  const includesSearchTerm = useCallback((str, term) => {
+    return str?.toLowerCase().includes(term.toLowerCase()) || false;
+  }, []);
 
-    // Search filter (name, email, phone)
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase();
-      const matchesSearch =
-        emp.username?.toLowerCase().includes(term) ||
-        emp.email?.toLowerCase().includes(term) ||
-        emp.phoneNumber?.toLowerCase().includes(term);
-      if (!matchesSearch) return false;
-    }
+  // Memoized filtered employees
+  const filteredEmployees = useMemo(() => {
+    if (!employees.length) return [];
 
-    // Login status filter
-    if (selectedLoginStatus !== "All Users") {
-      const isLoggedIn = !!emp.loginTime;
-      if (selectedLoginStatus === "Present" && !isLoggedIn) return false;
-      if (selectedLoginStatus === "Absent" && isLoggedIn) return false;
-    }
-    return true;
-  });
-  // Filter for new users (pending employees)
-  const filteredPendingEmployees = pendingEmployees.filter((emp) => {
-    // Search filter
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase();
-      const matchesSearch =
-        emp.name?.toLowerCase().includes(term) ||
-        emp.email?.toLowerCase().includes(term) ||
-        emp.phone?.toLowerCase().includes(term);
-      if (!matchesSearch) return false;
-    }
+    return employees.filter((emp) => {
+      // Role filter - Fixed to handle different role object structures
+      if (selectedRole !== "All Roles") {
+        const empRole = emp.role?.role || emp.role?.name || emp.role;
+        if (empRole !== selectedRole) {
+          return false;
+        }
+      }
 
-    // Date filter
-    if (selectedRole && selectedRole !== "All Roles") {
-      if (emp.date !== selectedRole) return false;
-    }
+      // Search filter (name, email, phone)
+      if (searchTerm.trim()) {
+        const term = searchTerm.toLowerCase();
+        const matchesSearch = 
+          includesSearchTerm(emp.username, term) ||
+          includesSearchTerm(emp.name, term) ||
+          includesSearchTerm(emp.email, term) ||
+          includesSearchTerm(emp.phoneNumber, term) ||
+          includesSearchTerm(emp.phone, term);
+        
+        if (!matchesSearch) return false;
+      }
 
-    return true;
-  });
+      // Login status filter
+      if (selectedLoginStatus !== "All Users") {
+        const isLoggedIn = !!emp.loginTime;
+        if (selectedLoginStatus === "Present" && !isLoggedIn) return false;
+        if (selectedLoginStatus === "Absent" && isLoggedIn) return false;
+      }
 
-  // Filter for branches/locations
-  const filteredBranches = branches.filter((branch) => {
-    // Search filter
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase();
-      if (!branch.campusName?.toLowerCase().includes(term)) return false;
-    }
+      return true;
+    });
+  }, [employees, selectedRole, searchTerm, selectedLoginStatus, includesSearchTerm]);
 
-    // Location filter
-    if (selectedRole !== "All Locations" && selectedRole !== "All Roles") {
-      if (branch.campusName !== selectedRole) return false;
-    }
+  // Memoized filtered pending employees
+  const filteredPendingEmployees = useMemo(() => {
+    if (!pendingEmployees.length) return [];
 
-    return true;
-  });
+    return pendingEmployees.filter((emp) => {
+      // Search filter
+      if (searchTerm.trim()) {
+        const term = searchTerm.toLowerCase();
+        const matchesSearch = 
+          includesSearchTerm(emp.name, term) ||
+          includesSearchTerm(emp.email, term) ||
+          includesSearchTerm(emp.phone, term) ||
+          includesSearchTerm(emp.phoneNumber, term);
+        
+        if (!matchesSearch) return false;
+      }
 
-  const handleEditRole = (roleData) => setEditRoleData(roleData);
-  const handleSaveEditedRole = () => setEditRoleData(null);
-  const handleCloseEdit = () => setEditRoleData(null);
-  const handleClosePopup = () => {
+      // Date filter (reusing selectedRole state)
+      if (selectedRole && selectedRole !== "All Roles" && selectedRole !== "") {
+        if (emp.date !== selectedRole) return false;
+      }
+
+      return true;
+    });
+  }, [pendingEmployees, searchTerm, selectedRole, includesSearchTerm]);
+
+  // Memoized filtered branches
+  const filteredBranches = useMemo(() => {
+    if (!branches.length) return [];
+
+    return branches.filter((branch) => {
+      // Search filter
+      if (searchTerm.trim()) {
+        const term = searchTerm.toLowerCase();
+        if (!includesSearchTerm(branch.campusName, term)) return false;
+      }
+
+      // Location filter
+      if (selectedRole !== "All Locations" && selectedRole !== "All Roles" && selectedRole !== "") {
+        if (branch.campusName !== selectedRole) return false;
+      }
+
+      return true;
+    });
+  }, [branches, searchTerm, selectedRole, includesSearchTerm]);
+
+  // Memoized filtered roles
+  const filteredRoles = useMemo(() => {
+    if (!rolesData.length) return [];
+
+    return rolesData.filter((role) => {
+      if (!searchTerm.trim()) return true;
+      const roleName = role.role || role.name || '';
+      return includesSearchTerm(roleName, searchTerm);
+    });
+  }, [rolesData, searchTerm, includesSearchTerm]);
+
+  // Event handlers
+  const handleEditRole = useCallback((roleData) => {
+    setEditRoleData(roleData);
+  }, []);
+
+  const handleSaveEditedRole = useCallback(() => {
+    setEditRoleData(null);
+  }, []);
+
+  const handleCloseEdit = useCallback(() => {
+    setEditRoleData(null);
+  }, []);
+
+  const handleClosePopup = useCallback(() => {
     setShowAssignPopup(false);
     setSelectedEmployee(null);
-  };
+  }, []);
 
-  const handleApprove = (employee) => {
+  const handleApprove = useCallback((employee) => {
     setSelectedEmployee(employee);
     setShowAssignPopup(true);
-  };
+  }, []);
 
-  const handleSaveAssignment = () => handleClosePopup();
+  const handleSaveAssignment = useCallback(() => {
+    handleClosePopup();
+  }, [handleClosePopup]);
 
-  const handleAddNewBranch = async (formData) => {
+  const handleAddNewBranch = useCallback(async (formData) => {
     try {
       const response = await api.post('/api/branch/new-branch', formData);
       if (response.data.success) {
@@ -214,10 +287,10 @@ export const EmployeeManagement = () => {
     } catch (error) {
       console.error("Error adding new branch:", error);
     }
-  };
+  }, []);
 
   // Clear all filters
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     setSearchTerm("");
     setSelectedRole(navId === "newusers" ? "" : navId === "locations" ? "All Locations" : "All Roles");
     setRoleSearchTerm("All Roles");
@@ -225,31 +298,84 @@ export const EmployeeManagement = () => {
     setShowRoleDropdown(false);
     setShowLoginDropdown(false);
     setIsFilterActive(false);
-  };
+  }, [navId]);
 
+  // Background color generation
   const bgClasses = ['#FBEDEA', '#D7B5EB', '#D2EFEA', '#ECECFD'];
-  const getGridBgColors = (length, columns, colors) => {
+  const getGridBgColors = useCallback((length, columns, colors) => {
     return Array.from({ length }, (_, i) => {
       const col = i % columns;
       const row = Math.floor(i / columns);
       return colors[(col + row) % colors.length];
     });
+  }, []);
+
+  const bgColorList = useMemo(() => {
+    return getGridBgColors(employees.length, 3, bgClasses);
+  }, [employees.length, getGridBgColors]);
+
+  // Get current data and loading state based on navId
+  const getCurrentData = () => {
+    switch (navId) {
+      case "all":
+        return {
+          data: filteredEmployees,
+          loading: loading.employees,
+          error: errors.employees,
+          total: employees.length
+        };
+      case "roles":
+        return {
+          data: filteredRoles,
+          loading: loading.roles,
+          error: errors.roles,
+          total: rolesData.length
+        };
+      case "newusers":
+        return {
+          data: filteredPendingEmployees,
+          loading: loading.pending,
+          error: errors.pending,
+          total: pendingEmployees.length
+        };
+      case "locations":
+        return {
+          data: filteredBranches,
+          loading: loading.branches,
+          error: errors.branches,
+          total: branches.length
+        };
+      default:
+        return { data: [], loading: false, error: false, total: 0 };
+    }
   };
-  const bgColorList = getGridBgColors(employees.length, 3, bgClasses);
+
+  const currentData = getCurrentData();
 
   return (
     <div className="flex w-screen h-screen">
       <Sidebar />
       <div className="flex gap-[1rem] flex-col flex-1 p-[1rem] h-screen">
-        <Navbar type="employeeManagement" showFilter={true} isFilterActive={isFilterActive} setIsFilterActive={setIsFilterActive} handleClearFilters={handleClearFilters}/>
+        <Navbar 
+          type="employeeManagement" 
+          showFilter={true} 
+          isFilterActive={isFilterActive} 
+          setIsFilterActive={setIsFilterActive} 
+          handleClearFilters={handleClearFilters}
+        />
 
+        {/* Filter Section */}
         {isFilterActive && (
           <div className="w-full bg-[#BBD3CC] rounded-xl flex gap-[0.5rem] p-[0.5rem]">
-            {/* Search Input - Show for all, newusers, and geofencing */}
+            {/* Search Input */}
             {(navId === "all" || navId === "roles" || navId === "newusers" || navId === "locations") && (
               <input
                 type="text"
-                placeholder={navId === "roles" ? "Search roles" : navId === "locations" ? "Search locations" : "Search by name, email, or phone"}
+                placeholder={
+                  navId === "roles" ? "Search roles" : 
+                  navId === "locations" ? "Search locations" : 
+                  "Search by name, email, or phone"
+                }
                 className="bg-white/50 flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A6C4BA]"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -288,14 +414,13 @@ export const EmployeeManagement = () => {
                 </div>
                 {showRoleDropdown && (
                   <div className="absolute z-50 mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {filteredRoles.length === 0 ? (
+                    {filteredRoleDropdown.length === 0 ? (
                       <div className="px-3 py-2 text-gray-500">No roles found</div>
                     ) : (
-                      filteredRoles.map((role, idx) => (
+                      filteredRoleDropdown.map((role, idx) => (
                         <div
                           key={idx}
-                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedRole === role ? 'bg-[#BBD3CC]' : ''
-                            }`}
+                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedRole === role ? 'bg-[#BBD3CC]' : ''}`}
                           onClick={() => {
                             setSelectedRole(role);
                             setRoleSearchTerm(role);
@@ -317,7 +442,7 @@ export const EmployeeManagement = () => {
                 <input
                   type="date"
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white/50 focus:outline-none focus:ring-2 focus:ring-[#A6C4BA]"
-                  value={selectedRole} // reusing selectedRole state for date
+                  value={selectedRole}
                   onChange={(e) => setSelectedRole(e.target.value)}
                 />
               </div>
@@ -340,8 +465,7 @@ export const EmployeeManagement = () => {
                     {["All Users", "Present", "Absent"].map((status) => (
                       <div
                         key={status}
-                        className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedLoginStatus === status ? 'bg-[#BBD3CC]' : ''
-                          }`}
+                        className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedLoginStatus === status ? 'bg-[#BBD3CC]' : ''}`}
                         onClick={() => {
                           setSelectedLoginStatus(status);
                           setShowLoginDropdown(false);
@@ -372,55 +496,77 @@ export const EmployeeManagement = () => {
         {isFilterActive && (
           <div className="px-[1rem] flex items-center justify-between text-sm text-gray-600">
             <div>
-              {navId === "all" && `Showing ${filteredEmployees.length} of ${employees.length} employees`}
-              {navId === "newusers" && `Showing ${filteredPendingEmployees.length} of ${pendingEmployees.length} new users`}
-              {navId === "locations" && `Showing ${filteredBranches.length} of ${branches.length} locations`}
-              {navId === "roles" && `Showing ${rolesData.filter(role => {
-                if (!searchTerm.trim()) return true;
-                return role.role.toLowerCase().includes(searchTerm.toLowerCase());
-              }).length} of ${rolesData.length} roles`}
+              Showing {currentData.data.length} of {currentData.total} {
+                navId === "all" ? "employees" :
+                navId === "newusers" ? "new users" :
+                navId === "locations" ? "locations" : "roles"
+              }
             </div>
             <div className="flex gap-2">
-              {searchTerm && <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">Search: "{searchTerm}"</span>}
-              {navId === "all" && selectedRole !== "All Roles" && <span className="px-2 py-1 bg-green-100 text-green-800 rounded">Role: {selectedRole}</span>}
-              {navId === "newusers" && selectedRole && <span className="px-2 py-1 bg-green-100 text-green-800 rounded">Date: {selectedRole}</span>}
-              {navId === "locations" && selectedRole !== "All Locations" && selectedRole !== "All Roles" && <span className="px-2 py-1 bg-green-100 text-green-800 rounded">Location: {selectedRole}</span>}
-              {navId === "all" && selectedLoginStatus !== "All Users" && <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded">Status: {selectedLoginStatus}</span>}
+              {searchTerm && (
+                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                  Search: "{searchTerm}"
+                </span>
+              )}
+              {navId === "all" && selectedRole !== "All Roles" && (
+                <span className="px-2 py-1 bg-green-100 text-green-800 rounded">
+                  Role: {selectedRole}
+                </span>
+              )}
+              {navId === "newusers" && selectedRole && (
+                <span className="px-2 py-1 bg-green-100 text-green-800 rounded">
+                  Date: {selectedRole}
+                </span>
+              )}
+              {navId === "locations" && selectedRole !== "All Locations" && selectedRole !== "All Roles" && (
+                <span className="px-2 py-1 bg-green-100 text-green-800 rounded">
+                  Location: {selectedRole}
+                </span>
+              )}
+              {navId === "all" && selectedLoginStatus !== "All Users" && (
+                <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded">
+                  Status: {selectedLoginStatus}
+                </span>
+              )}
             </div>
           </div>
         )}
+
+        {/* Content Sections */}
+        
         {/* All Employees */}
         {navId === "all" && (
           <div className="px-[1rem] grid grid-cols-1 md:grid-cols-2 gap-[1rem] overflow-y-auto">
-            {isLoadingEmployees ? (
+            {currentData.loading ? (
               <div className="text-center col-span-full mt-4 text-gray-600 font-semibold">
                 <Loading />
               </div>
-            ) : isErrorEmployees ? (
-              <p className="text-center col-span-full mt-4 text-red-500 font-semibold">Error fetching employees</p>
-            ) : filteredEmployees.length === 0 ? (
+            ) : currentData.error ? (
+              <p className="text-center col-span-full mt-4 text-red-500 font-semibold">
+                Error fetching employees
+              </p>
+            ) : currentData.data.length === 0 ? (
               <p className="text-center col-span-full mt-4 text-gray-500 font-medium">
-                {employees.length === 0 ? "No employees available" : "No employees match the current filters"}
+                {currentData.total === 0 ? "No employees available" : "No employees match the current filters"}
               </p>
             ) : (
-              filteredEmployees.map((emp, index) => (
+              currentData.data.map((emp, index) => (
                 <div
                   key={emp._id || index}
                   onClick={() => navigate(`/employee/${emp._id}/details/attendance`)}
                   className="cursor-pointer transition-transform hover:scale-[1.01] w-full"
                 >
                   <EmployeeCard
-                    key={emp._id || index}
-                    name={emp.username}
+                    name={emp.username || emp.name}
                     email={emp.email}
-                    phone={emp.phoneNumber}
-                    image={emp.profilePicture}
-                    role={emp.role.name}
+                    phone={emp.phoneNumber || emp.phone}
+                    image={emp.profilePicture || emp.image}
+                    role={emp.role?.role || emp.role?.name || emp.role || "N/A"}
                     inTime={emp.loginTime || "N/A"}
                     outTime={emp.logoutTime || "N/A"}
                     workTime="10:01"
                     breakTime="12:00"
-                    bgColor={emp.role.color}
+                    bgColor={emp.role?.color || bgColorList[index]}
                   />
                 </div>
               ))
@@ -432,44 +578,38 @@ export const EmployeeManagement = () => {
         {navId === "roles" && (
           <div className="flex-1 px-[1rem] overflow-y-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[1rem] justify-items-center">
-              {isLoadingRoles ? (
+              {currentData.loading ? (
                 <div className="text-center col-span-full mt-4 text-gray-600 font-semibold">
                   <Loading />
                 </div>
-              ) : isErrorRoles ? (
-                <p className="text-center col-span-full mt-4 text-red-500 font-semibold">Error fetching roles</p>
-              ) : rolesData.length === 0 ? (
-                <p className="text-center col-span-full mt-4 text-gray-500 font-medium">No roles available</p>
+              ) : currentData.error ? (
+                <p className="text-center col-span-full mt-4 text-red-500 font-semibold">
+                  Error fetching roles
+                </p>
+              ) : currentData.data.length === 0 ? (
+                <p className="text-center col-span-full mt-4 text-gray-500 font-medium">
+                  {currentData.total === 0 ? "No roles available" : "No roles match the current filters"}
+                </p>
               ) : (
-                // Filter roles based on search term
-                
-                rolesData
-                  .filter((role) => {
-                    if (!searchTerm.trim()) return true;
-                    return role.role.toLowerCase().includes(searchTerm.toLowerCase());
-                  })
-                  .map((role, idx) => (
-                                    <div
-                  key={role._id || index}
-                  onClick={() => navigate(`/employee/role/${role._id}/details`)}
-                  className="cursor-pointer transition-transform hover:scale-[1.01] w-full"
-                >
+                currentData.data.map((role, idx) => (
+                  <div
+                    key={role._id || idx}
+                    onClick={() => navigate(`/employee/role/${role._id}/details`)}
+                    className="cursor-pointer transition-transform hover:scale-[1.01] w-full"
+                  >
                     <RoleCard
-                      key={idx}
-                      role={role.role}
+                      role={role.role || role.name}
                       bgColor={role.color || "#e0e0e0"}
                       onEdit={() =>
                         handleEditRole({
-                          role: role.role,
-                          members: role.memberCount,
-                          color: role.bgColor || "#e0e0e0",
+                          role: role.role || role.name,
+                          members: role.memberCount || 0,
+                          color: role.color || "#e0e0e0",
                         })
                       }
                     />
-                    </div>
-                  ))
-
-
+                  </div>
+                ))
               )}
             </div>
             <div
@@ -483,20 +623,23 @@ export const EmployeeManagement = () => {
           </div>
         )}
 
-
         {/* Geofencing */}
         {navId === "locations" && (
           <div className="flex flex-col px-[1rem] gap-4 overflow-y-auto flex-1">
-            {isLoadingBranches ? (
+            {currentData.loading ? (
               <div className="text-center col-span-full mt-4 text-gray-600 font-semibold">
                 <Loading />
               </div>
-            ) : isErrorBranches ? (
-              <p className="text-center mt-4 text-red-500 font-semibold">Error fetching branches</p>
-            ) : branches.length === 0 ? (
-              <p className="text-center mt-4 text-gray-500 font-medium">No branches available</p>
+            ) : currentData.error ? (
+              <p className="text-center mt-4 text-red-500 font-semibold">
+                Error fetching branches
+              </p>
+            ) : currentData.data.length === 0 ? (
+              <p className="text-center mt-4 text-gray-500 font-medium">
+                {currentData.total === 0 ? "No branches available" : "No branches match the current filters"}
+              </p>
             ) : (
-              filteredBranches.map((loc, index) => (
+              currentData.data.map((loc, index) => (
                 <GeoFencing key={index} embedUrl={loc.embedURL} branchName={loc.campusName} />
               ))
             )}
@@ -514,24 +657,28 @@ export const EmployeeManagement = () => {
         {/* New Users */}
         {navId === "newusers" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[1rem] px-[1rem] overflow-y-auto">
-            {isLoadingPending ? (
+            {currentData.loading ? (
               <div className="text-center col-span-full mt-4 text-gray-600 font-semibold">
                 <Loading />
               </div>
-            ) : isErrorPending ? (
-              <p className="text-center col-span-full mt-4 text-red-500 font-semibold">Error fetching new users</p>
-            ) : pendingEmployees.length === 0 ? (
-              <p className="text-center col-span-full mt-4 text-gray-500 font-medium">No new users pending</p>
+            ) : currentData.error ? (
+              <p className="text-center col-span-full mt-4 text-red-500 font-semibold">
+                Error fetching new users
+              </p>
+            ) : currentData.data.length === 0 ? (
+              <p className="text-center col-span-full mt-4 text-gray-500 font-medium">
+                {currentData.total === 0 ? "No new users pending" : "No new users match the current filters"}
+              </p>
             ) : (
-              filteredPendingEmployees.map((emp, index) => (
+              currentData.data.map((emp, index) => (
                 <EmployeeCard
                   key={index}
                   name={emp.name}
                   email={emp.email}
-                  phone={emp.phone}
+                  phone={emp.phone || emp.phoneNumber}
                   role={emp.date}
                   bgColor={bgColorList[index]}
-                  image={emp.image}
+                  image={emp.image || emp.profilePicture}
                   isNewUser={true}
                   onApprove={() => handleApprove(emp)}
                 />
@@ -540,7 +687,7 @@ export const EmployeeManagement = () => {
           </div>
         )}
 
-        {/* Location Form */}
+        {/* Modals and Popups */}
         {showLocationForm && (
           <AddLocationForm
             isOpen={showLocationForm}

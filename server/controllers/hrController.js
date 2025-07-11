@@ -46,10 +46,48 @@ const getPendingEmployees = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, pendingEmployees: formattedPendingEmployees });
 })
 
+const getPendingLeaveReqs = asyncHandler(async (req, res) => {
+    const pendingLeaveReqs = await HrService.getPendingLeaveRequests();
 
+    const formattedRequest = pendingLeaveReqs.map((leaveReq) => ({
+        leaveId: leaveReq._id, 
+        leaveType: leaveReq.leaveType, 
+        requestedBy: leaveReq.userid.username,
+        requestedUserEmail: leaveReq.userid.email,
+        appliedOn: leaveReq.appliedOn.toISOString().split("T")[0],
+        leaveCategory: leaveReq.leaveCategory,
+        startDate: leaveReq.startDate.toISOString().split("T")[0],
+        endDate: leaveReq.endDate.toISOString().split("T")[0],
+        reason: leaveReq.reason,
+        status: leaveReq.status,
+    }));
+
+    res.status(200).json({ success: true, pendingLeaveReqs: formattedRequest });
+});
+
+const processLeaveReq = asyncHandler(async (req, res) => {
+    const { leaveId, decision, comment } = req.body;
+    const { userid } = req.user;
+
+    if (!leaveId || !decision)
+        throw new ApiError(400, "Incomplete data to process leave request");
+
+    const updatedLeave = await HrService.processLeaveRequest(userid, leaveId, decision, comment);
+    res.status(200).json({ success: true, updatedLeave });
+})
+
+const getAllLeaveReqs = asyncHandler(async (req, res) => {
+    const { userid } = req.user;
+    const leaveData = await HrService.fetchAllLeaveRequests();
+
+    return res.status(200).json({ success: true, LeaveData: leaveData })
+})
 
 module.exports = {
     addNewCampusLocation,
     acceptUser,
     getPendingEmployees,
+    getPendingLeaveReqs,
+    processLeaveReq,
+    getAllLeaveReqs,
 };
