@@ -9,7 +9,7 @@ import {NotificationCard} from "./components/NotificationCard";
 import {WorkBreakComposition} from "./components/WorkBreakComposititon";
 import { EmployeesOnLeave } from "./components/EmployeesOnLeave";
 import {RemainderPopup} from "./components/RemainderPopup";
-
+import {ProjectDeadline} from "../project/components/ProjectDeadline"
 
 import { NewUser } from './NewUser';
 
