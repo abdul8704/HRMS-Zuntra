@@ -21,13 +21,15 @@ const getAllCourseDetails = async () => {
 
 
 const getCourseIntroById = async (courseId) => {
-    return await courseDetails.find({ courseId });
+    return await courseDetails.findById(courseId);
 };
 
+const getTocCourseContentById = async (courseId) => {
+    return await courseContent.find({courseId : courseId},{'modules.moduleTitle': 1, 'modules.submodules.submoduleTitle': 1, _id: 0});
+};
 const getCourseContentById = async (courseId) => {
-    return await courseContent.find({ courseId });
+    return await courseContent.find({courseId : courseId});
 };
-
 
 const addNewCourse = async (courseData) => {
     return await courseDetails.create(courseData);
@@ -120,6 +122,7 @@ module.exports = {
     addNewCourse,
     getAllCourseDetails,
     getCourseIntroById,
+    getTocCourseContentById,
     getCourseContentById,
     addCourseContent,
     updateCourseIntro,

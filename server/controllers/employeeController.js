@@ -95,7 +95,7 @@ const getDetailsOfaEmployee= asyncHandler(async (req, res) => {
 const applyForLeave = asyncHandler(async (req, res) => {
   const { userid } = req.user;
   const { leaveCategory, startDate, endDate, reason } = req.body;
-  console.log(leaveCategory, startDate, endDate, reason)
+  console.log(userid, leaveCategory, startDate, endDate, reason)
 
   if(!leaveCategory || !startDate || !endDate || !reason){
     throw new ApiError(400, "please send all data reqd to apply leave")

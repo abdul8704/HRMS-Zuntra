@@ -1,32 +1,30 @@
 import React from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
-export const TableOfContents = ({ progress = "40%", enrolled, progressMatrix = [] }) => {
-  const modules = [
-    {
-      title: "Module 1 Name",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3", "Sub Module 4"]
-    },
-    {
-      title: "Module 2",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3", "Sub Module 4"]
-    },
-    {
-      title: "Module 3",
-      submodules: ["Sub Module 1", "Sub Module 2", "Sub Module 3", "Sub Module 4"]
-    }
-  ];
+export const TableOfContents = ({
+  progress = "40%",
+  enrolled,
+  progressMatrix = [],
+  tocContent = []
+}) => {
+  const { courseId } = useParams();
+  const navigate = useNavigate();
 
   const isModuleCompleted = (moduleIndex) => {
     const row = progressMatrix[moduleIndex];
     return Array.isArray(row) && row.length && row.every(val => val === 1);
   };
 
+  const handleClick = () => {
+    navigate(`/course/learn/${courseId}`);
+  };
+
   return (
     <div className="flex flex-col gap-4 w-full h-full">
-      <div className="bg-gray-200 p-4 rounded-xl font-sans overflow-y-auto">
+      <div className="bg-gray-200 p-4 rounded-xl font-sans overflow-y-auto flex-1">
         <h3 className="text-xl font-bold mb-4 text-black">Table of contents</h3>
         <div>
-          {modules.map((module, moduleIndex) => {
+          {tocContent.map((module, moduleIndex) => {
             const completed = isModuleCompleted(moduleIndex);
 
             return (
@@ -37,48 +35,48 @@ export const TableOfContents = ({ progress = "40%", enrolled, progressMatrix = [
                       completed ? "bg-[#00cfd1]" : "bg-gray-400"
                     }`}
                   />
-                  <span>{module.title}</span>
+                  <span>{module.moduleTitle}</span>
                 </div>
                 <ul className="list-none pl-5 mt-1.5">
-  {module.submodules.map((sub, subIndex) => (
-    <li
-      key={subIndex}
-      className="text-sm text-black my-1.5 flex items-center gap-2"
-    >
-      <span
-        className={`font-bold ${
-          progressMatrix[moduleIndex]?.[subIndex] === 1
-            ? "text-[#00cfd1]"
-            : "text-gray-400"
-        }`}
-      >
-        |
-      </span>
-      <span>{sub}</span>
-    </li>
-  ))}
-</ul>
-
+                  {(module.submodules || []).map((sub, subIndex) => (
+                    <li
+                      key={subIndex}
+                      className="text-sm text-black my-1.5 flex items-center gap-2"
+                    >
+                      <span
+                        className={`font-bold ${
+                          progressMatrix[moduleIndex]?.[subIndex] === 1
+                            ? "text-[#00cfd1]"
+                            : "text-gray-400"
+                        }`}
+                      >
+                        |
+                      </span>
+                      <span>{sub.submoduleTitle}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             );
           })}
         </div>
       </div>
 
-      {enrolled ? (
-        <button
-          className="w-full max-w-full text-center text-black font-bold text-lg py-3.5 px-6 rounded-xl cursor-pointer"
-          style={{
-            background: `linear-gradient(to right, #bbd3cc ${progress}, #e5e5e5 30%)`,
-          }}
-        >
-          Continue Learning
-        </button>
-      ) : (
-        <button className="w-full max-w-full text-center text-black font-bold text-lg py-3.5 px-6 rounded-xl bg-gray-200 cursor-pointer">
-          Enroll Now
-        </button>
-      )}
+      <button
+        onClick={handleClick}
+        className={`w-full max-w-full text-center text-black font-bold text-lg py-3.5 px-6 rounded-xl cursor-pointer ${
+          enrolled ? "" : "bg-gray-200"
+        }`}
+        style={
+          enrolled
+            ? {
+                background: `linear-gradient(to right, #bbd3cc ${progress}, #e5e5e5 30%)`,
+              }
+            : {}
+        }
+      >
+        {enrolled ? "Continue Learning" : "Enroll Now"}
+      </button>
     </div>
   );
 };

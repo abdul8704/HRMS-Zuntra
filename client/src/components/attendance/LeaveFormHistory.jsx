@@ -3,8 +3,9 @@ import { Eye } from 'lucide-react';
 
 export const LeaveFormHistory = () => {
   const history = [
-    { date: '2025-07-01', teamLead: 'Approved', hr: 'Pending', status: 'In Progress' },
+    { date: '2025-07-01', teamLead: 'Approved', hr: 'Pending', status: 'Approved' },
     { date: '2025-06-20', teamLead: 'Approved', hr: 'Approved', status: 'Approved' },
+    { date: '2025-05-20', teamLead: 'Pending', hr: 'Pending', status: 'In Progress' },
     { date: '2025-06-05', teamLead: 'Rejected', hr: '-', status: 'Rejected' },
   ];
 
