@@ -120,7 +120,7 @@ export const AttendanceCard = () => {
       </div>
 
       {/* Filter + Table */}
-      <div className="rounded-md h-[296px] flex flex-col overflow-hidden">
+      <div className="rounded-md h-[290px] flex flex-col overflow-hidden">
         {/* Filter Section */}
         {showFilter && (
           <div className="flex gap-4 px-4 py-1 border-b border-purple-200 flex-wrap bg-transparent">
