@@ -13,5 +13,6 @@ router.patch("/content/:id/edit",CourseController.editCourseContentController)
 router.delete("/:id/delete",CourseController.deleteCourseController)
 
 router.post("/:id/enroll",CourseController.courseEnrollController)
+router.get("/:id/progress",CourseController.getProgressMatrixByCourseIdController)
 
 module.exports = router;
