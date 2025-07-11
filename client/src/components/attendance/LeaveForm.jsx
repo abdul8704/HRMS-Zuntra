@@ -47,14 +47,15 @@ export const LeaveForm = ({ handleClose }) => {
             : specificDates,
       reason,
     };
-    console.log(data)
     try{
-      await api.post('/api/employee/leave/apply-leave', {
-        leaveCategory: leaveCategory,
-        startDate: durationType === 'single' ? singleDate : rangeStart,
-        endDate: durationType === 'range' ? rangeEnd : durationType === 'specific' ? specificDates[specificDates.length - 1] : rangeStart,
-        reason: reason
+      const leavReq = await api.post('/api/employee/leave/apply-leave', {
+        leaveCategory: data.leaveCategory,
+        dates: data.dates,
+        reason: data.reason
       })
+      if (leavReq.status === 201){
+        alert("Leave request sent successfully")
+      }
     }
     catch(error){
       console.log(error)

@@ -1,7 +1,27 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import api from '../../api/axios'
 
 export const LeaveFormHistory = () => {
+  
+
+  useEffect(() => {
+    try{
+      const fetchLeaveReqs = async () => {
+        const requests = await api.get("/api/employee/leave/requests");
+        setLeaveHistory(requests.data.leaveRequests);
+      }
+
+      fetchLeaveReqs();
+    }
+    catch(err){
+      console.log(err)
+    } 
+  }, [])
+
+  const [ leaveHistory, setLeaveHistory ] = useState([]);
+
   const history = [
     { date: '2025-07-01', teamLead: 'Approved', hr: 'Pending', status: 'Approved' },
     { date: '2025-06-20', teamLead: 'Approved', hr: 'Approved', status: 'Approved' },
@@ -9,10 +29,14 @@ export const LeaveFormHistory = () => {
     { date: '2025-06-05', teamLead: 'Rejected', hr: '-', status: 'Rejected' },
   ];
 
-  const formatDate = (isoDate) => {
-    const [year, month, day] = isoDate.split('-');
+  const formatDate = (rawDate) => {
+    const date = new Date(rawDate)
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   };
+
 
   const getSymbol = (value) => {
     switch (value.toLowerCase()) {
@@ -39,6 +63,7 @@ export const LeaveFormHistory = () => {
         return 'text-gray-600';
     }
   };
+  console.log("hostory", leaveHistory)
 
   return (
     <div className="w-full h-full overflow-auto rounded-lg ">
@@ -53,23 +78,23 @@ export const LeaveFormHistory = () => {
           </tr>
         </thead>
         <tbody>
-          {history.map((item, index) => (
+          {leaveHistory.map((item, index) => (
             <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-              <td className="p-3 text-left">{formatDate(item.date)}</td>
+              <td className="p-3 text-left">{formatDate(item.dates[0])}</td>
               <td className="p-3 text-center font-medium">
-                <span className={`${item.teamLead.toLowerCase() === 'approved' ? 'text-green-600' :
-                    item.teamLead.toLowerCase() === 'rejected' ? 'text-red-600' :
+                <span className={`${item.adminAction.toLowerCase() === 'approved' ? 'text-green-600' :
+                  item.adminAction.toLowerCase() === 'rejected' ? 'text-red-600' :
                       'text-gray-600'
                   }`}>
-                  {getSymbol(item.teamLead)}
+                  {getSymbol(item.adminAction)}
                 </span>
               </td>
               <td className="p-3 text-center font-medium">
-                <span className={`${item.hr.toLowerCase() === 'approved' ? 'text-green-600' :
-                    item.hr.toLowerCase() === 'rejected' ? 'text-red-600' :
+                <span className={`${item.superAdminAction.toLowerCase() === 'approved' ? 'text-green-600' :
+                    item.superAdminAction.toLowerCase() === 'rejected' ? 'text-red-600' :
                       'text-gray-600'
                   }`}>
-                  {getSymbol(item.hr)}
+                  {getSymbol(item.superAdminAction)}
                 </span>
               </td>
               <td className="p-3 text-left">

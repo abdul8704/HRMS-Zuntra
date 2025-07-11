@@ -56,8 +56,7 @@ const getPendingLeaveReqs = asyncHandler(async (req, res) => {
         requestedUserEmail: leaveReq.userid.email,
         appliedOn: leaveReq.appliedOn.toISOString().split("T")[0],
         leaveCategory: leaveReq.leaveCategory,
-        startDate: leaveReq.startDate.toISOString().split("T")[0],
-        endDate: leaveReq.endDate.toISOString().split("T")[0],
+        dates: leaveReq.dates.map((date) => date.toISOString().split("T")[0]),
         reason: leaveReq.reason,
         status: leaveReq.status,
     }));
