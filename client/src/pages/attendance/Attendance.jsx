@@ -1,14 +1,14 @@
 import React from 'react'
-import { Sidebar } from '../components/Sidebar'
-import { Navbar } from '../components/Navbar'
-import { TimeCard } from '../components/dashboard/TimeCard'
-import { AttendanceCalendar } from '../components/attendance/AttendanceCalendar'
-import { WorkBreakComposition } from '../components/dashboard/WorkBreakComposititon'
-import { AttendanceCard } from '../components/attendance/AttendanceCard'
+import { Sidebar } from '../../components/Sidebar'
+import { Navbar } from '../../components/Navbar'
+import { TimeCard } from '../../components/dashboard/TimeCard'
+import { AttendanceCalendar } from '../../components/attendance/AttendanceCalendar'
+import { WorkBreakComposition } from '../../components/dashboard/WorkBreakComposititon'
+import { AttendanceCard } from '../../components/attendance/AttendanceCard'
 import { useParams } from 'react-router-dom'
-import { LeaveForm } from '../components/attendance/LeaveForm'
-import { ScheduleForm } from '../components/attendance/ScheduleForm'
-import { LeaveFormHistory } from '../components/attendance/LeaveFormHistory'
+import { LeaveForm } from '../../components/attendance/LeaveForm'
+import { ScheduleForm } from '../../components/attendance/ScheduleForm'
+import { LeaveFormHistory } from '../../components/attendance/LeaveFormHistory'
 export const Attendance = () => {
     const { navId } = useParams();
     return (

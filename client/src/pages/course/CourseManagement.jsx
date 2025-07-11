@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Sidebar } from "../components/Sidebar";
-import { CourseCard } from "../components/coursemanagement/CourseCard";
-import AddCourse from "../components/coursemanagement/AddCourse";
-import Module from "../components/coursemanagement/Module";
-import SubModule from "../components/coursemanagement/SubModule";
-import AssignmentModule from "../components/coursemanagement/AssignmentModule";
-import { Navbar } from "../components/Navbar";
-import { Loading } from "../components/Loading";
-import api from "../api/axios";
+import { Sidebar } from "../../components/Sidebar";
+import { CourseCard } from "../../components/coursemanagement/CourseCard";
+import AddCourse from "../../components/coursemanagement/AddCourse";
+import Module from "../../components/coursemanagement/Module";
+import SubModule from "../../components/coursemanagement/SubModule";
+import AssignmentModule from "../../components/coursemanagement/AssignmentModule";
+import { Navbar } from "../../components/Navbar";
+import { Loading } from "../../components/Loading";
+import api from "../../api/axios";
 
 export const CourseManagement = () => {
   const { navId } = useParams();

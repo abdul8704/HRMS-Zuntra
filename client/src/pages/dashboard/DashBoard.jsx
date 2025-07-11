@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { Sidebar } from "../components/Sidebar";
+import { Sidebar } from "../../components/Sidebar";
 import { jwtDecode } from 'jwt-decode';
-import { UserGreetings } from '../components/dashboard/UserGreetings';
-import { ProjectDeadline } from '../components/projectManagement/ProjectDeadline';
-import { ReminderCard } from '../components/dashboard/ReminderCard';
-import { NotificationCard } from '../components/dashboard/NotificationCard';
-import { TimeCard } from '../components/dashboard/TimeCard';
-import { WorkBreakComposition } from '../components/dashboard/WorkBreakComposititon';
-import { NewUser } from '../pages/NewUser';
-import { EmployeesOnLeave } from '../components/Dashboard/EmployeesOnLeave';
-import { RemainderPopup } from '../components/Dashboard/RemainderPopup';
+import { UserGreetings } from '../../components/dashboard/UserGreetings';
+import { ProjectDeadline } from '../../components/projectManagement/ProjectDeadline';
+import { ReminderCard } from '../../components/dashboard/ReminderCard';
+import { NotificationCard } from '../../components/dashboard/NotificationCard';
+import { TimeCard } from '../../components/dashboard/TimeCard';
+import { WorkBreakComposition } from '../../components/dashboard/WorkBreakComposititon';
+import { NewUser } from '../NewUser';
+import { EmployeesOnLeave } from '../../components/Dashboard/EmployeesOnLeave';
+import { RemainderPopup } from '../../components/Dashboard/RemainderPopup';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
