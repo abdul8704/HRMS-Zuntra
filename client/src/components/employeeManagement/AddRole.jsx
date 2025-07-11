@@ -31,6 +31,7 @@ export const AddRole = ({ onClose }) => {
   const [courseCards, setCourseCards] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [salary, setSalary] = useState("");
   const [permissions, setPermissions] = useState({
     projectManagement: false,
     employeeManagement: false,
@@ -131,7 +132,7 @@ export const AddRole = ({ onClose }) => {
       return;
     }
     
-    console.log("Role:", roleName, "Color:", roleColor, "Courses:", courseCards, "Permissions:", permissions);
+    console.log("Role:", roleName, "Color:", roleColor, "Salary:", salary, "Courses:", courseCards, "Permissions:", permissions);
     onClose();
   };
 
@@ -256,6 +257,20 @@ export const AddRole = ({ onClose }) => {
             </label>
           </div>
         </div>
+
+        {/* Salary Input Section */}
+        <div className="w-full"><label className="text-sm font-medium text-gray-700 block mb-2 sm:mb-3" htmlFor="salary">
+          </label>
+          <input
+          type="number"
+          id="salary"
+          className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          placeholder="Enter salary in ₹"
+          value={salary}
+          onChange={(e) => setSalary(e.target.value)}
+          />
+          </div>
+
 
         {/* Courses Section */}
         <div className="bg-gray-300 rounded-xl h-48 sm:h-56 lg:h-64 w-full relative px-2 pt-3 sm:pt-4 pb-3 sm:pb-4">
