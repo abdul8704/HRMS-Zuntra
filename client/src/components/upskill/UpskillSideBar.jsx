@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import zuntraLogo from "../../assets/zuntra.png";
-import { Menu } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const UpskillSideBar = ({
   modules = [],
   progressMatrix = [],
-  onSubmoduleClick = () => {},
+  onSubmoduleClick = () => { },
 }) => {
+  const { courseId } = useParams();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const isModuleCompleted = (moduleIndex) =>
     progressMatrix[moduleIndex]?.length &&
@@ -43,6 +45,12 @@ export const UpskillSideBar = ({
         className={`fixed top-0 left-0 h-screen w-[260px] bg-[#cde8e6] p-4 overflow-y-auto z-[1000] transition-transform duration-300 
         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
+        <button
+          className="text-2xl font-bold text-black hover:scale-110 transition"
+          onClick={() => { navigate(`/course/${courseId}/intro`) }}
+        >
+          ←
+        </button>
         {/* Logo + Close */}
         <div className="relative">
           {/* Logo */}
@@ -90,20 +98,20 @@ export const UpskillSideBar = ({
               <ul className="pl-4 space-y-1">
                 {module.submodules.map((sub, subIdx) => (
                   <li
-  key={subIdx}
-  className="text-sm flex items-center gap-2 cursor-pointer hover:underline"
-  onClick={() => onSubmoduleClick(idx, subIdx)}
->
-  <span
-    className="w-[4px] h-[14px] rounded-sm"
-    style={{
-      backgroundColor: isSubmoduleCompleted(idx, subIdx)
-        ? "#00cfd1"
-        : "#B5A6A8",
-    }}
-  />
-  {sub}
-</li>
+                    key={subIdx}
+                    className="text-sm flex items-center gap-2 cursor-pointer hover:underline"
+                    onClick={() => onSubmoduleClick(idx, subIdx)}
+                  >
+                    <span
+                      className="w-[4px] h-[14px] rounded-sm"
+                      style={{
+                        backgroundColor: isSubmoduleCompleted(idx, subIdx)
+                          ? "#00cfd1"
+                          : "#B5A6A8",
+                      }}
+                    />
+                    {sub}
+                  </li>
 
                 ))}
               </ul>
