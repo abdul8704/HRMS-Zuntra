@@ -4,10 +4,10 @@ import api from "../../api/axios";
 
 import SidebarDetails from "../../components/SidebarDetails";
 import { Navbar } from "../../components/Navbar";
-import { TimeCard } from "../../components/dashboard/TimeCard";
-import { AttendanceCalendar } from "../attendance/components/AttendanceCalendar";
-import { AttendanceCard } from "../attendance/components/AttendanceCard";
-import ProgressCard from "../attendance/components/ProgressCard";
+import { TimeCard } from "../../dashboard/components/TimeCard";
+import { AttendanceCalendar } from "../../attendance/components/AttendanceCalendar";
+import { AttendanceCard } from "../../attendance/components/AttendanceCard";
+import ProgressCard from "../../attendance/components/ProgressCard";
 import { CourseCard } from "../../components/coursemanagement/CourseCard";
 import { EmployeeDetailsAssignment } from "../../components/employeeManagement/EmployeeDetailsAssignment";
 import { EmpProfile } from "../../components/employeeManagement/EmpProfile";
