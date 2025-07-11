@@ -158,7 +158,6 @@ export const Login = () => {
           }
           else if (res.status === 206) {
             console.log("Request Pending Approval");
-            // alert("Wait for approval")
             navigate("/dashboard");
           }
         },
