@@ -8,6 +8,7 @@ import { NotificationCard } from '../components/dashboard/NotificationCard';
 import { TimeCard } from '../components/dashboard/TimeCard';
 import { WorkBreakComposition } from '../components/dashboard/WorkBreakComposititon';
 import { NewUser } from '../pages/NewUser';
+import { RemainderPopup } from '../components/Dashboard/RemainderPopup';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
@@ -41,7 +42,7 @@ export const DashBoard = () => {
   return (
     <div className="flex h-screen">
       <Sidebar />
-
+       {/* <RemainderPopup /> */}
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 md:grid-cols-9 md:grid-rows-9 lg:grid-cols-9 lg:grid-rows-9 gap-[1rem] h-screen p-[1rem]">
 
