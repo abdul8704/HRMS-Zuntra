@@ -15,7 +15,7 @@ export const CourseCard = ({ courseImage, courseName, courseInstructor, deadline
     : "bg-[#BD080821] text-[#d35400]";
 
   return (
-    <div className="flex flex-col h-full bg-[#D6D6D6] rounded-xl shadow-md overflow-hidden">
+    <div className="flex flex-col w-full h-full bg-[#D6D6D6] rounded-xl shadow-md overflow-hidden">
       {/* Image Container with Fixed Aspect Ratio */}
       <div className="w-full aspect-[4/3] flex-shrink-0 overflow-hidden">
         <img
