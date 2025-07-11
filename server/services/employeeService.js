@@ -142,7 +142,7 @@ const markAttendanceOnLogin = async (userid, mode) => {
 
         // if employee previously logged in remotely, then starts another session onsite, update attendance type of day to onsite.
         if (attendance.status === "remote" && mode === "onsite") {
-            attendance.status = "onsite";
+            attendance.status = "present";
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
