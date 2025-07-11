@@ -24,20 +24,40 @@ const predefinedCourses = [
   { id: 10, courseName: "Next.js Deep Dive", authorName: "Lily Carter", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
 ];
 
-export const AddRole = ({ type = "edit", rolename="Abish", onClose }) => {
-  const [roleName, setRoleName] = useState(rolename || "");
-  const [roleColor, setRoleColor] = useState("#f5f5f5");
-  const [showColors, setShowColors] = useState(false);
-  const [courseCards, setCourseCards] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [salary, setSalary] = useState("");
-  const [permissions, setPermissions] = useState({
+
+
+export const AddRole = ({ 
+  type = "edit", // "edit" or "add"
+  rolename = "", 
+  rolecolor = "#f5f5f5",
+  rolesalary = "",
+  rolecourses = [],
+  rolepermissions = {
+    projectManagement: false,
+    employeeManagement: false,
+    courseManagement: false,
+    attendance: false
+  },
+  onClose,
+  onSave
+}) => {
+  const isEditMode = type === "edit";
+  
+  // Initialize state based on mode
+  const [roleName, setRoleName] = useState(isEditMode ? rolename : "");
+  const [roleColor, setRoleColor] = useState(isEditMode ? rolecolor : "#f5f5f5");
+  const [salary, setSalary] = useState(isEditMode ? rolesalary : "");
+  const [courseCards, setCourseCards] = useState(isEditMode ? rolecourses : []);
+  const [permissions, setPermissions] = useState(isEditMode ? rolepermissions : {
     projectManagement: false,
     employeeManagement: false,
     courseManagement: false,
     attendance: false
   });
+
+  const [showColors, setShowColors] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Refs for click outside detection
   const modalRef = useRef(null);
@@ -132,7 +152,20 @@ export const AddRole = ({ type = "edit", rolename="Abish", onClose }) => {
       return;
     }
 
-    console.log("Role:", roleName, "Color:", roleColor, "Salary:", salary, "Courses:", courseCards, "Permissions:", permissions);
+    const roleData = {
+      roleName,
+      roleColor,
+      salary,
+      courseCards,
+      permissions
+    };
+
+    console.log(`${isEditMode ? 'Editing' : 'Adding'} Role:`, roleData);
+    
+    if (onSave) {
+      onSave(roleData);
+    }
+    
     onClose();
   };
 
@@ -172,25 +205,53 @@ export const AddRole = ({ type = "edit", rolename="Abish", onClose }) => {
     }
   };
 
-  return (
-    <> 
+  // Get modal title based on mode
+  const getModalTitle = () => {
+    return isEditMode ? "Edit Role" : "Add New Role";
+  };
 
+  // Get button text based on mode
+  const getSubmitButtonText = () => {
+    return isEditMode ? "Update" : "Add";
+  };
+
+  // Get button styling based on mode
+  const getSubmitButtonStyle = () => {
+    return isEditMode 
+      ? "px-3 sm:px-4 py-2 rounded-md bg-blue-200 text-black hover:bg-blue-600 hover:text-white text-xs sm:text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none"
+      : "px-3 sm:px-4 py-2 rounded-md bg-green-200 text-black hover:bg-green-600 hover:text-white text-xs sm:text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none";
+  };
+
+  return (
+    <>
       <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-[2000] p-4">
         <div
           ref={modalRef}
           className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-[350px] sm:max-w-[450px] lg:max-w-[550px] shadow-lg flex flex-col gap-3 sm:gap-5 relative animate-scale-in max-h-[90vh] overflow-y-auto"
           style={{ animation: "fadeIn 0.2s ease-out" }}
         >
+          {/* Modal Header */}
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+              {getModalTitle()}
+            </h2>
+            {isEditMode && (
+              <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                Edit Mode
+              </span>
+            )}
+          </div>
+
           {/* Role input and color */}
           <div className="flex items-center gap-2 sm:gap-3 relative w-full">
             <input
               type="text"
               className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter role"
+              placeholder={isEditMode ? "Edit role name" : "Enter role name"}
               value={roleName}
               onChange={(e) => setRoleName(e.target.value)}
               onKeyDown={handleKeyDown}
-              autoFocus
+              autoFocus={!isEditMode}
             />
             <div
               className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-600 cursor-pointer hover:scale-110 transition-transform flex-shrink-0"
@@ -216,7 +277,9 @@ export const AddRole = ({ type = "edit", rolename="Abish", onClose }) => {
 
           {/* Permissions Section */}
           <div className="bg-gray-100 rounded-xl p-3 sm:p-4 w-full">
-            <h3 className="text-sm font-medium text-gray-700 mb-2 sm:mb-3">Permissions</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-2 sm:mb-3">
+              {isEditMode ? "Update Permissions" : "Set Permissions"}
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -261,23 +324,26 @@ export const AddRole = ({ type = "edit", rolename="Abish", onClose }) => {
           </div>
 
           {/* Salary Input Section */}
-          <div className="w-full"><label className="text-sm font-medium text-gray-700 block mb-2 sm:mb-3" htmlFor="salary">
-          </label>
+          <div className="w-full">
+            <label className="text-sm font-medium text-gray-700 block mb-2 sm:mb-3" htmlFor="salary">
+              {isEditMode ? "Update Salary" : "Set Salary"}
+            </label>
             <input
               type="number"
               id="salary"
               className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter salary in ₹"
+              placeholder={isEditMode ? "Update salary in ₹" : "Enter salary in ₹"}
               value={salary}
               onChange={(e) => setSalary(e.target.value)}
             />
           </div>
 
-
           {/* Courses Section */}
           <div className="bg-gray-300 rounded-xl h-48 sm:h-56 lg:h-64 w-full relative px-2 pt-3 sm:pt-4 pb-3 sm:pb-4">
             {courseCards.length === 0 && (
-              <span className="absolute top-2 sm:top-3 left-3 sm:left-4 text-xs sm:text-sm text-gray-600">Ongoing courses...</span>
+              <span className="absolute top-2 sm:top-3 left-3 sm:left-4 text-xs sm:text-sm text-gray-600">
+                {isEditMode ? "Current courses..." : "Assign courses..."}
+              </span>
             )}
 
             {/* Selected Cards */}
@@ -352,13 +418,20 @@ export const AddRole = ({ type = "edit", rolename="Abish", onClose }) => {
               Cancel
             </button>
             <button
-              className="px-3 sm:px-4 py-2 rounded-md bg-green-200 text-black hover:bg-green-600 hover:text-white text-xs sm:text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none"
+              className={getSubmitButtonStyle()}
               onClick={handleSubmit}
               disabled={!roleName.trim()}
             >
-              Add
+              {getSubmitButtonText()}
             </button>
           </div>
+
+          {/* Show current mode info for debugging */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="text-xs text-gray-400 text-center">
+              Mode: {type} | {isEditMode ? 'Editing existing role' : 'Adding new role'}
+            </div>
+          )}
         </div>
       </div>
 
@@ -378,9 +451,6 @@ export const AddRole = ({ type = "edit", rolename="Abish", onClose }) => {
           animation: fadeIn 0.15s ease-out;
         }
       `}</style>
-
-
-
     </>
   );
-};  
+};
