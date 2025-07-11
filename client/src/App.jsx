@@ -11,7 +11,6 @@ import { EmployeeDetails } from './pages/employee/EmployeeDetails';
 import { EmployeeManagement } from './pages/employee/EmployeeManagement';
 import { HrProjectDetails } from './pages/HrProjectDetails';
 import { HrProjectManagement } from './pages/project/HrProjectManagement';
-import  HrCreateCourse  from './pages/HrCreateCourse';
 import { Upskill } from './pages/course/Upskill';
 import { Attendance } from './pages/attendance/Attendance';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';

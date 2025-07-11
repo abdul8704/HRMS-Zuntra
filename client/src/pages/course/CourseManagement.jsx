@@ -4,11 +4,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Sidebar } from "../../components/Sidebar";
 import { Navbar } from "../../components/Navbar";
 
-import { CourseCard } from "../../components/coursemanagement/CourseCard";
-import AddCourse from "../../components/coursemanagement/AddCourse";
-import Module from "../../components/coursemanagement/Module";
-import SubModule from "../../components/coursemanagement/SubModule";
-import AssignmentModule from "../../components/coursemanagement/AssignmentModule";
+import { CourseCard } from "./components/CourseCard";
+import AddCourse from "./components/AddCourse";
+import Module from "./components/Module";
+import SubModule from "./components/SubModule";
+import AssignmentModule from "./components/AssignmentModule";
 
 import { Loading } from "../../components/Loading";
 import api from "../../api/axios";

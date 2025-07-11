@@ -1,7 +1,7 @@
 import React from 'react';
 import { Eye } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import api from '../../api/axios'
+import api from '../../../api/axios';
 
 export const LeaveFormHistory = () => {
   

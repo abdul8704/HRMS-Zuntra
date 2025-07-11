@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { TimeCard } from "../dashboard/TimeCard";
+import { TimeCard } from "../../dashboard/components/TimeCard";
 import { ToolTip } from "../../../components/ToolTip";
 
 export const EmployeeCard = ({

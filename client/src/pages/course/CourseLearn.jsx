@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { UpskillSideBar } from "../../components/upskill/UpskillSideBar";
-import { VideoPlayer } from "../../components/upskill/VideoPlayer";
-import { DescriptionSection } from "../../components/upskill/DescriptionSection";
-import { AssignmentsSection } from "../../components/upskill/AssignmentsSection";
+import { UpskillSideBar } from './components/UpskillSideBar';
+import { VideoPlayer } from "./components/VideoPlayer";
+import { DescriptionSection } from "./components/DescriptionSection";
+import { AssignmentsSection } from "./components/AssignmentsSection";
 import api from "../../api/axios";
 
 

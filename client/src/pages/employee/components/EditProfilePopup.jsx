@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import userIcon from "../../assets/user-icon.jpg";
+import userIcon from "../../../assets/user-icon.jpg";
 
 export default function EditProfileCard({ onClose }) {
   const [profile, setProfile] = useState({

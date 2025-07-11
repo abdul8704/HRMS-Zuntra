@@ -11,7 +11,7 @@ import { AddRole } from './components/AddRole';
 import { EditRolePopup } from './components/EditRolePopup';
 import { GeoFencing } from './components/GeoFencing';
 import { EmpAssignmentPopUp } from './components/EmployeeAssignmentPopup';
-import { AddLocationForm } from '../../components/employeeManagement/AddLocationForm';
+import { AddLocationForm } from './components/AddLocationForm';
 
 import api from '../../api/axios';
 

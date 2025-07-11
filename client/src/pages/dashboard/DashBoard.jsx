@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { Sidebar } from "../../components/Sidebar";
 import { jwtDecode } from 'jwt-decode';
 
-import UserGreetings from "../components/UserGreetings";
-import TimeCard from "../components/TimeCard";
-import ReminderCard from "../components/ReminderCard";
-import NotificationCard from "../dashboard/components/NotificationCard";
-import WorkBreakComposition from "../dashboard/components/WorkBreakComposititon";
-import EmployeesOnLeave from "../dashboard/components/EmployeesOnLeave";
-import RemainderPopup from "../dashboard/components/RemainderPopup";
+import UserGreetings from "./components/UserGreetings";
+import TimeCard from "./components/TimeCard";
+import ReminderCard from "./components/ReminderCard";
+import NotificationCard from "./components/NotificationCard";
+import WorkBreakComposition from "./components/WorkBreakComposititon";
+import EmployeesOnLeave from "./components/EmployeesOnLeave";
+import RemainderPopup from "./components/RemainderPopup";
 
 
-import { NewUser } from '../NewUser';
+import { NewUser } from './NewUser';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');

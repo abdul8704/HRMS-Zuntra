@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Users, Mail, Phone, DollarSign, Edit3, ChevronRight, X, } from "lucide-react";
 import ZuntraLogo from "../assets/Zuntra.svg";
-import EditProfileCard from "./employeeManagement/EditProfilePopup";
+import EditProfileCard from "../pages/employee/components/EditProfilePopup";
 import api from "../api/axios";
 
 export default function SidebarDetails({ type = "user" }) {

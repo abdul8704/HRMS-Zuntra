@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import zuntraLogo from "../../assets/zuntra.png";
+import zuntraLogo from "../../../assets/zuntra.png";
 import { useNavigate, useParams } from "react-router-dom";
 
 export const UpskillSideBar = ({
