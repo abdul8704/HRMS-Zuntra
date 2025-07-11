@@ -194,7 +194,7 @@ const UpskillNavItems = [
     ),    
     filter: false,
     role: "hr", 
-    path: 'overview',
+    path: 'all',
   },
   {
     label: 'Assigned',
@@ -205,7 +205,7 @@ const UpskillNavItems = [
     ),
     filter: true,
     role: "hr",
-    path: 'apply'
+    path: 'assigned'
   },
   {
     label: 'Enrolled',
@@ -216,7 +216,7 @@ const UpskillNavItems = [
     ),
     filter: true,
     role: "hr",
-    path: 'schedule',
+    path: 'enrolled',
   },
   {
     label: 'Completed',
@@ -227,7 +227,7 @@ const UpskillNavItems = [
     ),
     filter: true,
     role: "hr",
-    path: 'hello',
+    path: 'completed',
   }
 ];
 
@@ -293,6 +293,8 @@ export const Navbar = ({
       finalPath = `/employee/${employeeId}/details${path}`;
     } else if (type === 'attendance') {
       finalPath = `/attendance/${path}`;
+    } else if (type === 'upskill'){
+      finalPath = `/upskill/${path}`;
     }
 
     navigate(finalPath);
