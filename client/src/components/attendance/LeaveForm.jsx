@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from "../../api/axios"
 
 export const LeaveForm = ({ handleClose }) => {
   const [leaveCategory, setLeaveCategory] = useState('');
@@ -33,7 +34,7 @@ export const LeaveForm = ({ handleClose }) => {
     setSpecificDates(updated);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
       leaveCategory,
@@ -46,8 +47,21 @@ export const LeaveForm = ({ handleClose }) => {
             : specificDates,
       reason,
     };
-    console.log(data);
-    if (handleClose) handleClose();
+    console.log(data)
+    try{
+      await api.post('/api/employee/leave/apply-leave', {
+        leaveCategory: leaveCategory,
+        startDate: durationType === 'single' ? singleDate : rangeStart,
+        endDate: durationType === 'range' ? rangeEnd : durationType === 'specific' ? specificDates[specificDates.length - 1] : rangeStart,
+        reason: reason
+      })
+    }
+    catch(error){
+      console.log(error)
+      alert("Trouble while applying for leave")
+    }
+    if (handleClose) 
+      handleClose();
   };
 
   const handleCancel = () => {
