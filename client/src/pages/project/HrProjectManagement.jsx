@@ -7,8 +7,8 @@ import { Navbar } from "../../components/Navbar";
 import { Loading } from "../../components/Loading";
 
 // Project-specific components
-import { ProjectCard } from "../../components/projectManagement/ProjectCard";
-import { ProjectPopup } from "../../components/projectManagement/ProjectPopup";
+import { ProjectCard } from "./components/ProjectCard";
+import { ProjectPopup } from "./components/ProjectPopup";
 
 // Axios instance
 import api from "../../api/axios";

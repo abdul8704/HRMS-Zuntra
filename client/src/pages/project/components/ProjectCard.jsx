@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaPen, FaTrash } from "react-icons/fa";
-import { EmpProfile } from "../employeeManagement/EmpProfile";
+import { EmpProfile } from "../../employee/components/EmpProfile";
 import { useNavigate } from "react-router-dom";
 
 export const ProjectCard = ({ projectData }) => {
