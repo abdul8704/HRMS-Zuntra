@@ -46,6 +46,46 @@ const dummyCourses = [
     deadlineUnits: 'weeks',
     rating: 4.9,
   },
+  {
+    courseImage: 'https://via.placeholder.com/150',
+    courseName: 'React for Beginners',
+    courseInstructor: 'John Doe',
+    deadline: 10,
+    deadlineUnits: 'days',
+    rating: 5,
+  },
+  {
+    courseImage: 'https://via.placeholder.com/150',
+    courseName: 'Advanced JavaScript',
+    courseInstructor: 'Jane Smith',
+    deadline: 2,
+    deadlineUnits: 'weeks',
+    rating: 4.5,
+  },
+  {
+    courseImage: 'https://via.placeholder.com/150',
+    courseName: 'UI/UX Fundamentals',
+    courseInstructor: 'Emily Clark',
+    deadline: 5,
+    deadlineUnits: 'days',
+    rating: 5,
+  },
+  {
+    courseImage: 'https://via.placeholder.com/150',
+    courseName: 'Node.js Mastery',
+    courseInstructor: 'Mike Jordan',
+    deadline: 7,
+    deadlineUnits: 'days',
+    rating: 4.8,
+  },
+  {
+    courseImage: 'https://via.placeholder.com/150',
+    courseName: 'Database Design',
+    courseInstructor: 'Laura Hill',
+    deadline: 3,
+    deadlineUnits: 'weeks',
+    rating: 4.9,
+  },
 ];
 
 export const Upskill = () => {
@@ -178,7 +218,7 @@ export const Upskill = () => {
               ) : apiMessage ? (
                 <p className="text-center text-red-500">{apiMessage}</p>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-4 p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                   {courses.map((course, index) => (
                     <div
                       key={index}

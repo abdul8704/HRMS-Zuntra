@@ -321,6 +321,9 @@ export const Navbar = ({
     } else if (type === 'attendance') {
       const attendanceSegment = currentPath.split('/attendance/')[1]?.split('/')[0];
       updatedNavId = navItems.find(item => item.path === attendanceSegment)?.path || navItems[0]?.path;
+    } else if (type === 'upskill') {
+      const attendanceSegment = currentPath.split('/upskill/')[1]?.split('/')[0];
+      updatedNavId = navItems.find(item => item.path === attendanceSegment)?.path || navItems[0]?.path;
     }
 
 
