@@ -12,12 +12,8 @@ const leaveApplicationSchema = new mongoose.Schema(
             enum: ["CASUAL", "SICK", "EARNED", "UNPAID"],
             required: true,
         },
-        startDate: {
-            type: Date,
-            required: true,
-        },
-        endDate: {
-            type: Date,
+        dates: {
+            type: [Date],
             required: true,
         },
         reason: {
@@ -33,9 +29,13 @@ const leaveApplicationSchema = new mongoose.Schema(
             enum: ["PENDING", "APPROVED", "REJECTED"],
             default: "PENDING",
         },
-        reviewedBy: {
+        adminReviewer: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "UserCredentials", // Admin user
+        },
+        superAdminReviewer: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "UserCredentials", // Super admin user
         },
         reviewedAt: {
             type: Date,
@@ -45,13 +45,15 @@ const leaveApplicationSchema = new mongoose.Schema(
             default: "",
         },
         superAdminAction: {
-            type: Boolean,
-            default: false
+            type: String,
+            enum: ["PENDING", "APPROVED", "REJECTED"],
+            default: "PENDING"
         },
         adminAction: {
-            type: Boolean,
-            default: false
-        }
+            type: String,
+            enum: ["PENDING", "APPROVED", "REJECTED"],
+            default: "PENDING",
+        },
     },
     { timestamps: true }
 );
