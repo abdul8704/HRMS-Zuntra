@@ -8,6 +8,7 @@ import { NotificationCard } from '../components/dashboard/NotificationCard';
 import { TimeCard } from '../components/dashboard/TimeCard';
 import { WorkBreakComposition } from '../components/dashboard/WorkBreakComposititon';
 import { NewUser } from '../pages/NewUser';
+import { EmployeesOnLeave } from '../components/Dashboard/EmployeesOnLeave';
 import { RemainderPopup } from '../components/Dashboard/RemainderPopup';
 
 export const DashBoard = () => {
@@ -42,7 +43,7 @@ export const DashBoard = () => {
   return (
     <div className="flex h-screen">
       <Sidebar />
-       {/* <RemainderPopup /> */}
+
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 md:grid-cols-9 md:grid-rows-9 lg:grid-cols-9 lg:grid-rows-9 gap-[1rem] h-screen p-[1rem]">
 
@@ -93,7 +94,8 @@ export const DashBoard = () => {
 
           {/* 10. Employees on Leave */}
           <div className="h-[30vh] md:h-full col-span-2 md:col-span-6 md:col-start-4 md:row-start-7 md:row-span-3 rounded-2xl bg-[#adc0da] flex items-center justify-center animate-slide-in-right overflow-hidden">
-            <span className="text-gray-800">Employees on Leave</span>
+            {/* <span className="text-gray-800">Employees on Leave</span> */}
+            <EmployeesOnLeave />
           </div>
         </div>
       </div>
