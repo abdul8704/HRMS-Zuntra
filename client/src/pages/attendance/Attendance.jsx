@@ -3,14 +3,14 @@ import { useParams } from 'react-router-dom';
 
 import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
-import { TimeCard } from '../components/TimeCard';
-import { WorkBreakComposition } from '../../components/dashboard/WorkBreakComposititon';
+import { TimeCard } from '../dashboard/components/TimeCard';
+import { WorkBreakComposition } from '../dashboard/components/WorkBreakComposititon';
 
-import { AttendanceCalendar } from '../../components/attendance/AttendanceCalendar';
-import { AttendanceCard } from '../../components/attendance/AttendanceCard';
-import { LeaveForm } from '../../components/attendance/LeaveForm';
-import { ScheduleForm } from '../../components/attendance/ScheduleForm';
-import { LeaveFormHistory } from '../../components/attendance/LeaveFormHistory';
+import { AttendanceCalendar } from './components/AttendanceCalendar';
+import { AttendanceCard } from './components/AttendanceCard';
+import { LeaveForm } from './components/LeaveForm';
+import { ScheduleForm } from './components/ScheduleForm';
+import { LeaveFormHistory } from './components/LeaveFormHistory';
 
 
 export const Attendance = () => {
