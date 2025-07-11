@@ -5,7 +5,7 @@ import { CourseNavbar } from "../components/coursemanagement/CourseNavbar";
 import AddCourse from "../components/coursemanagement/AddCourse";
 import Module from "../components/coursemanagement/Module";
 import SubModule from "../components/coursemanagement/SubModule";
-import AssignmentModule from "../components/coursemanagement/AssignmentModule";
+import AssignmentModule from "../../components/AssignmentModule";
 
 const HrCreateCourse = () => {
   const [courseInfo, setCourseInfo] = useState({

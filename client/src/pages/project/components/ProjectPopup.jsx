@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { EmpProfile } from '../employeeManagement/EmpProfile';
+import { EmpProfile } from '../../employee/components/EmpProfile';
 
 const styles = {
   floatingButton: {

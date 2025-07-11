@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Sidebar } from "../components/Sidebar";
-import { ProjectCard } from "../components/projectManagement/ProjectCard";
-import { Navbar } from "../components/Navbar";
-import { ProjectPopup } from "../components/projectManagement/ProjectPopup";
-import { Loading } from "../components/Loading";
-import api from "../api/axios";
+
+// Sidebar, Navbar, and Loading
+import { Sidebar } from "../../components/Sidebar";
+import { Navbar } from "../../components/Navbar";
+import { Loading } from "../../components/Loading";
+
+// Project-specific components
+import { ProjectCard } from "../../components/projectManagement/ProjectCard";
+import { ProjectPopup } from "../../components/projectManagement/ProjectPopup";
+
+// Axios instance
+import api from "../../api/axios";
 
 export const HrProjectManagement = () => {
   const { navId } = useParams();

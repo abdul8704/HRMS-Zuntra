@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { ToolTip } from "../ToolTip";
+import { ToolTip } from "../../../components/ToolTip";
 
 const darkenColor = (hex, percent = 20) => {
   let color = hex.startsWith("#") ? hex.slice(1) : hex;

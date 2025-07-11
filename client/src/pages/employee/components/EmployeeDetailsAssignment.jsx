@@ -1,8 +1,8 @@
 import React from 'react';
 import { TimeCard } from '../dashboard/TimeCard';
-import { AttendanceCalendar } from '../attendance/AttendanceCalendar';
-import ProgressCard from '../attendance/ProgressCard';
-import { AttendanceCard } from '../attendance/AttendanceCard';
+import { AttendanceCalendar } from '../../attendance/components/AttendanceCalendar';
+import ProgressCard from '../../attendance/components/ProgressCard';
+import { AttendanceCard } from '../../attendance/components/AttendanceCard';
 import { WorkBreakComposition } from '../dashboard/WorkBreakComposititon'
 
 export const EmployeeDetailsAssignment = () => {

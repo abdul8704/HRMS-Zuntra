@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import api from '../../api/axios';
-import { Loading } from '../Loading';
+import api from '../../../api/axios';
+import { Loading } from '../../../components/Loading';
 
 export const ProjectDeadline = () => {
   const [projectDate, setProjectDate] = useState(new Date());

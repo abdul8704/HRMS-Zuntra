@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { TimeCard } from "../dashboard/TimeCard";
-import { ToolTip } from "../ToolTip";
+import { ToolTip } from "../../../components/ToolTip";
 
 export const EmployeeCard = ({
   name,

@@ -1,16 +1,17 @@
-import React from "react";
-import SidebarDetails from "../components/SidebarDetails";
-import { AttendanceCalendar } from "../components/attendance/AttendanceCalendar";
-import { AttendanceCard } from "../components/attendance/AttendanceCard";
-import ProgressCard from "../components/attendance/ProgressCard";
-import { Navbar } from "../components/Navbar";
-import { TimeCard } from "../components/dashboard/TimeCard";
-import { CourseCard } from "../components/coursemanagement/CourseCard";
-import { EmployeeDetailsAssignment } from "../components/employeeManagement/EmployeeDetailsAssignment";
-import { EmpProfile } from "../components/employeeManagement/EmpProfile";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
-import api from "../api/axios";
+import api from "../../api/axios";
+
+import SidebarDetails from "../../components/SidebarDetails";
+import { Navbar } from "../../components/Navbar";
+import { TimeCard } from "../../components/dashboard/TimeCard";
+import { AttendanceCalendar } from "../attendance/components/AttendanceCalendar";
+import { AttendanceCard } from "../attendance/components/AttendanceCard";
+import ProgressCard from "../attendance/components/ProgressCard";
+import { CourseCard } from "../../components/coursemanagement/CourseCard";
+import { EmployeeDetailsAssignment } from "../../components/employeeManagement/EmployeeDetailsAssignment";
+import { EmpProfile } from "../../components/employeeManagement/EmpProfile";
+
 
 const roleProfiles = [
   {

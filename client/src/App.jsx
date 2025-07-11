@@ -1,22 +1,21 @@
 import { useState, useEffect } from 'react'
-import {jwtDecode} from 'jwt-decode';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Login } from "./pages/Login";
-import { DashBoard } from './pages/DashBoard';
+import { DashBoard } from './pages/dashboard/DashBoard';
 import { NotFound } from './pages/NotFound';
-import { CourseManagement } from './pages/CourseManagement';
-import { CourseIntro } from './pages/CourseIntro';
-import { CourseLearn } from './pages/CourseLearn';
-import { ProjectOverview } from './pages/ProjectOverview';
-import { EmployeeDetails } from './pages/EmployeeDetails';
-import { EmployeeManagement } from './pages/EmployeeManagement';
+import { CourseManagement } from './pages/course/CourseManagement';
+import { CourseIntro } from './pages/course/CourseIntro';
+import { CourseLearn } from './pages/course/CourseLearn';
+import { ProjectOverview } from './pages/project/ProjectOverview';
+import { EmployeeDetails } from './pages/employee/EmployeeDetails';
+import { EmployeeManagement } from './pages/employee/EmployeeManagement';
 import { HrProjectDetails } from './pages/HrProjectDetails';
-import { HrProjectManagement } from './pages/HrProjectManagement';
+import { HrProjectManagement } from './pages/project/HrProjectManagement';
 import  HrCreateCourse  from './pages/HrCreateCourse';
-import { Upskill } from './pages/Upskill';
-import { Attendance } from './pages/Attendance';
+import { Upskill } from './pages/course/Upskill';
+import { Attendance } from './pages/attendance/Attendance';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
-import { ProtectRoute } from './hooks/ProtectRoute';
+import { ProtectRoute } from './pages/ProtectRoute';
 import './App.css'
 import './index.css'
 

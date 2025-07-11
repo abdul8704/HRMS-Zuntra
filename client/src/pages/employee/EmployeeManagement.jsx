@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Sidebar } from "../components/Sidebar";
-import { Navbar } from '../components/Navbar';
-import { EmployeeCard } from '../components/employeeManagement/EmployeeCard';
-import { RoleCard } from '../components/employeeManagement/RoleCard';
-import { AddRole } from '../components/employeeManagement/AddRole';
-import { EditRolePopup } from '../components/employeeManagement/EditRolePopup';
-import { GeoFencing } from '../components/employeeManagement/GeoFencing';
-import { EmpAssignmentPopUp } from '../components/employeeManagement/EmployeeAssignmentPopup';
-import { AddLocationForm } from '../components/employeeManagement/AddLocationForm';
-import { Loading } from '../components/Loading';
-import api from '../api/axios';
+
+import { Sidebar } from "../../components/Sidebar";
+import { Navbar } from '../../components/Navbar';
+import { Loading } from '../../components/Loading';
+
+import { EmployeeCard } from './components/EmployeeCard';
+import { RoleCard } from './components/RoleCard';
+import { AddRole } from './components/AddRole';
+import { EditRolePopup } from './components/EditRolePopup';
+import { GeoFencing } from './components/GeoFencing';
+import { EmpAssignmentPopUp } from './components/EmployeeAssignmentPopup';
+import { AddLocationForm } from '../../components/employeeManagement/AddLocationForm';
+
+import api from '../../api/axios';
+
 
 export const EmployeeManagement = () => {
   const { navId } = useParams();

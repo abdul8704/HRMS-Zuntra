@@ -1,9 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+
+
 import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
-import { useParams, useNavigate } from 'react-router-dom';
-import { CourseCard } from "../../components/coursemanagement/CourseCard";
+
 import api from '../../api/axios';
+
 
 const dummyCourses = [
   {

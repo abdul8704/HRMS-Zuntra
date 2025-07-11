@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Sidebar } from "../../components/Sidebar";
 import { jwtDecode } from 'jwt-decode';
-import { UserGreetings } from '../../components/dashboard/UserGreetings';
-import { ProjectDeadline } from '../../components/projectManagement/ProjectDeadline';
-import { ReminderCard } from '../../components/dashboard/ReminderCard';
-import { NotificationCard } from '../../components/dashboard/NotificationCard';
-import { TimeCard } from '../../components/dashboard/TimeCard';
-import { WorkBreakComposition } from '../../components/dashboard/WorkBreakComposititon';
+
+import UserGreetings from "../components/UserGreetings";
+import TimeCard from "../components/TimeCard";
+import ReminderCard from "../components/ReminderCard";
+import NotificationCard from "../dashboard/components/NotificationCard";
+import WorkBreakComposition from "../dashboard/components/WorkBreakComposititon";
+import EmployeesOnLeave from "../dashboard/components/EmployeesOnLeave";
+import RemainderPopup from "../dashboard/components/RemainderPopup";
+
+
 import { NewUser } from '../NewUser';
-import { EmployeesOnLeave } from '../../components/Dashboard/EmployeesOnLeave';
-import { RemainderPopup } from '../../components/Dashboard/RemainderPopup';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sidebar } from "../components/Sidebar";
-import { LeaveForm } from '../components/attendance/LeaveForm';
+import { LeaveForm } from './attendance/components/LeaveForm';
 
 export const HrPersonalAttendance = () => {
   const [showPopup, setShowPopup] = useState(false);

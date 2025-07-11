@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
 import { Sidebar } from "../../components/Sidebar";
 import { TableOfContents } from "../../components/upskill/TableContents";
 import api from "../../api/axios";
+
 
 export const CourseIntro = () => {
   const { courseId } = useParams();

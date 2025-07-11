@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Edit2, Trash2, Check, X } from "lucide-react";
-import { EmpProfile } from "../employeeManagement/EmpProfile";
+import { EmpProfile } from "../../employee/components/EmpProfile";
 
 export const TaskCard = ({ 
   taskData, 
