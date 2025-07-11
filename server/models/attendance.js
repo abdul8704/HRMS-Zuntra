@@ -45,6 +45,11 @@ const attendanceSchema = new mongoose.Schema({
         enum: ["present", "remote", "absent"],
         default: "present",
     },
+    leaveType: {
+        type: String,
+        enum: ['casual', 'earned', 'unpaid', 'sick', 'onduty', ''],
+        default: '',
+    }
 });
 
 attendanceSchema.index({ userid: 1, date: 1 }, { unique: true }); // one doc per user per day

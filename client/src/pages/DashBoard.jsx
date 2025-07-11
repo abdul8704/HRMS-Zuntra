@@ -6,11 +6,15 @@ import { ProjectDeadline } from '../components/projectManagement/ProjectDeadline
 import { ReminderCard } from '../components/dashboard/ReminderCard';
 import { NotificationCard } from '../components/dashboard/NotificationCard';
 import { TimeCard } from '../components/dashboard/TimeCard';
-import WorkBreakComposition from '../components/dashboard/WorkBreakComposititon';
+import { WorkBreakComposition } from '../components/dashboard/WorkBreakComposititon';
+import { NewUser } from '../pages/NewUser';
+import { EmployeesOnLeave } from '../components/Dashboard/EmployeesOnLeave';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
-  const userDetails = jwtDecode(token); // Make sure token contains name & profileImageURL
+  const userDetails = jwtDecode(token);
+  console.log("hello",userDetails);
+  if(!userDetails.role) return (<NewUser/>)
   const [showReminderForm, setShowReminderForm] = useState(false);
   const [reminderText, setReminderText] = useState('');
   const [reminderDate, setReminderDate] = useState('');
@@ -89,7 +93,8 @@ export const DashBoard = () => {
 
           {/* 10. Employees on Leave */}
           <div className="h-[30vh] md:h-full col-span-2 md:col-span-6 md:col-start-4 md:row-start-7 md:row-span-3 rounded-2xl bg-[#adc0da] flex items-center justify-center animate-slide-in-right overflow-hidden">
-            <span className="text-gray-800">Employees on Leave</span>
+            {/* <span className="text-gray-800">Employees on Leave</span> */}
+            <EmployeesOnLeave />
           </div>
         </div>
       </div>

@@ -52,8 +52,9 @@ const handleLogin = asyncHandler(async (req, res) => {
             message: "Login successful",
         });
     } 
-    else if (verifyLogin.message === "Wrong Password") 
+    else if (verifyLogin.message === "Wrong Password") {
         throw new ApiError(401, "Wrong Password");
+    }
 
     else if (verifyLogin.message === "User not found") 
         throw new ApiError(401, "User not found");
@@ -88,6 +89,7 @@ const geoFenceLogin = asyncHandler(async (req, res) => {
     else
         await employeeService.markAttendanceOnLogin(userid, "remote");
 
+    console.log("ALL DONE")
     res.status(200).json({ success: true, message: "Attendance marked" });
 })
 

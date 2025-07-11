@@ -131,6 +131,18 @@ const getCourseIntroIdController = asyncHandler(async (req, res) => {
   }
 });
 
+const getTocCourseContentIdController = asyncHandler(async (req, res) => {
+  const result = await courseService.getTocCourseContentById(req.params.id);
+  if (result.length === 0) {
+    throw new ApiError(404, "Course does not exist");
+  }
+  else {
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  }
+});
 const getCourseContentIdController = asyncHandler(async (req, res) => {
   const result = await courseService.getCourseContentById(req.params.id);
   if (result.length === 0) {
@@ -205,6 +217,7 @@ module.exports = {
   createCourseIntroController, 
   createCourseContentController, 
   getCourseDetailsController, 
+  getTocCourseContentIdController, 
   getCourseContentIdController, 
   getCourseIntroIdController,
   editCourseIntroController,

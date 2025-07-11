@@ -2,7 +2,7 @@ const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
 const attendanceHelper = require("../utils/attendanceHelper.js");
-const asyncHandler = require("express-async-handler");
+const LeaveApplication = require('../models/leaveApplication.js')
 
 const getAttendanceDataByUserId = async (
     userid,
@@ -46,14 +46,16 @@ const getAttendanceDataByUserId = async (
             if (holidays.includes(currentDateStr)) {
                 holidayCount++;
                 result.push({ date: currentDateStr, status: "holiday" });
-            } else if (attendanceMap.has(currentDateStr)) {
+            } 
+            else if (attendanceMap.has(currentDateStr)) {
                 presentCount++;
                 result.push({
                     date: currentDateStr,
                     status: "present",
                     ...attendanceMap.get(currentDateStr)._doc,
                 });
-            } else {
+            } 
+            else {
                 absentCount++;
                 result.push({ date: currentDateStr, status: "absent" });
             }
@@ -81,7 +83,7 @@ const getAttendanceDataByUserId = async (
     }
 };
 
-const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
+const markAttendanceOnLogin = async (userid, mode) => {
     const today = attendanceHelper.normalizeToUTCDate(new Date());
 
     try {
@@ -89,18 +91,30 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
             "shift",
             "startTime endTime"
         );
-        const shiftStart = new Date(shiftData.shift.shiftStart);
-        const shiftEnd = new Date(shiftData.shift.shiftEnd);
+
+        if (!shiftData) {
+            throw new ApiError(404, "User not found");
+        }
+
+        if (!shiftData.shift) {
+            throw new ApiError(400, "User does not have a shift assigned or assigned shift is invalid");
+        }
+
+        const shiftStart = new Date(shiftData.shift.startTime);
+        const shiftEnd = new Date(shiftData.shift.endTime);
 
         const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart);
         const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
 
-        const now = new Date();
+        if (isNaN(shiftStartTime.getTime(), isNaN(shiftEndTime.getTime()))){
+            throw new ApiError(400, "Unable to process shift timings");
+        }
+
+        const now = attendanceHelper.toUTCTimeOnly(new Date());
 
         let attendance = await Attendance.findOne({ userid, date: today });
 
-        // FIRST LOGIN OF THE DAY
-        if (!attendance) {
+        if (!attendance) {      // this statement determines if, this is the first session of the day. create a record, mark present.
             attendance = new Attendance({
                 userid,
                 date: today,
@@ -126,14 +140,14 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
             };
         }
 
-        // ✅ If status was remote and new mode is present, update status
+        // if employee previously logged in remotely, then starts another session onsite, update attendance type of day to onsite.
         if (attendance.status === "remote" && mode === "onsite") {
-            attendance.status = "onsite";
+            attendance.status = "present";
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
 
-        // 🕓 Previous session exists and has no logout time
+        // Previous session exists and has no logout time
         if (lastSession && !lastSession.logoutTime) {
             const sessionDurationMs = now - new Date(lastSession.loginTime);
             const sessionDurationMinutes = sessionDurationMs / (1000 * 60);
@@ -142,7 +156,7 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
             attendance.workingMinutes += sessionDurationMinutes;
         }
 
-        // 🕒 If previous session had logoutTime, calculate break only if within shift hours
+        // If previous session had logoutTime, calculate break only if within shift hours
         if (lastSession?.logoutTime) {
             const breakDurationMs = now - new Date(lastSession.logoutTime);
             const breakDurationMinutes = breakDurationMs / (1000 * 60);
@@ -154,14 +168,17 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
                 mode: isWithinShift ? mode : "extra",
             });
 
-            if (isWithinShift && breakDurationMinutes > 1) {
+            if (isWithinShift && breakDurationMinutes > 1) {        // TODO: update this to whatever client wants
                 attendance.breakMinutes += breakDurationMinutes;
             }
         } else {
             // No previous session? Just push a new session (shouldn’t occur, but safe fallback)
             attendance.sessions.push({
                 loginTime: now,
-                mode: now >= shiftStart && now <= shiftEnd ? mode : "extra",
+                mode:
+                    now >= shiftStartTime && now <= shiftEndTime
+                        ? mode
+                        : "extra",
             });
         }
 
@@ -171,56 +188,64 @@ const markAttendanceOnLogin = asyncHandler(async (userid, mode) => {
             message: "Attendance updated (subsequent login)",
         };
     } catch (error) {
-        console.log(error.response.data)
-
+        if (error instanceof ApiError) throw error;
         throw new ApiError(
             500,
             "Failed to mark attendance on login",
             error.message
         );
     }
-});
+};
 
-const markEndOfSession = async (userid, logoutTime) => {
+const markEndOfSession = async (userid, logout) => {
+    const today = attendanceHelper.normalizeToUTCDate(new Date());
+    const logoutTime = attendanceHelper.toUTCTimeOnly(new Date(logout));
+
     try {
-        const today = attendanceHelper.normalizeToUTCDate(new Date());
         const attendance = await Attendance.findOne({ userid, date: today });
 
         if (!attendance) {
-            return {
-                success: false,
-                message: "No attendance found for today",
-            };
+            throw new ApiError(400, "No attendance found for today", today)
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
 
-        if (lastSession && !lastSession.logoutTime) {
-            const logout = new Date(logoutTime);
-            lastSession.logoutTime = logout;
-
-            const login = new Date(lastSession.loginTime);
-
-            const sessionDurationMs = logout - login;
-            const sessionDurationMinutes = sessionDurationMs / (1000 * 60); // convert ms to minutes
-
-            attendance.workingMinutes += sessionDurationMinutes;
-
-            await attendance.save();
-
-            return {
-                success: true,
-                message: "Logout recorded and working minutes updated",
-                sessionDurationMinutes: Math.round(sessionDurationMinutes),
-                totalWorkingMinutes: Math.round(attendance.workingMinutes),
-            };
+        if (!lastSession) {
+            throw new ApiError(400, "No sessions found for today, cant close a session that doesnt exist");
         }
 
+        if (lastSession.logoutTime) {
+              throw new ApiError(400, "Session already logged out");
+        }
+
+        const logout = attendanceHelper.toUTCTimeOnly(new Date(logoutTime));
+        
+        if (isNaN(logout.getTime())) {
+            throw new ApiError(400, "Invalid 'logoutTime' format");
+        }
+
+        const login = attendanceHelper.toUTCTimeOnly(new Date(lastSession.loginTime));
+
+        if (logout < login) {
+            throw new Error(400, "How did u even logout before u logged in? Time Travel?")
+        }
+
+        const sessionDurationMs = logout - login;
+        const sessionDurationMinutes = sessionDurationMs / (1000 * 60);
+
+        lastSession.logoutTime = logout;
+        attendance.workingMinutes += sessionDurationMinutes;
+
+        await attendance.save();
+
         return {
-            success: false,
-            message: "No active session to log out from",
+            success: true,
+            message: "Logout recorded and working minutes updated",
+            sessionDurationMinutes: Math.round(sessionDurationMinutes),
+            totalWorkingMinutes: Math.round(attendance.workingMinutes),
         };
     } catch (error) {
+        if (error instanceof ApiError) throw error;
         throw new ApiError(500, "Failed to mark end of session", error.message);
     }
 };
@@ -251,8 +276,8 @@ const getDetailsOfaEmployee = async (userid) => {
             throw new ApiError(400, "Employee ID is required");
         }
 
-        const userCreds = await User.findById(userid, {passwordHash : 0})
-            .populate("role", "roleName")
+        const userCreds = await User.findById(userid, { passwordHash: 0 })
+            .populate("role", "role")
             .populate("shift", "startTime endTime")
             .populate("campus", "campusName");
 
@@ -262,27 +287,43 @@ const getDetailsOfaEmployee = async (userid) => {
 
         return userCreds;
     } catch (error) {
-        throw new ApiError(500, `Failed to fetch user details: ${error.message}`);
-    }
-};
-
-
-const getEmployeeByRole = async (roleId) => {
-    try {
-        const userData = await User.find({ role: roleId }).populate(
-            "role",
-            "roleName"
-        );
-        return userData;
-    } catch (error) {
+        if (error instanceof ApiError) throw error;
         throw new ApiError(
             500,
-            "Failed to fetch users by role: ",
+            "Error while fetching details of a user",
             error.message
         );
     }
 };
-  
+
+const getEmployeeByRole = async (roleId) => {
+    const userData = await User.find({ role: roleId }).populate(
+        "role",
+        "role color baseSalary"
+    );
+    return userData;
+};
+
+// TODO: if employee sends multiple request for same day, handle it
+const applyLeave = async (userid, leaveCategory, startDate, endDate, reason) => {
+    
+    const leaveType = leaveCategory.toUpperCase();
+    const leave = new LeaveApplication({
+        userid: userid,
+        leaveType: leaveType,
+        startDate: startDate,
+        endDate: endDate,
+        reason: reason,
+        status: "PENDING",
+    });
+
+    await leave.save();
+}
+
+const getLeaveRequests = async (userid) => {
+    const leaveRequests = LeaveApplication.find({ userid: userid });
+    return leaveRequests
+}
 
 module.exports = {
     getAttendanceDataByUserId,
@@ -291,4 +332,6 @@ module.exports = {
     getAllEmployees,
     getDetailsOfaEmployee,
     getEmployeeByRole,
+    applyLeave,
+    getLeaveRequests
 };

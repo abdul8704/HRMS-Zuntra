@@ -8,5 +8,7 @@ router.get("/attendance", employeeController.getAttendanceData);
 router.get("/", employeeController.fetchAllEmployees);
 router.get("/role/:role", employeeController.getEmployeeByRole);
 router.get("/:empId", employeeController.getDetailsOfaEmployee);
+router.post("/leave/apply-leave", employeeController.applyForLeave);
+router.get("/leave/requests", employeeController.getEmployeeRequests)
 
 module.exports = router;
