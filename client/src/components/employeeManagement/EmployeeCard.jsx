@@ -78,11 +78,12 @@ export const EmployeeCard = ({
           {/* Left Section */}
           <div className="flex items-center flex-[7] gap-4 min-w-0">
             <div className="flex items-center sm:items-stretch justify-center sm:justify-start self-stretch max-w-[8rem]">
-              <img
-                src={image}
-                alt="Profile"
-                className="w-full h-full object-cover block rounded-l-lg sm:rounded-l-lg sm:rounded-r-none sm:rounded-t-none"
-              />
+             <img
+  src={image}
+  alt="Profile"
+  className="w-full h-full object-cover block rounded-tl-2xl rounded-bl-2xl"
+/>
+
             </div>
 
             <div className="flex flex-col flex-1 min-w-0 max-w-full items-center sm:items-start justify-center overflow-hidden py-4">

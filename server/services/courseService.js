@@ -1,5 +1,6 @@
 const courseDetails = require("../models/courseDetails");
 const courseContent = require("../models/courseContent");
+const courseProgress = require("../models/courseProgress");
 const userCourse = require("../models/userCourse");
 const ApiError = require("../errors/ApiError");
 
@@ -118,6 +119,20 @@ const userCourseEnroll = async (userId, courseId) => {
     }
 };
 
+const fetchProgressMatrix = async (userId, courseId) => {
+  try {
+    const progressMatrix = await courseProgress.findOne(
+      { userId: userId, courseId: courseId },
+      { moduleStatus: 1 }
+    );
+
+    return progressMatrix ? progressMatrix.moduleStatus : null;
+  } catch (err) {
+    throw new ApiError(500, "Unable to get progress matrix", err.message);
+  }
+};
+
+
 module.exports = {
     addNewCourse,
     getAllCourseDetails,
@@ -129,4 +144,5 @@ module.exports = {
     updateCourseContent,
     deleteCourse,
     userCourseEnroll,
+    fetchProgressMatrix
 };

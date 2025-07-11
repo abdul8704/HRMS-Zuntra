@@ -82,7 +82,7 @@ const processLeaveRequest = async (userid, leaveId, decision, comments = '') => 
     if (!user || !user.role || !user.role.role) {
         throw new ApiError(403, 'User role not found or invalid');
     }
-
+    const finalDecision = decision.toUpperCase();
     const roleName = user.role.role.toUpperCase();
     console.log(roleName)
     const leaveApplication = await LeaveApplication.findById(leaveId);
@@ -92,38 +92,40 @@ const processLeaveRequest = async (userid, leaveId, decision, comments = '') => 
         throw new ApiError(400, 'Requested Leave application not found');
     }
 
-    const isApproved = decision.toUpperCase() === 'APPROVED';
+    const isApproved = finalDecision === "APPROVED";
 
     // ⛔ If Super Admin has already acted, no one else can override
-    if (leaveApplication.superAdminAction && roleName === "TEAM LEAD" ) {
-        if (leaveApplication.status !== decision.toUpperCase())
+    if (leaveApplication.superAdminAction !== "PENDING" && roleName === "TEAM LEAD" ) {
+        if (leaveApplication.status !== finalDecision)
             throw new ApiError(
                 403,
                 "Leave already reviewed by super admin. You can't override."
             );
-        else{
-            leaveApplication.adminAction = true;    
-            console.log("TL and HR agreed on same decision")
+        else {
+            leaveApplication.adminAction = finalDecision;
+            leaveApplication.adminReviewer = userid;
+            console.log("TL and HR agreed on same decision");
         }
     }
 
     // ✅ TEAM_LEAD logic
     if (roleName === "TEAM LEAD") {
         leaveApplication.status = isApproved ? 'APPROVED' : 'REJECTED';
-        leaveApplication.adminAction = true;
+        leaveApplication.adminAction = finalDecision;
+        leaveApplication.adminReviewer = userid;
         console.log("TL made his decison")
     }
 
     // ✅ HR / SUPER_ADMIN logic
     else if (roleName === "HR" || roleName === "SUPER_ADMIN" || roleName === 'CEO') {
         leaveApplication.status = isApproved ? 'APPROVED' : 'REJECTED';
-        leaveApplication.superAdminAction = true;
+        leaveApplication.superAdminAction = finalDecision;
+        leaveApplication.superAdminReviewer = userid;
         console.log("TL made his decison");
     }
 
     leaveApplication.reviewComment = comments;
     leaveApplication.reviewedAt = now;
-    leaveApplication.reviewedBy = userid;
 
     await leaveApplication.save();
 };
