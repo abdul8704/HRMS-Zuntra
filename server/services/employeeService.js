@@ -142,7 +142,7 @@ const markAttendanceOnLogin = async (userid, mode) => {
 
         // if employee previously logged in remotely, then starts another session onsite, update attendance type of day to onsite.
         if (attendance.status === "remote" && mode === "onsite") {
-            attendance.status = "onsite";
+            attendance.status = "present";
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
@@ -305,14 +305,13 @@ const getEmployeeByRole = async (roleId) => {
 };
 
 // TODO: if employee sends multiple request for same day, handle it
-const applyLeave = async (userid, leaveCategory, startDate, endDate, reason) => {
+const applyLeave = async (userid, leaveCategory, dates, reason) => {
     
     const leaveType = leaveCategory.toUpperCase();
     const leave = new LeaveApplication({
         userid: userid,
         leaveType: leaveType,
-        startDate: startDate,
-        endDate: endDate,
+        dates: dates,
         reason: reason,
         status: "PENDING",
     });

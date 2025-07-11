@@ -94,14 +94,14 @@ const getDetailsOfaEmployee= asyncHandler(async (req, res) => {
 
 const applyForLeave = asyncHandler(async (req, res) => {
   const { userid } = req.user;
-  const { leaveCategory, startDate, endDate, reason } = req.body;
-  console.log(userid, leaveCategory, startDate, endDate, reason)
+  const { leaveCategory, dates, reason } = req.body;
+  console.log(userid, leaveCategory, dates, reason)
 
-  if(!leaveCategory || !startDate || !endDate || !reason){
+  if(!leaveCategory || !dates || !reason){
     throw new ApiError(400, "please send all data reqd to apply leave")
   }
 
-  const applyLeave = await employeeService.applyLeave(userid, leaveCategory, startDate, endDate, reason);
+  const applyLeave = await employeeService.applyLeave(userid, leaveCategory.split(' ')[0], dates, reason);
 
   return res.status(201).json({ success: true, message: "Request sent successfully" })
 })
