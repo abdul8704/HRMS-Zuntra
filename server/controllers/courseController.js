@@ -212,6 +212,24 @@ const courseEnrollController = asyncHandler(async (req, res) => {
   });
 });
 
+const getProgressMatrixByCourseIdController = asyncHandler(async (req, res) => {
+  const courseId = req.params.id;
+  const { userid } = req.user;
+
+  if (!userid || !courseId) {
+    res.status(400);
+    throw new Error("userId and courseId are required");
+  }
+
+  const moduleStatus = await courseService.fetchProgressMatrix(userid, courseId);
+
+  res.status(200).json({
+    success: true,
+    data: moduleStatus,
+  });
+});
+
+
 
 module.exports = { 
   createCourseIntroController, 
@@ -223,5 +241,6 @@ module.exports = {
   editCourseIntroController,
   editCourseContentController,
   deleteCourseController,
-  courseEnrollController
+  courseEnrollController,
+  getProgressMatrixByCourseIdController,
 };

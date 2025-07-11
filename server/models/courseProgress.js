@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const courseProgressSchema = new mongoose.Schema({
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     courseId: {
-        type: String,
+         type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
     courseName: {
@@ -14,7 +14,7 @@ const courseProgressSchema = new mongoose.Schema({
         required: true,
     },
     percentComplete: {
-        // no of true/ mat.length * mat[0].lengthn
+        // no of true/ mat.length * mat[0].length
         type: Number,
         required: true,
     },
