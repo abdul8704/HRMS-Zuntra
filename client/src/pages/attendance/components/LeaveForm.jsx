@@ -18,6 +18,12 @@ export const LeaveForm = ({ handleClose }) => {
     'Casual Leave',
   ];
 
+  useEffect(() => {
+    if (durationType === 'specific' && specificDates.length === 0) {
+      setSpecificDates(['', '']);
+    }
+  }, [durationType]);
+
   const handleSpecificDateChange = (index, value) => {
     const updatedDates = [...specificDates];
     updatedDates[index] = value;
@@ -25,7 +31,10 @@ export const LeaveForm = ({ handleClose }) => {
   };
 
   const addSpecificDateField = () => {
-    setSpecificDates([...specificDates, '']);
+    const allFilled = specificDates.every(date => date);
+    if (allFilled) {
+      setSpecificDates([...specificDates, '']);
+    }
   };
 
   const removeSpecificDateField = (index) => {
@@ -47,22 +56,20 @@ export const LeaveForm = ({ handleClose }) => {
             : specificDates,
       reason,
     };
-    try{
+    try {
       const leavReq = await api.post('/api/employee/leave/apply-leave', {
         leaveCategory: data.leaveCategory,
         dates: data.dates,
         reason: data.reason
-      })
-      if (leavReq.status === 201){
-        alert("Leave request sent successfully")
+      });
+      if (leavReq.status === 201) {
+        alert("Leave request sent successfully");
       }
+    } catch (error) {
+      console.log(error);
+      alert("Trouble while applying for leave");
     }
-    catch(error){
-      console.log(error)
-      alert("Trouble while applying for leave")
-    }
-    if (handleClose) 
-      handleClose();
+    if (handleClose) handleClose();
   };
 
   const handleCancel = () => {
@@ -79,6 +86,7 @@ export const LeaveForm = ({ handleClose }) => {
   const adjustTextareaHeight = (e) => {
     const textarea = e.target;
     textarea.style.height = 'auto';
+    textarea.style.overflow = 'hidden';
     textarea.style.height = Math.max(textarea.scrollHeight, 50) + 'px';
     setReason(textarea.value);
   };
@@ -88,7 +96,7 @@ export const LeaveForm = ({ handleClose }) => {
       <div className="flex-1 overflow-y-auto px-4 py-4">
         <div className="flex flex-col gap-4 text-gray-700 max-w-2xl mx-auto">
           <h1 className="text-xl font-semibold text-gray-800">Apply for Leave</h1>
-          
+
           {/* Leave Category */}
           <div className="flex flex-col">
             <label className="text-sm font-medium mb-1 text-gray-700">Leave Category</label>
@@ -127,8 +135,8 @@ export const LeaveForm = ({ handleClose }) => {
                   {type === 'single'
                     ? 'Single Day'
                     : type === 'range'
-                    ? 'Date Range'
-                    : 'Specific Dates'}
+                      ? 'Date Range'
+                      : 'Specific Dates'}
                 </label>
               ))}
             </div>
@@ -197,7 +205,12 @@ export const LeaveForm = ({ handleClose }) => {
               <button
                 type="button"
                 onClick={addSpecificDateField}
-                className="text-blue-500 hover:text-blue-700 text-sm w-fit hover:underline transition-colors"
+                disabled={!specificDates.every(date => date)}
+                className={`text-sm w-fit transition-colors ${
+                  specificDates.every(date => date)
+                    ? 'text-blue-500 hover:text-blue-700 hover:underline'
+                    : 'text-gray-400 cursor-not-allowed'
+                }`}
               >
                 + Add another date
               </button>
@@ -212,7 +225,7 @@ export const LeaveForm = ({ handleClose }) => {
               onChange={adjustTextareaHeight}
               placeholder="Enter reason for leave..."
               className="border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              style={{ minHeight: '50px', height: 'auto' }}
+              style={{ minHeight: '50px', overflow: 'hidden' }}
               rows="2"
               required
             />

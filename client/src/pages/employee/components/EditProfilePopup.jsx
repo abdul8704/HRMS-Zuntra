@@ -108,7 +108,7 @@ export default function EditProfileCard({ onClose }) {
       <style jsx>{`
 
         .edit-card-container {
-          max-width: 640px;
+          width: 640px;
           padding: 20px 32px;
           background: #fff;
           border-radius: 14px;
@@ -143,8 +143,8 @@ export default function EditProfileCard({ onClose }) {
 
         .profile-picture-wrapper {
           display: flex;
-          align-items: center;
           justify-content: center;
+          align-items: center;
           position: relative;
           margin-bottom: 24px;
         }
@@ -158,28 +158,31 @@ export default function EditProfileCard({ onClose }) {
           display: flex;
           align-items: center;
           justify-content: center;
+          position: relative;
         }
-
-        .profile-picture-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
+          
         .profile-edit-icon {
           position: absolute;
           bottom: 4px;
-          right: 6px;
+          right: calc(50% - 48px); /* Moves icon near the bottom-right of the circle */
           background: #08bdb1;
           color: white;
           border-radius: 50%;
-          width: 26px;
-          height: 26px;
+          width: 24px;
+          height: 24px;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          font-size: 14px;
+          font-size: 12px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+
+        .profile-picture-img {
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
         }
 
         label {

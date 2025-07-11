@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { EmpCourseCard } from "./EmpCourseCard";
 
 const colors = [
-  "#F2F2F2", "#E8EAED", "#E6E6E6", "#D9D9D9", "#CCCCCC", "#BFBFBF", 
+  "#F2F2F2", "#E8EAED", "#E6E6E6", "#D9D9D9", "#CCCCCC", "#BFBFBF",
   "#FFFFE6", "#FFFFCC", "#FFFFB3", "#FFFF99", "#FFFF00", "#E6E600",
   "#E6FFE6", "#CCFFCC", "#B3FFB3", "#99FF99", "#00FF00", "#00CC00",
   "#E6FFFF", "#CCFFFF", "#B3FFFF", "#00FFFF", "#00E6E6", "#00CCCC",
@@ -24,21 +24,41 @@ const predefinedCourses = [
   { id: 10, courseName: "Next.js Deep Dive", authorName: "Lily Carter", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
 ];
 
-export const AddRole = ({ onClose }) => {
-  const [roleName, setRoleName] = useState("");
-  const [roleColor, setRoleColor] = useState("#f5f5f5");
-  const [showColors, setShowColors] = useState(false);
-  const [courseCards, setCourseCards] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [salary, setSalary] = useState("");
-  const [permissions, setPermissions] = useState({
+
+
+export const AddRole = ({ 
+  type = "edit", // "edit" or "add"
+  rolename = "", 
+  rolecolor = "#f5f5f5",
+  rolesalary = "",
+  rolecourses = [],
+  rolepermissions = {
+    projectManagement: false,
+    employeeManagement: false,
+    courseManagement: false,
+    attendance: false
+  },
+  onClose,
+  onSave
+}) => {
+  const isEditMode = type === "edit";
+  
+  // Initialize state based on mode
+  const [roleName, setRoleName] = useState(isEditMode ? rolename : "");
+  const [roleColor, setRoleColor] = useState(isEditMode ? rolecolor : "#f5f5f5");
+  const [salary, setSalary] = useState(isEditMode ? rolesalary : "");
+  const [courseCards, setCourseCards] = useState(isEditMode ? rolecourses : []);
+  const [permissions, setPermissions] = useState(isEditMode ? rolepermissions : {
     projectManagement: false,
     employeeManagement: false,
     courseManagement: false,
     attendance: false
   });
-  
+
+  const [showColors, setShowColors] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
   // Refs for click outside detection
   const modalRef = useRef(null);
   const colorPickerRef = useRef(null);
@@ -131,8 +151,21 @@ export const AddRole = ({ onClose }) => {
       alert("Please enter a role name");
       return;
     }
+
+    const roleData = {
+      roleName,
+      roleColor,
+      salary,
+      courseCards,
+      permissions
+    };
+
+    console.log(`${isEditMode ? 'Editing' : 'Adding'} Role:`, roleData);
     
-    console.log("Role:", roleName, "Color:", roleColor, "Salary:", salary, "Courses:", courseCards, "Permissions:", permissions);
+    if (onSave) {
+      onSave(roleData);
+    }
+    
     onClose();
   };
 
@@ -172,190 +205,233 @@ export const AddRole = ({ onClose }) => {
     }
   };
 
+  // Get modal title based on mode
+  const getModalTitle = () => {
+    return isEditMode ? "Edit Role" : "Add New Role";
+  };
+
+  // Get button text based on mode
+  const getSubmitButtonText = () => {
+    return isEditMode ? "Update" : "Add";
+  };
+
+  // Get button styling based on mode
+  const getSubmitButtonStyle = () => {
+    return isEditMode 
+      ? "px-3 sm:px-4 py-2 rounded-md bg-blue-200 text-black hover:bg-blue-600 hover:text-white text-xs sm:text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none"
+      : "px-3 sm:px-4 py-2 rounded-md bg-green-200 text-black hover:bg-green-600 hover:text-white text-xs sm:text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none";
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-[2000] p-4">
-      <div 
-        ref={modalRef}
-        className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-[350px] sm:max-w-[450px] lg:max-w-[550px] shadow-lg flex flex-col gap-3 sm:gap-5 relative animate-scale-in max-h-[90vh] overflow-y-auto"
-        style={{ animation: "fadeIn 0.2s ease-out" }}
-      >
-        {/* Role input and color */}
-        <div className="flex items-center gap-2 sm:gap-3 relative w-full">
-          <input
-            type="text"
-            className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="Enter role"
-            value={roleName}
-            onChange={(e) => setRoleName(e.target.value)}
-            onKeyDown={handleKeyDown}
-            autoFocus
-          />
-          <div
-            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-600 cursor-pointer hover:scale-110 transition-transform flex-shrink-0"
-            style={{ backgroundColor: roleColor }}
-            onClick={() => setShowColors(!showColors)}
-          />
-          {showColors && (
-            <div 
-              ref={colorPickerRef}
-              className="absolute top-10 right-0 bg-white border rounded-lg shadow-lg p-2 grid grid-cols-6 gap-1 z-50 animate-fade-in"
-            >
-              {colors.map((color, idx) => (
-                <div
-                  key={idx}
-                  className="w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer hover:scale-110 transition-transform"
-                  style={{ backgroundColor: color }}
-                  onClick={() => handleColorSelect(color)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Permissions Section */}
-        <div className="bg-gray-100 rounded-xl p-3 sm:p-4 w-full">
-          <h3 className="text-sm font-medium text-gray-700 mb-2 sm:mb-3">Permissions</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={permissions.projectManagement}
-                onChange={() => handlePermissionChange('projectManagement')}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
-              />
-              <span className="text-xs sm:text-sm text-gray-700">Project Management</span>
-            </label>
-            
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={permissions.employeeManagement}
-                onChange={() => handlePermissionChange('employeeManagement')}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
-              />
-              <span className="text-xs sm:text-sm text-gray-700">Employee Management</span>
-            </label>
-            
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={permissions.courseManagement}
-                onChange={() => handlePermissionChange('courseManagement')}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
-              />
-              <span className="text-xs sm:text-sm text-gray-700">Course Management</span>
-            </label>
-            
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={permissions.attendance}
-                onChange={() => handlePermissionChange('attendance')}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
-              />
-              <span className="text-xs sm:text-sm text-gray-700">Attendance</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Salary Input Section */}
-        <div className="w-full"><label className="text-sm font-medium text-gray-700 block mb-2 sm:mb-3" htmlFor="salary">
-          </label>
-          <input
-          type="number"
-          id="salary"
-          className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Enter salary in ₹"
-          value={salary}
-          onChange={(e) => setSalary(e.target.value)}
-          />
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-[2000] p-4">
+        <div
+          ref={modalRef}
+          className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-[350px] sm:max-w-[450px] lg:max-w-[550px] shadow-lg flex flex-col gap-3 sm:gap-5 relative animate-scale-in max-h-[90vh] overflow-y-auto"
+          style={{ animation: "fadeIn 0.2s ease-out" }}
+        >
+          {/* Modal Header */}
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+              {getModalTitle()}
+            </h2>
+            {isEditMode && (
+              <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                Edit Mode
+              </span>
+            )}
           </div>
 
+          {/* Role input and color */}
+          <div className="flex items-center gap-2 sm:gap-3 relative w-full">
+            <input
+              type="text"
+              className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder={isEditMode ? "Edit role name" : "Enter role name"}
+              value={roleName}
+              onChange={(e) => setRoleName(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoFocus={!isEditMode}
+            />
+            <div
+              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-600 cursor-pointer hover:scale-110 transition-transform flex-shrink-0"
+              style={{ backgroundColor: roleColor }}
+              onClick={() => setShowColors(!showColors)}
+            />
+            {showColors && (
+              <div
+                ref={colorPickerRef}
+                className="absolute top-10 right-0 bg-white border rounded-lg shadow-lg p-2 grid grid-cols-6 gap-1 z-50 animate-fade-in"
+              >
+                {colors.map((color, idx) => (
+                  <div
+                    key={idx}
+                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                    style={{ backgroundColor: color }}
+                    onClick={() => handleColorSelect(color)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
 
-        {/* Courses Section */}
-        <div className="bg-gray-300 rounded-xl h-48 sm:h-56 lg:h-64 w-full relative px-2 pt-3 sm:pt-4 pb-3 sm:pb-4">
-          {courseCards.length === 0 && (
-            <span className="absolute top-2 sm:top-3 left-3 sm:left-4 text-xs sm:text-sm text-gray-600">Ongoing courses...</span>
-          )}
-
-          {/* Selected Cards */}
-          <div className="h-full overflow-y-auto pr-1 sm:pr-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-0">
-              {courseCards.map((course) => (
-                <EmpCourseCard
-                  key={course.id}
-                  courseName={course.courseName}
-                  authorName={course.authorName}
-                  imageUrl={course.imageUrl}
-                  onRemove={() => handleRemoveCourse(course.id)}
-                  truncateTitle={false}
+          {/* Permissions Section */}
+          <div className="bg-gray-100 rounded-xl p-3 sm:p-4 w-full">
+            <h3 className="text-sm font-medium text-gray-700 mb-2 sm:mb-3">
+              {isEditMode ? "Update Permissions" : "Set Permissions"}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={permissions.projectManagement}
+                  onChange={() => handlePermissionChange('projectManagement')}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
                 />
-              ))}
+                <span className="text-xs sm:text-sm text-gray-700">Project Management</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={permissions.employeeManagement}
+                  onChange={() => handlePermissionChange('employeeManagement')}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
+                />
+                <span className="text-xs sm:text-sm text-gray-700">Employee Management</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={permissions.courseManagement}
+                  onChange={() => handlePermissionChange('courseManagement')}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
+                />
+                <span className="text-xs sm:text-sm text-gray-700">Course Management</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={permissions.attendance}
+                  onChange={() => handlePermissionChange('attendance')}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
+                />
+                <span className="text-xs sm:text-sm text-gray-700">Attendance</span>
+              </label>
             </div>
           </div>
 
-          {/* Dropdown */}
-          {showDropdown && (
-            <div 
-              ref={dropdownRef}
-              className="absolute bottom-12 sm:bottom-16 right-2 sm:right-6 w-[200px] sm:w-[240px] bg-white rounded-xl shadow-md z-[1000] p-2 flex flex-col gap-2 animate-fade-in"
-            >
-              <input
-                ref={searchInputRef}
-                type="text"
-                placeholder="Search courses..."
-                className="w-full p-2 rounded-md text-xs sm:text-sm bg-white outline-none border focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <div className="max-h-32 sm:max-h-40 overflow-y-auto overflow-x-hidden flex flex-col gap-1 items-center">
-                {availableCourses.length === 0 ? (
-                  <div className="text-xs sm:text-sm text-gray-500 py-2">No courses found</div>
-                ) : (
-                  availableCourses.map((course) => (
-                    <div
-                      key={course.id}
-                      className="cursor-pointer hover:bg-gray-50 rounded-md p-1 transition-colors w-full"
-                      onClick={() => handleAddCourse(course)}
-                    >
-                      <EmpCourseCard
-                        courseName={course.courseName}
-                        authorName={course.authorName}
-                        imageUrl={course.imageUrl}
-                        truncateTitle={true}
-                        inDropdown={true}
-                      />
-                    </div>
-                  ))
-                )}
+          {/* Salary Input Section */}
+          <div className="w-full">
+            <label className="text-sm font-medium text-gray-700 block mb-2 sm:mb-3" htmlFor="salary">
+              {isEditMode ? "Update Salary" : "Set Salary"}
+            </label>
+            <input
+              type="number"
+              id="salary"
+              className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder={isEditMode ? "Update salary in ₹" : "Enter salary in ₹"}
+              value={salary}
+              onChange={(e) => setSalary(e.target.value)}
+            />
+          </div>
+
+          {/* Courses Section */}
+          <div className="bg-gray-300 rounded-xl h-48 sm:h-56 lg:h-64 w-full relative px-2 pt-3 sm:pt-4 pb-3 sm:pb-4">
+            {courseCards.length === 0 && (
+              <span className="absolute top-2 sm:top-3 left-3 sm:left-4 text-xs sm:text-sm text-gray-600">
+                {isEditMode ? "Current courses..." : "Assign courses..."}
+              </span>
+            )}
+
+            {/* Selected Cards */}
+            <div className="h-full overflow-y-auto pr-1 sm:pr-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-0">
+                {courseCards.map((course) => (
+                  <EmpCourseCard
+                    key={course.id}
+                    courseName={course.courseName}
+                    authorName={course.authorName}
+                    imageUrl={course.imageUrl}
+                    onRemove={() => handleRemoveCourse(course.id)}
+                    truncateTitle={false}
+                  />
+                ))}
               </div>
             </div>
+
+            {/* Dropdown */}
+            {showDropdown && (
+              <div
+                ref={dropdownRef}
+                className="absolute bottom-12 sm:bottom-16 right-2 sm:right-6 w-[200px] sm:w-[240px] bg-white rounded-xl shadow-md z-[1000] p-2 flex flex-col gap-2 animate-fade-in"
+              >
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search courses..."
+                  className="w-full p-2 rounded-md text-xs sm:text-sm bg-white outline-none border focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <div className="max-h-32 sm:max-h-40 overflow-y-auto overflow-x-hidden flex flex-col gap-1 items-center">
+                  {availableCourses.length === 0 ? (
+                    <div className="text-xs sm:text-sm text-gray-500 py-2">No courses found</div>
+                  ) : (
+                    availableCourses.map((course) => (
+                      <div
+                        key={course.id}
+                        className="cursor-pointer hover:bg-gray-50 rounded-md p-1 transition-colors w-full"
+                        onClick={() => handleAddCourse(course)}
+                      >
+                        <EmpCourseCard
+                          courseName={course.courseName}
+                          authorName={course.authorName}
+                          imageUrl={course.imageUrl}
+                          truncateTitle={true}
+                          inDropdown={true}
+                        />
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Floating + Button */}
+            <span
+              className="absolute bottom-2 sm:bottom-3 right-2 sm:right-4 bg-teal-800/20 hover:bg-teal-800/40 rounded-full px-2 sm:px-3 py-1 text-lg sm:text-xl font-bold text-gray-800 cursor-pointer shadow-md z-[200] transition-colors select-none"
+              onClick={handleDropdownToggle}
+            >
+              {showDropdown ? "×" : "+"}
+            </span>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-center gap-3 sm:gap-4 pt-2">
+            <button
+              className="px-3 sm:px-4 py-2 rounded-md bg-gray-200 text-black hover:bg-red-600 hover:text-white hover:opacity-60 text-xs sm:text-sm transition-colors flex-1 sm:flex-none"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button
+              className={getSubmitButtonStyle()}
+              onClick={handleSubmit}
+              disabled={!roleName.trim()}
+            >
+              {getSubmitButtonText()}
+            </button>
+          </div>
+
+          {/* Show current mode info for debugging */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="text-xs text-gray-400 text-center">
+              Mode: {type} | {isEditMode ? 'Editing existing role' : 'Adding new role'}
+            </div>
           )}
-
-          {/* Floating + Button */}
-          <span
-            className="absolute bottom-2 sm:bottom-3 right-2 sm:right-4 bg-teal-800/20 hover:bg-teal-800/40 rounded-full px-2 sm:px-3 py-1 text-lg sm:text-xl font-bold text-gray-800 cursor-pointer shadow-md z-[200] transition-colors select-none"
-            onClick={handleDropdownToggle}
-          >
-            {showDropdown ? "×" : "+"}
-          </span>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex justify-center gap-3 sm:gap-4 pt-2">
-          <button
-            className="px-3 sm:px-4 py-2 rounded-md bg-gray-200 text-black hover:bg-red-600 hover:text-white hover:opacity-60 text-xs sm:text-sm transition-colors flex-1 sm:flex-none"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-          <button
-            className="px-3 sm:px-4 py-2 rounded-md bg-green-200 text-black hover:bg-green-600 hover:text-white text-xs sm:text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none"
-            onClick={handleSubmit}
-            disabled={!roleName.trim()}
-          >
-            Add
-          </button>
         </div>
       </div>
 
@@ -375,6 +451,6 @@ export const AddRole = ({ onClose }) => {
           animation: fadeIn 0.15s ease-out;
         }
       `}</style>
-    </div>
+    </>
   );
-};  
+};

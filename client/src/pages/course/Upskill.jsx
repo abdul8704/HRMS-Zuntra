@@ -89,6 +89,54 @@ const dummyCourses = [
     deadlineUnits: 'weeks',
     rating: 4.9,
   },
+    {
+    courseImage: 'https://via.placeholder.com/150',
+    courseName: 'Database Design',
+    courseInstructor: 'Laura Hill',
+    deadline: 3,
+    deadlineUnits: 'weeks',
+    rating: 4.9,
+  },
+  {
+    courseImage: 'https://via.placeholder.com/150',
+    courseName: 'React for Beginners',
+    courseInstructor: 'John Doe',
+    deadline: 10,
+    deadlineUnits: 'days',
+    rating: 5,
+  },
+  {
+    courseImage: 'https://via.placeholder.com/150',
+    courseName: 'Advanced JavaScript',
+    courseInstructor: 'Jane Smith',
+    deadline: 2,
+    deadlineUnits: 'weeks',
+    rating: 4.5,
+  },
+  {
+    courseImage: 'https://via.placeholder.com/150',
+    courseName: 'UI/UX Fundamentals',
+    courseInstructor: 'Emily Clark',
+    deadline: 5,
+    deadlineUnits: 'days',
+    rating: 5,
+  },
+  {
+    courseImage: 'https://via.placeholder.com/150',
+    courseName: 'Node.js Mastery',
+    courseInstructor: 'Mike Jordan',
+    deadline: 7,
+    deadlineUnits: 'days',
+    rating: 4.8,
+  },
+  {
+    courseImage: 'https://via.placeholder.com/150',
+    courseName: 'Database Design',
+    courseInstructor: 'Laura Hill',
+    deadline: 3,
+    deadlineUnits: 'weeks',
+    rating: 4.9,
+  },
 ];
 
 export const Upskill = () => {
@@ -102,9 +150,11 @@ export const Upskill = () => {
   const [apiMessage, setApiMessage] = useState('');
 
   useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
     const checkOverflow = () => {
-      const el = scrollRef.current;
-      if (el && el.scrollWidth > el.clientWidth) {
+      if (el.scrollWidth > el.clientWidth) {
         setShowArrows(true);
       } else {
         setShowArrows(false);
@@ -112,9 +162,14 @@ export const Upskill = () => {
     };
 
     checkOverflow();
-    window.addEventListener('resize', checkOverflow);
-    return () => window.removeEventListener('resize', checkOverflow);
-  }, []);
+
+    const resizeObserver = new ResizeObserver(checkOverflow);
+    resizeObserver.observe(el);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [courses, navId]);
 
   useEffect(() => {
     if (navId === 'all') return;
@@ -146,7 +201,7 @@ export const Upskill = () => {
     const el = scrollRef.current;
     if (!el) return;
 
-    const scrollAmount = 300;
+    const scrollAmount = 540;
     const isAtStart = el.scrollLeft <= 0;
     const isAtEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
 
@@ -185,7 +240,7 @@ export const Upskill = () => {
                 {showArrows && (
                   <button
                     onClick={() => scroll('left')}
-                    className="bg-white shadow px-3 py-2 rounded-full"
+                    className="bg-gradient-to-r from-black/10 to-white h-full px-3 py-2 rounded-l-lg"
                   >
                     &#8592;
                   </button>
@@ -195,7 +250,8 @@ export const Upskill = () => {
                   ref={scrollRef}
                   className="flex gap-4 overflow-x-auto pb-2 no-scrollbar"
                 >
-                  {dummyCourses.map((course, index) => (
+
+                  {(navId === 'all' ? dummyCourses : courses).map((course, index) => (
                     <div key={index} className="w-64 flex-shrink-0">
                       <CourseCard {...course} />
                     </div>
@@ -205,7 +261,7 @@ export const Upskill = () => {
                 {showArrows && (
                   <button
                     onClick={() => scroll('right')}
-                    className="bg-white shadow px-3 py-2 rounded-full"
+                    className="bg-gradient-to-l from-black/10 to-white h-full px-3 py-2 rounded-r-lg"
                   >
                     &#8594;
                   </button>
@@ -243,7 +299,7 @@ export const Upskill = () => {
           .no-scrollbar::-webkit-scrollbar {
             display: none;
           }
-          .no-scrollbar {
+          .no-scrollbar {4
             -ms-overflow-style: none;
             scrollbar-width: none;
           }
