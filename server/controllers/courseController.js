@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler')
-const courseService = require("../services/courseService"); // adjust path as needed
+const courseService = require("../services/courseService");
 
 const createCourseIntroController = asyncHandler(async (req, res) => {
   const courseData = req.body;
@@ -197,31 +197,52 @@ const deleteCourseController = asyncHandler(async (req, res) => {
 //with respect to user
 
 
-// @desc    Get all courses of a type by user ID type-[enrolledCourses, assignedCourses, completedCourses]
-// @route   GET /api/course/:type/:id 
+// @desc    Get all courses of a type by user ID type-[enrolledCourses, assignedCourses, completedCourses, available]
+// @route   GET /api/course/:type
 const getCoursesByTypeForUserId = asyncHandler(async (req, res) => {
   const { type } = req.params;
   const { userid } = req.user;
-  const allowedTypes = ["enrolledCourses", "assignedCourses", "completedCourses"];
+
+  const allowedTypes = ["enrolledCourses", "assignedCourses", "completedCourses", "available"];
 
   if (!allowedTypes.includes(type)) {
     throw new ApiError(400, "Invalid Course Type");
   }
 
-  const courses = await courseService.getCoursesByTypeForUserId(type, userid);
-  res.status(200).json({
+  if (type === "available") {
+    const allCourses = await courseService.getAllCourseDetails();
+    const enrolled = await courseService.getCoursesByTypeForUserId("enrolledCourses", userid);
+    const assigned = await courseService.getCoursesByTypeForUserId("assignedCourses", userid);
+    const completed = await courseService.getCoursesByTypeForUserId("completedCourses", userid);
+    const excludedIds = new Set([
+      ...((enrolled?.enrolledCourses || []).map(c => c._id.toString())),
+      ...((assigned?.assignedCourses || []).map(c => c._id.toString())),
+      ...((completed?.completedCourses || []).map(c => c._id.toString())),
+    ]);
+    const availableCourses = allCourses.filter(course =>
+      !excludedIds.has(course._id.toString())
+    );
+    return res.status(200).json({
+      success: true,
+      data: availableCourses,
+    });
+  }
+  const userCourses = await courseService.getCoursesByTypeForUserId(type, userid);
+  return res.status(200).json({
     success: true,
-    data: courses
+    data: userCourses?.[type] || [],
   });
 });
 
 
 
 
+// @desc    enroll a course
+// @route   POST /api/course/:id/enroll 
 const courseEnrollController = asyncHandler(async (req, res) => {
   const {userid} = req.user;
   const courseId = req.params.id;
-
+  console.log(userid)
   if (!userid || !courseId) {
     res.status(400);
     throw new Error("userId and courseId are required");
@@ -235,6 +256,9 @@ const courseEnrollController = asyncHandler(async (req, res) => {
     data: result
   });
 });
+
+
+
 
 const getProgressMatrixByCourseIdController = asyncHandler(async (req, res) => {
   const courseId = req.params.id;

@@ -1,13 +1,14 @@
 import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import api from "../../../api/axios";
 
 export const TableOfContents = ({
+  courseId,              
   progress = "40%",
   enrolled,
   progressMatrix = [],
-  tocContent = []
+  tocContent = [],
 }) => {
-  const { courseId } = useParams();
   const navigate = useNavigate();
 
   const isModuleCompleted = (moduleIndex) => {
@@ -15,8 +16,17 @@ export const TableOfContents = ({
     return Array.isArray(row) && row.length && row.every(val => val === 1);
   };
 
-  const handleClick = () => {
-    navigate(`/course/learn/${courseId}`);
+  const handleClick = async () => {
+    try {
+      if (!enrolled) {
+        const res = await api.post(`/api/course/${courseId}/enroll`);
+        console.log("Enrolled successfully:", res.data);
+      }
+
+      navigate(`/course/learn/${courseId}`);
+    } catch (error) {
+      console.error("Error in Continue Learning:", error);
+    }
   };
 
   return (
@@ -26,7 +36,6 @@ export const TableOfContents = ({
         <div>
           {tocContent.map((module, moduleIndex) => {
             const completed = isModuleCompleted(moduleIndex);
-
             return (
               <div className="mb-5" key={moduleIndex}>
                 <div className="flex items-center gap-2 text-base font-bold text-black">

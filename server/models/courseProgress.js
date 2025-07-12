@@ -9,10 +9,6 @@ const courseProgressSchema = new mongoose.Schema({
          type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
-    courseName: {
-        type: String,
-        required: true,
-    },
     percentComplete: {
         // no of true/ mat.length * mat[0].length
         type: Number,

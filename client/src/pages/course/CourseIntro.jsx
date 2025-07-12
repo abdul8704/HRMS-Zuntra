@@ -5,7 +5,6 @@ import { Sidebar } from "../../components/Sidebar";
 import { TableOfContents } from "./components/TableContents";
 import api from "../../api/axios";
 
-
 export const CourseIntro = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
@@ -20,6 +19,7 @@ export const CourseIntro = () => {
     [1, 0, 0, 1],
     [1, 1, 1, 1],
   ];
+
   useEffect(() => {
     const fetchCourseDetails = async () => {
       setLoading(true);
@@ -41,7 +41,7 @@ export const CourseIntro = () => {
           const modules = tocRes.data.data?.[0]?.modules || [];
           setTocContent(modules);
         } else {
-          setApiMessage(prev => prev + " | ToC fetch failed.");
+          setApiMessage((prev) => prev + " | ToC fetch failed.");
         }
       } catch (error) {
         setApiMessage("Error fetching course details or ToC.");
@@ -54,6 +54,7 @@ export const CourseIntro = () => {
       fetchCourseDetails();
     }
   }, [courseId]);
+
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -69,7 +70,9 @@ export const CourseIntro = () => {
             <div className="flex items-center justify-between bg-[#bbd3cc] p-4 rounded-xl mb-8 shadow-md">
               <button
                 className="text-2xl font-bold text-black hover:scale-110 transition"
-                onClick={() => { navigate("/upskill/assigned") }}
+                onClick={() => {
+                  navigate("/upskill/assigned");
+                }}
               >
                 ←
               </button>
@@ -82,19 +85,7 @@ export const CourseIntro = () => {
                 </p>
               </div>
               <span className="text-[2.6875rem] font-bold text-gray-900 w-6 flex justify-start items-center -translate-x-2.5 ml-5 -mt-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="41"
-                  height="38"
-                  fill="none"
-                  viewBox="0 0 41 38"
-                >
-                  <path
-                    fill="#000"
-                    fillOpacity=".5"
-                    d="M25.65 37.8a1.35 1.35 0 1 0 0-2.7H8.1a5.4 5.4 0 0 1-5.4-5.4V8.1a5.4 5.4 0 0 1 5.4-5.4h17.55a1.35 1.35 0 0 0 0-2.7H8.1A8.1 8.1 0 0 0 0 8.1v21.6a8.1 8.1 0 0 0 8.1 8.1h17.55Zm3.094-29.306a1.35 1.35 0 0 1 1.912 0l9.45 9.45a1.35 1.35 0 0 1 0 1.912l-9.45 9.45a1.351 1.351 0 1 1-1.912-1.912l7.147-7.144H12.15a1.35 1.35 0 1 1 0-2.7h23.741l-7.147-7.144a1.35 1.35 0 0 1 0-1.912Z"
-                  />
-                </svg>
+                {/* SVG or icon can go here */}
               </span>
             </div>
 
@@ -130,8 +121,9 @@ export const CourseIntro = () => {
 
               <div className="flex flex-col flex-[3] w-full md:h-full justify-center md:justify-start mt-4 md:mt-0">
                 <TableOfContents
+                  courseId={courseId} // <-- this is the key fix
                   progress={"70%"}
-                  enrolled={true}
+                  enrolled={false}
                   progressMatrix={progressMatrix}
                   tocContent={tocContent}
                 />

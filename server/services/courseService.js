@@ -95,29 +95,63 @@ const deleteCourse = async (courseId) => {
         throw new ApiError(500, "Failed to delete course content", err.message);
     }
 };
+//with respect to user
+// @desc    Get all enrolled courses by user ID type-[enrolledCourses, assignedCourses, completedCourses]
+const getCoursesByTypeForUserId = async (type, id) => {
+  const userCourseList = await userCourse.findById(id).select(type).populate(type);
+  return userCourseList;
+};
 
+// @desc    enroll a course 
 const userCourseEnroll = async (userId, courseId) => {
     try {
-        const ucourse = await userCourse.findOne({ _id: userId });
+        const ucourse = await userCourse.findById(userId);
 
         if (!ucourse) {
             throw new ApiError(404, "User not found");
         }
 
-        if (ucourse.currentCourses.includes(courseId)) {
+        if (ucourse.enrolledCourses.includes(courseId)) {
             throw new ApiError(400, "User already enrolled in this course");
         }
 
-        ucourse.currentCourses.push(courseId);
+        // Add to enrolledCourses
+        ucourse.enrolledCourses.push(courseId);
         await ucourse.save();
+
+        // Use TOC structure to determine progress layout
+        const tocData = await getTocCourseContentById(courseId);
+
+        if (!tocData.length) {
+            throw new ApiError(404, "Course TOC not found");
+        }
+
+        // Flatten the module/submodule structure from TOC
+        const modules = tocData[0]?.modules || [];
+        const completedModules = modules.map(mod => {
+            const submodules = mod?.submodules || [];
+            return new Array(submodules.length).fill(false);
+        });
+
+        const totalSubModules = completedModules.reduce((sum, subArray) => sum + subArray.length, 0);
+
+        await courseProgress.create({
+            userId,
+            courseId,
+            percentComplete: 0,
+            moduleStatus: {
+                totalSubModules,
+                completedModules,
+            },
+        });
 
         return ucourse;
     } catch (err) {
-        if (err instanceof ApiError)
-            throw err
+        if (err instanceof ApiError) throw err;
         throw new ApiError(500, "Failed to enroll user in course", err.message);
     }
 };
+
 
 const fetchProgressMatrix = async (userId, courseId) => {
     try {
@@ -132,12 +166,6 @@ const fetchProgressMatrix = async (userId, courseId) => {
     }
 };
 
-//with respect to user
-// @desc    Get all enrolled courses by user ID type-[enrolledCourses, assignedCourses, completedCourses]
-const getCoursesByTypeForUserId = async (type, id) => {
-  const userCourseList = await userCourse.findById(id).select(type).populate(type);
-  return userCourseList;
-};
 
 
 

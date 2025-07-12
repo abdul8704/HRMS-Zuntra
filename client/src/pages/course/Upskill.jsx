@@ -1,151 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-
-
 import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
-
 import { CourseCard } from './components/CourseCard';
 import api from '../../api/axios';
-
-
-const dummyCourses = [
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'React for Beginners',
-    courseInstructor: 'John Doe',
-    deadline: 10,
-    deadlineUnits: 'days',
-    rating: 5,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'Advanced JavaScript',
-    courseInstructor: 'Jane Smith',
-    deadline: 2,
-    deadlineUnits: 'weeks',
-    rating: 4.5,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'UI/UX Fundamentals',
-    courseInstructor: 'Emily Clark',
-    deadline: 5,
-    deadlineUnits: 'days',
-    rating: 5,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'Node.js Mastery',
-    courseInstructor: 'Mike Jordan',
-    deadline: 7,
-    deadlineUnits: 'days',
-    rating: 4.8,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'Database Design',
-    courseInstructor: 'Laura Hill',
-    deadline: 3,
-    deadlineUnits: 'weeks',
-    rating: 4.9,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'React for Beginners',
-    courseInstructor: 'John Doe',
-    deadline: 10,
-    deadlineUnits: 'days',
-    rating: 5,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'Advanced JavaScript',
-    courseInstructor: 'Jane Smith',
-    deadline: 2,
-    deadlineUnits: 'weeks',
-    rating: 4.5,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'UI/UX Fundamentals',
-    courseInstructor: 'Emily Clark',
-    deadline: 5,
-    deadlineUnits: 'days',
-    rating: 5,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'Node.js Mastery',
-    courseInstructor: 'Mike Jordan',
-    deadline: 7,
-    deadlineUnits: 'days',
-    rating: 4.8,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'Database Design',
-    courseInstructor: 'Laura Hill',
-    deadline: 3,
-    deadlineUnits: 'weeks',
-    rating: 4.9,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'Database Design',
-    courseInstructor: 'Laura Hill',
-    deadline: 3,
-    deadlineUnits: 'weeks',
-    rating: 4.9,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'React for Beginners',
-    courseInstructor: 'John Doe',
-    deadline: 10,
-    deadlineUnits: 'days',
-    rating: 5,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'Advanced JavaScript',
-    courseInstructor: 'Jane Smith',
-    deadline: 2,
-    deadlineUnits: 'weeks',
-    rating: 4.5,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'UI/UX Fundamentals',
-    courseInstructor: 'Emily Clark',
-    deadline: 5,
-    deadlineUnits: 'days',
-    rating: 5,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'Node.js Mastery',
-    courseInstructor: 'Mike Jordan',
-    deadline: 7,
-    deadlineUnits: 'days',
-    rating: 4.8,
-  },
-  {
-    courseImage: 'https://via.placeholder.com/150',
-    courseName: 'Database Design',
-    courseInstructor: 'Laura Hill',
-    deadline: 3,
-    deadlineUnits: 'weeks',
-    rating: 4.9,
-  },
-];
 
 export const Upskill = () => {
   const { navId } = useParams();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
-  const token = localStorage.getItem('accessToken');
   const [showArrows, setShowArrows] = useState(false);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -156,21 +19,13 @@ export const Upskill = () => {
     if (!el) return;
 
     const checkOverflow = () => {
-      if (el.scrollWidth > el.clientWidth) {
-        setShowArrows(true);
-      } else {
-        setShowArrows(false);
-      }
+      setShowArrows(el.scrollWidth > el.clientWidth);
     };
 
     checkOverflow();
-
     const resizeObserver = new ResizeObserver(checkOverflow);
     resizeObserver.observe(el);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
+    return () => resizeObserver.disconnect();
   }, [courses, navId]);
 
   useEffect(() => {
@@ -184,8 +39,11 @@ export const Upskill = () => {
         let res;
 
         if (navId === "all") {
-          res = await api.get(`/api/course`);
+          res = await api.get(`/api/course/available`);
           const courseList = Array.isArray(res.data?.data) ? res.data.data : [];
+          if (courseList.length === 0) {
+            setApiMessage("No courses found.");
+          }
           setCourses(courseList);
         } else if (["assigned", "enrolled", "completed"].includes(navId)) {
           const typeMap = {
@@ -195,17 +53,17 @@ export const Upskill = () => {
           };
 
           res = await api.get(`/api/course/${typeMap[navId]}/`);
+          const courseList = Array.isArray(res.data?.data) ? res.data.data : [];
 
-          const arrayFromResponse = res.data?.data?.[typeMap[navId]];
-
-          if (Array.isArray(arrayFromResponse)) {
-            setCourses(arrayFromResponse);
-          } else {
+          if (courseList.length === 0) {
             setCourses([]);
             setApiMessage("No courses found.");
+          } else {
+            setCourses(courseList);
           }
         }
       } catch (error) {
+        console.error(error);
         setCourses([]);
         setApiMessage("Error fetching courses.");
       } finally {
@@ -216,9 +74,6 @@ export const Upskill = () => {
     fetchCourses();
   }, [navId, navigate]);
 
-
-
-
   const scroll = (direction) => {
     const el = scrollRef.current;
     if (!el) return;
@@ -228,17 +83,9 @@ export const Upskill = () => {
     const isAtEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
 
     if (direction === 'left') {
-      if (isAtStart) {
-        el.scrollTo({ left: el.scrollWidth, behavior: 'smooth' });
-      } else {
-        el.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-      }
+      el.scrollTo({ left: isAtStart ? el.scrollWidth : el.scrollLeft - scrollAmount, behavior: 'smooth' });
     } else {
-      if (isAtEnd) {
-        el.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      }
+      el.scrollTo({ left: isAtEnd ? 0 : el.scrollLeft + scrollAmount, behavior: 'smooth' });
     }
   };
 
@@ -252,10 +99,7 @@ export const Upskill = () => {
           {navId === 'all' && (
             <div className="flex flex-col gap-2 mt-4">
               <div className="flex items-center justify-between px-1">
-                <h2 className="text-xl font-semibold">Recommended Courses</h2>
-                <span className="text-blue-600 text-sm font-medium cursor-pointer hover:underline">
-                  View all
-                </span>
+                <h2 className="text-xl font-semibold">Available Courses</h2>
               </div>
 
               <div className="flex items-center gap-4">
@@ -272,12 +116,21 @@ export const Upskill = () => {
                   ref={scrollRef}
                   className="flex gap-4 overflow-x-auto pb-2 no-scrollbar"
                 >
-
-                  {(navId === 'all' ? dummyCourses : courses).map((course, index) => (
-                    <div key={index} className="w-64 flex-shrink-0">
-                      <CourseCard {...course} />
-                    </div>
-                  ))}
+                  {loading ? (
+                    <p className="p-4">Loading...</p>
+                  ) : apiMessage ? (
+                    <p className="p-4 text-red-500">{apiMessage}</p>
+                  ) : (
+                    courses.map((course, index) => (
+                      <div
+                        key={index}
+                        className="w-64 flex-shrink-0 cursor-pointer"
+                        onClick={() => navigate(`/course/${course._id}/intro`)}
+                      >
+                        <CourseCard {...course} />
+                      </div>
+                    ))
+                  )}
                 </div>
 
                 {showArrows && (
@@ -292,7 +145,7 @@ export const Upskill = () => {
             </div>
           )}
 
-          {(navId === 'assigned' || navId === 'enrolled' ||navId==='completed') && (
+          {(navId === 'assigned' || navId === 'enrolled' || navId === 'completed') && (
             <div className="flex-1 overflow-y-auto">
               {loading ? (
                 <p className="text-center">Loading...</p>
@@ -321,7 +174,7 @@ export const Upskill = () => {
           .no-scrollbar::-webkit-scrollbar {
             display: none;
           }
-          .no-scrollbar {4
+          .no-scrollbar {
             -ms-overflow-style: none;
             scrollbar-width: none;
           }
