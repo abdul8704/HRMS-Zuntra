@@ -13,12 +13,12 @@ export const CourseIntro = () => {
   const [tocContent, setTocContent] = useState([]);
   const [loading, setLoading] = useState(false);
   const [apiMessage, setApiMessage] = useState("");
-
-  const progressMatrix = [
-    [1, 1, 1, 1],
-    [1, 0, 0, 1],
-    [1, 1, 1, 1],
-  ];
+  const [progressMatrix, setProgressMatrix] = useState(null);
+  // const progressMatrix = [
+  //   [1, 1, 1, 1],
+  //   [1, 0, 0, 1],
+  //   [1, 1, 1, 1],
+  // ];
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -26,9 +26,10 @@ export const CourseIntro = () => {
       setApiMessage("");
 
       try {
-        const [courseRes, tocRes] = await Promise.all([
+        const [courseRes, tocRes, progRes] = await Promise.all([
           api.get(`/api/course/details/${courseId}`),
           api.get(`/api/course/toc/content/${courseId}`),
+          api.get(`/api/course/${courseId}/progress`),
         ]);
 
         if (courseRes.data.success) {
@@ -43,8 +44,14 @@ export const CourseIntro = () => {
         } else {
           setApiMessage((prev) => prev + " | ToC fetch failed.");
         }
+        if (progRes.data.success) {
+          setProgressMatrix(progRes.data.data.completedModules);
+        }
+        else{
+          setProgressMatrix(null);
+        }
       } catch (error) {
-        setApiMessage("Error fetching course details or ToC.");
+        setApiMessage(response.data.data || "Error fetching course details");
       } finally {
         setLoading(false);
       }
@@ -121,13 +128,13 @@ export const CourseIntro = () => {
 
               <div className="flex flex-col flex-[3] w-full md:h-full justify-center md:justify-start mt-4 md:mt-0">
                 <TableOfContents
-                  courseId={courseId} // <-- this is the key fix
+                  courseId={courseId}
                   progress={"70%"}
-                  enrolled={false}
+                  enrolled={progressMatrix !== null}
                   progressMatrix={progressMatrix}
                   tocContent={tocContent}
                 />
-
+                {console.log(progressMatrix)};
               </div>
             </div>
           </>

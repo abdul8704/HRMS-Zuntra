@@ -162,6 +162,7 @@ const fetchProgressMatrix = async (userId, courseId) => {
 
         return progressMatrix ? progressMatrix.moduleStatus : null;
     } catch (err) {
+        if (err instanceof ApiError) throw err;
         throw new ApiError(500, "Unable to get progress matrix", err.message);
     }
 };

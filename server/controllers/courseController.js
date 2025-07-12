@@ -24,11 +24,11 @@ const createCourseIntroController = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "Missing required course fields");
   }
-  
+
   const existingCourse = await courseService.getCourseIntroById(courseId);
-  if (existingCourse.length !== 0) 
+  if (existingCourse.length !== 0)
     throw new ApiError(409, "Course Id already exists");
-  
+
 
   const result = await courseService.addNewCourse(courseData);
 
@@ -89,7 +89,7 @@ const createCourseContentController = asyncHandler(async (req, res) => {
     }
   }
   const existingCourse = await courseService.getCourseContentById(courseId);
-  if (existingCourse.length !== 0) 
+  if (existingCourse.length !== 0)
     throw new ApiError(409, "Course Id already exists");
 
   const result = await courseService.addCourseContent(courseContentData);
@@ -100,7 +100,7 @@ const createCourseContentController = asyncHandler(async (req, res) => {
       message: "Data added successfully",
     });
   } else {
-      throw new ApiError(500, "Failed to create course content");
+    throw new ApiError(500, "Failed to create course content");
   }
 });
 
@@ -108,7 +108,7 @@ const createCourseContentController = asyncHandler(async (req, res) => {
 const getCourseDetailsController = asyncHandler(async (req, res) => {
   const result = await courseService.getAllCourseDetails();
   if (result.length === 0) {
-      throw new ApiError(404, "No courses available");
+    throw new ApiError(404, "No courses available");
   }
   else {
     res.status(200).json({
@@ -157,7 +157,7 @@ const getCourseContentIdController = asyncHandler(async (req, res) => {
 });
 
 const editCourseIntroController = asyncHandler(async (req, res) => {
-  const result = await courseService.updateCourseIntro(req.params.id,req.body);
+  const result = await courseService.updateCourseIntro(req.params.id, req.body);
   if (result.length === 0) {
     throw new ApiError(404, "Course does not exist");
   }
@@ -170,7 +170,7 @@ const editCourseIntroController = asyncHandler(async (req, res) => {
 });
 
 const editCourseContentController = asyncHandler(async (req, res) => {
-  const result = await courseService.updateCourseContent(req.params.id,req.body);
+  const result = await courseService.updateCourseContent(req.params.id, req.body);
   if (result.length === 0) {
     throw new ApiError(404, "Course does not exist");
   }
@@ -240,17 +240,13 @@ const getCoursesByTypeForUserId = asyncHandler(async (req, res) => {
 // @desc    enroll a course
 // @route   POST /api/course/:id/enroll 
 const courseEnrollController = asyncHandler(async (req, res) => {
-  const {userid} = req.user;
+  const { userid } = req.user;
   const courseId = req.params.id;
   console.log(userid)
   if (!userid || !courseId) {
-    res.status(400);
-    throw new Error("userId and courseId are required");
+    throw new ApiError(400, "userId and courseId are required");
   }
-
   const result = await courseService.userCourseEnroll(userid, courseId);
-  console.log(result)
-
   res.status(200).json({
     success: true,
     data: result
@@ -259,19 +255,26 @@ const courseEnrollController = asyncHandler(async (req, res) => {
 
 
 
-
+// @desc    get progress of a course
+// @route   POST /api/course/:id/progress 
 const getProgressMatrixByCourseIdController = asyncHandler(async (req, res) => {
   const courseId = req.params.id;
   const { userid } = req.user;
 
   if (!userid || !courseId) {
-    res.status(400);
-    throw new Error("userId and courseId are required");
+    throw new ApiError(400, "userId and courseId are required");
   }
 
   const moduleStatus = await courseService.fetchProgressMatrix(userid, courseId);
-
-  res.status(200).json({
+  console.log(moduleStatus);
+  if (!moduleStatus) {
+    const msg = "Enrolle in a course"
+    return res.status(200).json({
+      success: false,
+      data: msg,
+    });
+  }
+  return res.status(200).json({
     success: true,
     data: moduleStatus,
   });
@@ -279,12 +282,12 @@ const getProgressMatrixByCourseIdController = asyncHandler(async (req, res) => {
 
 
 
-module.exports = { 
-  createCourseIntroController, 
-  createCourseContentController, 
-  getCourseDetailsController, 
-  getTocCourseContentIdController, 
-  getCourseContentIdController, 
+module.exports = {
+  createCourseIntroController,
+  createCourseContentController,
+  getCourseDetailsController,
+  getTocCourseContentIdController,
+  getCourseContentIdController,
   getCourseIntroIdController,
   editCourseIntroController,
   editCourseContentController,

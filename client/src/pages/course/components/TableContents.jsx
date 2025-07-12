@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../../api/axios";
 
 export const TableOfContents = ({
-  courseId,              
+  courseId,
   progress = "40%",
   enrolled,
   progressMatrix = [],
@@ -11,9 +11,12 @@ export const TableOfContents = ({
 }) => {
   const navigate = useNavigate();
 
+  // Normalize progressMatrix to empty array if null
+  const normalizedProgressMatrix = progressMatrix ?? [];
+
   const isModuleCompleted = (moduleIndex) => {
-    const row = progressMatrix[moduleIndex];
-    return Array.isArray(row) && row.length && row.every(val => val === 1);
+    const row = normalizedProgressMatrix[moduleIndex] || [];
+    return Array.isArray(row) && row.length && row.every((val) => val === 1);
   };
 
   const handleClick = async () => {
@@ -54,7 +57,7 @@ export const TableOfContents = ({
                     >
                       <span
                         className={`font-bold ${
-                          progressMatrix[moduleIndex]?.[subIndex] === 1
+                          normalizedProgressMatrix[moduleIndex]?.[subIndex] === 1
                             ? "text-[#00cfd1]"
                             : "text-gray-400"
                         }`}
