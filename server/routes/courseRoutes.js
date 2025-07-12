@@ -11,7 +11,8 @@ router.get("/content/:id",CourseController.getCourseContentIdController)
 router.patch("/details/:id/edit",CourseController.editCourseIntroController)
 router.patch("/content/:id/edit",CourseController.editCourseContentController)
 router.delete("/:id/delete",CourseController.deleteCourseController)
-
+//with respect to users
+router.get("/:type",CourseController.getCoursesByTypeForUserId);
 router.post("/:id/enroll",CourseController.courseEnrollController)
 router.get("/:id/progress",CourseController.getProgressMatrixByCourseIdController)
 

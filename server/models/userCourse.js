@@ -5,17 +5,20 @@ const userCourseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "UserCredentials",
     },
-    currentCourses: {
-        type: [String],
+    enrolledCourses: {
+        type: [mongoose.Schema.Types.ObjectId],
         default: [],
+        ref: "CourseDetails",
     },
     completedCourses: {
-        type: [String],
+        type: [mongoose.Schema.Types.ObjectId],
         default: [],
+        ref: "CourseDetails",
     },
     assignedCourses: {
-        type: [String],
+        type: [mongoose.Schema.Types.ObjectId],
         default: [],
+        ref: "CourseDetails",
     }
 });
 

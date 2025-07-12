@@ -4,6 +4,7 @@ import zuntraSquareLogo from '../assets/zuntra_square_no_text.png';
 import zuntraLogo from '../assets/zuntra.png';
 import { Logout } from './Logout';
 
+// Sidebar items 
 const sidebarItems = [
   {
     role: "EMP",
@@ -90,16 +91,24 @@ const sidebarItems = [
   },
 ];
 
-export const Sidebar = () => {
+
+export const Sidebar = ({ role = "HR" }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [userRole, setUserRole] = useState("HR");
+
+  const [userRole, setUserRole] = useState(role);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [sidebarState, setSidebarState] = useState(0); // 0: collapsed, 1: hover, 2: expanded, 3: pinned
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [open,setOpen]=useState(false);
+  const [open, setOpen] = useState(false);
+
   const currentPath = location.pathname;
+
+  useEffect(() => {
+    setUserRole(role);
+  }, [role]);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
@@ -107,7 +116,6 @@ export const Sidebar = () => {
 
     checkMobile();
     window.addEventListener('resize', checkMobile);
-
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -117,9 +125,11 @@ export const Sidebar = () => {
     }
   }, [location.pathname, isMobile]);
 
-  const visibleItems = sidebarItems.filter(item =>
-    userRole === "HR" ? true : item.role === "EMP"
-  );
+  // Only show items matching role
+  const visibleItems =
+    userRole === "newUser"
+      ? []
+      : sidebarItems.filter(item => userRole === "HR" || item.role === "EMP");
 
   const getActiveIndex = () => {
     if (currentPath.startsWith("/employee")) return visibleItems.findIndex(i => i.label === "Employee Management");
@@ -138,26 +148,23 @@ export const Sidebar = () => {
   });
 
   const handleItemClick = (item) => {
-    if(item.label==="Logout"){
+    if (item.label === "Logout") {
       setOpen(true);
-    }
-    else{
-    navigate(item.path);
+    } else {
+      navigate(item.path);
     }
     if (isMobile) {
       setMobileMenuOpen(false);
     }
   };
 
-
-
-
-  // Mobile Arrow Button
+  // ========== MOBILE SIDEBAR ==========
   if (isMobile) {
     return (
       <>
-        <Logout isOpen={open} onClose={() => setOpen(false)}/>
-        {/* Mobile Menu Button */}
+        <Logout isOpen={open} onClose={() => setOpen(false)} />
+
+        {/* Mobile menu button */}
         <button
           className={`fixed top-[4rem] -left-3 z-[9999] w-12 h-12 bg-[#bcd4cd] rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${mobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
             }`}
@@ -168,18 +175,17 @@ export const Sidebar = () => {
           </svg>
         </button>
 
-        {/* Mobile Sidebar Overlay */}
+        {/* Overlay */}
         {mobileMenuOpen && (
           <div className="fixed inset-0 z-[9998] bg-black/50" onClick={() => setMobileMenuOpen(false)} />
         )}
 
-        {/* Mobile Sidebar */}
+        {/* Mobile sidebar */}
         <div
           className={`fixed top-0 left-0 h-screen bg-[#bcd4cd] text-black transition-all duration-300 ease-in-out z-[9999] ${mobileMenuOpen ? 'w-screen' : 'w-0'
             } overflow-hidden`}
         >
           <div className="flex flex-col h-full">
-            {/* Header with logo and close button */}
             <div className="flex items-center justify-between p-4 border-b border-white/20">
               <img src={zuntraLogo} alt="Logo" className="h-8" />
               <button
@@ -192,7 +198,7 @@ export const Sidebar = () => {
               </button>
             </div>
 
-            {/* Menu Items */}
+            {/* Items */}
             <div className="flex-1 overflow-y-auto py-4">
               {visibleItems.map((item, index) => (
                 <div
@@ -214,13 +220,13 @@ export const Sidebar = () => {
     );
   }
 
-  // Desktop Sidebar (original behavior)
+  // ========== DESKTOP SIDEBAR ==========
   return (
     <>
-      <Logout isOpen={open} onClose={() => setOpen(false)}/>
+      <Logout isOpen={open} onClose={() => setOpen(false)} />
       <div
         className={`relative bg-[#bcd4cd] h-screen flex flex-col items-start pt-4 text-black transition-all duration-200 ease-in-out
-          ${sidebarState === 2 || sidebarState === 3 ? 'w-[21rem]' : 'w-[4.5rem]'}`}
+        ${sidebarState === 2 || sidebarState === 3 ? 'w-[21rem]' : 'w-[4.5rem]'}`}
         onMouseEnter={() => { if (sidebarState === 0) setSidebarState(1); }}
         onMouseLeave={() => { if (sidebarState !== 3) setSidebarState(0); }}
       >
@@ -229,23 +235,22 @@ export const Sidebar = () => {
             className="absolute top-2 right-2 cursor-pointer rounded-full hover:scale-110 transition-all duration-200 z-50"
             onClick={() => setSidebarState(prev => (prev === 2 ? 3 : 0))}
           >
+            {/* Pin/Unpin Icon */}
             {sidebarState === 2 ? (
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
-                <path stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m1 19 4.63-4.631m.006-.005-2.78-2.78c-.954-.953.006-2.996 1.31-3.078 1.178-.075 3.905.352 4.812-.555l2.49-2.49c.617-.618.225-2 .185-2.762-.058-1.016 1.558-2.271 2.415-1.414l4.647 4.648c.86.858-.4 2.469-1.413 2.415-.762-.04-2.145-.432-2.763.185l-2.49 2.49c-.906.907-.48 3.633-.554 4.81-.082 1.306-2.125 2.266-3.08 1.31l-2.78-2.78Z" />
+                <path stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m1 19 4.63-4.631..."/>
               </svg>
             ) : (
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="24" fill="none" viewBox="0 0 14 24">
-                <path fill="#000" d="M1.885 1.912c.15-.738.692-1.7 1.828-1.7h6.572c1.139-.001 1.68.962 1.829 1.7.08.4.077.813-.01 1.211-.085.387-.27.8-.608 1.104a8.992 8.992 0 0 1-.516.415l-.055.041a8.77 8.77 0 0 0-.551.449c-.374.338-.451.536-.453.622v3.522c0 .113.056.31.244.605a6.2 6.2 0 0 0 .759.919c.3.31.623.612.936.902l.034.033c.31.288.626.583.85.838.684.774.653 1.879.342 2.686-.311.806-1.046 1.664-2.154 1.664H7.75v5.805a.75.75 0 1 1-1.5 0v-5.805H3.068c-1.108 0-1.844-.857-2.154-1.664-.311-.806-.342-1.912.34-2.686.226-.255.542-.55.852-.838l.034-.033c.312-.29.636-.592.936-.902.313-.324.577-.634.76-.919.187-.295.242-.493.242-.606V5.754c0-.086-.078-.284-.453-.622a9 9 0 0 0-.551-.449l-.055-.041a8.999 8.999 0 0 1-.515-.415c-.34-.305-.524-.717-.61-1.103a2.953 2.953 0 0 1-.01-1.212Z" />
+                <path fill="#000" d="M1.885 1.912c.15-.738.692-1.7 1.828-1.7h6.572..."/>
               </svg>
-
             )}
           </div>
         )}
 
-        {/*Logo*/}
+        {/* Logo */}
         <div className="w-full h-10 mb-6 flex items-center justify-center relative overflow-hidden">
-          <div
-            className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out"
+          <div className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out"
             style={{
               opacity: sidebarState === 2 || sidebarState === 3 ? 0 : 1,
               transform: sidebarState === 2 || sidebarState === 3 ? 'scale(0.8)' : 'scale(1)',
@@ -254,10 +259,7 @@ export const Sidebar = () => {
           >
             <img src={zuntraSquareLogo} alt="Logo" className="w-10 h-10" />
           </div>
-
-          {/* Full logo - visible when expanded with smooth scaling */}
-          <div
-            className="absolute inset-0 flex items-center justify-center transition-all duration-500 ease-in-out"
+          <div className="absolute inset-0 flex items-center justify-center transition-all duration-500 ease-in-out"
             style={{
               opacity: sidebarState === 2 || sidebarState === 3 ? 1 : 0,
               transform: sidebarState === 2 || sidebarState === 3 ? 'scale(1)' : 'scale(0.9)',
@@ -281,6 +283,7 @@ export const Sidebar = () => {
           </div>
         )}
 
+        {/* Sidebar Items */}
         <div className="relative flex-1 w-full overflow-hidden">
           <div
             className="absolute left-0 w-full h-[4.5rem] bg-white/50 transition-all duration-500 ease-in-out z-0"
@@ -297,12 +300,9 @@ export const Sidebar = () => {
                 onMouseLeave={() => setHoveredIndex(null)}
                 onClick={() => handleItemClick(item)}
               >
-                {/* Fixed icon container - always stays in the same position */}
                 <div className="w-[4.5rem] h-full flex items-center justify-center flex-shrink-0">
                   {item.icon}
                 </div>
-
-                {/* Label - with smooth fade and slide animation */}
                 <span
                   className="text-lg font-medium whitespace-nowrap ml-2 transition-all duration-500 ease-in-out"
                   style={{
@@ -319,26 +319,11 @@ export const Sidebar = () => {
         </div>
       </div>
 
+      {/* Custom style for fade animation */}
       <style>{`
         @keyframes fadeIn {
-          0% { 
-            opacity: 0; 
-            transform: translateX(-10px) scale(0.9);
-          }
-          100% { 
-            opacity: 1; 
-            transform: translateX(0) scale(1);
-          }
-        }
-        
-        /* Smooth logo crossfade */
-        .logo-container img {
-          filter: blur(0px);
-          transition: filter 0.3s ease-in-out;
-        }
-        
-        .logo-container.transitioning img {
-          filter: blur(1px);
+          0% { opacity: 0; transform: translateX(-10px) scale(0.9); }
+          100% { opacity: 1; transform: translateX(0) scale(1); }
         }
       `}</style>
     </>

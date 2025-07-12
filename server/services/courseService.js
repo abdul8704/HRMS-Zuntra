@@ -26,10 +26,10 @@ const getCourseIntroById = async (courseId) => {
 };
 
 const getTocCourseContentById = async (courseId) => {
-    return await courseContent.find({courseId : courseId},{'modules.moduleTitle': 1, 'modules.submodules.submoduleTitle': 1, _id: 0});
+    return await courseContent.find({ courseId: courseId }, { 'modules.moduleTitle': 1, 'modules.submodules.submoduleTitle': 1, _id: 0 });
 };
 const getCourseContentById = async (courseId) => {
-    return await courseContent.find({courseId : courseId});
+    return await courseContent.find({ courseId: courseId });
 };
 
 const addNewCourse = async (courseData) => {
@@ -58,17 +58,17 @@ const updateCourseIntro = async (courseId, updateBody) => {
 
 const updateCourseContent = async (courseId, updateBody) => {
 
-        const updatedContent = await courseContent.findOneAndUpdate(
-            { courseId },
-            updateBody,
-            { new: true }
-        );
+    const updatedContent = await courseContent.findOneAndUpdate(
+        { courseId },
+        updateBody,
+        { new: true }
+    );
 
-        if (!updatedContent) {
-            throw new ApiError(404, "Course content not found");
-        }
+    if (!updatedContent) {
+        throw new ApiError(404, "Course content not found");
+    }
 
-        return updatedContent;
+    return updatedContent;
 };
 
 const deleteCourse = async (courseId) => {
@@ -90,7 +90,7 @@ const deleteCourse = async (courseId) => {
 
         return [deletedCourseIntro, deletedCourseContent];
     } catch (err) {
-        if(err instanceof ApiError)
+        if (err instanceof ApiError)
             throw err;
         throw new ApiError(500, "Failed to delete course content", err.message);
     }
@@ -113,24 +113,32 @@ const userCourseEnroll = async (userId, courseId) => {
 
         return ucourse;
     } catch (err) {
-        if(err instanceof ApiError)
+        if (err instanceof ApiError)
             throw err
         throw new ApiError(500, "Failed to enroll user in course", err.message);
     }
 };
 
 const fetchProgressMatrix = async (userId, courseId) => {
-  try {
-    const progressMatrix = await courseProgress.findOne(
-      { userId: userId, courseId: courseId },
-      { moduleStatus: 1 }
-    );
+    try {
+        const progressMatrix = await courseProgress.findOne(
+            { userId: userId, courseId: courseId },
+            { moduleStatus: 1 }
+        );
 
-    return progressMatrix ? progressMatrix.moduleStatus : null;
-  } catch (err) {
-    throw new ApiError(500, "Unable to get progress matrix", err.message);
-  }
+        return progressMatrix ? progressMatrix.moduleStatus : null;
+    } catch (err) {
+        throw new ApiError(500, "Unable to get progress matrix", err.message);
+    }
 };
+
+//with respect to user
+// @desc    Get all enrolled courses by user ID type-[enrolledCourses, assignedCourses, completedCourses]
+const getCoursesByTypeForUserId = async (type, id) => {
+  const userCourseList = await userCourse.findById(id).select(type).populate(type);
+  return userCourseList;
+};
+
 
 
 module.exports = {
@@ -144,5 +152,6 @@ module.exports = {
     updateCourseContent,
     deleteCourse,
     userCourseEnroll,
-    fetchProgressMatrix
+    fetchProgressMatrix,
+    getCoursesByTypeForUserId,
 };

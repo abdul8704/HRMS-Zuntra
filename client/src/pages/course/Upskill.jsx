@@ -1,10 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 
 import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
 
+import { CourseCard } from './components/CourseCard';
 import api from '../../api/axios';
 
 
@@ -89,7 +91,7 @@ const dummyCourses = [
     deadlineUnits: 'weeks',
     rating: 4.9,
   },
-    {
+  {
     courseImage: 'https://via.placeholder.com/150',
     courseName: 'Database Design',
     courseInstructor: 'Laura Hill',
@@ -143,7 +145,7 @@ export const Upskill = () => {
   const { navId } = useParams();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
-
+  const token = localStorage.getItem('accessToken');
   const [showArrows, setShowArrows] = useState(false);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -172,30 +174,50 @@ export const Upskill = () => {
   }, [courses, navId]);
 
   useEffect(() => {
-    if (navId === 'all') return;
+    if (navId === "create" || navId === "add") return;
 
     const fetchCourses = async () => {
       setLoading(true);
-      setApiMessage('');
+      setApiMessage("");
 
       try {
-        const res = await api.get(`/api/course/`);
-        if (res.data.success) {
-          setCourses(Array.isArray(res.data.data) ? res.data.data : []);
-        } else {
-          setApiMessage(res.data.message || 'Something went wrong.');
-          setCourses([]);
+        let res;
+
+        if (navId === "all") {
+          res = await api.get(`/api/course`);
+          const courseList = Array.isArray(res.data?.data) ? res.data.data : [];
+          setCourses(courseList);
+        } else if (["assigned", "enrolled", "completed"].includes(navId)) {
+          const typeMap = {
+            enrolled: "enrolledCourses",
+            assigned: "assignedCourses",
+            completed: "completedCourses",
+          };
+
+          res = await api.get(`/api/course/${typeMap[navId]}/`);
+
+          const arrayFromResponse = res.data?.data?.[typeMap[navId]];
+
+          if (Array.isArray(arrayFromResponse)) {
+            setCourses(arrayFromResponse);
+          } else {
+            setCourses([]);
+            setApiMessage("No courses found.");
+          }
         }
       } catch (error) {
-        setApiMessage('Error fetching courses.');
         setCourses([]);
+        setApiMessage("Error fetching courses.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchCourses();
-  }, [navId]);
+  }, [navId, navigate]);
+
+
+
 
   const scroll = (direction) => {
     const el = scrollRef.current;
@@ -270,7 +292,7 @@ export const Upskill = () => {
             </div>
           )}
 
-          {(navId === 'assigned' || navId === 'enrolled') && (
+          {(navId === 'assigned' || navId === 'enrolled' ||navId==='completed') && (
             <div className="flex-1 overflow-y-auto">
               {loading ? (
                 <p className="text-center">Loading...</p>

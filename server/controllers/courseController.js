@@ -194,6 +194,30 @@ const deleteCourseController = asyncHandler(async (req, res) => {
   });
 });
 
+//with respect to user
+
+
+// @desc    Get all courses of a type by user ID type-[enrolledCourses, assignedCourses, completedCourses]
+// @route   GET /api/course/:type/:id 
+const getCoursesByTypeForUserId = asyncHandler(async (req, res) => {
+  const { type } = req.params;
+  const { userid } = req.user;
+  const allowedTypes = ["enrolledCourses", "assignedCourses", "completedCourses"];
+
+  if (!allowedTypes.includes(type)) {
+    throw new ApiError(400, "Invalid Course Type");
+  }
+
+  const courses = await courseService.getCoursesByTypeForUserId(type, userid);
+  res.status(200).json({
+    success: true,
+    data: courses
+  });
+});
+
+
+
+
 const courseEnrollController = asyncHandler(async (req, res) => {
   const {userid} = req.user;
   const courseId = req.params.id;
@@ -243,4 +267,5 @@ module.exports = {
   deleteCourseController,
   courseEnrollController,
   getProgressMatrixByCourseIdController,
+  getCoursesByTypeForUserId,
 };
