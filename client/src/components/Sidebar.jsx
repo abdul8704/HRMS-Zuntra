@@ -18,6 +18,17 @@ const sidebarItems = [
   },
   {
     role: "EMP",
+    label: "CEO Dash",
+    path: "/dashboard",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="16" fill="none" viewBox="0 0 20 16">
+        <path fill="#000" d="M16.5 14h-13c-.275 0-.5.225-.5.5v1c0 .275.225.5.5.5h13c.275 0 .5-.225.5-.5v-1c0-.275-.225-.5-.5-.5Zm2-10A1.5 1.5 0 0 0 17 5.5c0 .222.05.428.137.619l-2.262 1.356a.999.999 0 0 1-1.381-.362l-2.547-4.457A1.494 1.494 0 0 0 10 0a1.5 1.5 0 0 0-1.5 1.5c0 .469.219.881.553 1.156L6.506 7.113a1 1 0 0 1-1.381.362l-2.26-1.356a1.5 1.5 0 0 0 .138-.619A1.5 1.5 0 1 0 1.5 7c.081 0 .163-.013.24-.025L4 13h12l2.26-6.025c.077.013.159.025.24.025a1.5 1.5 0 0 0 0-3Z" />
+      </svg>
+
+    ),
+  },
+  {
+    role: "EMP",
     label: "Project Management",
     path: "/projects/overview",
     icon: (
@@ -76,6 +87,18 @@ const sidebarItems = [
         <path fill="currentColor" d="M29.284 1.2v21.6c0 .318-.084.623-.234.848-.15.226-.353.352-.566.352h-22.4c-.212 0-.415-.126-.565-.352a1.553 1.553 0 0 1-.235-.848c0-.318.085-.623.235-.849.15-.225.353-.351.565-.351h4.8v-6c0-.318.085-.623.235-.848.15-.226.353-.352.565-.352h4.8v-6c0-.318.085-.623.235-.849.15-.225.353-.351.565-.351h4.8v-6c0-.318.085-.623.235-.849.15-.225.353-.351.565-.351h5.6c.213 0 .416.126.566.351.15.226.234.53.234.849Z" />
         <path fill="currentColor" d="M10.354 0h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-.854.354l-1.646-1.647L.708 14.854 0 14.146 11.647 2.5 10 .854A.5.5 0 0 1 10.354 0Z" />
       </svg>
+    ),
+  },
+  {
+    role: "EMP",
+    label: "Documents",
+    path: "/upskill/all",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="none" viewBox="0 0 16 20">
+        <path fill="#000" fill-rule="evenodd" d="M10.25.5A.25.25 0 0 0 10 .25H3A2.75 2.75 0 0 0 .25 3v14A2.75 2.75 0 0 0 3 19.75h10A2.75 2.75 0 0 0 15.75 17V7.147a.25.25 0 0 0-.25-.25H11a.75.75 0 0 1-.75-.75V.5Zm.75 9.75a.75.75 0 1 1 0 1.5H5a.75.75 0 1 1 0-1.5h6Zm0 4a.75.75 0 1 1 0 1.5H5a.75.75 0 1 1 0-1.5h6Z" clip-rule="evenodd" />
+        <path fill="#000" d="M11.75.823c0-.184.193-.3.336-.186.121.098.229.212.323.342l3.013 4.197c.068.096-.006.22-.124.22H12a.25.25 0 0 1-.25-.25V.823Z" />
+      </svg>
+
     ),
   },
   {
@@ -144,7 +167,7 @@ export const Sidebar = ({ role = "HR" }) => {
   const activeIndex = getActiveIndex();
 
   const getPositionStyle = (index) => ({
-    top: `${index * 72}px`,
+    top: `${index * 64}px`,
   });
 
   const handleItemClick = (item) => {
@@ -238,18 +261,20 @@ export const Sidebar = ({ role = "HR" }) => {
             {/* Pin/Unpin Icon */}
             {sidebarState === 2 ? (
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
-                <path stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m1 19 4.63-4.631..."/>
+                <path stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m1 19 4.63-4.631m.006-.005-2.78-2.78c-.954-.953.006-2.996 1.31-3.078 1.178-.075 3.905.352 4.812-.555l2.49-2.49c.617-.618.225-2 .185-2.762-.058-1.016 1.558-2.271 2.415-1.414l4.647 4.648c.86.858-.4 2.469-1.413 2.415-.762-.04-2.145-.432-2.763.185l-2.49 2.49c-.906.907-.48 3.633-.554 4.81-.082 1.306-2.125 2.266-3.08 1.31l-2.78-2.78Z" />
               </svg>
+
             ) : (
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="24" fill="none" viewBox="0 0 14 24">
-                <path fill="#000" d="M1.885 1.912c.15-.738.692-1.7 1.828-1.7h6.572..."/>
+                <path fill="#000" d="M1.885 1.912c.15-.738.692-1.7 1.828-1.7h6.572c1.139-.001 1.68.962 1.829 1.7.08.4.077.813-.01 1.211-.085.387-.27.8-.608 1.104a8.992 8.992 0 0 1-.516.415l-.055.041a8.77 8.77 0 0 0-.551.449c-.374.338-.451.536-.453.622v3.522c0 .113.056.31.244.605a6.2 6.2 0 0 0 .759.919c.3.31.623.612.936.902l.034.033c.31.288.626.583.85.838.684.774.653 1.879.342 2.686-.311.806-1.046 1.664-2.154 1.664H7.75v5.805a.75.75 0 1 1-1.5 0v-5.805H3.068c-1.108 0-1.844-.857-2.154-1.664-.311-.806-.342-1.912.34-2.686.226-.255.542-.55.852-.838l.034-.033c.312-.29.636-.592.936-.902.313-.324.577-.634.76-.919.187-.295.242-.493.242-.606V5.754c0-.086-.078-.284-.453-.622a9 9 0 0 0-.551-.449l-.055-.041a8.999 8.999 0 0 1-.515-.415c-.34-.305-.524-.717-.61-1.103a2.953 2.953 0 0 1-.01-1.212Z" />
               </svg>
+
             )}
           </div>
         )}
 
         {/* Logo */}
-        <div className="w-full h-10 mb-6 flex items-center justify-center relative overflow-hidden">
+        <div className="w-full h-10 mb-2 flex items-center justify-center relative overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out"
             style={{
               opacity: sidebarState === 2 || sidebarState === 3 ? 0 : 1,
@@ -286,14 +311,14 @@ export const Sidebar = ({ role = "HR" }) => {
         {/* Sidebar Items */}
         <div className="relative flex-1 w-full overflow-hidden">
           <div
-            className="absolute left-0 w-full h-[4.5rem] bg-white/50 transition-all duration-500 ease-in-out z-0"
+            className="absolute left-0 w-full h-[4.0rem] bg-white/50 transition-all duration-500 ease-in-out z-0"
             style={getPositionStyle(hoveredIndex !== null ? hoveredIndex : activeIndex)}
           />
           <div className="flex flex-col w-full z-10 relative">
             {visibleItems.map((item, index) => (
               <div
                 key={index}
-                className={`w-full h-[4.5rem] cursor-pointer transition-opacity duration-200 
+                className={`w-full h-[4.0rem] cursor-pointer transition-opacity duration-200 
                   ${index === activeIndex ? 'opacity-100' : 'opacity-50'} 
                   flex items-center`}
                 onMouseEnter={() => setHoveredIndex(index)}
