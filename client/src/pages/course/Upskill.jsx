@@ -4,6 +4,7 @@ import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
 import { CourseCard } from './components/CourseCard';
 import api from '../../api/axios';
+import { CompletedCard } from './components/CompletedCard';
 
 export const Upskill = () => {
   const { navId } = useParams();
@@ -145,7 +146,7 @@ export const Upskill = () => {
             </div>
           )}
 
-          {(navId === 'assigned' || navId === 'enrolled' || navId === 'completed') && (
+          {(navId === 'assigned' || navId === 'enrolled') && (
             <div className="flex-1 overflow-y-auto">
               {loading ? (
                 <p className="text-center">Loading...</p>
@@ -160,6 +161,28 @@ export const Upskill = () => {
                       className="cursor-pointer h-full flex"
                     >
                       <CourseCard {...course} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {(navId === 'completed') && (
+            <div className="flex-1 overflow-y-auto">
+              {loading ? (
+                <p className="text-center">Loading...</p>
+              ) : apiMessage ? (
+                <p className="text-center text-red-500">{apiMessage}</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-4 p-4">
+                  {courses.map((course, index) => (
+                    <div
+                      key={index}
+                      onClick={() => navigate(`/course/${course._id}/intro`)}
+                      className="cursor-pointer h-full flex"
+                    >
+                      <CompletedCard {...course} />
                     </div>
                   ))}
                 </div>

@@ -274,7 +274,7 @@ export const Sidebar = ({ role = "HR" }) => {
         )}
 
         {/* Logo */}
-        <div className="w-full h-10 mb-2 flex items-center justify-center relative overflow-hidden">
+        <div className="w-full h-10 mb-10 flex items-center justify-center relative overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out"
             style={{
               opacity: sidebarState === 2 || sidebarState === 3 ? 0 : 1,
