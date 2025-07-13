@@ -6,7 +6,7 @@ export const UpskillSideBar = ({
   modules = [],
   progressMatrix = [],
   percentComplete,
-  onSubmoduleClick = () => { },
+  onSubmoduleClick = () => {},
 }) => {
   const { courseId } = useParams();
   const [isOpen, setIsOpen] = useState(false);
@@ -20,17 +20,17 @@ export const UpskillSideBar = ({
         : [...prev, index]
     );
   };
-
   const isModuleCompleted = (moduleIndex) =>
-    progressMatrix[moduleIndex]?.length &&
-    progressMatrix[moduleIndex].every((val) => val === 1);
+    Array.isArray(progressMatrix[moduleIndex]) &&
+    progressMatrix[moduleIndex].length > 0 &&
+    progressMatrix[moduleIndex].every((val) => val === true);
 
   const isSubmoduleCompleted = (moduleIndex, subIndex) =>
-    progressMatrix[moduleIndex]?.[subIndex] === 1;
+    progressMatrix[moduleIndex]?.[subIndex] === true;
 
   return (
     <>
-      {/* Toggle Button - Mobile View Only */}
+      {/* Toggle Button - Mobile Only */}
       {!isOpen && (
         <button
           className="fixed top-[0.6rem] left-2 z-[1001] p-1.5 rounded-full bg-[#b3d1cc] shadow-md md:hidden"
@@ -55,7 +55,7 @@ export const UpskillSideBar = ({
         className={`fixed top-0 left-0 h-screen w-[260px] bg-[#cde8e6] p-4 overflow-y-auto z-[1000] transition-transform duration-300 
         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
-        {/* Arrow + Logo in one row */}
+        {/* Back Button + Logo */}
         <div className="flex items-center mb-8">
           <button
             className="text-2xl font-bold text-black hover:scale-110 transition"
@@ -75,7 +75,7 @@ export const UpskillSideBar = ({
           </div>
         </div>
 
-        {/* Close Button (mobile only) */}
+        {/* Close Button - Mobile Only */}
         <button
           className="absolute top-2 right-2 w-9 h-9 rounded-full bg-white shadow-md flex items-center justify-center md:hidden"
           onClick={() => setIsOpen(false)}
@@ -94,16 +94,21 @@ export const UpskillSideBar = ({
           </svg>
         </button>
 
-        {/* Modules with collapsible submodules */}
+        {/* Module Accordion */}
         <div>
           {modules.map((module, idx) => (
-            <div key={idx} className="mb-6"> {/* increased spacing */}
-              <div className="flex items-center justify-between mb-1 cursor-pointer select-none" onClick={() => toggleModule(idx)}>
+            <div key={idx} className="mb-6">
+              <div
+                className="flex items-center justify-between mb-1 cursor-pointer select-none"
+                onClick={() => toggleModule(idx)}
+              >
                 <div className="flex items-center gap-2">
                   <span
                     className="w-[4px] h-5 rounded-sm"
                     style={{
-                      backgroundColor: isModuleCompleted(idx) ? "#00cfd1" : "#8C8C8C",
+                      backgroundColor: isModuleCompleted(idx)
+                        ? "#00cfd1"
+                        : "#8C8C8C",
                     }}
                   />
                   <h4 className="text-sm font-semibold m-0">{module.title}</h4>
@@ -115,10 +120,10 @@ export const UpskillSideBar = ({
 
               {openModules.includes(idx) && (
                 <ul className="pl-4 space-y-3 leading-tight mt-3">
-                  {module.submodules.map((sub, subIdx) => (
+                  {(module.submodules || []).map((sub, subIdx) => (
                     <li
                       key={subIdx}
-                      className="text-sm flex items-center gap-2 cursor-pointer transition-all duration-150"
+                      className="text-sm flex items-center gap-2 cursor-pointer hover:text-teal-700 transition-all"
                       onClick={() => onSubmoduleClick(idx, subIdx)}
                     >
                       <span
@@ -137,7 +142,6 @@ export const UpskillSideBar = ({
             </div>
           ))}
         </div>
-
       </div>
     </>
   );

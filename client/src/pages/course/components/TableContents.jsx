@@ -1,15 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../api/axios";
 
 export const TableOfContents = ({
   courseId,
-  progress = "40%",
+  progress,
   enrolled,
   progressMatrix = [],
   tocContent = [],
 }) => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   // Normalize progressMatrix to empty array if null
   const normalizedProgressMatrix = progressMatrix ?? [];
@@ -22,13 +23,15 @@ export const TableOfContents = ({
   const handleClick = async () => {
     try {
       if (!enrolled) {
+        setLoading(true);
         const res = await api.post(`/api/course/${courseId}/enroll`);
         console.log("Enrolled successfully:", res.data);
       }
-
       navigate(`/course/learn/${courseId}`);
     } catch (error) {
       console.error("Error in Continue Learning:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,6 +51,7 @@ export const TableOfContents = ({
                     }`}
                   />
                   <span>{module.moduleTitle}</span>
+                  {completed && <span className="text-green-600 text-sm ml-1">✓</span>}
                 </div>
                 <ul className="list-none pl-5 mt-1.5">
                   {(module.submodules || []).map((sub, subIndex) => (
@@ -57,7 +61,7 @@ export const TableOfContents = ({
                     >
                       <span
                         className={`font-bold ${
-                          normalizedProgressMatrix[moduleIndex]?.[subIndex] === 1
+                          normalizedProgressMatrix[moduleIndex]?.[subIndex]
                             ? "text-[#00cfd1]"
                             : "text-gray-400"
                         }`}
@@ -76,19 +80,24 @@ export const TableOfContents = ({
 
       <button
         onClick={handleClick}
+        disabled={loading}
         className={`w-full max-w-full text-center text-black font-bold text-lg py-3.5 px-6 rounded-xl cursor-pointer ${
           enrolled ? "" : "bg-gray-200"
-        }`}
+        } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
         style={
           enrolled
             ? {
-                background: `linear-gradient(to right, #bbd3cc ${progress}, #e5e5e5 30%)`,
+                background: `linear-gradient(to right, #bbd3cc ${progress}, #e5e5e5 ${progress})`,
               }
             : {}
         }
       >
-        {enrolled ? "Continue Learning" : "Enroll Now"}
+        {loading
+          ? "Please wait..."
+          : enrolled
+          ? "Continue Learning"
+          : "Enroll Now"}
       </button>
     </div>
-  )
+  );
 };

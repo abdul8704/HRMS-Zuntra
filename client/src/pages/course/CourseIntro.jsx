@@ -46,7 +46,8 @@ export const CourseIntro = () => {
           setApiMessage((prev) => prev + " | ToC fetch failed.");
         }
         if (progRes.data.success) {
-          setProgressMatrix(progRes.data.data.completedModules);
+          setProgressMatrix(progRes.data.data.moduleStatus.completedModules);
+          console.log(progRes.data.data.moduleStatus.completedModules);
           setPercentComplete(progRes.data.data.percentComplete);
         }
         else{

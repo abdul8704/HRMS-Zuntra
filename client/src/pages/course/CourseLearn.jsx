@@ -16,6 +16,14 @@ export const CourseLearn = () => {
   const [selectedSubmoduleIndex, setSelectedSubmoduleIndex] = useState(null);
   const [progressMatrix, setProgressMatrix] = useState(null);
   const [percentComplete, setPercentComplete] = useState(0);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState({
+    type: "info",
+    title: "",
+    message: "",
+    duration: 3000,
+  });
+
   useEffect(() => {
     const fetchCourseContent = async () => {
       try {
@@ -33,7 +41,7 @@ export const CourseLearn = () => {
           }
         }
         if (progRes.data.success) {
-          setProgressMatrix(progRes.data.data.completedModules);
+          setProgressMatrix(progRes.data.data.moduleStatus.completedModules);
           setPercentComplete(progRes.data.data.percentComplete);
         }
         else {
@@ -61,49 +69,61 @@ export const CourseLearn = () => {
   const handleQuizCompleted = async () => {
     try {
       const res = await api.post(`/api/course/progress/${courseId}/${selectedModuleIndex}/${selectedSubmoduleIndex}`);
+      setPopupContent({
+        type: "success",
+        title: "Submodule Completed",
+        message: "You have successfully completed this subModule",
+        duration: 5000,
+      });
+      setShowPopup(true); 
+      setProgressMatrix(res.data.data.moduleStatus.completedModules)
       console.log("Course marked as completed", res.data);
-      <PopupCard
-        isVisible={popupVisible}
-        onClose={handleClosePopup}
-        type="success"
-        title="Submodule Completed"
-        message="You have successfully completed this subModule!"
-        duration={4000}
-      />
     } catch (error) {
       console.error("Failed to mark course as completed", error);
     }
   };
   return (
-    <div className="flex flex-col md:flex-row overflow-x-hidden min-h-screen">
-      {/* Sidebar */}
-      <UpskillSideBar
-        modules={formattedModules}
-        progressMatrix={progressMatrix}
-        percentComplete={percentComplete}
-        onSubmoduleClick={(modIdx, subIdx) => {
-          setSelectedModuleIndex(modIdx);
-          setSelectedSubmoduleIndex(subIdx);
-        }}
-      />
+    <>
+      {showPopup && (
+        <PopupCard
+          isVisible={true}
+          onClose={() => setShowPopup(false)}
+          type={popupContent.type}
+          title={popupContent.title}
+          message={popupContent.message}
+          duration={popupContent.duration}
+        />
+      )}
+      <div className="flex flex-col md:flex-row overflow-x-hidden min-h-screen">
+        {/* Sidebar */}
+        <UpskillSideBar
+          modules={formattedModules}
+          progressMatrix={progressMatrix}
+          percentComplete={percentComplete}
+          onSubmoduleClick={(modIdx, subIdx) => {
+            setSelectedModuleIndex(modIdx);
+            setSelectedSubmoduleIndex(subIdx);
+          }}
+        />
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col px-4 md:px-6 md:ml-[260px] bg-white font-sans">
-        <div className="h-6" />
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col px-4 md:px-6 md:ml-[260px] bg-white font-sans">
+          <div className="h-6" />
 
-        <div className="flex items-center text-lg md:text-xl font-bold text-black mb-4">
-          <div className="w-1 h-6 bg-[#009688] rounded-sm mr-2" />
-          {selectedSubmodule?.submoduleTitle || "No submodule selected"}
+          <div className="flex items-center text-lg md:text-xl font-bold text-black mb-4">
+            <div className="w-1 h-6 bg-[#009688] rounded-sm mr-2" />
+            {selectedSubmodule?.submoduleTitle || "No submodule selected"}
+          </div>
+
+          {selectedSubmodule && (
+            <>
+              <VideoPlayer videoUrl={selectedSubmodule.video.videoUrl} />
+              <DescriptionSection description={selectedSubmodule.description} />
+              <AssignmentsSection quiz={selectedSubmodule.quiz} markProgress={handleQuizCompleted} />
+            </>
+          )}
         </div>
-
-        {selectedSubmodule && (
-          <>
-            <VideoPlayer videoUrl={selectedSubmodule.video.videoUrl} />
-            <DescriptionSection description={selectedSubmodule.description} />
-            <AssignmentsSection quiz={selectedSubmodule.quiz} markProgress={handleQuizCompleted} />
-          </>
-        )}
       </div>
-    </div>
+    </>
   );
 };

@@ -187,14 +187,35 @@ const setCourseProgress = async (userId, courseId, moduleId, subModuleId) => {
 
             const total = progress.moduleStatus.totalSubModules || 1;
             const completed = matrix.flat().filter(Boolean).length;
-            const percentComplete = Math.round((completed / total) * 100);
+            const percentComplete = Math.floor((completed / total) * 100);
 
             progress.moduleStatus.completedModules = matrix;
             progress.percentComplete = percentComplete;
 
             await progress.save();
+
+            // If completed, update user's course status
+            if (percentComplete === 100) {
+                const user = await userCourse.findById(userId);
+
+                if (user) {
+                    const cIdStr = courseId.toString();
+                    user.enrolledCourses = user.enrolledCourses.filter(
+                        id => id.toString() !== cIdStr
+                    );
+                    user.assignedCourses = user.assignedCourses.filter(
+                        id => id.toString() !== cIdStr
+                    );
+                    if (!user.completedCourses.some(id => id.toString() === cIdStr)) {
+                        user.completedCourses.push(courseId);
+                    }
+
+                    await user.save();
+                }
+            }
         }
 
+        console.log("hello",progress);
         return progress;
     } catch (err) {
         if (err instanceof ApiError) throw err;

@@ -266,7 +266,7 @@ const getProgressMatrixByCourseIdController = asyncHandler(async (req, res) => {
   }
 
   const moduleStatus = await courseService.fetchProgressMatrix(userid, courseId);
-  console.log(moduleStatus);
+  console.log(moduleStatus.moduleStatus);
   if (!moduleStatus) {
     const msg = "Enrolle in a course"
     return res.status(200).json({
