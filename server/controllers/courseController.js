@@ -242,7 +242,6 @@ const getCoursesByTypeForUserId = asyncHandler(async (req, res) => {
 const courseEnrollController = asyncHandler(async (req, res) => {
   const { userid } = req.user;
   const courseId = req.params.id;
-  console.log(userid)
   if (!userid || !courseId) {
     throw new ApiError(400, "userId and courseId are required");
   }
@@ -273,9 +272,6 @@ const getProgressMatrixByCourseIdController = asyncHandler(async (req, res) => {
       data: "Enroll in a course"
     });
   }
-
-  // Optional: log only if moduleStatus exists
-  console.log(moduleStatus.moduleStatus);
 
   return res.status(200).json({
     success: true,

@@ -222,11 +222,9 @@ const setCourseProgress = async (userId, courseId, moduleId, subModuleId) => {
             }
         }
 
-        console.log("hello",progress);
         return progress;
     } catch (err) {
         if (err instanceof ApiError) throw err;
-        console.log(err.message);
         throw new ApiError(500, "Failed to set course progress", err.message);
     }
 };
