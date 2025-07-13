@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../api/axios";
-
+import { jwtDecode } from 'jwt-decode';
 export const TableOfContents = ({
   courseId,
   progress,
   enrolled,
+  courseName,
   progressMatrix = [],
   tocContent = [],
 }) => {
@@ -18,14 +19,24 @@ export const TableOfContents = ({
     const row = normalizedProgressMatrix[moduleIndex] || [];
     return Array.isArray(row) && row.length && row.every((val) => val === true);
   };
+  const token = localStorage.getItem('accessToken');
+  const userDetails = jwtDecode(token || '{}');
 
   const handleClick = async () => {
     try {
+      if (enrolled && progress === "100%") {
+        alert(
+          `🎓 This is to certify that ${userDetails.username} has successfully completed the course ${courseName} 🎉.\n\n📸 Please take a screenshot of this message as proof of completion. SkillIssue kindly adjust for now 💀`
+        );
+        return;
+      }
+
+
       if (!enrolled) {
         setLoading(true);
         const res = await api.post(`/api/course/${courseId}/enroll`);
-        console.log("Enrolled successfully:", res.data);
       }
+
       navigate(`/course/learn/${courseId}`);
     } catch (error) {
       console.error("Error in Continue Learning:", error);
@@ -33,6 +44,7 @@ export const TableOfContents = ({
       setLoading(false);
     }
   };
+
 
   return (
     <div className="flex flex-col gap-4 w-full h-full">
@@ -45,9 +57,8 @@ export const TableOfContents = ({
               <div className="mb-5" key={moduleIndex}>
                 <div className="flex items-center gap-2 text-base font-bold text-black">
                   <span
-                    className={`w-1 h-6 rounded ${
-                      completed ? "bg-[#00cfd1]" : "bg-gray-400"
-                    }`}
+                    className={`w-1 h-6 rounded ${completed ? "bg-[#00cfd1]" : "bg-gray-400"
+                      }`}
                   />
                   <span>{module.moduleTitle}</span>
                 </div>
@@ -59,11 +70,10 @@ export const TableOfContents = ({
                       className="text-sm text-black my-1.5 flex items-center gap-2"
                     >
                       <span
-                        className={`font-bold ${
-                          normalizedProgressMatrix[moduleIndex]?.[subIndex]
-                            ? "text-[#00cfd1]"
-                            : "text-gray-400"
-                        }`}
+                        className={`font-bold ${normalizedProgressMatrix[moduleIndex]?.[subIndex]
+                          ? "text-[#00cfd1]"
+                          : "text-gray-400"
+                          }`}
                       >
                         |
                       </span>
@@ -80,23 +90,25 @@ export const TableOfContents = ({
       <button
         onClick={handleClick}
         disabled={loading}
-        className={`w-full max-w-full text-center text-black font-bold text-lg py-3.5 px-6 rounded-xl cursor-pointer ${
-          enrolled ? "" : "bg-gray-200"
-        } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+        className={`w-full max-w-full text-center text-black font-bold text-lg py-3.5 px-6 rounded-xl cursor-pointer ${enrolled ? "" : "bg-gray-200"
+          } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
         style={
           enrolled
             ? {
-                background: `linear-gradient(to right, #bbd3cc ${progress}, #e5e5e5 ${progress})`,
-              }
+              background: `linear-gradient(to right, #bbd3cc ${progress}, #e5e5e5 ${progress})`,
+            }
             : {}
         }
       >
         {loading
           ? "Please wait..."
-          : enrolled
-          ? "Continue Learning"
-          : "Enroll Now"}
+          : enrolled && progress === "100%"
+            ? "Download Certificate"
+            : enrolled
+              ? "Continue Learning"
+              : "Enroll Now"}
       </button>
+
     </div>
   );
 };

@@ -124,6 +124,7 @@ export const CourseIntro = () => {
                   courseId={courseId}
                   progress={percentComplete + "%"}
                   enrolled={progressMatrix !== null}
+                  courseName={courseData?.courseName}
                   progressMatrix={progressMatrix}
                   tocContent={tocContent}
                 />
