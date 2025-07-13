@@ -255,8 +255,8 @@ const courseEnrollController = asyncHandler(async (req, res) => {
 
 
 
-// @desc    get progress of a course
-// @route   POST /api/course/:id/progress 
+// @desc    Get progress of a course for a specific user
+// @route   POST /api/course/:id/progress
 const getProgressMatrixByCourseIdController = asyncHandler(async (req, res) => {
   const courseId = req.params.id;
   const { userid } = req.user;
@@ -266,19 +266,23 @@ const getProgressMatrixByCourseIdController = asyncHandler(async (req, res) => {
   }
 
   const moduleStatus = await courseService.fetchProgressMatrix(userid, courseId);
-  console.log(moduleStatus.moduleStatus);
+
   if (!moduleStatus) {
-    const msg = "Enrolle in a course"
     return res.status(200).json({
       success: false,
-      data: msg,
+      data: "Enroll in a course"
     });
   }
+
+  // Optional: log only if moduleStatus exists
+  console.log(moduleStatus.moduleStatus);
+
   return res.status(200).json({
     success: true,
-    data: moduleStatus,
+    data: moduleStatus
   });
 });
+
 
 
 // @desc    set progress of a course

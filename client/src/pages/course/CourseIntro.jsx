@@ -15,11 +15,6 @@ export const CourseIntro = () => {
   const [apiMessage, setApiMessage] = useState("");
   const [progressMatrix, setProgressMatrix] = useState(null);
   const [percentComplete, setPercentComplete] = useState(0);
-  // const progressMatrix = [
-  //   [1, 1, 1, 1],
-  //   [1, 0, 0, 1],
-  //   [1, 1, 1, 1],
-  // ];
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -35,6 +30,7 @@ export const CourseIntro = () => {
 
         if (courseRes.data.success) {
           setCourseData(courseRes.data.data);
+          console.log("Course Details:", courseRes.data.data);
         } else {
           setApiMessage(courseRes.data.message || "Course data error.");
         }
@@ -45,16 +41,16 @@ export const CourseIntro = () => {
         } else {
           setApiMessage((prev) => prev + " | ToC fetch failed.");
         }
+
         if (progRes.data.success) {
           setProgressMatrix(progRes.data.data.moduleStatus.completedModules);
-          console.log(progRes.data.data.moduleStatus.completedModules);
           setPercentComplete(progRes.data.data.percentComplete);
-        }
-        else{
+        } else {
           setProgressMatrix(null);
         }
       } catch (error) {
-        setApiMessage(response.data.data || "Error fetching course details");
+        console.error("Fetch error:", error);
+        setApiMessage("Error fetching course details.");
       } finally {
         setLoading(false);
       }
@@ -88,51 +84,45 @@ export const CourseIntro = () => {
               </button>
               <div className="flex-grow text-center">
                 <h2 className="m-0 text-xl font-semibold text-gray-900">
-                  {courseData?.courseName || "Introduction to course"}
+                  {courseData?.courseName || "Introduction to Course"}
                 </h2>
                 <p className="mt-1 text-sm text-gray-800">
-                  by {courseData?.courseInstructor || "Prof.Dr.Diwakar"}
+                  by {courseData?.courseInstructor || "Prof. Dr. Diwakar"}
                 </p>
               </div>
               <span className="text-[2.6875rem] font-bold text-gray-900 w-6 flex justify-start items-center -translate-x-2.5 ml-5 -mt-2">
-                {/* SVG or icon can go here */}
+                {/* Optional Icon or Rating can go here */}
               </span>
             </div>
 
             <div className="flex-1 flex gap-6 h-[75vh] flex-col lg:flex-row">
+              {/* Left Section - Video & Description */}
               <div className="flex flex-col flex-[7] w-full">
                 <div className="w-full h-[56.25rem] bg-white rounded-xl shadow-md overflow-y-auto flex flex-col p-5 gap-5 scrollbar-thin scrollbar-thumb-slate-300">
-                  <video
-                    controls
-                    className="w-full h-[90%] object-cover rounded-xl"
-                    poster={
-                      courseData?.thumbnail ||
-                      "https://via.placeholder.com/800x450.png?text=Course+Thumbnail"
-                    }
-                  >
-                    <source
-                      src={
-                        courseData?.videoUrl ||
-                        "https://videos.pexels.com/video-files/3129424/3129424-uhd_2560_1440_24fps.mp4"
-                      }
-                      type="video/mp4"
+                  <div className="w-full h-[90%] rounded-xl overflow-hidden">
+                    <iframe
+                      src={courseData?.courseIntroVideo?.videoUrl}
+                      title={courseData?.courseIntroVideo?.videoTitle || "Course Intro"}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full rounded-xl"
                     />
-                    Your browser does not support the video tag.
-                  </video>
+                  </div>
 
                   <div className="h-1/2 p-4 bg-gray-50 rounded-lg">
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
                     <p className="text-sm text-gray-700 leading-relaxed">
-                      {courseData?.description || "No description available."}
+                      {courseData?.courseDescription || "No description available."}
                     </p>
                   </div>
                 </div>
               </div>
 
+              {/* Right Section - Table of Contents */}
               <div className="flex flex-col flex-[3] w-full md:h-full justify-center md:justify-start mt-4 md:mt-0">
                 <TableOfContents
                   courseId={courseId}
-                  progress={percentComplete+"%"}
+                  progress={percentComplete + "%"}
                   enrolled={progressMatrix !== null}
                   progressMatrix={progressMatrix}
                   tocContent={tocContent}

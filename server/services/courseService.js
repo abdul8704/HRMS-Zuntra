@@ -152,7 +152,7 @@ const userCourseEnroll = async (userId, courseId) => {
     }
 };
 
-// @desc    fetchProgressMAtrix
+// @desc    Fetch progress matrix for a given user and course
 const fetchProgressMatrix = async (userId, courseId) => {
     try {
         const progressMatrix = await courseProgress.findOne(
@@ -160,15 +160,22 @@ const fetchProgressMatrix = async (userId, courseId) => {
             { percentComplete: 1, moduleStatus: 1 }
         );
 
+        // Return the relevant data or null if not found
         return progressMatrix ? {
             percentComplete: progressMatrix.percentComplete,
             moduleStatus: progressMatrix.moduleStatus
         } : null;
+
     } catch (err) {
         if (err instanceof ApiError) throw err;
         throw new ApiError(500, "Unable to get progress matrix", err.message);
     }
 };
+
+module.exports = {
+    fetchProgressMatrix
+};
+
 
 // @desc    set progress of a course
 const setCourseProgress = async (userId, courseId, moduleId, subModuleId) => {

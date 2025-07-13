@@ -12,12 +12,11 @@ export const TableOfContents = ({
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // Normalize progressMatrix to empty array if null
   const normalizedProgressMatrix = progressMatrix ?? [];
 
   const isModuleCompleted = (moduleIndex) => {
     const row = normalizedProgressMatrix[moduleIndex] || [];
-    return Array.isArray(row) && row.length && row.every((val) => val === 1);
+    return Array.isArray(row) && row.length && row.every((val) => val === true);
   };
 
   const handleClick = async () => {
@@ -51,8 +50,8 @@ export const TableOfContents = ({
                     }`}
                   />
                   <span>{module.moduleTitle}</span>
-                  {completed && <span className="text-green-600 text-sm ml-1">✓</span>}
                 </div>
+
                 <ul className="list-none pl-5 mt-1.5">
                   {(module.submodules || []).map((sub, subIndex) => (
                     <li

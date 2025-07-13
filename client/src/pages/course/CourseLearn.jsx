@@ -77,6 +77,7 @@ export const CourseLearn = () => {
       });
       setShowPopup(true); 
       setProgressMatrix(res.data.data.moduleStatus.completedModules)
+      setPercentComplete(res.data.data.percentComplete)
       console.log("Course marked as completed", res.data);
     } catch (error) {
       console.error("Failed to mark course as completed", error);
