@@ -14,6 +14,7 @@ export const CourseIntro = () => {
   const [loading, setLoading] = useState(false);
   const [apiMessage, setApiMessage] = useState("");
   const [progressMatrix, setProgressMatrix] = useState(null);
+  const [percentComplete, setPercentComplete] = useState(0);
   // const progressMatrix = [
   //   [1, 1, 1, 1],
   //   [1, 0, 0, 1],
@@ -46,6 +47,7 @@ export const CourseIntro = () => {
         }
         if (progRes.data.success) {
           setProgressMatrix(progRes.data.data.completedModules);
+          setPercentComplete(progRes.data.data.percentComplete);
         }
         else{
           setProgressMatrix(null);
@@ -65,7 +67,7 @@ export const CourseIntro = () => {
   return (
     <div className="flex h-screen">
       <Sidebar />
-      <div className="flex-1 flex flex-col p-4 overflow-hidden">
+      <div className="flex-1 flex flex-col p-4">
         {loading || apiMessage ? (
           <div className="flex flex-1 justify-center items-center">
             <p className={`text-xl ${apiMessage ? "text-red-600" : "text-gray-700"}`}>
@@ -96,7 +98,7 @@ export const CourseIntro = () => {
               </span>
             </div>
 
-            <div className="flex gap-6 h-[75vh] flex-col md:flex-row">
+            <div className="flex-1 flex gap-6 h-[75vh] flex-col lg:flex-row">
               <div className="flex flex-col flex-[7] w-full">
                 <div className="w-full h-[56.25rem] bg-white rounded-xl shadow-md overflow-y-auto flex flex-col p-5 gap-5 scrollbar-thin scrollbar-thumb-slate-300">
                   <video
@@ -129,12 +131,11 @@ export const CourseIntro = () => {
               <div className="flex flex-col flex-[3] w-full md:h-full justify-center md:justify-start mt-4 md:mt-0">
                 <TableOfContents
                   courseId={courseId}
-                  progress={"70%"}
+                  progress={percentComplete+"%"}
                   enrolled={progressMatrix !== null}
                   progressMatrix={progressMatrix}
                   tocContent={tocContent}
                 />
-                {console.log(progressMatrix)};
               </div>
             </div>
           </>

@@ -181,5 +181,5 @@ export const Upskill = () => {
         `}
       </style>
     </>
-  );
+  )
 };

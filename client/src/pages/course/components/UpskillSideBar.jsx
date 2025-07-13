@@ -5,7 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 export const UpskillSideBar = ({
   modules = [],
   progressMatrix = [],
-  onSubmoduleClick = () => {},
+  percentComplete,
+  onSubmoduleClick = () => { },
 }) => {
   const { courseId } = useParams();
   const [isOpen, setIsOpen] = useState(false);
@@ -65,14 +66,10 @@ export const UpskillSideBar = ({
 
           <div className="flex flex-col ml-7">
             <img src={zuntraLogo} alt="Logo" className="w-[120px]" />
-            <div className="flex gap-1 mt-1">
+            <div className="w-full bg-gray-200 rounded h-[5px] overflow-hidden mt-1">
               <div
-                className="h-[5px] rounded w-[60%]"
-                style={{ backgroundColor: "#2b9c9f" }}
-              />
-              <div
-                className="h-[5px] rounded w-[30%]"
-                style={{ backgroundColor: "#e8dcdc" }}
+                className="h-full rounded bg-teal-600 transition-all duration-300"
+                style={{ width: `${percentComplete}%` }}
               />
             </div>
           </div>
@@ -99,47 +96,47 @@ export const UpskillSideBar = ({
 
         {/* Modules with collapsible submodules */}
         <div>
-  {modules.map((module, idx) => (
-    <div key={idx} className="mb-6"> {/* increased spacing */}
-      <div className="flex items-center justify-between mb-1 cursor-pointer select-none" onClick={() => toggleModule(idx)}>
-        <div className="flex items-center gap-2">
-          <span
-            className="w-[4px] h-5 rounded-sm"
-            style={{
-              backgroundColor: isModuleCompleted(idx) ? "#00cfd1" : "#8C8C8C",
-            }}
-          />
-          <h4 className="text-sm font-semibold m-0">{module.title}</h4>
-        </div>
-        <span className="text-sm pr-1">
-          {openModules.includes(idx) ? "▼" : "▶"}
-        </span>
-      </div>
+          {modules.map((module, idx) => (
+            <div key={idx} className="mb-6"> {/* increased spacing */}
+              <div className="flex items-center justify-between mb-1 cursor-pointer select-none" onClick={() => toggleModule(idx)}>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="w-[4px] h-5 rounded-sm"
+                    style={{
+                      backgroundColor: isModuleCompleted(idx) ? "#00cfd1" : "#8C8C8C",
+                    }}
+                  />
+                  <h4 className="text-sm font-semibold m-0">{module.title}</h4>
+                </div>
+                <span className="text-sm pr-1">
+                  {openModules.includes(idx) ? "▼" : "▶"}
+                </span>
+              </div>
 
-      {openModules.includes(idx) && (
-        <ul className="pl-4 space-y-3 leading-tight mt-3">
-          {module.submodules.map((sub, subIdx) => (
-            <li
-              key={subIdx}
-              className="text-sm flex items-center gap-2 cursor-pointer transition-all duration-150"
-              onClick={() => onSubmoduleClick(idx, subIdx)}
-            >
-              <span
-                className="w-[4px] h-[14px] rounded-sm"
-                style={{
-                  backgroundColor: isSubmoduleCompleted(idx, subIdx)
-                    ? "#00cfd1"
-                    : "#B5A6A8",
-                }}
-              />
-              {sub}
-            </li>
+              {openModules.includes(idx) && (
+                <ul className="pl-4 space-y-3 leading-tight mt-3">
+                  {module.submodules.map((sub, subIdx) => (
+                    <li
+                      key={subIdx}
+                      className="text-sm flex items-center gap-2 cursor-pointer transition-all duration-150"
+                      onClick={() => onSubmoduleClick(idx, subIdx)}
+                    >
+                      <span
+                        className="w-[4px] h-[14px] rounded-sm"
+                        style={{
+                          backgroundColor: isSubmoduleCompleted(idx, subIdx)
+                            ? "#00cfd1"
+                            : "#B5A6A8",
+                        }}
+                      />
+                      {sub}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           ))}
-        </ul>
-      )}
-    </div>
-  ))}
-</div>
+        </div>
 
       </div>
     </>

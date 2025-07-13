@@ -15,5 +15,6 @@ router.delete("/:id/delete",CourseController.deleteCourseController)
 router.get("/:type",CourseController.getCoursesByTypeForUserId);
 router.post("/:id/enroll",CourseController.courseEnrollController);
 router.get("/:id/progress",CourseController.getProgressMatrixByCourseIdController);
+router.post("/progress/:courseId/:moduleId/:subModuleId",CourseController.setCourseProgress);
 
 module.exports = router;

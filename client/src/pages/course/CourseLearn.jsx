@@ -5,36 +5,39 @@ import { UpskillSideBar } from './components/UpskillSideBar';
 import { VideoPlayer } from "./components/VideoPlayer";
 import { DescriptionSection } from "./components/DescriptionSection";
 import { AssignmentsSection } from "./components/AssignmentsSection";
+import { PopupCard } from '../../components/PopupCard';
 import api from "../../api/axios";
 
 
 export const CourseLearn = () => {
   const { courseId } = useParams();
-
   const [courseData, setCourseData] = useState(null);
   const [selectedModuleIndex, setSelectedModuleIndex] = useState(null);
   const [selectedSubmoduleIndex, setSelectedSubmoduleIndex] = useState(null);
-
-  // ✅ Hardcoded progress matrix
-  const progressMatrix = [
-    [1, 1, 1],
-    [1, 0, 1],
-    [1, 1, 1],
-  ];
-
+  const [progressMatrix, setProgressMatrix] = useState(null);
+  const [percentComplete, setPercentComplete] = useState(0);
   useEffect(() => {
     const fetchCourseContent = async () => {
       try {
-        const res = await api.get(`/api/course/content/${courseId}`);
-        if (res.data.success) {
-          const course = res.data.data[0];
+        // const res = await api.get(`/api/course/content/${courseId}`);
+        const [courseRes, progRes] = await Promise.all([
+          api.get(`/api/course/content/${courseId}`),
+          api.get(`/api/course/${courseId}/progress`),
+        ]);
+        if (courseRes.data.success) {
+          const course = courseRes.data.data[0];
           setCourseData(course);
-
-          // ✅ Set default to first submodule
           if (course.modules.length > 0 && course.modules[0].submodules.length > 0) {
             setSelectedModuleIndex(0);
             setSelectedSubmoduleIndex(0);
           }
+        }
+        if (progRes.data.success) {
+          setProgressMatrix(progRes.data.data.completedModules);
+          setPercentComplete(progRes.data.data.percentComplete);
+        }
+        else {
+          setProgressMatrix(null);
         }
       } catch (err) {
         console.error("Failed to load course content", err);
@@ -55,13 +58,29 @@ export const CourseLearn = () => {
     selectedModuleIndex !== null && selectedSubmoduleIndex !== null
       ? courseData?.modules[selectedModuleIndex]?.submodules[selectedSubmoduleIndex]
       : null;
-
+  const handleQuizCompleted = async () => {
+    try {
+      const res = await api.post(`/api/course/progress/${courseId}/${selectedModuleIndex}/${selectedSubmoduleIndex}`);
+      console.log("Course marked as completed", res.data);
+      <PopupCard
+        isVisible={popupVisible}
+        onClose={handleClosePopup}
+        type="success"
+        title="Submodule Completed"
+        message="You have successfully completed this subModule!"
+        duration={4000}
+      />
+    } catch (error) {
+      console.error("Failed to mark course as completed", error);
+    }
+  };
   return (
     <div className="flex flex-col md:flex-row overflow-x-hidden min-h-screen">
       {/* Sidebar */}
       <UpskillSideBar
         modules={formattedModules}
         progressMatrix={progressMatrix}
+        percentComplete={percentComplete}
         onSubmoduleClick={(modIdx, subIdx) => {
           setSelectedModuleIndex(modIdx);
           setSelectedSubmoduleIndex(subIdx);
@@ -81,7 +100,7 @@ export const CourseLearn = () => {
           <>
             <VideoPlayer videoUrl={selectedSubmodule.video.videoUrl} />
             <DescriptionSection description={selectedSubmodule.description} />
-            <AssignmentsSection quiz={selectedSubmodule.quiz} />
+            <AssignmentsSection quiz={selectedSubmodule.quiz} markProgress={handleQuizCompleted} />
           </>
         )}
       </div>

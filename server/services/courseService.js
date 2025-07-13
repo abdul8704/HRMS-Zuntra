@@ -98,8 +98,8 @@ const deleteCourse = async (courseId) => {
 //with respect to user
 // @desc    Get all enrolled courses by user ID type-[enrolledCourses, assignedCourses, completedCourses]
 const getCoursesByTypeForUserId = async (type, id) => {
-  const userCourseList = await userCourse.findById(id).select(type).populate(type);
-  return userCourseList;
+    const userCourseList = await userCourse.findById(id).select(type).populate(type);
+    return userCourseList;
 };
 
 // @desc    enroll a course 
@@ -152,21 +152,56 @@ const userCourseEnroll = async (userId, courseId) => {
     }
 };
 
-
+// @desc    fetchProgressMAtrix
 const fetchProgressMatrix = async (userId, courseId) => {
     try {
         const progressMatrix = await courseProgress.findOne(
             { userId: userId, courseId: courseId },
-            { moduleStatus: 1 }
+            { percentComplete: 1, moduleStatus: 1 }
         );
 
-        return progressMatrix ? progressMatrix.moduleStatus : null;
+        return progressMatrix ? {
+            percentComplete: progressMatrix.percentComplete,
+            moduleStatus: progressMatrix.moduleStatus
+        } : null;
     } catch (err) {
         if (err instanceof ApiError) throw err;
         throw new ApiError(500, "Unable to get progress matrix", err.message);
     }
 };
 
+// @desc    set progress of a course
+const setCourseProgress = async (userId, courseId, moduleId, subModuleId) => {
+    try {
+        const progress = await courseProgress.findOne({ userId, courseId });
+
+        if (!progress) {
+            throw new ApiError(400, "User has not enrolled in this course");
+        }
+
+        const matrix = progress.moduleStatus.completedModules;
+
+        // Update progress to true if not already
+        if (!matrix[moduleId][subModuleId]) {
+            matrix[moduleId][subModuleId] = true;
+
+            const total = progress.moduleStatus.totalSubModules || 1;
+            const completed = matrix.flat().filter(Boolean).length;
+            const percentComplete = Math.round((completed / total) * 100);
+
+            progress.moduleStatus.completedModules = matrix;
+            progress.percentComplete = percentComplete;
+
+            await progress.save();
+        }
+
+        return progress;
+    } catch (err) {
+        if (err instanceof ApiError) throw err;
+        console.log(err.message);
+        throw new ApiError(500, "Failed to set course progress", err.message);
+    }
+};
 
 
 
@@ -183,4 +218,5 @@ module.exports = {
     userCourseEnroll,
     fetchProgressMatrix,
     getCoursesByTypeForUserId,
+    setCourseProgress,
 };

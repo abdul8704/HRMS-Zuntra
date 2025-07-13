@@ -281,6 +281,26 @@ const getProgressMatrixByCourseIdController = asyncHandler(async (req, res) => {
 });
 
 
+// @desc    set progress of a course
+// @route   POST api/course/progress/:courseId/:moduleId/:subModuleId 
+const setCourseProgress = asyncHandler(async (req, res) => {
+  const { courseId, moduleId, subModuleId } = req.params;
+  const { userid } = req.user;
+
+  if (!userid || !courseId || moduleId === undefined || subModuleId === undefined) {
+    throw new ApiError(400, "Missing userId, courseId, moduleId, or subModuleId");
+  }
+
+  const result = await courseService.setCourseProgress(userid, courseId, moduleId, subModuleId);
+
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
+
+
 
 module.exports = {
   createCourseIntroController,
@@ -295,4 +315,5 @@ module.exports = {
   courseEnrollController,
   getProgressMatrixByCourseIdController,
   getCoursesByTypeForUserId,
+  setCourseProgress,
 };

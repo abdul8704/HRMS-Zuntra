@@ -1,3 +1,12 @@
+// <PopupCard
+//   isVisible={popupVisible}
+//   onClose={handleClosePopup}
+//   type="success" // can be: success, info, warning, error, notification
+//   title="Success"
+//   message="Your changes have been saved successfully!"
+//   duration={4000}
+// />
+
 import React, { useState, useEffect } from 'react';
 
 export const PopupCard = ({

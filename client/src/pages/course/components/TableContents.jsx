@@ -90,5 +90,5 @@ export const TableOfContents = ({
         {enrolled ? "Continue Learning" : "Enroll Now"}
       </button>
     </div>
-  );
+  )
 };
