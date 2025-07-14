@@ -14,7 +14,7 @@ import { ProjectDeadline } from "../project/components/ProjectDeadline";
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
   const userDetails = jwtDecode(token || '{}');
-
+  const [showReminder , setShowReminder] = useState(false);
   const isNewUser = !userDetails?.role;
   console.log(isNewUser)
 
@@ -42,6 +42,9 @@ export const DashBoard = () => {
     setReminderDate('');
     setShowReminderForm(prev => !prev);
   };
+  const isPlusButtonClicked=()=>{
+    setShowReminder(prev=>!prev);
+  }
 
   return (
     <div className="flex h-screen">
@@ -49,7 +52,7 @@ export const DashBoard = () => {
 
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 md:grid-cols-9 md:grid-rows-9 lg:grid-cols-9 lg:grid-rows-9 gap-[1rem] h-screen p-[1rem]">
-
+          {showReminder && <RemainderPopup onClose={isPlusButtonClicked}/>}
           {/* 1. UserGreetings */}
           <div className="h-[10vh] md:h-full col-span-2 md:col-span-4 md:row-span-1 rounded-2xl flex items-center overflow-hidden px-[0.3rem] animate-slide-in-left">
             <UserGreetings
@@ -86,7 +89,7 @@ export const DashBoard = () => {
 
           {/* 7. Reminders */}
           <div className="h-[30vh] md:h-full col-span-2 md:col-span-5 md:col-start-1 md:row-start-4 md:row-span-3 rounded-2xl bg-[#bfbff7] flex items-center justify-center animate-slide-in-left">
-            <ReminderCard />
+            <ReminderCard onPlusClick={isPlusButtonClicked}/>
           </div>
 
           {/* 8. Notifications */}
