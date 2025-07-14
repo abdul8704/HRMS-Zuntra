@@ -1,6 +1,6 @@
 import React from "react";
 
-export const ReminderCard = () => {
+export const ReminderCard = ({onPlusClick}) => {
   const reminders = [
     "Today is payroll day, must have to giveddddddddddddddddddddddddddddddd22332dddddd dddd dddddd dd dd pay to employee’s 1",
     "Today is payroll day, must have to give pay to employee’s 2",
@@ -15,7 +15,7 @@ export const ReminderCard = () => {
         <span className="font-semibold text-gray-800 text-[clamp(0.9rem,1.5vw,0.3rem)]">Reminder</span>
 
         {/* Custom Plus Icon */}
-        <button className="cursor-pointer p-1 hover:scale-110 transition-transform duration-200">
+        <button onClick={onPlusClick} className="cursor-pointer p-1 hover:scale-110 transition-transform duration-200">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="10"
