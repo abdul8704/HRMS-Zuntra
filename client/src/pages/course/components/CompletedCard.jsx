@@ -1,12 +1,12 @@
 import React from "react";
 import { FaStar, FaRedoAlt, FaDownload } from "react-icons/fa";
 
-export const CompletedCard = ({ image, title, instructor, date, rating }) => {
+export const CompletedCard = ({ courseImage, courseName, courseInstructor, date="02/01/2006", rating="5" }) => {
   return (
     <div className="flex flex-col md:flex-row bg-gray-100 rounded-xl overflow-hidden w-full max-w-xl mx-auto mb-4">
       {/* Image */}
       <img
-        src={image}
+        src={courseImage}
         alt="course"
         className="w-full md:w-40 h-44 object-cover flex-shrink-0"
       />
@@ -16,8 +16,8 @@ export const CompletedCard = ({ image, title, instructor, date, rating }) => {
         {/* Top */}
         <div className="flex justify-between items-start flex-wrap">
           <div>
-            <h3 className="text-xl font-semibold mb-1">{title}</h3>
-            <p className="text-sm text-gray-600">by {instructor}</p>
+            <h3 className="text-xl font-semibold mb-1">{courseName}</h3>
+            <p className="text-sm text-gray-600">by {courseInstructor}</p>
           </div>
           <div className="flex items-center gap-1 font-medium mt-1">
             <span>{rating}</span>
