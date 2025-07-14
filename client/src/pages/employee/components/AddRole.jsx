@@ -1,5 +1,39 @@
 import React, { useState, useEffect, useRef } from "react";
-import { EmpCourseCard } from "./EmpCourseCard";
+
+// Mock EmpCourseCard component for the example
+const EmpCourseCard = ({ courseName, authorName, imageUrl, onRemove, truncateTitle = false, inDropdown = false }) => {
+  const displayName = truncateTitle && courseName.length > 20 
+    ? courseName.substring(0, 20) + "..." 
+    : courseName;
+  
+  return (
+    <div className="bg-white rounded-lg p-2 shadow-sm border relative">
+      <div className="flex items-center gap-2">
+        <img 
+          src={imageUrl} 
+          alt={courseName}
+          className="w-8 h-8 rounded object-cover"
+        />
+        <div className="flex-1 min-w-0">
+          <div className="text-xs font-medium text-gray-900 truncate">
+            {displayName}
+          </div>
+          <div className="text-xs text-gray-500 truncate">
+            {authorName}
+          </div>
+        </div>
+        {onRemove && !inDropdown && (
+          <button
+            onClick={onRemove}
+            className="text-red-500 hover:text-red-700 text-sm font-bold"
+          >
+            ×
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const colors = [
   "#F2F2F2", "#E8EAED", "#E6E6E6", "#D9D9D9", "#CCCCCC", "#BFBFBF",
@@ -24,10 +58,8 @@ const predefinedCourses = [
   { id: 10, courseName: "Next.js Deep Dive", authorName: "Lily Carter", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
 ];
 
-
-
 export const AddRole = ({ 
-  type = "edit", // "edit" or "add"
+  type = "add", // "edit" or "add"
   rolename = "", 
   rolecolor = "#f5f5f5",
   rolesalary = "",
@@ -38,8 +70,8 @@ export const AddRole = ({
     courseManagement: false,
     attendance: false
   },
-  onClose,
-  onSave
+  onClose = () => console.log("Close modal"),
+  onSave = (data) => console.log("Save data:", data)
 }) => {
   const isEditMode = type === "edit";
   
@@ -64,6 +96,7 @@ export const AddRole = ({
   const colorPickerRef = useRef(null);
   const dropdownRef = useRef(null);
   const searchInputRef = useRef(null);
+  const containerRef = useRef(null);
 
   const availableCourses = predefinedCourses.filter(
     (course) =>
@@ -74,7 +107,7 @@ export const AddRole = ({
   // Handle clicking outside modal
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
         onClose();
       }
     };
@@ -96,21 +129,6 @@ export const AddRole = ({
       return () => document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [showColors]);
-
-  // Handle clicking outside dropdown
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-        setSearchTerm("");
-      }
-    };
-
-    if (showDropdown) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [showDropdown]);
 
   // Handle escape key
   useEffect(() => {
@@ -225,172 +243,217 @@ export const AddRole = ({
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-[2000] p-4">
-        <div
-          ref={modalRef}
-          className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-[350px] sm:max-w-[450px] lg:max-w-[550px] shadow-lg flex flex-col gap-3 sm:gap-5 relative animate-scale-in max-h-[90vh] overflow-y-auto"
-          style={{ animation: "fadeIn 0.2s ease-out" }}
+        <div 
+          ref={containerRef}
+          className={`flex items-center justify-center gap-4 transition-all duration-300 ease-in-out ${
+            showDropdown ? 'transform -translate-x-4' : ''
+          }`}
         >
-          {/* Modal Header */}
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-              {getModalTitle()}
-            </h2>
-            {isEditMode && (
-              <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                Edit Mode
+          {/* Main Modal */}
+          <div
+            ref={modalRef}
+            className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-[350px] sm:max-w-[450px] lg:max-w-[550px] shadow-lg flex flex-col gap-3 sm:gap-5 relative animate-scale-in max-h-[90vh] overflow-y-auto"
+            style={{ animation: "fadeIn 0.2s ease-out" }}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+                {getModalTitle()}
+              </h2>
+            </div>
+
+            {/* Role input and color */}
+            <div className="flex items-center gap-2 sm:gap-3 relative w-full">
+              <input
+                type="text"
+                className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder={isEditMode ? "Edit role name" : "Enter role name"}
+                value={roleName}
+                onChange={(e) => setRoleName(e.target.value)}
+                onKeyDown={handleKeyDown}
+                autoFocus={!isEditMode}
+              />
+              <div
+                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-600 cursor-pointer hover:scale-110 transition-transform flex-shrink-0"
+                style={{ backgroundColor: roleColor }}
+                onClick={() => setShowColors(!showColors)}
+              />
+              {showColors && (
+                <div
+                  ref={colorPickerRef}
+                  className="absolute top-10 right-0 bg-white border rounded-lg shadow-lg p-2 grid grid-cols-6 gap-1 z-50 animate-fade-in"
+                >
+                  {colors.map((color, idx) => (
+                    <div
+                      key={idx}
+                      className="w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                      style={{ backgroundColor: color }}
+                      onClick={() => handleColorSelect(color)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Permissions Section */}
+            <div className="bg-gray-100 rounded-xl p-3 sm:p-4 w-full">
+              <h3 className="text-sm font-medium text-gray-700 mb-2 sm:mb-3">
+                {isEditMode ? "Update Permissions" : "Set Permissions"}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={permissions.projectManagement}
+                    onChange={() => handlePermissionChange('projectManagement')}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
+                  />
+                  <span className="text-xs sm:text-sm text-gray-700">Project Management</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={permissions.employeeManagement}
+                    onChange={() => handlePermissionChange('employeeManagement')}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
+                  />
+                  <span className="text-xs sm:text-sm text-gray-700">Employee Management</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={permissions.courseManagement}
+                    onChange={() => handlePermissionChange('courseManagement')}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
+                  />
+                  <span className="text-xs sm:text-sm text-gray-700">Course Management</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={permissions.attendance}
+                    onChange={() => handlePermissionChange('attendance')}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
+                  />
+                  <span className="text-xs sm:text-sm text-gray-700">Attendance</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Salary Input Section */}
+            <div className="w-full">
+              <label className="text-sm font-medium text-gray-700 block mb-2 sm:mb-3" htmlFor="salary">
+                {isEditMode ? "Update Salary" : "Set Salary"}
+              </label>
+              <input
+                type="number"
+                id="salary"
+                className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder={isEditMode ? "Update salary in ₹" : "Enter salary in ₹"}
+                value={salary}
+                onChange={(e) => setSalary(e.target.value)}
+              />
+            </div>
+
+            {/* Courses Section */}
+            <div className="bg-gray-300 rounded-xl h-48 sm:h-56 lg:h-64 w-full relative px-2 pt-3 sm:pt-4 pb-3 sm:pb-4">
+              {courseCards.length === 0 && (
+                <span className="absolute top-2 sm:top-3 left-3 sm:left-4 text-xs sm:text-sm text-gray-600">
+                  {isEditMode ? "Current courses..." : "Assign courses..."}
+                </span>
+              )}
+
+              {/* Selected Cards */}
+              <div className="h-full overflow-y-auto pr-1 sm:pr-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-0">
+                  {courseCards.map((course) => (
+                    <EmpCourseCard
+                      key={course.id}
+                      courseName={course.courseName}
+                      authorName={course.authorName}
+                      imageUrl={course.imageUrl}
+                      onRemove={() => handleRemoveCourse(course.id)}
+                      truncateTitle={false}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Floating + Button */}
+              <span
+                className="absolute bottom-2 sm:bottom-3 right-2 sm:right-4 bg-teal-800/20 hover:bg-teal-800/40 rounded-full px-2 sm:px-3 py-1 text-lg sm:text-xl font-bold text-gray-800 cursor-pointer shadow-md z-[200] transition-colors select-none"
+                onClick={handleDropdownToggle}
+              >
+                {showDropdown ? "×" : "+"}
               </span>
-            )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-center gap-3 sm:gap-4 pt-2">
+              <button
+                className="px-3 sm:px-4 py-2 rounded-md bg-gray-200 text-black hover:bg-red-600 hover:text-white hover:opacity-60 text-xs sm:text-sm transition-colors flex-1 sm:flex-none"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button
+                className={getSubmitButtonStyle()}
+                onClick={handleSubmit}
+                disabled={!roleName.trim()}
+              >
+                {getSubmitButtonText()}
+              </button>
+            </div>
           </div>
 
-          {/* Role input and color */}
-          <div className="flex items-center gap-2 sm:gap-3 relative w-full">
-            <input
-              type="text"
-              className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder={isEditMode ? "Edit role name" : "Enter role name"}
-              value={roleName}
-              onChange={(e) => setRoleName(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoFocus={!isEditMode}
-            />
+          {/* Side Dropdown */}
+          {showDropdown && (
             <div
-              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-600 cursor-pointer hover:scale-110 transition-transform flex-shrink-0"
-              style={{ backgroundColor: roleColor }}
-              onClick={() => setShowColors(!showColors)}
-            />
-            {showColors && (
-              <div
-                ref={colorPickerRef}
-                className="absolute top-10 right-0 bg-white border rounded-lg shadow-lg p-2 grid grid-cols-6 gap-1 z-50 animate-fade-in"
-              >
-                {colors.map((color, idx) => (
-                  <div
-                    key={idx}
-                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer hover:scale-110 transition-transform"
-                    style={{ backgroundColor: color }}
-                    onClick={() => handleColorSelect(color)}
-                  />
-                ))}
+              ref={dropdownRef}
+              className="w-[350px] sm:w-[450px] lg:w-[550px] bg-white rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col gap-3 sm:gap-5 z-[1000] animate-slide-in-right max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
+                  Add Courses
+                </h3>
+                <button
+                  onClick={handleDropdownToggle}
+                  className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+                >
+                  ×
+                </button>
               </div>
-            )}
-          </div>
 
-          {/* Permissions Section */}
-          <div className="bg-gray-100 rounded-xl p-3 sm:p-4 w-full">
-            <h3 className="text-sm font-medium text-gray-700 mb-2 sm:mb-3">
-              {isEditMode ? "Update Permissions" : "Set Permissions"}
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={permissions.projectManagement}
-                  onChange={() => handlePermissionChange('projectManagement')}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
-                />
-                <span className="text-xs sm:text-sm text-gray-700">Project Management</span>
-              </label>
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search courses..."
+                className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
 
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={permissions.employeeManagement}
-                  onChange={() => handlePermissionChange('employeeManagement')}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
-                />
-                <span className="text-xs sm:text-sm text-gray-700">Employee Management</span>
-              </label>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={permissions.courseManagement}
-                  onChange={() => handlePermissionChange('courseManagement')}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
-                />
-                <span className="text-xs sm:text-sm text-gray-700">Course Management</span>
-              </label>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={permissions.attendance}
-                  onChange={() => handlePermissionChange('attendance')}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
-                />
-                <span className="text-xs sm:text-sm text-gray-700">Attendance</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Salary Input Section */}
-          <div className="w-full">
-            <label className="text-sm font-medium text-gray-700 block mb-2 sm:mb-3" htmlFor="salary">
-              {isEditMode ? "Update Salary" : "Set Salary"}
-            </label>
-            <input
-              type="number"
-              id="salary"
-              className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder={isEditMode ? "Update salary in ₹" : "Enter salary in ₹"}
-              value={salary}
-              onChange={(e) => setSalary(e.target.value)}
-            />
-          </div>
-
-          {/* Courses Section */}
-          <div className="bg-gray-300 rounded-xl h-48 sm:h-56 lg:h-64 w-full relative px-2 pt-3 sm:pt-4 pb-3 sm:pb-4">
-            {courseCards.length === 0 && (
-              <span className="absolute top-2 sm:top-3 left-3 sm:left-4 text-xs sm:text-sm text-gray-600">
-                {isEditMode ? "Current courses..." : "Assign courses..."}
-              </span>
-            )}
-
-            {/* Selected Cards */}
-            <div className="h-full overflow-y-auto pr-1 sm:pr-2">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-0">
-                {courseCards.map((course) => (
-                  <EmpCourseCard
-                    key={course.id}
-                    courseName={course.courseName}
-                    authorName={course.authorName}
-                    imageUrl={course.imageUrl}
-                    onRemove={() => handleRemoveCourse(course.id)}
-                    truncateTitle={false}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Dropdown */}
-            {showDropdown && (
-              <div
-                ref={dropdownRef}
-                className="absolute bottom-12 sm:bottom-16 right-2 sm:right-6 w-[200px] sm:w-[240px] bg-white rounded-xl shadow-md z-[1000] p-2 flex flex-col gap-2 animate-fade-in"
-              >
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  placeholder="Search courses..."
-                  className="w-full p-2 rounded-md text-xs sm:text-sm bg-white outline-none border focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <div className="max-h-32 sm:max-h-40 overflow-y-auto overflow-x-hidden flex flex-col gap-1 items-center">
+              <div className="flex-1 overflow-y-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {availableCourses.length === 0 ? (
-                    <div className="text-xs sm:text-sm text-gray-500 py-2">No courses found</div>
+                    <div className="col-span-full text-center text-gray-500 py-8">
+                      No courses found
+                    </div>
                   ) : (
                     availableCourses.map((course) => (
                       <div
                         key={course.id}
-                        className="cursor-pointer hover:bg-gray-50 rounded-md p-1 transition-colors w-full"
+                        className="cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors"
                         onClick={() => handleAddCourse(course)}
                       >
                         <EmpCourseCard
                           courseName={course.courseName}
                           authorName={course.authorName}
                           imageUrl={course.imageUrl}
-                          truncateTitle={true}
+                          truncateTitle={false}
                           inDropdown={true}
                         />
                       </div>
@@ -398,38 +461,6 @@ export const AddRole = ({
                   )}
                 </div>
               </div>
-            )}
-
-            {/* Floating + Button */}
-            <span
-              className="absolute bottom-2 sm:bottom-3 right-2 sm:right-4 bg-teal-800/20 hover:bg-teal-800/40 rounded-full px-2 sm:px-3 py-1 text-lg sm:text-xl font-bold text-gray-800 cursor-pointer shadow-md z-[200] transition-colors select-none"
-              onClick={handleDropdownToggle}
-            >
-              {showDropdown ? "×" : "+"}
-            </span>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-center gap-3 sm:gap-4 pt-2">
-            <button
-              className="px-3 sm:px-4 py-2 rounded-md bg-gray-200 text-black hover:bg-red-600 hover:text-white hover:opacity-60 text-xs sm:text-sm transition-colors flex-1 sm:flex-none"
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button
-              className={getSubmitButtonStyle()}
-              onClick={handleSubmit}
-              disabled={!roleName.trim()}
-            >
-              {getSubmitButtonText()}
-            </button>
-          </div>
-
-          {/* Show current mode info for debugging */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="text-xs text-gray-400 text-center">
-              Mode: {type} | {isEditMode ? 'Editing existing role' : 'Adding new role'}
             </div>
           )}
         </div>
@@ -447,8 +478,23 @@ export const AddRole = ({
           }
         }
         
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
         .animate-fade-in {
           animation: fadeIn 0.15s ease-out;
+        }
+        
+        .animate-slide-in-right {
+          animation: slideInRight 0.3s ease-out;
         }
       `}</style>
     </>
