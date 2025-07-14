@@ -1,6 +1,6 @@
 import React from "react";
 
-// 👤 Reusable Employee Profile Card
+// 👤 Reusable Employee Profile Card (Smaller Version)
 export const EmpProfile = ({
   name,
   role,
@@ -12,7 +12,7 @@ export const EmpProfile = ({
 
   return (
     <div
-      className="flex items-center rounded-full  w-full h-14 relative" // height increased
+      className="flex items-center rounded-full px-3 py-1 w-full h-12 relative"
       style={{ backgroundColor: color }}
     >
       {tl && (
@@ -30,7 +30,7 @@ export const EmpProfile = ({
       <img
         src={avatar}
         alt={firstName}
-        className="h-full  rounded-full mr-3 object-cover shrink-0" // bigger image
+        className="w-8 h-8 rounded-full mr-3 object-cover shrink-0"
       />
       <div className="flex flex-col justify-center overflow-hidden">
         <div className="font-bold text-sm truncate leading-tight text-black">
@@ -97,11 +97,11 @@ export const EmployeesOnLeave = () => {
       </div>
 
       {/* Employee Cards Grid */}
-      <div className="grid grid-cols-2 gap-3 overflow-y-auto pr-2 max-h-[17rem] custom-scrollbar">
+      <div className="grid grid-cols-3 gap-3 overflow-y-auto pr-2 max-h-[17rem] custom-scrollbar">
         {leaveEmployees.map((emp, index) => (
           <div
             key={index}
-            className="bg-[#d3dce7] rounded-full flex items-center justify-start p-1.5"
+            className="bg-[#d3dce7] rounded-full flex items-center justify-start p-1"
           >
             <EmpProfile
               name={emp.name}

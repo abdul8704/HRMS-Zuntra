@@ -6,6 +6,7 @@ import SidebarDetails from "../../components/SidebarDetails";
 import { Navbar } from "../../components/Navbar";
 import { EmployeeDetailsAssignment } from "./components/EmployeeDetailsAssignment";
 import { EmpProfile } from "./components/EmpProfile";
+import { EmployeeCourseProgress } from "./components/EmployeeCourseProgress";
 
 
 const roleProfiles = [
@@ -77,7 +78,10 @@ export const EmployeeDetails = ({ type }) => {
               </>
             )}
             {navId === "project" && <p>PROJECT</p>}
-            {navId === "courses" && <p>Courses</p>}
+            {navId === "courses" && (
+              <EmployeeCourseProgress />
+            )
+          }
           </>
         )}
 
