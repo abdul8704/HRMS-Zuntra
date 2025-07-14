@@ -1,36 +1,84 @@
 import React, { useState, useEffect, useRef } from "react";
-
-// Mock EmpCourseCard component for the example
-const EmpCourseCard = ({ courseName, authorName, imageUrl, onRemove, truncateTitle = false, inDropdown = false }) => {
-  const displayName = truncateTitle && courseName.length > 20 
-    ? courseName.substring(0, 20) + "..." 
-    : courseName;
+//import { CourseCard } from "../../course/components/CourseCard";
+// CourseCard component
+const CourseCard = ({ courseImage, courseName, courseInstructor, deadline, deadlineUnits, rating = 5 }) => {
+  const [isSelfPaced, setIsSelfPaced] = useState(false);
   
+  useEffect(() => {
+    if (deadline === 0) {
+      setIsSelfPaced(true);
+    }
+  }, [deadline]);
+  
+  const badgeStyle = isSelfPaced
+    ? "bg-green-100 text-green-800"
+    : "bg-orange-100 text-orange-800";
+
+  // Debug: Log the props to check if courseInstructor is being passed correctly
+  console.log('CourseCard props:', { courseName, courseInstructor, deadline, deadlineUnits, rating });
+
   return (
-    <div className="bg-white rounded-lg p-2 shadow-sm border relative">
-      <div className="flex items-center gap-2">
-        <img 
-          src={imageUrl} 
+    <div className="flex flex-col w-full h-full bg-gray-200 rounded-xl shadow-md overflow-hidden">
+      {/* Image Container with Fixed Aspect Ratio */}
+      {/* <CourseCard courseImage={"https://www.hello.jpg"} courseName={"PEACE"} courseInstructor={"JAI"} deadline={3} deadlineUnits={"Days"} rating={10} /> */}
+      <div className="w-full aspect-[4/3] flex-shrink-0 overflow-hidden">
+        <img
+          src={courseImage}
           alt={courseName}
-          className="w-8 h-8 rounded object-cover"
+          className="w-full h-full object-cover bg-gray-100"
         />
-        <div className="flex-1 min-w-0">
-          <div className="text-xs font-medium text-gray-900 truncate">
-            {displayName}
-          </div>
-          <div className="text-xs text-gray-500 truncate">
-            {authorName}
-          </div>
-        </div>
-        {onRemove && !inDropdown && (
-          <button
-            onClick={onRemove}
-            className="text-red-500 hover:text-red-700 text-sm font-bold"
-          >
-            ×
-          </button>
-        )}
       </div>
+      {/* Content Container */}
+      <div className="flex flex-col justify-between flex-1 p-3 min-h-0">
+        {/* Title and Instructor */}
+        <div className="flex flex-col mb-2 flex-1">
+          <h3 className="text-sm font-semibold mb-2 leading-tight text-left text-gray-900">
+            {courseName}
+          </h3>
+          <p className="text-xs text-gray-700 text-left font-medium px-2 py-1 rounded">
+            by {courseInstructor || 'Unknown Instructor'}
+          </p>
+        </div>
+        
+        {/* Badge and Rating */}
+        <div className="flex justify-between items-center gap-2 flex-shrink-0 mt-2">
+          <span
+            className={`rounded-xl font-medium px-2 py-1 text-xs flex-shrink-0 ${badgeStyle}`}
+          >
+            {deadline === 0 ? "At your own pace" : `in ${deadline} ${deadlineUnits}`}
+          </span>
+          <span className="flex items-center gap-1 flex-shrink-0">
+            <span className="font-bold text-xs text-black">
+              {rating}
+            </span>
+            <span className="text-base text-yellow-500">★</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Wrapper component for CourseCard to handle remove functionality
+const CourseCardWrapper = ({ course, onRemove, inDropdown = false }) => {
+  return (
+    <div className="relative h-full">
+      <CourseCard
+        courseImage={course.courseImage}
+        courseName={course.courseName}
+        courseInstructor={course.courseInstructor}
+        deadline={course.deadline}
+        deadlineUnits={course.deadlineUnits}
+        rating={course.rating}
+      />
+      {onRemove && !inDropdown && (
+        <button
+          onClick={onRemove}
+          className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold shadow-md transition-colors z-10"
+        >
+          ×
+        </button>
+      )}
     </div>
   );
 };
@@ -46,19 +94,19 @@ const colors = [
 ];
 
 const predefinedCourses = [
-  { id: 1, courseName: "React Fundamentals", authorName: "John Doe", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 2, courseName: "Advanced Node.js", authorName: "Jane Smith", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 3, courseName: "MongoDB Mastery", authorName: "Kevin Li", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 4, courseName: "Python for Data Science", authorName: "Emily Stone", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 5, courseName: "Machine Learning Basics", authorName: "Michael Ray", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 6, courseName: "Fullstack with MERN", authorName: "Rachel Green", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 7, courseName: "Cloud Computing 101", authorName: "Thomas Blake", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 8, courseName: "Cybersecurity Essentials", authorName: "Sophia Reed", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 9, courseName: "Kubernetes Crash Course", authorName: "James Hunt", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 10, courseName: "Next.js Deep Dive", authorName: "Lily Carter", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
+  { id: 1, courseName: "React Fundamentals", courseInstructor: "John Doe", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 8, deadlineUnits: "weeks", rating: 4.8 },
+  { id: 2, courseName: "Advanced Node.js", courseInstructor: "Jane Smith", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 12, deadlineUnits: "weeks", rating: 4.9 },
+  { id: 3, courseName: "MongoDB Mastery", courseInstructor: "Kevin Li", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 6, deadlineUnits: "weeks", rating: 4.7 },
+  { id: 4, courseName: "Python for Data Science", courseInstructor: "Emily Stone", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 0, deadlineUnits: "weeks", rating: 4.6 },
+  { id: 5, courseName: "Machine Learning Basics", courseInstructor: "Michael Ray", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 10, deadlineUnits: "weeks", rating: 4.8 },
+  { id: 6, courseName: "Fullstack with MERN", courseInstructor: "Rachel Green", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 16, deadlineUnits: "weeks", rating: 4.9 },
+  { id: 7, courseName: "Cloud Computing 101", courseInstructor: "Thomas Blake", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 0, deadlineUnits: "weeks", rating: 4.5 },
+  { id: 8, courseName: "Cybersecurity Essentials", courseInstructor: "Sophia Reed", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 14, deadlineUnits: "weeks", rating: 4.7 },
+  { id: 9, courseName: "Kubernetes Crash Course", courseInstructor: "James Hunt", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 4, deadlineUnits: "weeks", rating: 4.6 },
+  { id: 10, courseName: "Next.js Deep Dive", courseInstructor: "Lily Carter", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 0, deadlineUnits: "weeks", rating: 4.8 }
 ];
 
-export const AddRole = ({ 
+export default function AddRole({ 
   type = "add", // "edit" or "add"
   rolename = "", 
   rolecolor = "#f5f5f5",
@@ -72,7 +120,7 @@ export const AddRole = ({
   },
   onClose = () => console.log("Close modal"),
   onSave = (data) => console.log("Save data:", data)
-}) => {
+}) {
   const isEditMode = type === "edit";
   
   // Initialize state based on mode
@@ -90,6 +138,12 @@ export const AddRole = ({
   const [showColors, setShowColors] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [initialLoad, setInitialLoad] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setInitialLoad(false), 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Refs for click outside detection
   const modalRef = useRef(null);
@@ -104,7 +158,7 @@ export const AddRole = ({
       course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Handle clicking outside modal
+  // Handle clicking outside modal (but not dropdown)
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -189,8 +243,7 @@ export const AddRole = ({
 
   const handleAddCourse = (course) => {
     setCourseCards([...courseCards, course]);
-    setShowDropdown(false);
-    setSearchTerm("");
+    // Don't close dropdown - keep it open for multiple selections
   };
 
   const handleRemoveCourse = (id) => {
@@ -207,6 +260,12 @@ export const AddRole = ({
     if (showDropdown) {
       setSearchTerm("");
     }
+  };
+
+  // Explicit close function for dropdown
+  const handleCloseDropdown = () => {
+    setShowDropdown(false);
+    setSearchTerm("");
   };
 
   const handlePermissionChange = (permission) => {
@@ -245,15 +304,12 @@ export const AddRole = ({
       <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-[2000] p-4">
         <div 
           ref={containerRef}
-          className={`flex items-center justify-center gap-4 transition-all duration-300 ease-in-out ${
-            showDropdown ? 'transform -translate-x-4' : ''
-          }`}
+          className="flex items-start justify-center gap-4 w-full max-w-[calc(100vw-2rem)] mx-auto"
         >
-          {/* Main Modal */}
+          {/* Main Modal - Fixed width */}
           <div
             ref={modalRef}
-            className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-[350px] sm:max-w-[450px] lg:max-w-[550px] shadow-lg flex flex-col gap-3 sm:gap-5 relative animate-scale-in max-h-[90vh] overflow-y-auto"
-            style={{ animation: "fadeIn 0.2s ease-out" }}
+            className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-[550px] shadow-lg flex flex-col gap-3 sm:gap-5 relative overflow-y-auto flex-shrink-0"
           >
             {/* Modal Header */}
             <div className="flex items-center justify-between mb-2">
@@ -281,7 +337,7 @@ export const AddRole = ({
               {showColors && (
                 <div
                   ref={colorPickerRef}
-                  className="absolute top-10 right-0 bg-white border rounded-lg shadow-lg p-2 grid grid-cols-6 gap-1 z-50 animate-fade-in"
+                  className="absolute top-10 right-0 bg-white border border-gray-300 rounded-lg shadow-lg p-3 grid grid-cols-6 gap-2 z-[100]"
                 >
                   {colors.map((color, idx) => (
                     <div
@@ -367,17 +423,16 @@ export const AddRole = ({
               )}
 
               {/* Selected Cards */}
-              <div className="h-full overflow-y-auto pr-1 sm:pr-2">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-0">
+              <div className="h-full overflow-y-auto pr-1 sm:pr-2 min-h-[8rem]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-0">
                   {courseCards.map((course) => (
-                    <EmpCourseCard
-                      key={course.id}
-                      courseName={course.courseName}
-                      authorName={course.authorName}
-                      imageUrl={course.imageUrl}
-                      onRemove={() => handleRemoveCourse(course.id)}
-                      truncateTitle={false}
-                    />
+                    <div key={course.id} className="h-48">
+                      <CourseCardWrapper
+                        course={course}
+                        onRemove={() => handleRemoveCourse(course.id)}
+                        inDropdown={false}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -413,14 +468,14 @@ export const AddRole = ({
           {showDropdown && (
             <div
               ref={dropdownRef}
-              className="w-[350px] sm:w-[450px] lg:w-[550px] bg-white rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col gap-3 sm:gap-5 z-[1000] animate-slide-in-right max-h-[90vh] overflow-y-auto"
+              className="w-[350px] sm:w-[450px] lg:w-[550px] bg-white rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col gap-3 sm:gap-5 z-[1000] animate-fade-in-no-scale max-h-[90vh] overflow-y-auto flex-shrink-0"
             >
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
                   Add Courses
                 </h3>
                 <button
-                  onClick={handleDropdownToggle}
+                  onClick={handleCloseDropdown}
                   className="text-gray-500 hover:text-gray-700 text-xl font-bold"
                 >
                   ×
@@ -437,7 +492,7 @@ export const AddRole = ({
               />
 
               <div className="flex-1 overflow-y-auto">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {availableCourses.length === 0 ? (
                     <div className="col-span-full text-center text-gray-500 py-8">
                       No courses found
@@ -449,13 +504,12 @@ export const AddRole = ({
                         className="cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors"
                         onClick={() => handleAddCourse(course)}
                       >
-                        <EmpCourseCard
-                          courseName={course.courseName}
-                          authorName={course.authorName}
-                          imageUrl={course.imageUrl}
-                          truncateTitle={false}
-                          inDropdown={true}
-                        />
+                        <div className="h-56">
+                          <CourseCardWrapper
+                            course={course}
+                            inDropdown={true}
+                          />
+                        </div>
                       </div>
                     ))
                   )}
@@ -467,17 +521,19 @@ export const AddRole = ({
       </div>
 
       <style jsx>{`
-        @keyframes fadeIn {
+        @keyframes fadeInNoScale {
           from {
             opacity: 0;
-            transform: scale(0.95);
           }
           to {
             opacity: 1;
-            transform: scale(1);
           }
         }
-        
+
+        .animate-fade-in-no-scale {
+          animation: fadeInNoScale 0.15s ease-out;
+        }
+
         @keyframes slideInRight {
           from {
             opacity: 0;
@@ -488,15 +544,25 @@ export const AddRole = ({
             transform: translateX(0);
           }
         }
-        
-        .animate-fade-in {
-          animation: fadeIn 0.15s ease-out;
-        }
-        
+
         .animate-slide-in-right {
           animation: slideInRight 0.3s ease-out;
+        }
+
+        .line-clamp-1 {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
       `}</style>
     </>
   );
-};
+}
