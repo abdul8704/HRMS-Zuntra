@@ -69,15 +69,10 @@ function App() {
           </ProtectRoute>
         }/>
 
-        <Route path="/projectoverview" element={
-          <ProtectRoute>
-            <ProjectOverview />
-          </ProtectRoute>
-        }/>
-
         <Route path="/projects/:navId" element={
           <ProtectRoute>
-            <HrProjectManagement />
+            {/* <HrProjectManagement /> */}
+            <ProjectOverview />
           </ProtectRoute>
         }/>
 

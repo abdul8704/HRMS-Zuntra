@@ -1,417 +1,299 @@
-import React, { useState, useEffect, useRef } from "react";
-import api from '../../../api/axios'
+import React, { useState, useEffect, useRef } from 'react';
+import { User, ChevronDown, Search, X } from 'lucide-react';
 
-export const EmpAssignmentPopUp = ({ employee, isOpen, onClose, onSave }) => {
-  const getRoles = async () => {
-    try {
-      const response = await api.get('/api/roles');
-      const roleSalary = {};
-      const roleId = {};
-
-      response.data.forEach(role => {
-        roleSalary[role.role] = role.baseSalary;
-        roleId[role.role] = role._id;
-      });
-      return { role: roleId, salary: roleSalary };
-    }
-    catch (error) {
-      alert("Error fetching roles. Please try again later.");
-      console.error("Error fetching roles:", error);
-      return [];
-    }
-  };
-
-  const getShifts = async () => {
-    try {
-      const response = await api.get('/api/shifts');
-
-      return response.data;
-    }
-    catch (error) {
-      alert("Error fetching shifts. Please try again later.");
-      console.error("Error fetching shifts:", error);
-      return [];
-    }
-  };
-
-  const getBranches = async () => {
-    try {
-      const response = await api.get('/api/branch');
-      return response.data.branches;
-    }
-    catch (error) {
-      alert("Error fetching branches. Please try again later.");
-      console.error("Error fetching branches:", error);
-      return [];
-    }
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const roles = await getRoles();
-      const shifts = await getShifts();
-      const branches = await getBranches();
-
-      setRoles(roles.role);
-      setRoleBaseSalary(roles.salary)
-      setShifts(shifts);
-      setBranches(branches);
-    };
-
-    fetchData();
-  }, []);
-
-  const [roles, setRoles] = useState([]);
-  const [roleBaseSalary, setRoleBaseSalary] = useState({});
-  const [shifts, setShifts] = useState([]);
-  const [branches, setBranches] = useState([]);
+export const EmpAssignmentPopUp = () => {
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedShift, setSelectedShift] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
-  const [salary, setSalary] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [salary, setSalary] = useState('');c  
+  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [showShiftDropdown, setShowShiftDropdown] = useState(false);
+  const [showBranchDropdown, setShowBranchDropdown] = useState(false);
   const [manualSalary, setManualSalary] = useState(false);
 
   const roleInputRef = useRef(null);
+  const shiftInputRef = useRef(null);
+  const branchInputRef = useRef(null);
 
+  // Mock data
+  const roles = [
+    { name: 'Marketing Head', baseSalary: 25 },
+    { name: 'Marketing Lead', baseSalary: 20 },
+    { name: 'Marketing Executive', baseSalary: 15 },
+    { name: 'Sales Manager', baseSalary: 22 },
+    { name: 'Sales Executive', baseSalary: 18 },
+    { name: 'HR Manager', baseSalary: 24 },
+    { name: 'HR Executive', baseSalary: 16 },
+    { name: 'Developer', baseSalary: 30 },
+    { name: 'Designer', baseSalary: 20 },
+    { name: 'Content Writer', baseSalary: 14 }
+  ];
+
+  const shifts = [
+    { id: 1, name: 'Morning', startTime: '09:00', endTime: '17:00' },
+    { id: 2, name: 'Evening', startTime: '17:00', endTime: '01:00' },
+    { id: 3, name: 'Night', startTime: '01:00', endTime: '09:00' }
+  ];
+
+  const branches = [
+    { id: 1, name: 'Zuntre Perungudi' },
+    { id: 2, name: 'New York Office' },
+    { id: 3, name: 'Los Angeles Office' },
+    { id: 4, name: 'Chicago Office' },
+    { id: 5, name: 'Miami Office' }
+  ];
+
+  const employee = {
+    name: 'John Doe',
+    email: 'doe@gmail.com',
+    phone: '5461664',
+    date: '2025-07-01'
+  };
+
+  // Auto-update salary when role changes
   useEffect(() => {
-    if (!manualSalary && roleBaseSalary[selectedRole]) {
-      setSalary(roleBaseSalary[selectedRole]);
+    if (!manualSalary && selectedRole) {
+      const role = roles.find(r => r.name === selectedRole);
+      if (role) {
+        setSalary(role.baseSalary);
+      }
     }
-  }, [selectedRole]);
+  }, [selectedRole, manualSalary]);
 
+  // Handle click outside to close dropdowns
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (roleInputRef.current && !roleInputRef.current.contains(e.target)) {
-        setShowDropdown(false);
+        setShowRoleDropdown(false);
+      }
+      if (shiftInputRef.current && !shiftInputRef.current.contains(e.target)) {
+        setShowShiftDropdown(false);
+      }
+      if (branchInputRef.current && !branchInputRef.current.contains(e.target)) {
+        setShowBranchDropdown(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  if (!isOpen) return null;
-
-  const handleSubmit = async () => {
-    if (isFormValid) {
-      try {
-        await api.post('/api/hr/accept', {
-          email: employee.email,
-          shiftId: selectedShift,
-          campusId: selectedBranch,
-          roleId: roles[selectedRole],
-        });
-        alert("Employee assigned successfully");
-        onSave();
-        onClose();
-        window.location.reload();
-      }
-      catch (err) {
-        alert("Error assigning employee:", err);
-      }
-    };
-  }
-
-  const filteredRoles = Object.keys(roles).filter((role) =>
-    role.toLowerCase().includes(selectedRole.toLowerCase())
+  const filteredRoles = roles.filter(role =>
+    role.name.toLowerCase().includes(selectedRole.toLowerCase())
   );
 
-  const handleSelectRole = (role) => {
-    setSelectedRole(role);
-    setShowDropdown(false);
+  const handleRoleSelect = (role) => {
+    setSelectedRole(role.name);
+    setShowRoleDropdown(false);
     setManualSalary(false);
   };
 
-  const handleSalaryChange = (e) => {
-    setSalary(e.target.value);
-    setManualSalary(true);
+  const handleShiftSelect = (shift) => {
+    setSelectedShift(shift.name);
+    setShowShiftDropdown(false);
   };
 
-  const formatTime = (time) => {
-    return new Date(time).toLocaleTimeString();
-  }
+  const handleBranchSelect = (branch) => {
+    setSelectedBranch(branch.name);
+    setShowBranchDropdown(false);
+  };
 
-  const isFormValid =
-    selectedRole.trim() &&
-    selectedBranch.trim() &&
-    salary.toString().trim();
+  const handleSalaryChange = (e) => {
+    const val = e.target.value;
+    if (val === '' || (!isNaN(val) && parseFloat(val) >= 0)) {
+      setSalary(val);
+      setManualSalary(true);
+    }
+  };
+
+  const isFormValid = selectedRole.trim() && selectedShift.trim() && selectedBranch.trim() && salary.toString().trim();
+
+  const handleSubmit = () => {
+    if (isFormValid) {
+      alert(`Employee assigned successfully!
+Role: ${selectedRole}
+Shift: ${selectedShift}
+Branch: ${selectedBranch}
+Salary: ${salary}/hour`);
+    }
+  };
+
+  const handleCancel = () => {
+    // Reset all form fields
+    setSelectedRole('');
+    setSelectedShift('');
+    setSelectedBranch('');
+    setSalary('');
+    setManualSalary(false);
+    // In a real app, this would close the popup
+    alert('Assignment cancelled');
+  };
 
   return (
-    <div className="popup-overlay">
-      <div className="popup-container">
-        {/* Left */}
-        <div className="popup-left">
-          <img src={employee.image || "https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png"} alt="Profile" />
-          <h3 className="emp-emp-name">{employee.name}</h3>
-          <p className="emp-info emp-email-bg">{employee.email}</p>
-          <p className="emp-info">{employee.phone}</p>
-          <p className="emp-info">Applied on : {employee.date}</p>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+      <style jsx>{`
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input[type="number"] {
+          -moz-appearance: textfield;
+        }
+      `}</style>
+      <div className="bg-white rounded-2xl shadow-2xl flex w-full max-w-4xl mx-4 overflow-hidden">
+        {/* Left Side - Employee Info */}
+        <div className="w-2/5 bg-gradient-to-br from-blue-50 to-indigo-100 p-8 flex flex-col justify-center items-center text-center">
+          <div className="relative mb-6">
+            <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+              <User size={48} className="text-white" />
+            </div>
+          </div>
+          
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">{employee.name}</h3>
+          <div className="bg-white bg-opacity-80 px-4 py-2 rounded-full mb-2">
+            <p className="text-sm font-medium text-gray-700">{employee.email}</p>
+          </div>
+          <p className="text-sm text-gray-600 mb-1">{employee.phone}</p>
+          <p className="text-sm text-gray-600">Applied on: {employee.date}</p>
         </div>
 
-        {/* Right */}
-        <div className="popup-right">
-          <label ref={roleInputRef}>
-            Role:
-            <input
-              type="text"
-              value={selectedRole}
-              onChange={(e) => {
-                setSelectedRole(e.target.value);
-                setManualSalary(false);
-              }}
-              onFocus={() => setShowDropdown(true)}
-              placeholder="Select or search role"
-            />
-            {showDropdown && (
-              <ul className="dropdown">
-                {filteredRoles.length === 0 ? (
-                  <li className="no-option">No roles found</li>
-                ) : (
-                  filteredRoles.map((role) => (
-                    <li key={role} onClick={() => handleSelectRole(role)}>
-                      {role}
-                    </li>
-                  ))
-                )}
-              </ul>
-            )}
-          </label>
+        {/* Right Side - Assignment Form */}
+        <div className="flex-1 p-8">
+          <div className="space-y-6">
+            {/* Role Selection */}
+            <div className="relative" ref={roleInputRef}>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Role</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={selectedRole}
+                  onChange={(e) => {
+                    setSelectedRole(e.target.value);
+                    setShowRoleDropdown(true);
+                    setManualSalary(false);
+                  }}
+                  onFocus={() => setShowRoleDropdown(true)}
+                  placeholder="Search for a role..."
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 pr-10"
+                />
+                <Search size={20} className="absolute right-3 top-3.5 text-gray-400" />
+              </div>
+              
+              {showRoleDropdown && (
+                <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {filteredRoles.length === 0 ? (
+                    <div className="px-4 py-3 text-sm text-gray-500 italic">No roles found</div>
+                  ) : (
+                    filteredRoles.map((role) => (
+                      <div
+                        key={role.name}
+                        onClick={() => handleRoleSelect(role)}
+                        className="px-4 py-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center"
+                      >
+                        <span className="text-gray-800">{role.name}</span>
+                        <span className="text-sm text-gray-500">{role.baseSalary}/hr</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
 
-          <label>
-            Shift:
-            <select value={selectedShift} onChange={(e) => setSelectedShift(e.target.value)} required>
-              <option value="" disabled hidden>Select shift</option>
-              {shifts.map((shift) => (
-                <option key={shift.shiftName} value={shift._id}>{shift.shiftName + " (" + formatTime(shift.startTime) + " - " + formatTime(shift.endTime) + ")"}</option>
-              ))}
-            </select>
-          </label>
+            {/* Shift Selection */}
+            <div className="relative" ref={shiftInputRef}>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Shift</label>
+              <div 
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 cursor-pointer flex justify-between items-center"
+                onClick={() => setShowShiftDropdown(!showShiftDropdown)}
+              >
+                <span className={selectedShift ? 'text-gray-800' : 'text-gray-500'}>
+                  {selectedShift || 'Select shift'}
+                </span>
+                <ChevronDown size={20} className="text-gray-400" />
+              </div>
+              
+              {showShiftDropdown && (
+                <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+                  {shifts.map((shift) => (
+                    <div
+                      key={shift.id}
+                      onClick={() => handleShiftSelect(shift)}
+                      className="px-4 py-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center"
+                    >
+                      <span className="text-gray-800 capitalize">{shift.name}</span>
+                      <span className="text-sm text-gray-500">{shift.startTime} - {shift.endTime}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          <label>
-            Branch:
-            <select value={selectedBranch} onChange={(e) => setSelectedBranch(e.target.value)} required>
-              <option value="" disabled hidden>Select branch</option>
-              {branches.map((branch) => (
-                <option key={branch} value={branch._id}>{branch.campusName}</option>
-              ))}
-            </select>
-          </label>
+            {/* Branch Selection */}
+            <div className="relative" ref={branchInputRef}>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Branch</label>
+              <div 
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 cursor-pointer flex justify-between items-center"
+                onClick={() => setShowBranchDropdown(!showBranchDropdown)}
+              >
+                <span className={selectedBranch ? 'text-gray-800' : 'text-gray-500'}>
+                  {selectedBranch || 'Select branch'}
+                </span>
+                <ChevronDown size={20} className="text-gray-400" />
+              </div>
+              
+              {showBranchDropdown && (
+                <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  {branches.map((branch) => (
+                    <div
+                      key={branch.id}
+                      onClick={() => handleBranchSelect(branch)}
+                      className="px-4 py-3 hover:bg-blue-50 cursor-pointer"
+                    >
+                      <span className="text-gray-800">{branch.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          <label>
-            Salary (per hour):
-            <input
-              type="number"
-              value={salary}
-              onChange={handleSalaryChange}
-              placeholder="Select role to get salary"
-            />
-          </label>
+            {/* Salary Input */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Salary (per hour)</label>
+              <input
+                type="number"
+                min="0"
+                value={salary}
+                onChange={handleSalaryChange}
+                placeholder="Select role to get salary"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+              />
+            </div>
 
-          <div className="popup-buttons">
-            <button className="cancel-btn" onClick={onClose}>Cancel</button>
-            <button className="recruit-btn" onClick={handleSubmit} disabled={!isFormValid}>Recruit</button>
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-4 pt-4">
+              <button 
+                onClick={handleCancel}
+                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSubmit}
+                disabled={!isFormValid}
+                className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                  isFormValid 
+                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Recruit
+              </button>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Styles */}
-      <style jsx>{`
-        .popup-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          background: rgba(0, 0, 0, 0.4);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 1000;
-        }
-
-        .popup-container {
-          background: white;
-          border-radius: 1rem;
-          display: flex;
-          flex-direction: row;
-          width: 90%;
-          max-width: 43.75rem;
-          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
-          overflow: hidden;
-          align-items: stretch;
-        }
-
-        .popup-left {
-          width: 35%;
-          background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          padding: 1.5rem;
-          text-align: center;
-        }
-
-        .popup-left img {
-          width: 7rem;
-          height: 7rem;
-          border-radius: 1rem;
-          object-fit: cover;
-          margin-bottom: 1rem;
-        }
-
-        .emp-emp-name {
-          font-size: 1.5rem;
-          font-weight: normal;
-          margin: 0.5rem 0;
-          word-wrap: break-word;
-          white-space: normal;
-          text-align: center;
-          width: 100%;
-        }
-
-        .emp-info {
-          font-size: 0.85rem;
-          opacity: 0.7;
-          margin: 0.15rem 0;
-          word-wrap: break-word;
-          white-space: normal;
-          text-align: center;
-          width: 100%;
-        }
-
-        .emp-email-bg {
-          background-color: rgba(255, 255, 255, 0.8);
-          color: rgba(0, 0, 0, 0.7);
-          padding: 0.3rem 0.7rem;
-          border-radius: 9999px;
-          display: inline-block;
-          font-size: 0.85rem;
-          opacity: 0.9;
-          word-wrap: break-word;
-          white-space: normal;
-          text-align: center;
-          max-width: 100%;
-        }
-
-        .popup-right {
-          flex: 1;
-          padding: 1.5rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          gap: 1rem;
-        }
-
-        label {
-          font-size: 0.9rem;
-          display: flex;
-          flex-direction: column;
-          position: relative;
-        }
-
-        input,
-        select {
-          padding: 0.5rem;
-          margin-top: 0.3rem;
-          border-radius: 0.4rem;
-          border: 0.0625rem solid #ccc;
-          font-size: 0.95rem;
-        }
-
-        select:invalid {
-          color: rgba(0, 0, 0, 0.4);
-        }
-
-        .dropdown {
-          position: absolute;
-          top: 100%;
-          left: 0;
-          right: 0;
-          background: white;
-          border: 0.0625rem solid #ccc;
-          border-radius: 0.4rem;
-          max-height: 8rem;
-          overflow-y: auto;
-          z-index: 10;
-        }
-
-        .dropdown li {
-          padding: 0.5rem;
-          cursor: pointer;
-        }
-
-        .dropdown li:hover {
-          background-color: #f0f0f0;
-        }
-
-        .no-option {
-          padding: 0.5rem;
-          color: #888;
-        }
-
-        .popup-buttons {
-          display: flex;
-          justify-content: center;
-          gap: 1rem;
-          margin-top: 1rem;
-        }
-
-        .cancel-btn,
-        .recruit-btn {
-          padding: 0.6rem 1.2rem;
-          border: none;
-          border-radius: 0.5rem;
-          font-weight: bold;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-        }
-
-        .cancel-btn {
-          background-color: #f3f4f6;
-          color: black;
-          font-weight: normal;
-        }
-
-        .cancel-btn:hover {
-          background-color: red;
-          opacity: 0.5;
-          color: white;
-          font-weight: normal;
-        }
-
-        .recruit-btn {
-          background-color: rgba(140, 221, 132, 0.8);
-          color: white;
-          font-weight: normal;
-        }
-
-        .recruit-btn:not(:disabled):hover {
-          background-color: green;
-          opacity: 0.7;
-          font-weight: normal;
-        }
-
-        .recruit-btn:disabled,
-        .recruit-btn:disabled:hover {
-          background-color: #d1d5d6;
-          opacity: 1;
-          cursor: not-allowed;
-          font-weight: normal;
-        }
-
-        @media (max-width: 37.5rem) {
-          .popup-container {
-            flex-direction: column;
-            max-width: 95%;
-          }
-
-          .popup-left,
-          .popup-right {
-            width: 100%;
-          }
-        }
-      `}</style>
     </div>
   );
 };
+
+//export default EmpAssignmentPopUp;
