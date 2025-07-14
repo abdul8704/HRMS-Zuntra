@@ -107,9 +107,9 @@ export const Upskill = () => {
                 {showArrows && (
                   <button
                     onClick={() => scroll('left')}
-                    className="bg-gradient-to-r from-black/10 to-white h-full px-3 py-2 rounded-l-lg"
+                    className="bg-gradient-to-r from-black/0 to-white/0 h-full px-1 py-2 rounded-l-lg"
                   >
-                    &#8592;
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#151414ff"><path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z"/></svg>
                   </button>
                 )}
 
@@ -137,9 +137,9 @@ export const Upskill = () => {
                 {showArrows && (
                   <button
                     onClick={() => scroll('right')}
-                    className="bg-gradient-to-l from-black/10 to-white h-full px-3 py-2 rounded-r-lg"
+                    className="bg-gradient-to-l from-black/0 to-white/0 h-full px-1 py-2 rounded-l-lgg"
                   >
-                    &#8594;
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#151414ff"><path d="m288-96-68-68 316-316-316-316 68-68 384 384L288-96Z"/></svg>
                   </button>
                 )}
               </div>

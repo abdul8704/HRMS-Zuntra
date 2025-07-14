@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { X, Users, Calendar, Play } from 'lucide-react';
+import { MdVideoCall } from 'react-icons/md';
+
 
 export const NotificationPopup = ({ setShowPopup }) => {
   const [userRole, setUserRole] = useState('HR'); // 'HR' or 'Team Lead'
@@ -116,11 +118,20 @@ export const NotificationPopup = ({ setShowPopup }) => {
   };
 
   const handleInstantMeeting = () => {
-    const meetingLink = generateMeetingLink();
-    const meetingText = `\n\nInstant Meeting: ${meetingLink}`;
-    setNotification(prev => prev + meetingText);
-    setShowMeetDropdown(false);
-  };
+  // Pick a predefined link
+  const meetingLink = predefinedMeetLinks[Math.floor(Math.random() * predefinedMeetLinks.length)];
+
+  // Redirect and update message
+  window.open(meetingLink, '_blank');
+  const meetingText = `\n\nInstant Meeting: ${meetingLink}`;
+  setNotification(prev => prev + meetingText);
+  setShowMeetDropdown(false);
+};
+const predefinedMeetLinks = [
+  "https://meet.google.com/njt-ocka-nsh"
+];
+
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -148,7 +159,13 @@ export const NotificationPopup = ({ setShowPopup }) => {
                 className="flex items-center justify-center w-10 h-10 bg-white hover:bg-gray-50 rounded-lg transition-colors border border-gray-200 shadow-sm"
                 title="Add Google Meet"
               >
-                📹
+                <img
+  src="https://www.gstatic.com/images/branding/product/1x/meet_2020q4_48dp.png"
+  alt="Google Meet"
+  className="w-6 h-6"
+/>
+
+
               </button>
 
               {showMeetDropdown && (

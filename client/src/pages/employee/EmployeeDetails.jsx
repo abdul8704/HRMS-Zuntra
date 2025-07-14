@@ -6,6 +6,8 @@ import SidebarDetails from "../../components/SidebarDetails";
 import { Navbar } from "../../components/Navbar";
 import { EmployeeDetailsAssignment } from "./components/EmployeeDetailsAssignment";
 import { EmpProfile } from "./components/EmpProfile";
+import { AssignCoursePopup } from "./components/AssignCoursePopup";
+import { EmployeeCourseProgress } from "./components/EmployeeCourseProgress";
 
 
 const roleProfiles = [
@@ -42,6 +44,7 @@ export const EmployeeDetails = ({ type }) => {
   const { roleId, navId } = useParams();
   console.log(roleId, navId);
   const [roleProfiles, setRolesProfiles] = useState([]);
+  const [showAssignCourse, setShowAssignCourse] = useState(true);
 
   if (type === "role") {
     useEffect(() => {
@@ -77,7 +80,29 @@ export const EmployeeDetails = ({ type }) => {
               </>
             )}
             {navId === "project" && <p>PROJECT</p>}
-            {navId === "courses" && <p>Courses</p>}
+            {navId === "courses" && (
+              <>
+                <p>Courses</p>
+                <button
+                  className="fixed bottom-8 right-20 w-14 h-14 bg-[#BBD3CC] text-[#6c6c6c] rounded-full flex items-center justify-center text-2xl font-bold cursor-pointer hover:scale-110 hover:bg-[#A6C4BA] transition-transform z-[1000]"
+                  onClick={() => setShowAssignCourse(true)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" height="2rem" viewBox="0 -960 960 960" width="2rem" fill="#000000">
+                    <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+                  </svg>
+                </button>
+                {showAssignCourse && (
+                  <AssignCoursePopup
+                    isOpen={showAssignCourse}
+                    onClose={() => setShowAssignCourse(false)}
+                    onAssign={(data) => {
+                      console.log('Assigned:', data);
+                    }}
+                  />
+                )}
+
+              </>
+            )}
           </>
         )}
 
