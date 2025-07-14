@@ -10,7 +10,7 @@ import { WorkBreakComposition } from "./components/WorkBreakComposititon";
 import { EmployeesOnLeave } from "./components/EmployeesOnLeave";
 import { RemainderPopup } from "./components/RemainderPopup";
 import { ProjectDeadline } from "../project/components/ProjectDeadline";
-
+import { PlusButton } from "../../components/PlusButton";
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
   const userDetails = jwtDecode(token || '{}');
@@ -45,6 +45,7 @@ export const DashBoard = () => {
 
   return (
     <div className="flex h-screen">
+      <PlusButton />
       <Sidebar role={isNewUser ? "newUser" : "HR"} />
 
       <div className="flex-1 overflow-y-auto">

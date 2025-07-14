@@ -54,7 +54,6 @@ export const AttendanceCard = () => {
     const end = parseDate(toDate);
     const dates = [];
     let current = new Date(start);
-
     while (current <= end) {
       dates.push({
         date: new Date(current),
@@ -88,46 +87,41 @@ export const AttendanceCard = () => {
     : new Date().getFullYear();
 
   return (
-    <div className="w-full h-full bg-purple-200 p-4 rounded-xl overflow-hidden relative">
+    <div className="w-full h-full flex flex-col bg-purple-200 p-4 rounded-xl overflow-hidden">
       {/* Header */}
-      <div className="flex flex-col gap-2 mb-3">
-        <div className="flex items-start justify-between flex-wrap gap-2">
-          <h2 className="text-base font-bold tracking-wide text-gray-800">
-            ATTENDANCE RECORD
-          </h2>
-          <p className="text-sm text-gray-700 font-medium">
-            {headingMonth.toUpperCase()} {headingYear}
-          </p>
-          <button
-            onClick={() => setShowFilter(!showFilter)}
-            className="p-1 hover:scale-110 transition-transform"
+      <div className="flex items-start justify-between flex-wrap gap-2 mb-3">
+        <h2 className="text-base font-bold tracking-wide text-gray-800">
+          ATTENDANCE RECORD
+        </h2>
+        <p className="text-sm text-gray-700 font-medium">
+          {headingMonth.toUpperCase()} {headingYear}
+        </p>
+        <button
+          onClick={() => setShowFilter(!showFilter)}
+          className="p-1 hover:scale-110 transition-transform"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            fill="none"
+            viewBox="0 0 24 24"
+            className="w-4 h-4"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              fill="none"
-              viewBox="0 0 24 24"
-              className="w-4 h-4"
-            >
-              <path
-                fill="#000"
-                d="M20 16.606a.75.75 0 0 1-.75.75h-5.1a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h7.74a2.93 2.93 0 0 1 5.66 0h5.1a.75.75 0 0 1 .75.75Zm0-13.21a.75.75 0 0 1-.75.75H16.8a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h10.39a2.93 2.93 0 0 1 5.66 0h2.45a.74.74 0 0 1 .75.75Zm0 6.6a.741.741 0 0 1-.75.75H7.55a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h1.14a2.93 2.93 0 0 1 5.66 0h11.7a.75.75 0 0 1 .75.75Z"
-              />
-            </svg>
-          </button>
-        </div>
+            <path
+              fill="#000"
+              d="M20 16.606a.75.75 0 0 1-.75.75h-5.1a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h7.74a2.93 2.93 0 0 1 5.66 0h5.1a.75.75 0 0 1 .75.75Zm0-13.21a.75.75 0 0 1-.75.75H16.8a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h10.39a2.93 2.93 0 0 1 5.66 0h2.45a.74.74 0 0 1 .75.75Zm0 6.6a.741.741 0 0 1-.75.75H7.55a2.93 2.93 0 0 1-5.66 0H.75a.75.75 0 0 1 0-1.5h1.14a2.93 2.93 0 0 1 5.66 0h11.7a.75.75 0 0 1 .75.75Z"
+            />
+          </svg>
+        </button>
       </div>
 
       {/* Filter + Table */}
-      <div className="rounded-md h-[290px] flex flex-col overflow-hidden">
-        {/* Filter Section */}
+      <div className="flex flex-col flex-grow min-h-0 overflow-hidden rounded-md">
         {showFilter && (
           <div className="flex gap-4 px-4 py-1 border-b border-purple-200 flex-wrap bg-transparent">
             <div className="flex items-center gap-2">
-              <label className="text-sm font-semibold text-gray-600 whitespace-nowrap">
-                From
-              </label>
+              <label className="text-sm font-semibold text-gray-600">From</label>
               <input
                 type="date"
                 value={fromDate}
@@ -136,9 +130,7 @@ export const AttendanceCard = () => {
               />
             </div>
             <div className="flex items-center gap-2">
-              <label className="text-sm font-semibold text-gray-600 whitespace-nowrap">
-                To
-              </label>
+              <label className="text-sm font-semibold text-gray-600">To</label>
               <input
                 type="date"
                 value={toDate}
@@ -149,25 +141,18 @@ export const AttendanceCard = () => {
           </div>
         )}
 
-        {/* Table Header */}
         <div className="grid grid-cols-2 bg-black/10 px-4 py-2 font-semibold text-sm flex-shrink-0">
           <div>Date</div>
           <div>Report</div>
         </div>
 
-        {/* Attendance Rows */}
-        <div className="overflow-y-auto flex-grow">
+        <div className="overflow-y-auto flex-grow min-h-0">
           {filteredDates.map((entry, idx) => (
             <div key={idx} className="relative py-2">
-              {/* White base background */}
               <div className="absolute inset-0 bg-transparent z-0" />
-
-              {/* Colored overlay (full width, vertical padding only) */}
               <div
                 className={`absolute top-1 bottom-1 left-0 right-0 opacity-90 z-10 ${overlayBgColors[entry.status]}`}
               />
-
-              {/* Content */}
               <div className="relative z-20 grid grid-cols-2 items-center px-4 text-sm">
                 <div className="text-black">{formatDisplayDate(entry.date)}</div>
                 <div>
