@@ -9,12 +9,13 @@ import { NotificationCard } from "./components/NotificationCard";
 import { WorkBreakComposition } from "./components/WorkBreakComposititon";
 import { EmployeesOnLeave } from "./components/EmployeesOnLeave";
 import { RemainderPopup } from "./components/RemainderPopup";
+import { NotificationPopup } from './components/NotificationPopup';
 import { ProjectDeadline } from "../project/components/ProjectDeadline";
-import { PlusButton } from "../../components/PlusButton";
+
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
   const userDetails = jwtDecode(token || '{}');
-
+  const [showNotification , setShowNotification]=useState(false);
   const isNewUser = !userDetails?.role;
   console.log(isNewUser)
 
@@ -42,15 +43,17 @@ export const DashBoard = () => {
     setReminderDate('');
     setShowReminderForm(prev => !prev);
   };
+  const isPlusButtonClicked=()=>{
+    setShowNotification(prev=>!prev);
+  }
 
   return (
     <div className="flex h-screen">
-      <PlusButton />
       <Sidebar role={isNewUser ? "newUser" : "HR"} />
 
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 md:grid-cols-9 md:grid-rows-9 lg:grid-cols-9 lg:grid-rows-9 gap-[1rem] h-screen p-[1rem]">
-
+          {showNotification && <NotificationPopup setShowPopup={setShowNotification}/>}
           {/* 1. UserGreetings */}
           <div className="h-[10vh] md:h-full col-span-2 md:col-span-4 md:row-span-1 rounded-2xl flex items-center overflow-hidden px-[0.3rem] animate-slide-in-left">
             <UserGreetings
@@ -92,7 +95,7 @@ export const DashBoard = () => {
 
           {/* 8. Notifications */}
           <div className="h-[30vh] md:h-full col-span-2 md:col-span-4 md:col-start-6 md:row-start-4 md:row-span-3 rounded-2xl bg-[#f6e0bf] flex items-center justify-center animate-slide-in-right">
-            <NotificationCard />
+            <NotificationCard onPlusClick={isPlusButtonClicked}/>
           </div>
 
           {/* 9. Work Break Stats */}

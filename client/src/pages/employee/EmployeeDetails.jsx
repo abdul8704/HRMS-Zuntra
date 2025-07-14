@@ -7,6 +7,7 @@ import { Navbar } from "../../components/Navbar";
 import { EmployeeDetailsAssignment } from "./components/EmployeeDetailsAssignment";
 import { EmpProfile } from "./components/EmpProfile";
 import { AssignCoursePopup } from "./components/AssignCoursePopup";
+import { EmployeeCourseProgress } from "./components/EmployeeCourseProgress";
 
 
 const roleProfiles = [

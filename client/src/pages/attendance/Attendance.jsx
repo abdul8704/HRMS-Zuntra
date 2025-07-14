@@ -10,7 +10,7 @@ import { AttendanceCalendar } from './components/AttendanceCalendar';
 import { AttendanceCard } from './components/AttendanceCard';
 import { LeaveForm } from './components/LeaveForm';
 import { ScheduleForm } from './components/ScheduleForm';
-import { LeaveFormHistory } from './components/LeaveFormHistory';
+import  LeaveFormHistory  from './components/LeaveFormHistory';
 
 
 export const Attendance = () => {
