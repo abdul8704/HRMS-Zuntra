@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { X, Users, Calendar, Play } from 'lucide-react';
+import { MdVideoCall } from 'react-icons/md';
+
 
 export const NotificationPopup = ({ setShowPopup }) => {
   const [userRole, setUserRole] = useState('HR'); // 'HR' or 'Team Lead'
@@ -148,7 +150,7 @@ export const NotificationPopup = ({ setShowPopup }) => {
                 className="flex items-center justify-center w-10 h-10 bg-white hover:bg-gray-50 rounded-lg transition-colors border border-gray-200 shadow-sm"
                 title="Add Google Meet"
               >
-                📹
+                <MdVideoCall className="w-6 h-6 text-green-600" />
               </button>
 
               {showMeetDropdown && (
