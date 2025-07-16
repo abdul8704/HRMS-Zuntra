@@ -106,9 +106,19 @@ export const NotificationPopup = ({ setShowPopup }) => {
   };
 
   const generateMeetingLink = () => {
-    const meetingId = Math.random().toString(36).substr(2, 10);
-    return `https://meet.google.com/${meetingId}`;
+  const randomLetters = () => {
+    const letters = "abcdefghijklmnopqrstuvwxyz";
+    let result = "";
+    for (let i = 0; i < 3; i++) {
+      result += letters.charAt(Math.floor(Math.random() * letters.length));
+    }
+    return result;
   };
+
+  return `https://meet.google.com/${randomLetters()}-${randomLetters()}-${randomLetters()}`;
+};
+
+
 
   const handleScheduleMeeting = () => {
     const meetingLink = generateMeetingLink();
