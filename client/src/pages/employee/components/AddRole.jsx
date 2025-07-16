@@ -356,11 +356,13 @@ export default function AddRole({
                         />
                       </div>
                       <button
-                        onClick={() => handleRemoveCourse(course.id)}
-                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold shadow-md transition-colors z-10"
-                      >
-                        ×
-                      </button>
+  onClick={() => handleRemoveCourse(course.id)}
+  className="absolute top-1 right-1 bg-transparent rounded-full w-6 h-6 flex items-center justify-center z-10 group"
+>
+  <span className="text-black-600 text-xl font-normal group-hover:scale-125 transition-transform">×</span>
+</button>
+
+
                     </div>
                   ))}
                 </div>
