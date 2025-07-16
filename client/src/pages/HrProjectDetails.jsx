@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from "../components/Sidebar";
-import { TaskCard } from '../components/projectManagement/TaskCard';
-import { TaskNavbar } from '../components/projectManagement/TaskNavbar';
-import { ProjectPopup } from '../components/projectManagement/ProjectPopup';
+import { TaskCard } from './project/components/TaskCard';
+import { TaskNavbar } from './project/components/TaskNavbar';
+import { ProjectPopup } from './project/components/ProjectPopup';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 

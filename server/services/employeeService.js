@@ -305,14 +305,13 @@ const getEmployeeByRole = async (roleId) => {
 };
 
 // TODO: if employee sends multiple request for same day, handle it
-const applyLeave = async (userid, leaveCategory, startDate, endDate, reason) => {
+const applyLeave = async (userid, leaveCategory, dates, reason) => {
     
     const leaveType = leaveCategory.toUpperCase();
     const leave = new LeaveApplication({
         userid: userid,
         leaveType: leaveType,
-        startDate: startDate,
-        endDate: endDate,
+        dates: dates,
         reason: reason,
         status: "PENDING",
     });

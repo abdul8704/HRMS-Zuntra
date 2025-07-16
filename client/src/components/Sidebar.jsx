@@ -4,6 +4,7 @@ import zuntraSquareLogo from '../assets/zuntra_square_no_text.png';
 import zuntraLogo from '../assets/zuntra.png';
 import { Logout } from './Logout';
 
+// Sidebar items 
 const sidebarItems = [
   {
     role: "EMP",
@@ -13,6 +14,17 @@ const sidebarItems = [
       <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" fill="none" viewBox="0 0 25 24">
         <path fill="currentColor" d="M14.951 8a1.29 1.29 0 0 1-.95-.384 1.296 1.296 0 0 1-.383-.95V1.334c0-.377.128-.694.384-.949s.572-.383.95-.384h8c.377 0 .694.128.95.384s.383.572.382.95v5.333c0 .377-.128.694-.384.95a1.285 1.285 0 0 1-.949.383h-8ZM1.618 13.333a1.29 1.29 0 0 1-.95-.384A1.296 1.296 0 0 1 .284 12V1.333C.284.956.412.64.668.384s.573-.383.95-.384h8c.378 0 .694.128.95.384s.384.572.383.95V12c0 .378-.128.695-.384.95a1.285 1.285 0 0 1-.95.383h-8ZM14.95 24a1.29 1.29 0 0 1-.95-.384 1.296 1.296 0 0 1-.383-.95V12c0-.378.128-.694.384-.95a1.3 1.3 0 0 1 .95-.383h8c.377 0 .694.128.95.384s.383.572.382.949v10.667c0 .377-.128.694-.384.95a1.285 1.285 0 0 1-.949.383h-8ZM1.618 24a1.29 1.29 0 0 1-.95-.384 1.296 1.296 0 0 1-.384-.95v-5.333c0-.377.128-.694.384-.949s.573-.383.95-.384h8c.378 0 .694.128.95.384s.384.572.383.95v5.333c0 .377-.128.694-.384.95a1.285 1.285 0 0 1-.95.383h-8Z" />
       </svg>
+    ),
+  },
+  {
+    role: "EMP",
+    label: "CEO Dash",
+    path: "/dashboard",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="16" fill="none" viewBox="0 0 20 16">
+        <path fill="#000" d="M16.5 14h-13c-.275 0-.5.225-.5.5v1c0 .275.225.5.5.5h13c.275 0 .5-.225.5-.5v-1c0-.275-.225-.5-.5-.5Zm2-10A1.5 1.5 0 0 0 17 5.5c0 .222.05.428.137.619l-2.262 1.356a.999.999 0 0 1-1.381-.362l-2.547-4.457A1.494 1.494 0 0 0 10 0a1.5 1.5 0 0 0-1.5 1.5c0 .469.219.881.553 1.156L6.506 7.113a1 1 0 0 1-1.381.362l-2.26-1.356a1.5 1.5 0 0 0 .138-.619A1.5 1.5 0 1 0 1.5 7c.081 0 .163-.013.24-.025L4 13h12l2.26-6.025c.077.013.159.025.24.025a1.5 1.5 0 0 0 0-3Z" />
+      </svg>
+
     ),
   },
   {
@@ -79,6 +91,18 @@ const sidebarItems = [
   },
   {
     role: "EMP",
+    label: "Documents",
+    path: "/upskill/all",
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="none" viewBox="0 0 16 20">
+        <path fill="#000" fill-rule="evenodd" d="M10.25.5A.25.25 0 0 0 10 .25H3A2.75 2.75 0 0 0 .25 3v14A2.75 2.75 0 0 0 3 19.75h10A2.75 2.75 0 0 0 15.75 17V7.147a.25.25 0 0 0-.25-.25H11a.75.75 0 0 1-.75-.75V.5Zm.75 9.75a.75.75 0 1 1 0 1.5H5a.75.75 0 1 1 0-1.5h6Zm0 4a.75.75 0 1 1 0 1.5H5a.75.75 0 1 1 0-1.5h6Z" clip-rule="evenodd" />
+        <path fill="#000" d="M11.75.823c0-.184.193-.3.336-.186.121.098.229.212.323.342l3.013 4.197c.068.096-.006.22-.124.22H12a.25.25 0 0 1-.25-.25V.823Z" />
+      </svg>
+
+    ),
+  },
+  {
+    role: "EMP",
     label: "Logout",
     path: "/",
     icon: (
@@ -90,16 +114,24 @@ const sidebarItems = [
   },
 ];
 
-export const Sidebar = () => {
+
+export const Sidebar = ({ role = "HR" }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [userRole, setUserRole] = useState("HR");
+
+  const [userRole, setUserRole] = useState(role);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [sidebarState, setSidebarState] = useState(0); // 0: collapsed, 1: hover, 2: expanded, 3: pinned
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [open,setOpen]=useState(false);
+  const [open, setOpen] = useState(false);
+
   const currentPath = location.pathname;
+
+  useEffect(() => {
+    setUserRole(role);
+  }, [role]);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
@@ -107,7 +139,6 @@ export const Sidebar = () => {
 
     checkMobile();
     window.addEventListener('resize', checkMobile);
-
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -117,9 +148,11 @@ export const Sidebar = () => {
     }
   }, [location.pathname, isMobile]);
 
-  const visibleItems = sidebarItems.filter(item =>
-    userRole === "HR" ? true : item.role === "EMP"
-  );
+  // Only show items matching role
+  const visibleItems =
+    userRole === "newUser"
+      ? []
+      : sidebarItems.filter(item => userRole === "HR" || item.role === "EMP");
 
   const getActiveIndex = () => {
     if (currentPath.startsWith("/employee")) return visibleItems.findIndex(i => i.label === "Employee Management");
@@ -134,30 +167,27 @@ export const Sidebar = () => {
   const activeIndex = getActiveIndex();
 
   const getPositionStyle = (index) => ({
-    top: `${index * 72}px`,
+    top: `${index * 64}px`,
   });
 
   const handleItemClick = (item) => {
-    if(item.label==="Logout"){
+    if (item.label === "Logout") {
       setOpen(true);
-    }
-    else{
-    navigate(item.path);
+    } else {
+      navigate(item.path);
     }
     if (isMobile) {
       setMobileMenuOpen(false);
     }
   };
 
-
-
-
-  // Mobile Arrow Button
+  // ========== MOBILE SIDEBAR ==========
   if (isMobile) {
     return (
       <>
-        <Logout isOpen={open} onClose={() => setOpen(false)}/>
-        {/* Mobile Menu Button */}
+        <Logout isOpen={open} onClose={() => setOpen(false)} />
+
+        {/* Mobile menu button */}
         <button
           className={`fixed top-[4rem] -left-3 z-[9999] w-12 h-12 bg-[#bcd4cd] rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${mobileMenuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
             }`}
@@ -168,18 +198,17 @@ export const Sidebar = () => {
           </svg>
         </button>
 
-        {/* Mobile Sidebar Overlay */}
+        {/* Overlay */}
         {mobileMenuOpen && (
           <div className="fixed inset-0 z-[9998] bg-black/50" onClick={() => setMobileMenuOpen(false)} />
         )}
 
-        {/* Mobile Sidebar */}
+        {/* Mobile sidebar */}
         <div
           className={`fixed top-0 left-0 h-screen bg-[#bcd4cd] text-black transition-all duration-300 ease-in-out z-[9999] ${mobileMenuOpen ? 'w-screen' : 'w-0'
             } overflow-hidden`}
         >
           <div className="flex flex-col h-full">
-            {/* Header with logo and close button */}
             <div className="flex items-center justify-between p-4 border-b border-white/20">
               <img src={zuntraLogo} alt="Logo" className="h-8" />
               <button
@@ -192,7 +221,7 @@ export const Sidebar = () => {
               </button>
             </div>
 
-            {/* Menu Items */}
+            {/* Items */}
             <div className="flex-1 overflow-y-auto py-4">
               {visibleItems.map((item, index) => (
                 <div
@@ -214,13 +243,13 @@ export const Sidebar = () => {
     );
   }
 
-  // Desktop Sidebar (original behavior)
+  // ========== DESKTOP SIDEBAR ==========
   return (
     <>
-      <Logout isOpen={open} onClose={() => setOpen(false)}/>
+      <Logout isOpen={open} onClose={() => setOpen(false)} />
       <div
         className={`relative bg-[#bcd4cd] h-screen flex flex-col items-start pt-4 text-black transition-all duration-200 ease-in-out
-          ${sidebarState === 2 || sidebarState === 3 ? 'w-[21rem]' : 'w-[4.5rem]'}`}
+        ${sidebarState === 2 || sidebarState === 3 ? 'w-[21rem]' : 'w-[4.5rem]'}`}
         onMouseEnter={() => { if (sidebarState === 0) setSidebarState(1); }}
         onMouseLeave={() => { if (sidebarState !== 3) setSidebarState(0); }}
       >
@@ -229,10 +258,12 @@ export const Sidebar = () => {
             className="absolute top-2 right-2 cursor-pointer rounded-full hover:scale-110 transition-all duration-200 z-50"
             onClick={() => setSidebarState(prev => (prev === 2 ? 3 : 0))}
           >
+            {/* Pin/Unpin Icon */}
             {sidebarState === 2 ? (
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
-                <path stroke="#000" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m1 19 4.63-4.631m.006-.005-2.78-2.78c-.954-.953.006-2.996 1.31-3.078 1.178-.075 3.905.352 4.812-.555l2.49-2.49c.617-.618.225-2 .185-2.762-.058-1.016 1.558-2.271 2.415-1.414l4.647 4.648c.86.858-.4 2.469-1.413 2.415-.762-.04-2.145-.432-2.763.185l-2.49 2.49c-.906.907-.48 3.633-.554 4.81-.082 1.306-2.125 2.266-3.08 1.31l-2.78-2.78Z" />
+                <path stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m1 19 4.63-4.631m.006-.005-2.78-2.78c-.954-.953.006-2.996 1.31-3.078 1.178-.075 3.905.352 4.812-.555l2.49-2.49c.617-.618.225-2 .185-2.762-.058-1.016 1.558-2.271 2.415-1.414l4.647 4.648c.86.858-.4 2.469-1.413 2.415-.762-.04-2.145-.432-2.763.185l-2.49 2.49c-.906.907-.48 3.633-.554 4.81-.082 1.306-2.125 2.266-3.08 1.31l-2.78-2.78Z" />
               </svg>
+
             ) : (
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="24" fill="none" viewBox="0 0 14 24">
                 <path fill="#000" d="M1.885 1.912c.15-.738.692-1.7 1.828-1.7h6.572c1.139-.001 1.68.962 1.829 1.7.08.4.077.813-.01 1.211-.085.387-.27.8-.608 1.104a8.992 8.992 0 0 1-.516.415l-.055.041a8.77 8.77 0 0 0-.551.449c-.374.338-.451.536-.453.622v3.522c0 .113.056.31.244.605a6.2 6.2 0 0 0 .759.919c.3.31.623.612.936.902l.034.033c.31.288.626.583.85.838.684.774.653 1.879.342 2.686-.311.806-1.046 1.664-2.154 1.664H7.75v5.805a.75.75 0 1 1-1.5 0v-5.805H3.068c-1.108 0-1.844-.857-2.154-1.664-.311-.806-.342-1.912.34-2.686.226-.255.542-.55.852-.838l.034-.033c.312-.29.636-.592.936-.902.313-.324.577-.634.76-.919.187-.295.242-.493.242-.606V5.754c0-.086-.078-.284-.453-.622a9 9 0 0 0-.551-.449l-.055-.041a8.999 8.999 0 0 1-.515-.415c-.34-.305-.524-.717-.61-1.103a2.953 2.953 0 0 1-.01-1.212Z" />
@@ -242,10 +273,9 @@ export const Sidebar = () => {
           </div>
         )}
 
-        {/*Logo*/}
-        <div className="w-full h-10 mb-6 flex items-center justify-center relative overflow-hidden">
-          <div
-            className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out"
+        {/* Logo */}
+        <div className="w-full h-10 mb-10 flex items-center justify-center relative overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center transition-all duration-200 ease-in-out"
             style={{
               opacity: sidebarState === 2 || sidebarState === 3 ? 0 : 1,
               transform: sidebarState === 2 || sidebarState === 3 ? 'scale(0.8)' : 'scale(1)',
@@ -254,10 +284,7 @@ export const Sidebar = () => {
           >
             <img src={zuntraSquareLogo} alt="Logo" className="w-10 h-10" />
           </div>
-
-          {/* Full logo - visible when expanded with smooth scaling */}
-          <div
-            className="absolute inset-0 flex items-center justify-center transition-all duration-500 ease-in-out"
+          <div className="absolute inset-0 flex items-center justify-center transition-all duration-500 ease-in-out"
             style={{
               opacity: sidebarState === 2 || sidebarState === 3 ? 1 : 0,
               transform: sidebarState === 2 || sidebarState === 3 ? 'scale(1)' : 'scale(0.9)',
@@ -281,28 +308,26 @@ export const Sidebar = () => {
           </div>
         )}
 
+        {/* Sidebar Items */}
         <div className="relative flex-1 w-full overflow-hidden">
           <div
-            className="absolute left-0 w-full h-[4.5rem] bg-white/50 transition-all duration-500 ease-in-out z-0"
+            className="absolute left-0 w-full h-[4.0rem] bg-white/50 transition-all duration-500 ease-in-out z-0"
             style={getPositionStyle(hoveredIndex !== null ? hoveredIndex : activeIndex)}
           />
           <div className="flex flex-col w-full z-10 relative">
             {visibleItems.map((item, index) => (
               <div
                 key={index}
-                className={`w-full h-[4.5rem] cursor-pointer transition-opacity duration-200 
+                className={`w-full h-[4.0rem] cursor-pointer transition-opacity duration-200 
                   ${index === activeIndex ? 'opacity-100' : 'opacity-50'} 
                   flex items-center`}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
                 onClick={() => handleItemClick(item)}
               >
-                {/* Fixed icon container - always stays in the same position */}
                 <div className="w-[4.5rem] h-full flex items-center justify-center flex-shrink-0">
                   {item.icon}
                 </div>
-
-                {/* Label - with smooth fade and slide animation */}
                 <span
                   className="text-lg font-medium whitespace-nowrap ml-2 transition-all duration-500 ease-in-out"
                   style={{
@@ -319,26 +344,11 @@ export const Sidebar = () => {
         </div>
       </div>
 
+      {/* Custom style for fade animation */}
       <style>{`
         @keyframes fadeIn {
-          0% { 
-            opacity: 0; 
-            transform: translateX(-10px) scale(0.9);
-          }
-          100% { 
-            opacity: 1; 
-            transform: translateX(0) scale(1);
-          }
-        }
-        
-        /* Smooth logo crossfade */
-        .logo-container img {
-          filter: blur(0px);
-          transition: filter 0.3s ease-in-out;
-        }
-        
-        .logo-container.transitioning img {
-          filter: blur(1px);
+          0% { opacity: 0; transform: translateX(-10px) scale(0.9); }
+          100% { opacity: 1; transform: translateX(0) scale(1); }
         }
       `}</style>
     </>

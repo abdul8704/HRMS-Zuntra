@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler')
-const courseService = require("../services/courseService"); // adjust path as needed
+const courseService = require("../services/courseService");
 
 const createCourseIntroController = asyncHandler(async (req, res) => {
   const courseData = req.body;
@@ -24,11 +24,11 @@ const createCourseIntroController = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "Missing required course fields");
   }
-  
+
   const existingCourse = await courseService.getCourseIntroById(courseId);
-  if (existingCourse.length !== 0) 
+  if (existingCourse.length !== 0)
     throw new ApiError(409, "Course Id already exists");
-  
+
 
   const result = await courseService.addNewCourse(courseData);
 
@@ -89,7 +89,7 @@ const createCourseContentController = asyncHandler(async (req, res) => {
     }
   }
   const existingCourse = await courseService.getCourseContentById(courseId);
-  if (existingCourse.length !== 0) 
+  if (existingCourse.length !== 0)
     throw new ApiError(409, "Course Id already exists");
 
   const result = await courseService.addCourseContent(courseContentData);
@@ -100,7 +100,7 @@ const createCourseContentController = asyncHandler(async (req, res) => {
       message: "Data added successfully",
     });
   } else {
-      throw new ApiError(500, "Failed to create course content");
+    throw new ApiError(500, "Failed to create course content");
   }
 });
 
@@ -108,7 +108,7 @@ const createCourseContentController = asyncHandler(async (req, res) => {
 const getCourseDetailsController = asyncHandler(async (req, res) => {
   const result = await courseService.getAllCourseDetails();
   if (result.length === 0) {
-      throw new ApiError(404, "No courses available");
+    throw new ApiError(404, "No courses available");
   }
   else {
     res.status(200).json({
@@ -157,7 +157,7 @@ const getCourseContentIdController = asyncHandler(async (req, res) => {
 });
 
 const editCourseIntroController = asyncHandler(async (req, res) => {
-  const result = await courseService.updateCourseIntro(req.params.id,req.body);
+  const result = await courseService.updateCourseIntro(req.params.id, req.body);
   if (result.length === 0) {
     throw new ApiError(404, "Course does not exist");
   }
@@ -170,7 +170,7 @@ const editCourseIntroController = asyncHandler(async (req, res) => {
 });
 
 const editCourseContentController = asyncHandler(async (req, res) => {
-  const result = await courseService.updateCourseContent(req.params.id,req.body);
+  const result = await courseService.updateCourseContent(req.params.id, req.body);
   if (result.length === 0) {
     throw new ApiError(404, "Course does not exist");
   }
@@ -194,18 +194,58 @@ const deleteCourseController = asyncHandler(async (req, res) => {
   });
 });
 
-const courseEnrollController = asyncHandler(async (req, res) => {
-  const {userid} = req.user;
-  const courseId = req.params.id;
+//with respect to user
 
-  if (!userid || !courseId) {
-    res.status(400);
-    throw new Error("userId and courseId are required");
+
+// @desc    Get all courses of a type by user ID type-[enrolledCourses, assignedCourses, completedCourses, available]
+// @route   GET /api/course/:type
+const getCoursesByTypeForUserId = asyncHandler(async (req, res) => {
+  const { type } = req.params;
+  const { userid } = req.user;
+
+  const allowedTypes = ["enrolledCourses", "assignedCourses", "completedCourses", "available"];
+
+  if (!allowedTypes.includes(type)) {
+    throw new ApiError(400, "Invalid Course Type");
   }
 
-  const result = await courseService.userCourseEnroll(userid, courseId);
-  console.log(result)
+  if (type === "available") {
+    const allCourses = await courseService.getAllCourseDetails();
+    const enrolled = await courseService.getCoursesByTypeForUserId("enrolledCourses", userid);
+    const assigned = await courseService.getCoursesByTypeForUserId("assignedCourses", userid);
+    const completed = await courseService.getCoursesByTypeForUserId("completedCourses", userid);
+    const excludedIds = new Set([
+      ...((enrolled?.enrolledCourses || []).map(c => c._id.toString())),
+      ...((assigned?.assignedCourses || []).map(c => c._id.toString())),
+      ...((completed?.completedCourses || []).map(c => c._id.toString())),
+    ]);
+    const availableCourses = allCourses.filter(course =>
+      !excludedIds.has(course._id.toString())
+    );
+    return res.status(200).json({
+      success: true,
+      data: availableCourses,
+    });
+  }
+  const userCourses = await courseService.getCoursesByTypeForUserId(type, userid);
+  return res.status(200).json({
+    success: true,
+    data: userCourses?.[type] || [],
+  });
+});
 
+
+
+
+// @desc    enroll a course
+// @route   POST /api/course/:id/enroll 
+const courseEnrollController = asyncHandler(async (req, res) => {
+  const { userid } = req.user;
+  const courseId = req.params.id;
+  if (!userid || !courseId) {
+    throw new ApiError(400, "userId and courseId are required");
+  }
+  const result = await courseService.userCourseEnroll(userid, courseId);
   res.status(200).json({
     success: true,
     data: result
@@ -213,15 +253,67 @@ const courseEnrollController = asyncHandler(async (req, res) => {
 });
 
 
-module.exports = { 
-  createCourseIntroController, 
-  createCourseContentController, 
-  getCourseDetailsController, 
-  getTocCourseContentIdController, 
-  getCourseContentIdController, 
+
+// @desc    Get progress of a course for a specific user
+// @route   POST /api/course/:id/progress
+const getProgressMatrixByCourseIdController = asyncHandler(async (req, res) => {
+  const courseId = req.params.id;
+  const { userid } = req.user;
+
+  if (!userid || !courseId) {
+    throw new ApiError(400, "userId and courseId are required");
+  }
+
+  const moduleStatus = await courseService.fetchProgressMatrix(userid, courseId);
+
+  if (!moduleStatus) {
+    return res.status(200).json({
+      success: false,
+      data: "Enroll in a course"
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: moduleStatus
+  });
+});
+
+
+
+// @desc    set progress of a course
+// @route   POST api/course/progress/:courseId/:moduleId/:subModuleId 
+const setCourseProgress = asyncHandler(async (req, res) => {
+  const { courseId, moduleId, subModuleId } = req.params;
+  const { userid } = req.user;
+
+  if (!userid || !courseId || moduleId === undefined || subModuleId === undefined) {
+    throw new ApiError(400, "Missing userId, courseId, moduleId, or subModuleId");
+  }
+
+  const result = await courseService.setCourseProgress(userid, courseId, moduleId, subModuleId);
+
+  res.status(200).json({
+    success: true,
+    data: result,
+  });
+});
+
+
+
+
+module.exports = {
+  createCourseIntroController,
+  createCourseContentController,
+  getCourseDetailsController,
+  getTocCourseContentIdController,
+  getCourseContentIdController,
   getCourseIntroIdController,
   editCourseIntroController,
   editCourseContentController,
   deleteCourseController,
-  courseEnrollController
+  courseEnrollController,
+  getProgressMatrixByCourseIdController,
+  getCoursesByTypeForUserId,
+  setCourseProgress,
 };
