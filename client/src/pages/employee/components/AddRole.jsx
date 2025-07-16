@@ -1,87 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-//import { CourseCard } from "../../course/components/CourseCard";
-// CourseCard component
-const CourseCard = ({ courseImage, courseName, courseInstructor, deadline, deadlineUnits, rating = 5 }) => {
-  const [isSelfPaced, setIsSelfPaced] = useState(false);
-  
-  useEffect(() => {
-    if (deadline === 0) {
-      setIsSelfPaced(true);
-    }
-  }, [deadline]);
-  
-  const badgeStyle = isSelfPaced
-    ? "bg-green-100 text-green-800"
-    : "bg-orange-100 text-orange-800";
-
-  // Debug: Log the props to check if courseInstructor is being passed correctly
-  console.log('CourseCard props:', { courseName, courseInstructor, deadline, deadlineUnits, rating });
-
-  return (
-    <div className="flex flex-col w-full h-full bg-gray-200 rounded-xl shadow-md overflow-hidden">
-      {/* Image Container with Fixed Aspect Ratio */}
-      {/* <CourseCard courseImage={"https://www.hello.jpg"} courseName={"PEACE"} courseInstructor={"JAI"} deadline={3} deadlineUnits={"Days"} rating={10} /> */}
-      <div className="w-full aspect-[4/3] flex-shrink-0 overflow-hidden">
-        <img
-          src={courseImage}
-          alt={courseName}
-          className="w-full h-full object-cover bg-gray-100"
-        />
-      </div>
-      {/* Content Container */}
-      <div className="flex flex-col justify-between flex-1 p-3 min-h-0">
-        {/* Title and Instructor */}
-        <div className="flex flex-col mb-2 flex-1">
-          <h3 className="text-sm font-semibold mb-2 leading-tight text-left text-gray-900">
-            {courseName}
-          </h3>
-          <p className="text-xs text-gray-700 text-left font-medium px-2 py-1 rounded">
-            by {courseInstructor || 'Unknown Instructor'}
-          </p>
-        </div>
-        
-        {/* Badge and Rating */}
-        <div className="flex justify-between items-center gap-2 flex-shrink-0 mt-2">
-          <span
-            className={`rounded-xl font-medium px-2 py-1 text-xs flex-shrink-0 ${badgeStyle}`}
-          >
-            {deadline === 0 ? "At your own pace" : `in ${deadline} ${deadlineUnits}`}
-          </span>
-          <span className="flex items-center gap-1 flex-shrink-0">
-            <span className="font-bold text-xs text-black">
-              {rating}
-            </span>
-            <span className="text-base text-yellow-500">★</span>
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Wrapper component for CourseCard to handle remove functionality
-const CourseCardWrapper = ({ course, onRemove, inDropdown = false }) => {
-  return (
-    <div className="relative h-full">
-      <CourseCard
-        courseImage={course.courseImage}
-        courseName={course.courseName}
-        courseInstructor={course.courseInstructor}
-        deadline={course.deadline}
-        deadlineUnits={course.deadlineUnits}
-        rating={course.rating}
-      />
-      {onRemove && !inDropdown && (
-        <button
-          onClick={onRemove}
-          className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold shadow-md transition-colors z-10"
-        >
-          ×
-        </button>
-      )}
-    </div>
-  );
-};
+import { CourseCard } from "../../course/components/CourseCard";
 
 const colors = [
   "#F2F2F2", "#E8EAED", "#E6E6E6", "#D9D9D9", "#CCCCCC", "#BFBFBF",
@@ -94,16 +12,16 @@ const colors = [
 ];
 
 const predefinedCourses = [
-  { id: 1, courseName: "React Fundamentals", courseInstructor: "John Doe", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 8, deadlineUnits: "weeks", rating: 4.8 },
-  { id: 2, courseName: "Advanced Node.js", courseInstructor: "Jane Smith", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 12, deadlineUnits: "weeks", rating: 4.9 },
-  { id: 3, courseName: "MongoDB Mastery", courseInstructor: "Kevin Li", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 6, deadlineUnits: "weeks", rating: 4.7 },
-  { id: 4, courseName: "Python for Data Science", courseInstructor: "Emily Stone", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 0, deadlineUnits: "weeks", rating: 4.6 },
-  { id: 5, courseName: "Machine Learning Basics", courseInstructor: "Michael Ray", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 10, deadlineUnits: "weeks", rating: 4.8 },
-  { id: 6, courseName: "Fullstack with MERN", courseInstructor: "Rachel Green", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 16, deadlineUnits: "weeks", rating: 4.9 },
-  { id: 7, courseName: "Cloud Computing 101", courseInstructor: "Thomas Blake", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 0, deadlineUnits: "weeks", rating: 4.5 },
-  { id: 8, courseName: "Cybersecurity Essentials", courseInstructor: "Sophia Reed", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 14, deadlineUnits: "weeks", rating: 4.7 },
-  { id: 9, courseName: "Kubernetes Crash Course", courseInstructor: "James Hunt", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 4, deadlineUnits: "weeks", rating: 4.6 },
-  { id: 10, courseName: "Next.js Deep Dive", courseInstructor: "Lily Carter", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 0, deadlineUnits: "weeks", rating: 4.8 }
+  { id: 1, courseName: "React Fundamentals", courseInstructor: "John Doe", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 8, deadlineUnits: "weeks", rating: 5 },
+  { id: 2, courseName: "Advanced Node.js", courseInstructor: "Jane Smith", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 12, deadlineUnits: "weeks", rating: 5 },
+  { id: 3, courseName: "MongoDB Mastery", courseInstructor: "Kevin Li", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 6, deadlineUnits: "weeks", rating: 5 },
+  { id: 4, courseName: "Python for Data Science", courseInstructor: "Emily Stone", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 0, deadlineUnits: "weeks", rating: 5 },
+  { id: 5, courseName: "Machine Learning Basics", courseInstructor: "Michael Ray", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 10, deadlineUnits: "weeks", rating: 5 },
+  { id: 6, courseName: "Fullstack with MERN", courseInstructor: "Rachel Green", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 16, deadlineUnits: "weeks", rating: 5 },
+  { id: 7, courseName: "Cloud Computing 101", courseInstructor: "Thomas Blake", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 0, deadlineUnits: "weeks", rating: 5 },
+  { id: 8, courseName: "Cybersecurity Essentials", courseInstructor: "Sophia Reed", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 14, deadlineUnits: "weeks", rating: 5 },
+  { id: 9, courseName: "Kubernetes Crash Course", courseInstructor: "James Hunt", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 4, deadlineUnits: "weeks", rating: 5 },
+  { id: 10, courseName: "Next.js Deep Dive", courseInstructor: "Lily Carter", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 0, deadlineUnits: "weeks", rating: 5 }
 ];
 
 export default function AddRole({ 
@@ -426,12 +344,25 @@ export default function AddRole({
               <div className="h-full overflow-y-auto pr-1 sm:pr-2 min-h-[8rem]">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-0">
                   {courseCards.map((course) => (
-                    <div key={course.id} className="h-48">
-                      <CourseCardWrapper
-                        course={course}
-                        onRemove={() => handleRemoveCourse(course.id)}
-                        inDropdown={false}
-                      />
+                    <div key={course.id} className="relative">
+                      <div className="h-60">
+                        <CourseCard
+                          courseImage={course.courseImage}
+                          courseName={course.courseName}
+                          courseInstructor={course.courseInstructor}
+                          deadline={course.deadline}
+                          deadlineUnits={course.deadlineUnits}
+                          rating={course.rating}
+                        />
+                      </div>
+                      <button
+  onClick={() => handleRemoveCourse(course.id)}
+  className="absolute top-1 right-1 bg-transparent rounded-full w-6 h-6 flex items-center justify-center z-10 group"
+>
+  <span className="text-black-600 text-xl font-normal group-hover:scale-125 transition-transform">×</span>
+</button>
+
+
                     </div>
                   ))}
                 </div>
@@ -504,10 +435,14 @@ export default function AddRole({
                         className="cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors"
                         onClick={() => handleAddCourse(course)}
                       >
-                        <div className="h-56">
-                          <CourseCardWrapper
-                            course={course}
-                            inDropdown={true}
+                        <div className="h-65">
+                          <CourseCard
+                            courseImage={course.courseImage}
+                            courseName={course.courseName}
+                            courseInstructor={course.courseInstructor}
+                            deadline={course.deadline}
+                            deadlineUnits={course.deadlineUnits}
+                            rating={course.rating}
                           />
                         </div>
                       </div>
