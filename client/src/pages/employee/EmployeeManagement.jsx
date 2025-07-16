@@ -7,7 +7,7 @@ import { Loading } from '../../components/Loading';
 
 import { EmployeeCard } from './components/EmployeeCard';
 import { RoleCard } from './components/RoleCard';
-import { AddRole } from './components/AddRole';
+import  AddRole  from './components/AddRole';
 import { EditRolePopup } from './components/EditRolePopup';
 import { GeoFencing } from './components/GeoFencing';
 import { EmpAssignmentPopUp } from './components/EmployeeAssignmentPopup';
