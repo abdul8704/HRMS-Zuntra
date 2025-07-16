@@ -44,7 +44,7 @@ export const EmployeeDetails = ({ type }) => {
   const { roleId, navId } = useParams();
   console.log(roleId, navId);
   const [roleProfiles, setRolesProfiles] = useState([]);
-  const [showAssignCourse, setShowAssignCourse] = useState(true);
+  const [showAssignCourse, setShowAssignCourse] = useState(false);
 
   if (type === "role") {
     useEffect(() => {
