@@ -15,6 +15,7 @@ import { Upskill } from './pages/course/Upskill';
 import { Attendance } from './pages/attendance/Attendance';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
 import { ProtectRoute } from './pages/ProtectRoute';
+import { CompanyDocs } from './pages/companyDocs/CompanyDocs';
 import './App.css'
 import './index.css'
 
@@ -69,15 +70,10 @@ function App() {
           </ProtectRoute>
         }/>
 
-        <Route path="/projectoverview" element={
-          <ProtectRoute>
-            <ProjectOverview />
-          </ProtectRoute>
-        }/>
-
         <Route path="/projects/:navId" element={
           <ProtectRoute>
-            <HrProjectManagement />
+            {/* <HrProjectManagement /> */}
+            <ProjectOverview />
           </ProtectRoute>
         }/>
 
@@ -105,6 +101,11 @@ function App() {
           </ProtectRoute>
         }/>
 
+        <Route path="/documentations" element={
+          <ProtectRoute>
+            <CompanyDocs />
+          </ProtectRoute>
+        }/>
 
         {/* Not Found Route */}
         <Route path="*" element={<NotFound />} />

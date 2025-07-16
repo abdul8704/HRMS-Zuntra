@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { EmpCourseCard } from "./EmpCourseCard";
+import { CourseCard } from "../../course/components/CourseCard";
 
 const colors = [
   "#F2F2F2", "#E8EAED", "#E6E6E6", "#D9D9D9", "#CCCCCC", "#BFBFBF",
@@ -12,22 +12,20 @@ const colors = [
 ];
 
 const predefinedCourses = [
-  { id: 1, courseName: "React Fundamentals", authorName: "John Doe", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 2, courseName: "Advanced Node.js", authorName: "Jane Smith", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 3, courseName: "MongoDB Mastery", authorName: "Kevin Li", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 4, courseName: "Python for Data Science", authorName: "Emily Stone", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 5, courseName: "Machine Learning Basics", authorName: "Michael Ray", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 6, courseName: "Fullstack with MERN", authorName: "Rachel Green", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 7, courseName: "Cloud Computing 101", authorName: "Thomas Blake", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 8, courseName: "Cybersecurity Essentials", authorName: "Sophia Reed", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 9, courseName: "Kubernetes Crash Course", authorName: "James Hunt", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 10, courseName: "Next.js Deep Dive", authorName: "Lily Carter", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
+  { id: 1, courseName: "React Fundamentals", courseInstructor: "John Doe", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 8, deadlineUnits: "weeks", rating: 5 },
+  { id: 2, courseName: "Advanced Node.js", courseInstructor: "Jane Smith", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 12, deadlineUnits: "weeks", rating: 5 },
+  { id: 3, courseName: "MongoDB Mastery", courseInstructor: "Kevin Li", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 6, deadlineUnits: "weeks", rating: 5 },
+  { id: 4, courseName: "Python for Data Science", courseInstructor: "Emily Stone", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 0, deadlineUnits: "weeks", rating: 5 },
+  { id: 5, courseName: "Machine Learning Basics", courseInstructor: "Michael Ray", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 10, deadlineUnits: "weeks", rating: 5 },
+  { id: 6, courseName: "Fullstack with MERN", courseInstructor: "Rachel Green", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 16, deadlineUnits: "weeks", rating: 5 },
+  { id: 7, courseName: "Cloud Computing 101", courseInstructor: "Thomas Blake", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 0, deadlineUnits: "weeks", rating: 5 },
+  { id: 8, courseName: "Cybersecurity Essentials", courseInstructor: "Sophia Reed", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 14, deadlineUnits: "weeks", rating: 5 },
+  { id: 9, courseName: "Kubernetes Crash Course", courseInstructor: "James Hunt", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 4, deadlineUnits: "weeks", rating: 5 },
+  { id: 10, courseName: "Next.js Deep Dive", courseInstructor: "Lily Carter", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 0, deadlineUnits: "weeks", rating: 5 }
 ];
 
-
-
-export const AddRole = ({ 
-  type = "edit", // "edit" or "add"
+export default function AddRole({ 
+  type = "add", // "edit" or "add"
   rolename = "", 
   rolecolor = "#f5f5f5",
   rolesalary = "",
@@ -38,9 +36,9 @@ export const AddRole = ({
     courseManagement: false,
     attendance: false
   },
-  onClose,
-  onSave
-}) => {
+  onClose = () => console.log("Close modal"),
+  onSave = (data) => console.log("Save data:", data)
+}) {
   const isEditMode = type === "edit";
   
   // Initialize state based on mode
@@ -58,12 +56,19 @@ export const AddRole = ({
   const [showColors, setShowColors] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [initialLoad, setInitialLoad] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setInitialLoad(false), 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Refs for click outside detection
   const modalRef = useRef(null);
   const colorPickerRef = useRef(null);
   const dropdownRef = useRef(null);
   const searchInputRef = useRef(null);
+  const containerRef = useRef(null);
 
   const availableCourses = predefinedCourses.filter(
     (course) =>
@@ -71,10 +76,10 @@ export const AddRole = ({
       course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Handle clicking outside modal
+  // Handle clicking outside modal (but not dropdown)
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
         onClose();
       }
     };
@@ -96,21 +101,6 @@ export const AddRole = ({
       return () => document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [showColors]);
-
-  // Handle clicking outside dropdown
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-        setSearchTerm("");
-      }
-    };
-
-    if (showDropdown) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [showDropdown]);
 
   // Handle escape key
   useEffect(() => {
@@ -171,8 +161,7 @@ export const AddRole = ({
 
   const handleAddCourse = (course) => {
     setCourseCards([...courseCards, course]);
-    setShowDropdown(false);
-    setSearchTerm("");
+    // Don't close dropdown - keep it open for multiple selections
   };
 
   const handleRemoveCourse = (id) => {
@@ -189,6 +178,12 @@ export const AddRole = ({
     if (showDropdown) {
       setSearchTerm("");
     }
+  };
+
+  // Explicit close function for dropdown
+  const handleCloseDropdown = () => {
+    setShowDropdown(false);
+    setSearchTerm("");
   };
 
   const handlePermissionChange = (permission) => {
@@ -225,232 +220,284 @@ export const AddRole = ({
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-[2000] p-4">
-        <div
-          ref={modalRef}
-          className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-[350px] sm:max-w-[450px] lg:max-w-[550px] shadow-lg flex flex-col gap-3 sm:gap-5 relative animate-scale-in max-h-[90vh] overflow-y-auto"
-          style={{ animation: "fadeIn 0.2s ease-out" }}
+        <div 
+          ref={containerRef}
+          className="flex items-start justify-center gap-4 w-full max-w-[calc(100vw-2rem)] mx-auto"
         >
-          {/* Modal Header */}
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-              {getModalTitle()}
-            </h2>
-            {isEditMode && (
-              <span className="text-xs sm:text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                Edit Mode
+          {/* Main Modal - Fixed width */}
+          <div
+            ref={modalRef}
+            className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-[550px] shadow-lg flex flex-col gap-3 sm:gap-5 relative overflow-y-auto flex-shrink-0"
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+                {getModalTitle()}
+              </h2>
+            </div>
+
+            {/* Role input and color */}
+            <div className="flex items-center gap-2 sm:gap-3 relative w-full">
+              <input
+                type="text"
+                className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder={isEditMode ? "Edit role name" : "Enter role name"}
+                value={roleName}
+                onChange={(e) => setRoleName(e.target.value)}
+                onKeyDown={handleKeyDown}
+                autoFocus={!isEditMode}
+              />
+              <div
+                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-600 cursor-pointer hover:scale-110 transition-transform flex-shrink-0"
+                style={{ backgroundColor: roleColor }}
+                onClick={() => setShowColors(!showColors)}
+              />
+              {showColors && (
+                <div
+                  ref={colorPickerRef}
+                  className="absolute top-10 right-0 bg-white border border-gray-300 rounded-lg shadow-lg p-3 grid grid-cols-6 gap-2 z-[100]"
+                >
+                  {colors.map((color, idx) => (
+                    <div
+                      key={idx}
+                      className="w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer hover:scale-110 transition-transform"
+                      style={{ backgroundColor: color }}
+                      onClick={() => handleColorSelect(color)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Permissions Section */}
+            <div className="bg-gray-100 rounded-xl p-3 sm:p-4 w-full">
+              <h3 className="text-sm font-medium text-gray-700 mb-2 sm:mb-3">
+                {isEditMode ? "Update Permissions" : "Set Permissions"}
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={permissions.projectManagement}
+                    onChange={() => handlePermissionChange('projectManagement')}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
+                  />
+                  <span className="text-xs sm:text-sm text-gray-700">Project Management</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={permissions.employeeManagement}
+                    onChange={() => handlePermissionChange('employeeManagement')}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
+                  />
+                  <span className="text-xs sm:text-sm text-gray-700">Employee Management</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={permissions.courseManagement}
+                    onChange={() => handlePermissionChange('courseManagement')}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
+                  />
+                  <span className="text-xs sm:text-sm text-gray-700">Course Management</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={permissions.attendance}
+                    onChange={() => handlePermissionChange('attendance')}
+                    className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
+                  />
+                  <span className="text-xs sm:text-sm text-gray-700">Attendance</span>
+                </label>
+              </div>
+            </div>
+
+            {/* Salary Input Section */}
+            <div className="w-full">
+              <label className="text-sm font-medium text-gray-700 block mb-2 sm:mb-3" htmlFor="salary">
+                {isEditMode ? "Update Salary" : "Set Salary"}
+              </label>
+              <input
+                type="number"
+                id="salary"
+                className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder={isEditMode ? "Update salary in ₹" : "Enter salary in ₹"}
+                value={salary}
+                onChange={(e) => setSalary(e.target.value)}
+              />
+            </div>
+
+            {/* Courses Section */}
+            <div className="bg-gray-300 rounded-xl h-48 sm:h-56 lg:h-64 w-full relative px-2 pt-3 sm:pt-4 pb-3 sm:pb-4">
+              {courseCards.length === 0 && (
+                <span className="absolute top-2 sm:top-3 left-3 sm:left-4 text-xs sm:text-sm text-gray-600">
+                  {isEditMode ? "Current courses..." : "Assign courses..."}
+                </span>
+              )}
+
+              {/* Selected Cards */}
+              <div className="h-full overflow-y-auto pr-1 sm:pr-2 min-h-[8rem]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-0">
+                  {courseCards.map((course) => (
+                    <div key={course.id} className="relative">
+                      <div className="h-60">
+                        <CourseCard
+                          courseImage={course.courseImage}
+                          courseName={course.courseName}
+                          courseInstructor={course.courseInstructor}
+                          deadline={course.deadline}
+                          deadlineUnits={course.deadlineUnits}
+                          rating={course.rating}
+                        />
+                      </div>
+                      <button
+  onClick={() => handleRemoveCourse(course.id)}
+  className="absolute top-1 right-1 bg-transparent rounded-full w-6 h-6 flex items-center justify-center z-10 group"
+>
+  <span className="text-black-600 text-xl font-normal group-hover:scale-125 transition-transform">×</span>
+</button>
+
+
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Floating + Button */}
+              <span
+                className="absolute bottom-2 sm:bottom-3 right-2 sm:right-4 bg-teal-800/20 hover:bg-teal-800/40 rounded-full px-2 sm:px-3 py-1 text-lg sm:text-xl font-bold text-gray-800 cursor-pointer shadow-md z-[200] transition-colors select-none"
+                onClick={handleDropdownToggle}
+              >
+                {showDropdown ? "×" : "+"}
               </span>
-            )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-center gap-3 sm:gap-4 pt-2">
+              <button
+                className="px-3 sm:px-4 py-2 rounded-md bg-gray-200 text-black hover:bg-red-600 hover:text-white hover:opacity-60 text-xs sm:text-sm transition-colors flex-1 sm:flex-none"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button
+                className={getSubmitButtonStyle()}
+                onClick={handleSubmit}
+                disabled={!roleName.trim()}
+              >
+                {getSubmitButtonText()}
+              </button>
+            </div>
           </div>
 
-          {/* Role input and color */}
-          <div className="flex items-center gap-2 sm:gap-3 relative w-full">
-            <input
-              type="text"
-              className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder={isEditMode ? "Edit role name" : "Enter role name"}
-              value={roleName}
-              onChange={(e) => setRoleName(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoFocus={!isEditMode}
-            />
+          {/* Side Dropdown */}
+          {showDropdown && (
             <div
-              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-600 cursor-pointer hover:scale-110 transition-transform flex-shrink-0"
-              style={{ backgroundColor: roleColor }}
-              onClick={() => setShowColors(!showColors)}
-            />
-            {showColors && (
-              <div
-                ref={colorPickerRef}
-                className="absolute top-10 right-0 bg-white border rounded-lg shadow-lg p-2 grid grid-cols-6 gap-1 z-50 animate-fade-in"
-              >
-                {colors.map((color, idx) => (
-                  <div
-                    key={idx}
-                    className="w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer hover:scale-110 transition-transform"
-                    style={{ backgroundColor: color }}
-                    onClick={() => handleColorSelect(color)}
-                  />
-                ))}
+              ref={dropdownRef}
+              className="w-[350px] sm:w-[450px] lg:w-[550px] bg-white rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col gap-3 sm:gap-5 z-[1000] animate-fade-in-no-scale max-h-[90vh] overflow-y-auto flex-shrink-0"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
+                  Add Courses
+                </h3>
+                <button
+                  onClick={handleCloseDropdown}
+                  className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+                >
+                  ×
+                </button>
               </div>
-            )}
-          </div>
 
-          {/* Permissions Section */}
-          <div className="bg-gray-100 rounded-xl p-3 sm:p-4 w-full">
-            <h3 className="text-sm font-medium text-gray-700 mb-2 sm:mb-3">
-              {isEditMode ? "Update Permissions" : "Set Permissions"}
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={permissions.projectManagement}
-                  onChange={() => handlePermissionChange('projectManagement')}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
-                />
-                <span className="text-xs sm:text-sm text-gray-700">Project Management</span>
-              </label>
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search courses..."
+                className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
 
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={permissions.employeeManagement}
-                  onChange={() => handlePermissionChange('employeeManagement')}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
-                />
-                <span className="text-xs sm:text-sm text-gray-700">Employee Management</span>
-              </label>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={permissions.courseManagement}
-                  onChange={() => handlePermissionChange('courseManagement')}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
-                />
-                <span className="text-xs sm:text-sm text-gray-700">Course Management</span>
-              </label>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={permissions.attendance}
-                  onChange={() => handlePermissionChange('attendance')}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 focus:ring-2 flex-shrink-0"
-                />
-                <span className="text-xs sm:text-sm text-gray-700">Attendance</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Salary Input Section */}
-          <div className="w-full">
-            <label className="text-sm font-medium text-gray-700 block mb-2 sm:mb-3" htmlFor="salary">
-              {isEditMode ? "Update Salary" : "Set Salary"}
-            </label>
-            <input
-              type="number"
-              id="salary"
-              className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder={isEditMode ? "Update salary in ₹" : "Enter salary in ₹"}
-              value={salary}
-              onChange={(e) => setSalary(e.target.value)}
-            />
-          </div>
-
-          {/* Courses Section */}
-          <div className="bg-gray-300 rounded-xl h-48 sm:h-56 lg:h-64 w-full relative px-2 pt-3 sm:pt-4 pb-3 sm:pb-4">
-            {courseCards.length === 0 && (
-              <span className="absolute top-2 sm:top-3 left-3 sm:left-4 text-xs sm:text-sm text-gray-600">
-                {isEditMode ? "Current courses..." : "Assign courses..."}
-              </span>
-            )}
-
-            {/* Selected Cards */}
-            <div className="h-full overflow-y-auto pr-1 sm:pr-2">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-0">
-                {courseCards.map((course) => (
-                  <EmpCourseCard
-                    key={course.id}
-                    courseName={course.courseName}
-                    authorName={course.authorName}
-                    imageUrl={course.imageUrl}
-                    onRemove={() => handleRemoveCourse(course.id)}
-                    truncateTitle={false}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Dropdown */}
-            {showDropdown && (
-              <div
-                ref={dropdownRef}
-                className="absolute bottom-12 sm:bottom-16 right-2 sm:right-6 w-[200px] sm:w-[240px] bg-white rounded-xl shadow-md z-[1000] p-2 flex flex-col gap-2 animate-fade-in"
-              >
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  placeholder="Search courses..."
-                  className="w-full p-2 rounded-md text-xs sm:text-sm bg-white outline-none border focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <div className="max-h-32 sm:max-h-40 overflow-y-auto overflow-x-hidden flex flex-col gap-1 items-center">
+              <div className="flex-1 overflow-y-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {availableCourses.length === 0 ? (
-                    <div className="text-xs sm:text-sm text-gray-500 py-2">No courses found</div>
+                    <div className="col-span-full text-center text-gray-500 py-8">
+                      No courses found
+                    </div>
                   ) : (
                     availableCourses.map((course) => (
                       <div
                         key={course.id}
-                        className="cursor-pointer hover:bg-gray-50 rounded-md p-1 transition-colors w-full"
+                        className="cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors"
                         onClick={() => handleAddCourse(course)}
                       >
-                        <EmpCourseCard
-                          courseName={course.courseName}
-                          authorName={course.authorName}
-                          imageUrl={course.imageUrl}
-                          truncateTitle={true}
-                          inDropdown={true}
-                        />
+                        <div className="h-65">
+                          <CourseCard
+                            courseImage={course.courseImage}
+                            courseName={course.courseName}
+                            courseInstructor={course.courseInstructor}
+                            deadline={course.deadline}
+                            deadlineUnits={course.deadlineUnits}
+                            rating={course.rating}
+                          />
+                        </div>
                       </div>
                     ))
                   )}
                 </div>
               </div>
-            )}
-
-            {/* Floating + Button */}
-            <span
-              className="absolute bottom-2 sm:bottom-3 right-2 sm:right-4 bg-teal-800/20 hover:bg-teal-800/40 rounded-full px-2 sm:px-3 py-1 text-lg sm:text-xl font-bold text-gray-800 cursor-pointer shadow-md z-[200] transition-colors select-none"
-              onClick={handleDropdownToggle}
-            >
-              {showDropdown ? "×" : "+"}
-            </span>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-center gap-3 sm:gap-4 pt-2">
-            <button
-              className="px-3 sm:px-4 py-2 rounded-md bg-gray-200 text-black hover:bg-red-600 hover:text-white hover:opacity-60 text-xs sm:text-sm transition-colors flex-1 sm:flex-none"
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button
-              className={getSubmitButtonStyle()}
-              onClick={handleSubmit}
-              disabled={!roleName.trim()}
-            >
-              {getSubmitButtonText()}
-            </button>
-          </div>
-
-          {/* Show current mode info for debugging */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="text-xs text-gray-400 text-center">
-              Mode: {type} | {isEditMode ? 'Editing existing role' : 'Adding new role'}
             </div>
           )}
         </div>
       </div>
 
       <style jsx>{`
-        @keyframes fadeIn {
+        @keyframes fadeInNoScale {
           from {
             opacity: 0;
-            transform: scale(0.95);
           }
           to {
             opacity: 1;
-            transform: scale(1);
           }
         }
-        
-        .animate-fade-in {
-          animation: fadeIn 0.15s ease-out;
+
+        .animate-fade-in-no-scale {
+          animation: fadeInNoScale 0.15s ease-out;
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .animate-slide-in-right {
+          animation: slideInRight 0.3s ease-out;
+        }
+
+        .line-clamp-1 {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
       `}</style>
     </>
   );
-};
+}

@@ -13,7 +13,7 @@ export const ProjectCard = ({ projectData }) => {
     title: projectData.title || "",
     subtitle: projectData.subtitle || "",
     description: projectData.description || "",
-    date: projectData.date || "",
+    date: projectData.date || 1,
     teamName: projectData.teamName || "",
     teamMembers: projectData.teamMembers || "",
     user: {
@@ -32,7 +32,7 @@ export const ProjectCard = ({ projectData }) => {
       title: projectData.title || "",
       subtitle: projectData.subtitle || "",
       description: projectData.description || "",
-      date: projectData.date || "",
+      date: projectData.date || 1,
       teamName: projectData.teamName || "",
       teamMembers: projectData.teamMembers || "",
       user: {
@@ -142,6 +142,7 @@ export const ProjectCard = ({ projectData }) => {
       display: "flex",
       flexDirection: "column",
       gap: "1rem",
+      fontFamily: "'Segoe UI', sans-serif",
     },
     inputRow: {
       display: "flex",
@@ -151,36 +152,43 @@ export const ProjectCard = ({ projectData }) => {
       flex: 1,
       padding: "0.75rem",
       borderRadius: "0.5rem",
-      border: "1px solid #ccc",
+      border: "none",
+      backgroundColor: "#e0e0e0",
       fontSize: "1rem",
+      color: "#333",
     },
     textarea: {
       padding: "0.75rem",
       borderRadius: "0.5rem",
-      border: "1px solid #ccc",
+      border: "none",
+      backgroundColor: "#e0e0e0",
       fontSize: "1rem",
       width: "100%",
       resize: "vertical",
-      minHeight: "5rem",
+      minHeight: "6rem",
+      color: "#333",
     },
     addBtn: {
       marginTop: "0.5rem",
       alignSelf: "flex-end",
-      fontSize: "1.1rem",
+      fontSize: "1.25rem",
       cursor: "pointer",
+      color: "#4caf50",
     },
     actions: {
       display: "flex",
       justifyContent: "center",
       marginTop: "1rem",
+      gap: "1rem",
     },
     actionBtn: {
-      padding: "0.5rem 1.25rem",
+      padding: "0.5rem 1.5rem",
       fontSize: "1rem",
       borderRadius: "0.5rem",
-      border: "1px solid #ccc",
+      border: "1px solid #b0b0b0",
+      backgroundColor: "transparent",
       cursor: "pointer",
-      margin: "0 0.5rem",
+      color: "#333",
     },
   };
 
@@ -231,8 +239,9 @@ export const ProjectCard = ({ projectData }) => {
                 style={styles.input}
               />
               <input
-                type="text"
-                placeholder="dd-mm-yyyy"
+                type="number"
+                placeholder="Due Hours"
+                min="1"
                 value={formData.date}
                 onChange={(e) =>
                   setFormData({ ...formData, date: e.target.value })
@@ -271,13 +280,13 @@ export const ProjectCard = ({ projectData }) => {
                       user: { ...formData.user, name: e.target.value },
                     })
                   }
-                  style={{ ...styles.input, cursor: "pointer" }}
+                  style={{ ...styles.input, paddingRight: "2rem" }}
                 />
                 <div
                   style={{
                     position: "absolute",
                     top: "50%",
-                    right: "1rem",
+                    right: "0.75rem",
                     transform: "translateY(-50%)",
                     pointerEvents: "none",
                     fontSize: "1rem",
@@ -294,10 +303,10 @@ export const ProjectCard = ({ projectData }) => {
               onChange={(e) =>
                 setFormData({ ...formData, teamMembers: e.target.value })
               }
-              style={{ ...styles.textarea, minHeight: "6rem" }}
+              style={styles.textarea}
             />
 
-            <div style={{ ...styles.addBtn, fontSize: "1.25rem" }}>＋</div>
+            <div style={styles.addBtn}>＋</div>
 
             <div style={styles.actions}>
               <button
