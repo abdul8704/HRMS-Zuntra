@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { X, Users, Calendar, Play } from 'lucide-react';
-import { MdVideoCall } from 'react-icons/md';
-
 
 export const NotificationPopup = ({ setShowPopup }) => {
   const [userRole, setUserRole] = useState('HR'); // 'HR' or 'Team Lead'
@@ -105,43 +103,68 @@ export const NotificationPopup = ({ setShowPopup }) => {
     setShowPopup(false);
   };
 
-  const generateMeetingLink = () => {
-  const randomLetters = () => {
-    const letters = "abcdefghijklmnopqrstuvwxyz";
-    let result = "";
+  // Generate meeting ID function from dashboard code
+  const generateMeetingId = () => {
+    const chars = 'abcdefghijklmnopqrstuvwxyz';
+    let result = '';
     for (let i = 0; i < 3; i++) {
-      result += letters.charAt(Math.floor(Math.random() * letters.length));
+      for (let j = 0; j < 4; j++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      if (i < 2) result += '-';
     }
     return result;
   };
 
-  return `https://meet.google.com/${randomLetters()}-${randomLetters()}-${randomLetters()}`;
-};
+  // Create meeting function from dashboard code
+  const createMeeting = () => {
+    // Open Google Meet with the new meeting
+    window.open('https://meet.google.com/new', '_blank');
+    
+    alert('Creating new meeting...\nOpening Google Meet to create a new meeting room.');
+  };
 
+  // Join meeting function from dashboard code
+  const joinMeeting = (meetingCode) => {
+    if (!meetingCode) {
+      alert('Please enter a meeting code or URL');
+      return;
+    }
 
+    let meetingUrl;
+    
+    // Check if it's already a Google Meet URL
+    if (meetingCode.includes('meet.google.com')) {
+      meetingUrl = meetingCode;
+    } else {
+      // Assume it's a meeting code and construct Google Meet URL
+      meetingUrl = `https://meet.google.com/${meetingCode}`;
+    }
+    
+    // Open Google Meet in a new tab
+    window.open(meetingUrl, '_blank');
+    
+    // Show confirmation
+    alert(`Joining meeting: ${meetingCode}\nOpening Google Meet...`);
+  };
 
   const handleScheduleMeeting = () => {
-    const meetingLink = generateMeetingLink();
+    const meetingId = generateMeetingId();
+    const meetingLink = `https://meet.google.com/${meetingId}`;
     const meetingText = `\n\nScheduled Meeting: ${meetingLink}`;
     setNotification(prev => prev + meetingText);
     setShowMeetDropdown(false);
   };
 
   const handleInstantMeeting = () => {
-  // Pick a predefined link
-  const meetingLink = predefinedMeetLinks[Math.floor(Math.random() * predefinedMeetLinks.length)];
-
-  // Redirect and update message
-  window.open(meetingLink, '_blank');
-  const meetingText = `\n\nInstant Meeting: ${meetingLink}`;
-  setNotification(prev => prev + meetingText);
-  setShowMeetDropdown(false);
-};
-const predefinedMeetLinks = [
-  "https://meet.google.com/njt-ocka-nsh"
-];
-
-
+    // Create a new meeting using the dashboard's create meeting function
+    createMeeting();
+    
+    // Just add the message without any link
+    const meetingText = `\n\nInstant meeting link pasted:`;
+    setNotification(prev => prev + meetingText);
+    setShowMeetDropdown(false);
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -170,12 +193,10 @@ const predefinedMeetLinks = [
                 title="Add Google Meet"
               >
                 <img
-  src="https://www.gstatic.com/images/branding/product/1x/meet_2020q4_48dp.png"
-  alt="Google Meet"
-  className="w-6 h-6"
-/>
-
-
+                  src="https://www.gstatic.com/images/branding/product/1x/meet_2020q4_48dp.png"
+                  alt="Google Meet"
+                  className="w-6 h-6"
+                />
               </button>
 
               {showMeetDropdown && (

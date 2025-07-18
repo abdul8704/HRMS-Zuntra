@@ -15,6 +15,12 @@ const handleLogout = asyncHandler(async (req, res) => {
         sameSite: "None",
     });
 
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+    });
+
     const logout = await employeeService.markEndOfSession(userid, logoutTime);
 
     if (logout.success !== true)
@@ -40,78 +46,93 @@ const getAttendanceData = asyncHandler(async (req, res) => {
 });
 
 const fetchAllEmployees = asyncHandler(async (req, res) => {
-  const employees = await employeeService.getAllEmployees();
+    const employees = await employeeService.getAllEmployees();
 
-  const roleColorCache = new Map();
-  const roleNameCache = new Map();
+    const roleColorCache = new Map();
+    const roleNameCache = new Map();
 
-  const formattedEmployees = await Promise.all(
-    employees.map(async (emp) => {
-      const roleId = emp.role._id.toString();
+    const formattedEmployees = await Promise.all(
+        employees.map(async (emp) => {
+            const roleId = emp.role._id.toString();
 
-      if (!roleColorCache.has(roleId)) {
-        const roleDetails = await roleService.getRoleDetailsById(roleId);
-        roleColorCache.set(roleId, roleDetails?.color || null);
-        roleNameCache.set(roleId, roleDetails?.role || null);
-      }
+            if (!roleColorCache.has(roleId)) {
+                const roleDetails = await roleService.getRoleDetailsById(
+                    roleId
+                );
+                roleColorCache.set(roleId, roleDetails?.color || null);
+                roleNameCache.set(roleId, roleDetails?.role || null);
+            }
 
-      const employeeObject = emp.toObject?.() ?? emp;
+            const employeeObject = emp.toObject?.() ?? emp;
 
-      return {
-        ...employeeObject,
-        role: {
-          name: roleNameCache.get(roleId),
-          color: roleColorCache.get(roleId),
-        },
-      };
-    })
-  );
-  res.status(200).json({ success: true, employees: formattedEmployees });
+            return {
+                ...employeeObject,
+                role: {
+                    name: roleNameCache.get(roleId),
+                    color: roleColorCache.get(roleId),
+                },
+            };
+        })
+    );
+    res.status(200).json({ success: true, employees: formattedEmployees });
 });
-
-
 
 const getEmployeeByRole = asyncHandler(async (req, res) => {
     const { role } = req.params;
 
-    if (!role) 
-        throw new ApiError(400, "Role not provided");
+    if (!role) throw new ApiError(400, "Role not provided");
 
     const employees = await employeeService.getEmployeeByRole(role);
 
     res.status(200).json({ success: true, employees });
 });
 
-const getDetailsOfaEmployee= asyncHandler(async (req, res) => {
-    const { empId } = req.params;
+const getDetailsOfaEmployee = asyncHandler(async (req, res) => {
+    const { userid } = req.params;
 
-    if (!empId) 
-        throw new ApiError(400, "empId not provided");
+    if (!userid) throw new ApiError(400, "userid not provided");
 
-    const employeeDetail = await employeeService.getDetailsOfaEmployee(empId);
+    const employeeDetail = await employeeService.getDetailsOfaEmployee(userid);
     res.status(200).json({ success: true, employeeDetail });
 });
 
 const applyForLeave = asyncHandler(async (req, res) => {
-  const { userid } = req.user;
-  const { leaveCategory, dates, reason } = req.body;
-  console.log(userid, leaveCategory, dates, reason)
+    const { userid } = req.user;
+    const { leaveCategory, dates, reason } = req.body;
+    console.log(userid, leaveCategory, dates, reason);
 
-  if(!leaveCategory || !dates || !reason){
-    throw new ApiError(400, "please send all data reqd to apply leave")
-  }
+    if (!leaveCategory || !dates || !reason) {
+        throw new ApiError(400, "please send all data reqd to apply leave");
+    }
 
-  const applyLeave = await employeeService.applyLeave(userid, leaveCategory.split(' ')[0], dates, reason);
+    const applyLeave = await employeeService.applyLeave(
+        userid,
+        leaveCategory.split(" ")[0],
+        dates,
+        reason
+    );
 
-  return res.status(201).json({ success: true, message: "Request sent successfully" })
-})
+    return res
+        .status(201)
+        .json({ success: true, message: "Request sent successfully" });
+});
 
 const getEmployeeRequests = asyncHandler(async (req, res) => {
-  const { userid } = req.user;
+    const { userid } = req.user;
 
-  const applicationData = await employeeService.getLeaveRequests(userid);
-  return res.status(200).json({ success: true, leaveRequests: applicationData })
-})
+    const applicationData = await employeeService.getLeaveRequests(userid);
+    return res
+        .status(200)
+        .json({ success: true, leaveRequests: applicationData });
+});
+
+const getMyData = asyncHandler(async (req, res) => {
+    const { userid, username, allowedAccess } = req.user;
+
+    return res
+        .status(200)
+        .json({ success: true, data: { userid, username, allowedAccess } });
+});
 
 module.exports = {
     handleLogout,
@@ -121,4 +142,5 @@ module.exports = {
     getDetailsOfaEmployee,
     applyForLeave,
     getEmployeeRequests,
+    getMyData,
 };
