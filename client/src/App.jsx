@@ -14,7 +14,6 @@ import { HrProjectManagement } from './pages/project/HrProjectManagement';
 import { Upskill } from './pages/course/Upskill';
 import { Attendance } from './pages/attendance/Attendance';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
-import { ProtectRoute } from './pages/ProtectRoute';
 import { CeoDashboard } from './pages/dashboard/CeoDashboard';
 import { CompanyDocs } from './pages/companyDocs/CompanyDocs';
 import { AuthProvider } from './context/AuthContext';
