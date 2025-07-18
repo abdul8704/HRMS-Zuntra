@@ -17,18 +17,10 @@ import { useAuth } from "../../context/AuthContext";
 export const DashBoard = () => {
 
   const { user, loading } = useAuth();
-  
-
-  // const token = document.cookies.accessToken
-  // const userDetails = jwtDecode(token || '{}');
-
-  const [showNotification , setShowNotification]=useState(false);
-  
-
+  const [showNotification, setShowNotification] = useState(false);
   const [showReminderForm, setShowReminderForm] = useState(false);
   const [reminderText, setReminderText] = useState('');
   const [reminderDate, setReminderDate] = useState('');
-  
 
   const isNewUser = !user?.allowedAccess;
 
@@ -52,8 +44,8 @@ export const DashBoard = () => {
     setReminderDate('');
     setShowReminderForm(prev => !prev);
   };
-  const isPlusButtonClicked=()=>{
-    setShowNotification(prev=>!prev);
+  const isPlusButtonClicked = () => {
+    setShowNotification(prev => !prev);
   }
 
   return (
@@ -63,7 +55,7 @@ export const DashBoard = () => {
 
       <div className="flex-1 overflow-y-auto">
         <div className="grid grid-cols-2 md:grid-cols-9 md:grid-rows-9 lg:grid-cols-9 lg:grid-rows-9 gap-[1rem] h-screen p-[1rem]">
-          {showNotification && <NotificationPopup setShowPopup={setShowNotification}/>}
+          {showNotification && <NotificationPopup setShowPopup={setShowNotification} />}
           {/* 1. UserGreetings */}
           <div className="h-[10vh] md:h-full col-span-2 md:col-span-4 md:row-span-1 rounded-2xl flex items-center overflow-hidden px-[0.3rem] animate-slide-in-left">
             <UserGreetings
@@ -105,7 +97,7 @@ export const DashBoard = () => {
 
           {/* 8. Notifications */}
           <div className="h-[30vh] md:h-full col-span-2 md:col-span-4 md:col-start-6 md:row-start-4 md:row-span-3 rounded-2xl bg-[#f6e0bf] flex items-center justify-center animate-slide-in-right">
-            <NotificationCard onPlusClick={isPlusButtonClicked}/>
+            <NotificationCard onPlusClick={isPlusButtonClicked} />
           </div>
 
           {/* 9. Work Break Stats */}
