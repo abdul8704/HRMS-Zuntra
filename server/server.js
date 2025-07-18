@@ -16,6 +16,7 @@ const rolesRouter = require('./routes/rolesRoutes')
 const shiftRouter = require('./routes/shiftRoutes')
 const geoLocationRouter = require('./routes/geoLocationRouter')
 const reminderRouter = require('./routes/reminderRoutes')
+const path = require("path");
 
 const errorHandler=require('./middlewares/errorHandler')
 const JWTauth = require('./middlewares/authenticateJWT')
@@ -47,6 +48,7 @@ app.use("/api/roles", rolesRouter);
 app.use("/api/shifts", shiftRouter);
 app.use("/api/branch", geoLocationRouter);
 app.use("/api/reminder", reminderRouter);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(errorHandler);
 
 const start = async () => {
