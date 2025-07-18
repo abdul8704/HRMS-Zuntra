@@ -16,8 +16,10 @@ import { Attendance } from './pages/attendance/Attendance';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
 import { ProtectRoute } from './pages/ProtectRoute';
 import { CeoDashboard } from './pages/dashboard/CeoDashboard';
+import { CompanyDocs } from './pages/companyDocs/CompanyDocs';
 import './App.css'
 import './index.css'
+import { ShiftDetails } from './pages/employee/components/ShiftDetails';
 
 
 function App() {
@@ -45,6 +47,12 @@ function App() {
             <EmployeeDetails type="user" />
           </ProtectRoute>
         } />
+
+        <Route path="/shift/details" element={
+          <ProtectRoute>
+            <ShiftDetails />
+          </ProtectRoute>
+        }/>
 
         <Route path="/employee/role/:roleId/details" element={
           <ProtectRoute>
@@ -99,12 +107,7 @@ function App() {
           <ProtectRoute>
             <Upskill />
           </ProtectRoute>
-        } />
-        <Route path="/ceo" element={
-          <ProtectRoute>
-            <CeoDashboard/>
-          </ProtectRoute>
-        } />
+        }/>
 
 
         {/* Not Found Route */}

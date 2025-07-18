@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export function EmployeeCourseProgress() {
-  const [viewType, setViewType] = useState("employee"); // "employee" or "course"
+  const [viewType, setViewType] = useState("employee");
+  const [tooltip, setTooltip] = useState({ show: false, text: "", anchorRef: null });
+  const progressBarRef = useRef(null);
+  const cardRef = useRef(null);
+  const [fontSize, setFontSize] = useState("0.8rem");
 
-  // Sample data
   const employeeData = {
     name: "Jai Atithya A",
     image: "https://randomuser.me/api/portraits/men/75.jpg",
     email: "jaiatithya@zuntra.com",
     phone: "+91 1234567890",
     role: "Embedded & IoT Developer",
-    progress: 40
+    progress: 40,
   };
 
   const courseData = {
@@ -18,18 +21,57 @@ export function EmployeeCourseProgress() {
     image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=200&h=200&fit=crop&crop=center",
     instructor: "Dr. Sarah Johnson",
     role: "React Specialist",
-    progress: 65
+    progress: 65,
   };
 
   const currentData = viewType === "employee" ? employeeData : courseData;
 
+  const handleMouseEnter = () => {
+    setTooltip({
+      show: true,
+      text: `${viewType === "employee" ? "Course Progress" : "Completion"}: ${currentData.progress}%`,
+      anchorRef: progressBarRef,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setTooltip({ show: false, text: "", anchorRef: null });
+  };
+
+  const SimpleTooltip = ({ text, show }) => {
+    if (!show) return null;
+    return (
+      <div className="absolute z-50 bg-gray-800 text-white px-2 py-1 rounded text-xs whitespace-nowrap -top-8 left-1/2 transform -translate-x-1/2">
+        {text}
+        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+      </div>
+    );
+  };
+
+  // ResizeObserver to scale font size
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const observer = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        const width = entry.contentRect.width;
+        const newFontSize = `clamp(0.6rem, ${width / 40}px, 0.85rem)`;
+        setFontSize(newFontSize);
+      }
+    });
+
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="space-y-4">
+    <div ref={cardRef} style={{ fontSize }} className="h-full w-full flex flex-col gap-1">
       {/* Toggle Buttons */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-shrink-0">
         <button
           onClick={() => setViewType("employee")}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`px-2 py-[2px] rounded-md text-xs font-medium transition-colors ${
             viewType === "employee"
               ? "bg-teal-500 text-white"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -39,7 +81,7 @@ export function EmployeeCourseProgress() {
         </button>
         <button
           onClick={() => setViewType("course")}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`px-2 py-[2px] rounded-md text-xs font-medium transition-colors ${
             viewType === "course"
               ? "bg-teal-500 text-white"
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -49,117 +91,56 @@ export function EmployeeCourseProgress() {
         </button>
       </div>
 
-      {/* Main Card */}
-      <div className="flex items-center bg-[#eef8f8] p-4 rounded-xl w-[500px] shadow-md">
-        {/* Profile/Course Image */}
-        <img
-          src={currentData.image}
-          alt={viewType === "employee" ? "Profile" : "Course"}
-          className="w-24 h-24 rounded-full object-cover mr-4"
-        />
+      {/* Card */}
+      <div className="flex flex-row bg-[#eef8f8] rounded-xl shadow-md w-full h-full overflow-hidden">
+        {/* Image */}
+        <div className="w-24 h-full flex-shrink-0">
+          <img
+            src={currentData.image}
+            alt="Profile"
+            className="w-full h-full object-cover rounded-l-xl"
+          />
+        </div>
 
-        {/* Info Section */}
-        <div className="flex-1">
-          <h2 className="text-xl font-semibold text-gray-900">{currentData.name}</h2>
+        {/* Info */}
+        <div className="flex-1 px-3 py-2 flex flex-col justify-between">
+          <div className="flex flex-col gap-0.5">
+            <p className="font-bold text-gray-800 leading-tight truncate">
+              {currentData.name}
+            </p>
+            {viewType === "employee" ? (
+              <>
+                <p className="text-gray-600 text-xs truncate">{currentData.email}</p>
+                <p className="text-gray-600 text-xs truncate">{currentData.phone}</p>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600 text-xs truncate">
+                  Instructor: {courseData.instructor}
+                </p>
+                <p className="text-gray-600 text-xs truncate">Duration: 6 weeks</p>
+              </>
+            )}
 
-          {viewType === "employee" ? (
-            <>
-              {/* Email */}
-              <div className="flex items-center text-sm text-gray-600 mt-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="15"
-                  height="12"
-                  fill="none"
-                  viewBox="0 0 15 12"
-                  className="mr-2"
-                >
-                  <path
-                    fill="#000"
-                    fillOpacity=".5"
-                    d="M1.5 11.243c-.413 0-.765-.135-1.059-.406A1.283 1.283 0 0 1 0 9.861V1.569C0 1.19.147.864.441.594.735.324 1.088.188 1.5.188h12c.412 0 .766.135 1.06.406.294.27.44.596.44.975v8.292c0 .38-.147.705-.44.976a1.508 1.508 0 0 1-1.06.406h-12Zm6-4.837 6-3.455V1.57l-6 3.455-6-3.455v1.382l6 3.455Z"
-                  />
-                </svg>
-                {currentData.email}
-              </div>
-
-              {/* Phone */}
-              <div className="flex items-center text-sm text-gray-600 mt-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="11"
-                  height="12"
-                  fill="none"
-                  viewBox="0 0 11 12"
-                  className="mr-2"
-                >
-                  <path
-                    fill="#000"
-                    fillOpacity=".5"
-                    d="M2.212 5.074A9.28 9.28 0 0 0 6.24 9.12l1.344-1.35a.605.605 0 0 1 .623-.148 6.94 6.94 0 0 0 2.182.35c.336 0 .611.277.611.615v2.143a.614.614 0 0 1-.611.614C4.65 11.344 0 6.67 0 .904 0 .564.275.288.611.288H2.75c.336 0 .611.276.611.614 0 .768.122 1.505.348 2.193a.619.619 0 0 1-.152.626L2.212 5.074Z"
-                  />
-                </svg>
-                {currentData.phone}
-              </div>
-            </>
-          ) : (
-            <>
-              {/* Instructor Name */}
-              <div className="flex items-center text-sm text-gray-600 mt-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="none"
-                  viewBox="0 0 16 16"
-                  className="mr-2"
-                >
-                  <path
-                    fill="#000"
-                    fillOpacity=".5"
-                    d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM8 9a5 5 0 0 0-5 5v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a5 5 0 0 0-5-5Z"
-                  />
-                </svg>
-                Instructor: {courseData.instructor}
-              </div>
-
-              {/* Course Duration or Additional Info */}
-              <div className="flex items-center text-sm text-gray-600 mt-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="none"
-                  viewBox="0 0 16 16"
-                  className="mr-2"
-                >
-                  <path
-                    fill="#000"
-                    fillOpacity=".5"
-                    d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1ZM8 4a.5.5 0 0 1 .5.5v3h2a.5.5 0 0 1 0 1h-2.5a.5.5 0 0 1-.5-.5v-3.5A.5.5 0 0 1 8 4Z"
-                  />
-                </svg>
-                Duration: 6 weeks
-              </div>
-            </>
-          )}
-
-          {/* Role */}
-          <div className="mt-2 inline-block bg-teal-100 text-teal-800 px-3 py-1 text-sm rounded-full font-medium">
-            {currentData.role}
+            <span className="mt-[2px] inline-block text-xs text-teal-700 bg-teal-100 rounded-full px-2 py-[1px] w-fit">
+              {currentData.role}
+            </span>
           </div>
 
-          {/* Progress Bar */}
-          <div className="w-full h-2 bg-gray-300 rounded-full mt-3 relative">
-            <div 
-              className="h-2 bg-teal-500 rounded-full absolute top-0 left-0 transition-all duration-300"
-              style={{ width: `${currentData.progress}%` }}
-            ></div>
-          </div>
-          
-          {/* Progress Text */}
-          <div className="text-xs text-gray-600 mt-1">
-            {viewType === "employee" ? "Course Progress" : "Completion"}: {currentData.progress}%
+          {/* Progress bar */}
+          <div className="mt-1">
+            <div
+              ref={progressBarRef}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              className="w-full h-2 bg-gray-300 rounded-full relative"
+            >
+              <div
+                className="h-2 bg-teal-500 rounded-full absolute top-0 left-0 transition-all duration-300"
+                style={{ width: `${currentData.progress}%` }}
+              ></div>
+              <SimpleTooltip text={tooltip.text} show={tooltip.show} />
+            </div>
           </div>
         </div>
       </div>
