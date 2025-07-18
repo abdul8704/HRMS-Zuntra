@@ -11,6 +11,7 @@ import { EmployeesOnLeave } from "./components/EmployeesOnLeave";
 import { RemainderPopup } from "./components/RemainderPopup";
 import { NotificationPopup } from './components/NotificationPopup';
 import { ProjectDeadline } from "../project/components/ProjectDeadline";
+import { PlusButton } from '../../components/PlusButton';
 
 export const DashBoard = () => {
   const token = localStorage.getItem('accessToken');
@@ -49,6 +50,7 @@ export const DashBoard = () => {
 
   return (
     <div className="flex h-screen">
+      <PlusButton />
       <Sidebar role={isNewUser ? "newUser" : "HR"} />
 
       <div className="flex-1 overflow-y-auto">

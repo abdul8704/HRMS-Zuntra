@@ -17,6 +17,7 @@ import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
 import { ProtectRoute } from './pages/ProtectRoute';
 import './App.css'
 import './index.css'
+import { ShiftDetails } from './pages/employee/components/ShiftDetails';
 
 
 function App() {
@@ -42,6 +43,12 @@ function App() {
         <Route path="/employee/:empId/details/:navId" element={
           <ProtectRoute>
             <EmployeeDetails type="user" />
+          </ProtectRoute>
+        }/>
+
+        <Route path="/shift/details" element={
+          <ProtectRoute>
+            <ShiftDetails />
           </ProtectRoute>
         }/>
 
