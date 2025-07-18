@@ -277,6 +277,15 @@ export const Login = () => {
             username: name, email, phoneNum: phone, password
           });
 
+          const formData = new FormData();
+          formData.append("profilePicture", profileImage);
+          const profilePic = await api.post(`/auth/signup/uploadprofile/${newUser.data.userId}`, formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
+
           if (newUser.status === 200) {
             setPopupContent({ type: 'success', title: 'Signup Successful', message: 'Signup successful! Login to your account.' });
             setShowPopup(true);
