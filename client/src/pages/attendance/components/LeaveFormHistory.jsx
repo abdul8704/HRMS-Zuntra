@@ -12,9 +12,9 @@ const LeaveFormHistory = () => {
         dates: ['2025-07-15'],
         leaveCategory: 'Sick Leave',
         reason:
-          'Fever and coldsdfghjksdfghjsxcvbnsdfghdfgh dfghdfg xcvbndfghj vgbnmnbvcvbnbvcvbnbvcvbn sdertfgybhjnmksdcfgvbhnjmk, dfdgfbhngmj cyvmukjvnutynfuinkhgf7 sdfghjklssdfghjkllkjhgfdsdfghjkllkjhgfdrtyuj gybutygnjkhkfygjkjnfjygkhyfrtufryjhgfvtkugfdbugfbfyghjkjhg',
+          'Fever and cold',
         adminAction: 'Approved',
-        adminReason: 'Medical certificate provided sdfgbhnjkm,lzsxdcfvgbhnjmk,sxdcfvgbhnjmk,.xcvbnm,s dxcfvgbhn sedrftgvbhnjmk,lkmnbhvcdxcfvgbhnjmk,kmnbgvfcdxsdxcfvgbhnjmk,',
+        adminReason: 'Medical certificate provided',
         superAdminAction: 'Pending',
         superAdminReason: '',
         status: 'Approved',
