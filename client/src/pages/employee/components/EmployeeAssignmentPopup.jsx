@@ -5,7 +5,7 @@ export const EmpAssignmentPopUp = () => {
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedShift, setSelectedShift] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
-  const [salary, setSalary] = useState('');c  
+  const [salary, setSalary] = useState('');
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [showShiftDropdown, setShowShiftDropdown] = useState(false);
   const [showBranchDropdown, setShowBranchDropdown] = useState(false);

@@ -18,6 +18,10 @@ const rolesDetail = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    allowedAccess: {
+        type: [String],
+        default: [],
+    }
 });
 
 module.exports = mongoose.model('rolesDetails', rolesDetail)
