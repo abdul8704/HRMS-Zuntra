@@ -92,7 +92,7 @@ const sidebarItems = [
   {
     role: "EMP",
     label: "Documents",
-    path: "/upskill/all",
+    path: "/documentations",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="none" viewBox="0 0 16 20">
         <path fill="#000" fillRule="evenodd" d="M10.25.5A.25.25 0 0 0 10 .25H3A2.75 2.75 0 0 0 .25 3v14A2.75 2.75 0 0 0 3 19.75h10A2.75 2.75 0 0 0 15.75 17V7.147a.25.25 0 0 0-.25-.25H11a.75.75 0 0 1-.75-.75V.5Zm.75 9.75a.75.75 0 1 1 0 1.5H5a.75.75 0 1 1 0-1.5h6Zm0 4a.75.75 0 1 1 0 1.5H5a.75.75 0 1 1 0-1.5h6Z" clipRule="evenodd" />
