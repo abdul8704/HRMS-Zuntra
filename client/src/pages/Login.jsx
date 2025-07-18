@@ -5,8 +5,10 @@ import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { PopupCard } from '../components/PopupCard';
 import { Loading } from "../components/Loading";
+import { useAuth } from "../context/AuthContext"
 
 export const Login = () => {
+  const { setUser } = useAuth();
   const [isSignup, setIsSignup] = useState(false);
   const [showReset, setShowReset] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -140,7 +142,8 @@ export const Login = () => {
         setShowPopup(true);
         return;
       }
-      const token = response.data.accessToken;
+
+      setUser(response.data.credentials) // set creds on a global level
 
       navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -151,10 +154,8 @@ export const Login = () => {
 
           if (res.status === 200) {
             console.log("Attendance Marked");
-            localStorage.setItem("accessToken", token);
-
-            setLoading(false);
             navigate("/dashboard");
+            setLoading(false);
           }
           else if (res.status === 206) {
             console.log("Request Pending Approval");
@@ -276,8 +277,16 @@ export const Login = () => {
             username: name, email, phoneNum: phone, password
           });
 
+          const formData = new FormData();
+          formData.append("profilePicture", profileImage);
+          const profilePic = await api.post(`/auth/signup/uploadprofile/${newUser.data.userId}`, formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
+
           if (newUser.status === 200) {
-            localStorage.setItem("accessToken", newUser.data.accessToken);
             setPopupContent({ type: 'success', title: 'Signup Successful', message: 'Signup successful! Login to your account.' });
             setShowPopup(true);
             setSignupData({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });

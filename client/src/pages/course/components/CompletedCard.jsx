@@ -1,42 +1,48 @@
 import React from "react";
-import { FaStar, FaRedoAlt, FaDownload } from "react-icons/fa";
+import { FaStar, FaDownload } from "react-icons/fa";
 
-export const CompletedCard = ({ courseImage, courseName, courseInstructor, date="02/01/2006", rating="5" }) => {
+// Card Component
+export const CompletedCard = ({
+  courseImage,
+  courseName = "DevOps with Docker",
+  courseInstructor = "Arjun Mehta",
+  date = "10-10-10",
+  rating = "3.5",
+}) => {
   return (
-    <div className="flex flex-col md:flex-row bg-gray-100 rounded-xl overflow-hidden w-full max-w-xl mx-auto mb-4">
-      {/* Image */}
+    <div className="w-[620px] h-[120px] bg-[#F7F7F7] rounded-xl shadow-sm flex overflow-hidden">
+      {/* Left - Image */}
       <img
         src={courseImage}
-        alt="course"
-        className="w-full md:w-40 h-44 object-cover flex-shrink-0"
+        alt="Course"
+        className="w-[38%] h-full object-cover"
       />
 
-      {/* Card Body */}
-      <div className="flex flex-col justify-between flex-grow p-5">
-        {/* Top */}
-        <div className="flex justify-between items-start flex-wrap">
-          <div>
-            <h3 className="text-xl font-semibold mb-1">{courseName}</h3>
-            <p className="text-sm text-gray-600">by {courseInstructor}</p>
+      {/* Right - Content */}
+      <div className="flex flex-col justify-between flex-grow px-4 py-3">
+        {/* Top Row - Title + Rating */}
+        <div className="flex justify-between items-start">
+          <div className="truncate max-w-[200%]">
+            <h3 className="text-[15px] font-semibold text-black leading-tight truncate">
+              {courseName}
+            </h3>
+            <p className="text-[12px] text-gray-600 truncate">
+              by {courseInstructor}
+            </p>
           </div>
-          <div className="flex items-center gap-1 font-medium mt-1">
+          <div className="flex items-center gap-1 text-[12px] text-gray-800 flex-shrink-0 mt-[2px]">
             <span>{rating}</span>
-            <FaStar className="text-yellow-500" />
+            <FaStar className="text-yellow-400 text-[14px]" />
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex justify-between items-center mt-4 flex-wrap gap-2">
-          <span className="bg-[#7B08BD21] text-[#7B08BD] text-xs font-medium px-3 py-1 rounded-full">
+        {/* Bottom Row - Date + Download */}
+        <div className="flex justify-between items-center mt-4">
+          <span className="bg-[#EADCF9] text-[11px] text-black font-medium px-4 py-[3px] rounded-full whitespace-nowrap truncate">
             Completed on: {date}
           </span>
-          <div className="flex gap-3">
-            <div className="bg-[#08BD1D21] p-2 rounded-full flex items-center justify-center">
-              <FaRedoAlt className="text-[#08BD1D] text-base" />
-            </div>
-            <div className="bg-[#08BD1D21] p-2 rounded-full flex items-center justify-center">
-              <FaDownload className="text-[#08BD1D] text-base" />
-            </div>
+          <div className="bg-[#C9F6D8] p-[7px] rounded-full cursor-pointer hover:scale-105 transition">
+            <FaDownload className="text-[#08BD1D] text-[13px]" />
           </div>
         </div>
       </div>

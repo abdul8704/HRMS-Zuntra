@@ -30,4 +30,33 @@ const uploadVideo = multer({
     fileFilter: fileFilter,
 })
 
-module.exports = {uploadVideo};
+// profilePicture
+    const profileStorage = multer.diskStorage({
+        destination:(req,file,cb)=>{
+            cb(null,"uploads/profilePictures");
+        },
+        filename:(req,file,cb)=>{
+            const _id = req.params.userId;
+            const extension = ".png";
+            const newFileName = `${_id}${extension}`;
+            cb(null,newFileName);
+        }
+    })
+
+    const profileFileFilter=(req,file,cb) => {
+        const allowedTypes= /jpeg|jpg|png/;
+        const isAllowed  = allowedTypes.test(file.mimetype);
+        if(isAllowed){
+            cb(null,true);
+        }
+        else{
+            cb(Object.assign(new Error("Ivalid file type!"), { statusCode: 400 }),false);
+        }
+    };
+
+    const uploadProfile = multer({
+        storage: profileStorage,
+        fileFilter: profileFileFilter,
+    })
+
+    module.exports = {uploadVideo, uploadProfile};

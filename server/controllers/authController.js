@@ -11,7 +11,7 @@ const ApiError = require("../errors/ApiError");
 
 const handleRefreshToken = asyncHandler((req, res) => {
     const cookies = req.cookies;
-
+    console.log("REfreshinggg")
     if (!cookies?.refreshToken)
         throw new ApiError(401, "Refresh token not found in cookies");
 
@@ -41,15 +41,22 @@ const handleLogin = asyncHandler(async (req, res) => {
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: true,
-            sameSite: "None",
+            secure: false, // TODO: change to true during de[ployment]
+            sameSite: "Lax",
             maxAge: 1 * 24 * 60 * 60 * 1000, // 1 days
+        });
+
+        res.cookie("accessToken", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "Lax",
+            maxAge: 1 * 24 * 60 * 60 * 1000, // TODO: change to 15 mins during deployment 1 days
         });
 
         res.status(200).json({
             success: true,
-            accessToken: token,
             message: "Login successful",
+            credentials: verifyLogin.userData
         });
     } 
     else if (verifyLogin.message === "Wrong Password") {
@@ -123,8 +130,29 @@ const signUpHandler = asyncHandler(async (req, res) => {
         success: true,
         accessToken: token,
         message: "Signup Successfull",
+        userId: newuser._id,
     });
 });
+
+const uploadProfileController = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+
+    const imagePath = `uploads/profilePictures/${req.file.filename}`;
+
+    res.status(200).json({
+      success: true,
+      message: "Profile picture uploaded",
+      data: {
+        imagePath,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 const userExists = asyncHandler(async (req, res) => {
     const { email } = req.body;
@@ -192,4 +220,5 @@ module.exports = {
     sendOTPController,
     verifyOTPController,
     resetPassword,
+    uploadProfileController
 };

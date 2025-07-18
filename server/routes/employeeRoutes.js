@@ -10,5 +10,6 @@ router.get("/role/:role", employeeController.getEmployeeByRole);
 router.get("/:empId", employeeController.getDetailsOfaEmployee);
 router.post("/leave/apply-leave", employeeController.applyForLeave);
 router.get("/leave/requests", employeeController.getEmployeeRequests)
+router.get("/emp-data/me", employeeController.getMyData);
 
 module.exports = router;

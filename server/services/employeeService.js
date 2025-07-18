@@ -10,12 +10,15 @@ const getAttendanceDataByUserId = async (
     endDate,
     holidays = []
 ) => {
+    console.log(startDate, endDate)
     try {
         const start = attendanceHelper.normalizeToUTCDate(startDate);
         start.setUTCHours(0, 0, 0, 0);
 
         const end = attendanceHelper.normalizeToUTCDate(endDate);
         end.setUTCHours(23, 59, 59, 999);
+
+    console.log(start, end);
 
         // Fetch attendance records within the date range
         const attendanceRecords = await Attendance.find({
