@@ -130,8 +130,29 @@ const signUpHandler = asyncHandler(async (req, res) => {
         success: true,
         accessToken: token,
         message: "Signup Successfull",
+        userId: newuser._id,
     });
 });
+
+const uploadProfileController = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded" });
+    }
+
+    const imagePath = `uploads/profilePictures/${req.file.filename}`;
+
+    res.status(200).json({
+      success: true,
+      message: "Profile picture uploaded",
+      data: {
+        imagePath,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 const userExists = asyncHandler(async (req, res) => {
     const { email } = req.body;
@@ -199,4 +220,5 @@ module.exports = {
     sendOTPController,
     verifyOTPController,
     resetPassword,
+    uploadProfileController
 };
