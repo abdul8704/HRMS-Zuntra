@@ -14,7 +14,6 @@ import { HrProjectManagement } from './pages/project/HrProjectManagement';
 import { Upskill } from './pages/course/Upskill';
 import { Attendance } from './pages/attendance/Attendance';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
-import { ProtectRoute } from './pages/ProtectRoute';
 import './App.css'
 import './index.css'
 
@@ -22,83 +21,58 @@ import './index.css'
 function App() {
   const [userid, setUserid] = useState('');
 
- return (
+  return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
 
         <Route path="/dashboard" element={
-          <ProtectRoute>
-            <DashBoard />
-          </ProtectRoute>
-        }/>
+          <DashBoard />
+        } />
 
         <Route path="/employee/:navId" element={
-          <ProtectRoute>
-            <EmployeeManagement />
-          </ProtectRoute>
-        }/>
+          <EmployeeManagement />
+        } />
 
         <Route path="/employee/:empId/details/:navId" element={
-          <ProtectRoute>
-            <EmployeeDetails type="user" />
-          </ProtectRoute>
-        }/>
+          <EmployeeDetails type="user" />
+        } />
 
         <Route path="/employee/role/:roleId/details" element={
-          <ProtectRoute>
-            <EmployeeDetails type="role" />
-          </ProtectRoute>
-        }/>
+          <EmployeeDetails type="role" />
+        } />
 
         <Route path="/courses/:navId" element={
-          <ProtectRoute>
-            <CourseManagement />
-          </ProtectRoute>
-        }/>
+          <CourseManagement />
+        } />
 
         <Route path="/course/:courseId/intro" element={
-          <ProtectRoute>
-            <CourseIntro />
-          </ProtectRoute>
-        }/>
+          <CourseIntro />
+        } />
 
         <Route path="/course/learn/:courseId" element={
-          <ProtectRoute>
-            <CourseLearn />
-          </ProtectRoute>
-        }/>
+          <CourseLearn />
+        } />
 
-        <Route path="/projects/:navId" element={
-          <ProtectRoute>
-            {/* <HrProjectManagement /> */}
-            <ProjectOverview />
-          </ProtectRoute>
-        }/>
+        <Route path="/projects/:navId" element={<ProjectOverview />} />
+        {/* <Route path="/projects/:navId" element={<HrProjectManagement />} /> */}
+
 
         <Route path="/project/:projectId/:navId" element={
-          <ProtectRoute>
-            <HrProjectDetails />
-          </ProtectRoute>
-        }/>
+          <HrProjectDetails />
+        } />
 
         <Route path="/attendance/:navId" element={
-          <ProtectRoute>
-            <Attendance />
-          </ProtectRoute>
-        }/>
+          <Attendance />
+        } />
 
         <Route path="/attendance/" element={
-          <ProtectRoute>
-            <HrPersonalAttendance />
-          </ProtectRoute>
-        }/>
+          <HrPersonalAttendance />
+        } />
 
         <Route path="/upskill/:navId" element={
-          <ProtectRoute>
-            <Upskill />
-          </ProtectRoute>
-        }/>
+          <Upskill />
+        } />
 
 
         {/* Not Found Route */}
