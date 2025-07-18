@@ -14,7 +14,8 @@ const verifyLogin = async (email, password) => {
             profilePicture: 1,
             passwordHash: 1,
         }
-    );
+    ).populate("role", "allowedAccess");
+    
     if (!userData) 
         throw new ApiError(400, "User not found with this email");
 
@@ -28,8 +29,7 @@ const verifyLogin = async (email, password) => {
         userData: {
             username: userData.username,
             userid: userData._id,
-            role: userData.role,
-            profilePicture: userData.profilePicture,
+            allowedAccess: userData.role.allowedAccess,
         },
     };
 };

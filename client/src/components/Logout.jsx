@@ -9,8 +9,6 @@ export const Logout = ({ isOpen, onClose }) => {
       logoutTime: Date.now()
     })
 
-    localStorage.removeItem('accessToken');
-    console.log("Done")
     window.location.href = '/';
     return;
   }

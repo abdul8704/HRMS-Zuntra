@@ -2,6 +2,7 @@ const connectDB = require('./configs/db')
 const express = require('express');
 const app = express();
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 require('dotenv').config();
 
 const hrRoutes = require('./routes/hr');
@@ -32,6 +33,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
+app.use(cookieParser()); 
 app.use("/auth", authRouter)
 app.use("/api", JWTauth);
 

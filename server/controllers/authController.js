@@ -11,7 +11,7 @@ const ApiError = require("../errors/ApiError");
 
 const handleRefreshToken = asyncHandler((req, res) => {
     const cookies = req.cookies;
-
+    console.log("REfreshinggg")
     if (!cookies?.refreshToken)
         throw new ApiError(401, "Refresh token not found in cookies");
 
@@ -41,15 +41,22 @@ const handleLogin = asyncHandler(async (req, res) => {
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: true,
-            sameSite: "None",
+            secure: false, // TODO: change to true during de[ployment]
+            sameSite: "Lax",
             maxAge: 1 * 24 * 60 * 60 * 1000, // 1 days
+        });
+
+        res.cookie("accessToken", token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "Lax",
+            maxAge: 1 * 24 * 60 * 60 * 1000, // TODO: change to 15 mins during deployment 1 days
         });
 
         res.status(200).json({
             success: true,
-            accessToken: token,
             message: "Login successful",
+            credentials: verifyLogin.userData
         });
     } 
     else if (verifyLogin.message === "Wrong Password") {

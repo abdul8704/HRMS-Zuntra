@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sidebar } from "../../components/Sidebar";
 import { jwtDecode } from 'jwt-decode';
 
@@ -11,17 +11,25 @@ import { EmployeesOnLeave } from "./components/EmployeesOnLeave";
 import { RemainderPopup } from "./components/RemainderPopup";
 import { NotificationPopup } from './components/NotificationPopup';
 import { ProjectDeadline } from "../project/components/ProjectDeadline";
+import { useAuth } from "../../context/AuthContext";
 
 export const DashBoard = () => {
-  const token = localStorage.getItem('accessToken');
-  const userDetails = jwtDecode(token || '{}');
+
+  const { user, loading } = useAuth();
+  
+
+  // const token = document.cookies.accessToken
+  // const userDetails = jwtDecode(token || '{}');
+
   const [showNotification , setShowNotification]=useState(false);
-  const isNewUser = !userDetails?.role;
-  console.log(isNewUser)
+  
 
   const [showReminderForm, setShowReminderForm] = useState(false);
   const [reminderText, setReminderText] = useState('');
   const [reminderDate, setReminderDate] = useState('');
+  
+
+  const isNewUser = !user?.allowedAccess;
 
   const motivationalQuotes = [
     "Hope you make the most of your time today!",
@@ -57,8 +65,8 @@ export const DashBoard = () => {
           {/* 1. UserGreetings */}
           <div className="h-[10vh] md:h-full col-span-2 md:col-span-4 md:row-span-1 rounded-2xl flex items-center overflow-hidden px-[0.3rem] animate-slide-in-left">
             <UserGreetings
-              name={userDetails?.username}
-              profileImageURL={userDetails?.profilePicture}
+              name={user?.username}
+              profileImageURL={user?.profilePicture}
               marqueeText={quote}
             />
           </div>

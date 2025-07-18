@@ -21,8 +21,8 @@ export const TableOfContents = ({
     return Array.isArray(row) && row.length && row.every((val) => val === true);
   };
 
-  const token = localStorage.getItem('accessToken');
-  const userDetails = jwtDecode(token || '{}');
+  // const token = localStorage.getItem('accessToken');
+  // const userDetails = jwtDecode(token || '{}');
 
   const handleStartOver = () => {
     navigate(`/course/learn/${courseId}`);
