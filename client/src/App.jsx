@@ -52,7 +52,7 @@ function App() {
           <ProtectRoute>
             <ShiftDetails />
           </ProtectRoute>
-        }/>
+        } />
 
         <Route path="/employee/role/:roleId/details" element={
           <ProtectRoute>
@@ -107,8 +107,13 @@ function App() {
           <ProtectRoute>
             <Upskill />
           </ProtectRoute>
-        }/>
+        } />
 
+        <Route path="/ceo" element={
+          <ProtectRoute>
+            <CeoDashboard />
+          </ProtectRoute>
+        } />
 
         {/* Not Found Route */}
         <Route path="*" element={<NotFound />} />
