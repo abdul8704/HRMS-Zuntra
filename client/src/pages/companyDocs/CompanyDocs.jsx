@@ -214,6 +214,9 @@ export const CompanyDocs = () => {
             </div>
           )
         )}
+        {navId === "upload" && (
+          <p> hi </p>
+        )}
         {navId !== "all" && navId !== "upload" && (() => {
           const selectedDoc = documents.find((doc) => doc._id === navId);
           return (
