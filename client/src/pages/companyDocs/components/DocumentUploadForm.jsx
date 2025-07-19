@@ -1,88 +1,184 @@
 import React, { useState } from 'react';
+import { Upload, File, Calendar, Check, X } from 'lucide-react';
 
-export const DocumentUploadForm = () => {
+export function DocumentUploadForm() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [documentName, setDocumentName] = useState("");
+  const [validUpto, setValidUpto] = useState("");
+  const [dragOver, setDragOver] = useState(false);
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-
+  const handleFileChange = (file) => {
     if (file && file.type === 'application/pdf') {
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
     } else {
       setSelectedFile(null);
       setPreviewUrl(null);
+      if (file) {
+        alert("Please select a valid PDF file.");
+      }
     }
+  };
+
+  const handleFileInput = (e) => {
+    const file = e.target.files[0];
+    handleFileChange(file);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    handleFileChange(file);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setDragOver(false);
   };
 
   const handleNameChange = (e) => setDocumentName(e.target.value);
+  const handleDateChange = (e) => setValidUpto(e.target.value);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!selectedFile || !documentName.trim()) {
+    if (!selectedFile || !documentName.trim() || !validUpto) {
       alert("Please fill in all fields and upload a valid PDF.");
       return;
     }
-
-    // For now, just simulate success
-    alert(`Document "${documentName}" is ready to be uploaded!`);
+    console.log({ documentName, validUpto, selectedFile });
+    alert("Document uploaded successfully!");
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 w-full">
-      {/* Left: Upload Form */}
-      <form
-        onSubmit={handleSubmit}
-        className="w-full md:w-1/2 bg-white border rounded-lg p-4 shadow space-y-4"
-      >
-        <div>
-          <label className="block font-medium text-sm text-gray-700">Document Name</label>
-          <input
-            type="text"
-            value={documentName}
-            onChange={handleNameChange}
-            className="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-blue-200 focus:outline-none"
-            placeholder="e.g. Company Policy 2025"
-            required
-          />
-        </div>
+    <div className="flex flex-col lg:flex-row gap-[1rem] h-full">
+      {/* Left: Form */}
+      <div className="flex flex-col flex-1 bg-white rounded-xl shadow-lg p-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+          <File className="w-5 h-5 mr-2 text-blue-600" />
+          Document Details
+        </h2>
 
-        <div>
-          <label className="block font-medium text-sm text-gray-700">Upload PDF</label>
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={handleFileChange}
-            className="mt-1"
-            required
-          />
-        </div>
+        <form className="space-y-6 flex flex-col flex-1" onSubmit={handleSubmit}>
+          {/* Document Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Document Name
+            </label>
+            <input
+              type="text"
+              value={documentName}
+              onChange={handleNameChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              placeholder="Enter document name"
+              required
+            />
+          </div>
 
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-        >
-          Submit
-        </button>
-      </form>
+          {/* Valid Until Date */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+              <Calendar className="w-4 h-4 mr-1" />
+              Valid Until
+            </label>
+            <input
+              type="date"
+              value={validUpto}
+              onChange={handleDateChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              required
+            />
+          </div>
+
+          {/* File Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+              <Upload className="w-4 h-4 mr-1" />
+              Upload PDF Document
+            </label>
+
+            <div
+              className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-all ${
+                dragOver
+                  ? 'border-blue-500 bg-blue-50'
+                  : selectedFile
+                    ? 'border-green-400 bg-green-50'
+                    : 'border-gray-300 hover:border-gray-400'
+              }`}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+            >
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={handleFileInput}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                required
+              />
+
+              {selectedFile ? (
+                <div className="space-y-2">
+                  <Check className="w-8 h-8 text-green-600 mx-auto" />
+                  <p className="text-sm font-medium text-green-700">{selectedFile.name}</p>
+                  <p className="text-xs text-gray-500">
+                    {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Upload className="w-8 h-8 text-gray-400 mx-auto" />
+                  <p className="text-sm font-medium text-gray-700">
+                    Drop your PDF file here or click to browse
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    PDF files only, up to 10MB
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="pt-2">
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all transform hover:scale-105 active:scale-95"
+            >
+              Upload Document
+            </button>
+          </div>
+        </form>
+      </div>
 
       {/* Right: PDF Preview */}
-      <div className="w-full md:w-1/2 bg-white border rounded-lg p-4 shadow">
-        <h2 className="text-md font-medium mb-2 text-gray-800">Preview</h2>
-        {previewUrl ? (
-          <iframe
-            src={previewUrl}
-            title="PDF Preview"
-            className="w-full h-[500px] border rounded"
-          ></iframe>
-        ) : (
-          <div className="text-gray-500 h-full flex items-center justify-center border border-dashed rounded p-4 min-h-[200px]">
-            No document selected
-          </div>
-        )}
+      <div className="flex flex-col flex-1 bg-white rounded-xl shadow-lg p-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-6">Document Preview</h2>
+
+        <div className="flex-1 overflow-hidden">
+          {previewUrl ? (
+            <iframe
+              src={previewUrl}
+              title="PDF Preview"
+              className="w-full h-full border rounded"
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 border border-dashed rounded">
+              <File className="mb-4 text-gray-300" />
+              <p className="text-lg font-medium mb-2">No document selected</p>
+              <p className="text-sm text-center px-4">
+                Upload a PDF document to see the preview here
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
-};
+}

@@ -5,6 +5,7 @@ import { Navbar } from '../../components/Navbar';
 import { FaDownload } from 'react-icons/fa';
 import { DocumentViewer } from './components/DocumentViewer'
 import api, { BASE_URL } from '../../api/axios';
+import { DocumentUploadForm } from './components/DocumentUploadForm';
 
 export const CompanyDocs = () => {
   const navigate = useNavigate();
@@ -215,7 +216,7 @@ export const CompanyDocs = () => {
           )
         )}
         {navId === "upload" && (
-          <p> hi </p>
+          <DocumentUploadForm />
         )}
         {navId !== "all" && navId !== "upload" && (() => {
           const selectedDoc = documents.find((doc) => doc._id === navId);
@@ -226,9 +227,6 @@ export const CompanyDocs = () => {
             />
           );
         })()}
-
-
-
       </div>
     </div>
   );
