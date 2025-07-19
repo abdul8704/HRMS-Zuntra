@@ -6,14 +6,9 @@ const companyDocumentSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  givenDate: {
-    type: Date,
-    required: true,
-  },
   validUpto: {
     type: Date,
-    required: true,
   },
-}, { timestamps: true });
+}, { timestamps: true }); // Adds createdAt and updatedAt automatically
 
 module.exports = mongoose.model('companyDocument', companyDocumentSchema);
