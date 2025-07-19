@@ -58,7 +58,7 @@ const uploadCompanyDocument = asyncHandler(async (req, res) => {
   try {
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
     pdfDoc.setTitle(documentName);
-    pdfDoc.setAuthor('Your Company Name');
+    
 
     const updatedPdfBytes = await pdfDoc.save();
     fs.writeFileSync(filePath, updatedPdfBytes);
