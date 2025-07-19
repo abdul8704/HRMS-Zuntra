@@ -1,77 +1,79 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { User, ChevronDown, Search, X } from 'lucide-react';
+import { User, ChevronDown, Search } from 'lucide-react';
+import api from '../../../api/axios';
 
-export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }) => {
+export const EmpAssignmentPopUp = ({ employee, onClose, onSave }) => {
   const [selectedRole, setSelectedRole] = useState('');
   const [selectedShift, setSelectedShift] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
+  const [selectedRoleId, setSelectedRoleId] = useState('');
+  const [selectedShiftId, setSelectedShiftId] = useState('');
+  const [selectedBranchId, setSelectedBranchId] = useState('');
   const [salary, setSalary] = useState('');
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [showShiftDropdown, setShowShiftDropdown] = useState(false);
   const [showBranchDropdown, setShowBranchDropdown] = useState(false);
   const [manualSalary, setManualSalary] = useState(false);
 
+  const [roles, setRoles] = useState([]);
+  const [shifts, setShifts] = useState([]);
+  const [branches, setBranches] = useState([]);
+
   const roleInputRef = useRef(null);
   const shiftInputRef = useRef(null);
   const branchInputRef = useRef(null);
 
-  // Mock data
-  const roles = [
-    { name: 'Marketing Head', baseSalary: 25 },
-    { name: 'Marketing Lead', baseSalary: 20 },
-    { name: 'Marketing Executive', baseSalary: 15 },
-    { name: 'Sales Manager', baseSalary: 22 },
-    { name: 'Sales Executive', baseSalary: 18 },
-    { name: 'HR Manager', baseSalary: 24 },
-    { name: 'HR Executive', baseSalary: 16 },
-    { name: 'Developer', baseSalary: 30 },
-    { name: 'Designer', baseSalary: 20 },
-    { name: 'Content Writer', baseSalary: 14 }
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [rolesRes, shiftsRes, branchesRes] = await Promise.all([
+          api.get('/api/roles'),
+          api.get('/api/shifts'),
+          api.get('/api/branch')
+        ]);
 
-  const shifts = [
-    { id: 1, name: 'Morning', startTime: '09:00', endTime: '17:00' },
-    { id: 2, name: 'Evening', startTime: '17:00', endTime: '01:00' },
-    { id: 3, name: 'Night', startTime: '01:00', endTime: '09:00' }
-  ];
+        const formattedRoles = rolesRes.data.map(role => ({
+          id: role._id,
+          name: role.role,
+          baseSalary: role.baseSalary
+        }));
 
-  const branches = [
-    { id: 1, name: 'Zuntra Perungudi' },
-    { id: 2, name: 'New York Office' },
-    { id: 3, name: 'Los Angeles Office' },
-    { id: 4, name: 'Chicago Office' },
-    { id: 5, name: 'Miami Office' }
-  ];
+        const formattedShifts = shiftsRes.data.map(shift => ({
+          id: shift._id,
+          name: shift.shiftName,
+          startTime: new Date(shift.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          endTime: new Date(shift.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }));
 
-  const employee = {
-    name: 'John Doe',
-    email: 'doe@gmail.com',
-    phone: '5461664',
-    date: '2025-07-01'
-  };
+        const formattedBranches = branchesRes.data.branches.map(branch => ({
+          id: branch._id,
+          name: branch.campusName
+        }));
 
-  // Auto-update salary when role changes
+        setRoles(formattedRoles);
+        setShifts(formattedShifts);
+        setBranches(formattedBranches);
+      } catch (error) {
+        alert("Error fetching assignment data. Please try again later.");
+        console.error("API fetch error:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   useEffect(() => {
     if (!manualSalary && selectedRole) {
       const role = roles.find(r => r.name === selectedRole);
-      if (role) {
-        setSalary(role.baseSalary);
-      }
+      if (role) setSalary(role.baseSalary);
     }
-  }, [selectedRole, manualSalary]);
+  }, [selectedRole, manualSalary, roles]);
 
-  // Handle click outside to close dropdowns
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (roleInputRef.current && !roleInputRef.current.contains(e.target)) {
-        setShowRoleDropdown(false);
-      }
-      if (shiftInputRef.current && !shiftInputRef.current.contains(e.target)) {
-        setShowShiftDropdown(false);
-      }
-      if (branchInputRef.current && !branchInputRef.current.contains(e.target)) {
-        setShowBranchDropdown(false);
-      }
+      if (roleInputRef.current && !roleInputRef.current.contains(e.target)) setShowRoleDropdown(false);
+      if (shiftInputRef.current && !shiftInputRef.current.contains(e.target)) setShowShiftDropdown(false);
+      if (branchInputRef.current && !branchInputRef.current.contains(e.target)) setShowBranchDropdown(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -83,17 +85,20 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
 
   const handleRoleSelect = (role) => {
     setSelectedRole(role.name);
+    setSelectedRoleId(role.id);
     setShowRoleDropdown(false);
     setManualSalary(false);
   };
 
   const handleShiftSelect = (shift) => {
     setSelectedShift(shift.name);
+    setSelectedShiftId(shift.id);
     setShowShiftDropdown(false);
   };
 
   const handleBranchSelect = (branch) => {
     setSelectedBranch(branch.name);
+    setSelectedBranchId(branch.id);
     setShowBranchDropdown(false);
   };
 
@@ -105,16 +110,49 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
     }
   };
 
-  const isFormValid = selectedRole.trim() && selectedShift.trim() && selectedBranch.trim() && salary.toString().trim();
+  const isFormValid =
+    selectedRoleId && selectedShiftId && selectedBranchId && salary.toString().trim();
 
-  const handleSubmit = () => {
-    onClose();
+  const handleSubmit = async () => {
+    if (isFormValid) {
+      const selectedShiftData = shifts.find(shift => shift.id === selectedShiftId);
+
+      if (!selectedShiftData) {
+        alert("Invalid shift selected.");
+        return;
+      }
+
+      try {
+        const payload = {
+          email: employee.email,
+          shiftId: selectedShiftId,
+          campusId: selectedBranchId,
+          roleId: selectedRoleId,
+          salary: salary
+        };
+
+        console.log("Submitting:", payload);
+
+        const response = await api.post('/api/hr/accept', payload);
+
+        alert("Employee assigned successfully");
+        onSave();
+        onClose();
+        window.location.reload();
+      } catch (err) {
+        console.error("Error assigning employee:", err);
+        alert("Error assigning employee. Please try again.");
+      }
+    }
   };
 
   const handleCancel = () => {
     setSelectedRole('');
     setSelectedShift('');
     setSelectedBranch('');
+    setSelectedRoleId('');
+    setSelectedShiftId('');
+    setSelectedBranchId('');
     setSalary('');
     setManualSalary(false);
     onClose();
@@ -124,14 +162,12 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
         <div className="bg-white rounded-2xl shadow-2xl flex w-full max-w-4xl mx-4 overflow-hidden">
-          {/* Left Side - Employee Info */}
           <div className="w-2/5 bg-gradient-to-br from-blue-50 to-indigo-100 p-8 flex flex-col justify-center items-center text-center">
             <div className="relative mb-6">
               <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
                 <User size={48} className="text-white" />
               </div>
             </div>
-
             <h3 className="text-2xl font-bold text-gray-800 mb-2">{employee.name}</h3>
             <div className="bg-white bg-opacity-80 px-4 py-2 rounded-full mb-2">
               <p className="text-sm font-medium text-gray-700">{employee.email}</p>
@@ -140,10 +176,8 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
             <p className="text-sm text-gray-600">Applied on: {employee.date}</p>
           </div>
 
-          {/* Right Side - Assignment Form */}
           <div className="flex-1 p-8">
             <div className="space-y-6">
-              {/* Role Selection */}
               <div className="relative" ref={roleInputRef}>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Role</label>
                 <div className="relative">
@@ -161,7 +195,6 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
                   />
                   <Search size={20} className="absolute right-3 top-3.5 text-gray-400" />
                 </div>
-
                 {showRoleDropdown && (
                   <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                     {filteredRoles.length === 0 ? (
@@ -182,11 +215,10 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
                 )}
               </div>
 
-              {/* Shift Selection */}
               <div className="relative" ref={shiftInputRef}>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Shift</label>
                 <div
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 cursor-pointer flex justify-between items-center"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 cursor-pointer flex justify-between items-center"
                   onClick={() => setShowShiftDropdown(!showShiftDropdown)}
                 >
                   <span className={selectedShift ? 'text-gray-800' : 'text-gray-500'}>
@@ -194,7 +226,6 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
                   </span>
                   <ChevronDown size={20} className="text-gray-400" />
                 </div>
-
                 {showShiftDropdown && (
                   <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
                     {shifts.map((shift) => (
@@ -211,11 +242,10 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
                 )}
               </div>
 
-              {/* Branch Selection */}
               <div className="relative" ref={branchInputRef}>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Branch</label>
                 <div
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 cursor-pointer flex justify-between items-center"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 cursor-pointer flex justify-between items-center"
                   onClick={() => setShowBranchDropdown(!showBranchDropdown)}
                 >
                   <span className={selectedBranch ? 'text-gray-800' : 'text-gray-500'}>
@@ -223,7 +253,6 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
                   </span>
                   <ChevronDown size={20} className="text-gray-400" />
                 </div>
-
                 {showBranchDropdown && (
                   <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                     {branches.map((branch) => (
@@ -239,7 +268,6 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
                 )}
               </div>
 
-              {/* Salary Input */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Salary (per hour)</label>
                 <input
@@ -252,12 +280,9 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
                 />
               </div>
 
-              {/* Action Buttons */}
               <div className="flex justify-end space-x-4 pt-4">
                 <button
-                  onClick={
-                    handleCancel
-                  }
+                  onClick={handleCancel}
                   className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors font-medium"
                 >
                   Cancel
@@ -267,8 +292,8 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
                   disabled={!isFormValid}
                   className={`px-6 py-3 rounded-lg font-medium transition-colors ${isFormValid
                     ? 'bg-blue-600 text-white hover:bg-blue-700'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'}
+                  `}
                 >
                   Recruit
                 </button>
@@ -277,18 +302,6 @@ export const EmpAssignmentPopUp = ({ email, employeee, isOpen, onClose, onSave }
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
-        input[type="number"] {
-          -moz-appearance: textfield;
-        }
-      `}</style>
     </>
   );
 };
-

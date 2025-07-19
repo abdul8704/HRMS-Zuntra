@@ -40,10 +40,11 @@ const getPendingUsers = async () => {
     }
 };
 
-const creatUserPersonal = async (userid) => {
+const creatUserPersonal = async (userid, salary) => {
     try {
         const userPersonal = new UserPersonal({
             _id: userid,
+            Salary: salary,
         });
 
         await userPersonal.save();
