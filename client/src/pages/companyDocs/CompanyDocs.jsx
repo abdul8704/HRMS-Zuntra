@@ -101,6 +101,7 @@ export const CompanyDocs = () => {
     e.stopPropagation();
 
     if (!window.confirm("Are you sure you want to delete this document?")) return;
+    if (!window.confirm("After you delete git push in vscode")) return;
 
     try {
       const response = await api.delete(`/api/docs/${id}`);
