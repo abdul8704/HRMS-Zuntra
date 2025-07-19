@@ -1,8 +1,56 @@
 const multer = require("multer")
 const path = require("path");
 
+// profilePicture
+
+const profileFileFilter=(req,file,cb) => {
+    const allowedTypes= /jpeg|jpg|png/;
+    const isAllowed  = allowedTypes.test(file.mimetype);
+    if(isAllowed){
+        cb(null,true);
+    }
+    else{
+        cb(Object.assign(new Error("Ivalid file type!"), { statusCode: 400 }),false);
+    }
+};
+
+const uploadProfile = multer({
+    storage: multer.memoryStorage(),
+    fileFilter: profileFileFilter,
+})
+
+
+//pdf
+const documentStorage = multer.diskStorage({
+    destination:(req,file,cb)=>{
+        cb(null,"uploads/companyDocuments");
+    },
+    filename:(req,file,cb)=>{
+        const { documentId } = req.params;
+        const extension = ".pdf";
+        const newFileName = `${documentId}${extension}`;
+        cb(null,newFileName);
+    }
+})
+
+const documentFileFilter=(req,file,cb) => {
+    const allowedTypes= /pdf/;
+    const isAllowed  = allowedTypes.test(file.mimetype);
+    if(isAllowed){
+        cb(null,true);
+    }
+    else{
+        cb(Object.assign(new Error("Unable to send Message!!"), { statusCode: 400 }),false);
+    }
+};
+
+const uploadDocument = multer({
+    storage: documentStorage,
+    fileFilter: documentFileFilter,
+})
+
 //Course Videos
-const storage = multer.diskStorage({
+const courseStorage = multer.diskStorage({
     destination:(req,file,cb)=>{
         cb(null,"uploads/courseLearnVideos");
     },
@@ -14,7 +62,7 @@ const storage = multer.diskStorage({
     }
 })
 
-const fileFilter=(req,file,cb) => {
+const courseFileFilter=(req,file,cb) => {
     const allowedTypes= /mp4/;
     const isAllowed  = allowedTypes.test(file.mimetype);
     if(isAllowed){
@@ -26,26 +74,8 @@ const fileFilter=(req,file,cb) => {
 };
 
 const uploadVideo = multer({
-    storage: storage,
-    fileFilter: fileFilter,
+    storage: courseStorage,
+    fileFilter: courseFileFilter,
 })
 
-// profilePicture
-
-    const profileFileFilter=(req,file,cb) => {
-        const allowedTypes= /jpeg|jpg|png/;
-        const isAllowed  = allowedTypes.test(file.mimetype);
-        if(isAllowed){
-            cb(null,true);
-        }
-        else{
-            cb(Object.assign(new Error("Ivalid file type!"), { statusCode: 400 }),false);
-        }
-    };
-
-    const uploadProfile = multer({
-        storage: multer.memoryStorage(),
-        fileFilter: profileFileFilter,
-    })
-
-    module.exports = {uploadVideo, uploadProfile};
+module.exports = {uploadVideo, uploadProfile, uploadDocument};
