@@ -270,12 +270,16 @@ export const EmployeeManagement = () => {
   const handleClosePopup = useCallback(() => {
     setShowAssignPopup(false);
     setSelectedEmployee(null);
+    console.log("Inside handleClosePopup")
   }, []);
+
+  console.log(showAssignPopup);
 
   const handleApprove = useCallback((employee) => {
     setSelectedEmployee(employee);
     setShowAssignPopup(true);
   }, []);
+
 
   const handleSaveAssignment = useCallback(() => {
     handleClosePopup();
