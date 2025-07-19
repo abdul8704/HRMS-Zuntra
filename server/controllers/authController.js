@@ -7,6 +7,9 @@ const transporter = require("../utils/sendOTP");
 const jwtUtils = require("../utils/generateJWT");
 const GeoService = require("../services/geoLocationService")
 const ApiError = require("../errors/ApiError");
+const sharp = require("sharp");
+const path = require("path");
+const fs = require("fs");
 
 
 const handleRefreshToken = asyncHandler((req, res) => {
@@ -140,19 +143,27 @@ const uploadProfileController = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "No file uploaded" });
     }
 
-    const imagePath = `uploads/profilePictures/${req.file.filename}`;
+    const userId = req.params.userId;
+    const outputDir = path.join(__dirname, "..", "uploads", "profilePictures");
+
+    const outputPath = path.join(outputDir, `${userId}.png`);
+
+    await sharp(req.file.buffer)
+      .png()
+      .toFile(outputPath);
 
     res.status(200).json({
       success: true,
-      message: "Profile picture uploaded",
+      message: "Profile picture uploaded and converted to PNG",
       data: {
-        imagePath,
+        imagePath: `uploads/profilePictures/${userId}.png`,
       },
     });
   } catch (err) {
     next(err);
   }
 };
+
 
 const userExists = asyncHandler(async (req, res) => {
     const { email } = req.body;
