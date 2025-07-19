@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
 import { FaDownload } from 'react-icons/fa';
+import { DocumentViewer } from './components/DocumentViewer'
 import api, { BASE_URL } from '../../api/axios';
 
 export const CompanyDocs = () => {
@@ -62,7 +63,7 @@ export const CompanyDocs = () => {
   // Add navigation handler
   const handleRowClick = useCallback((documentId) => {
     // Replace '/document-details' with your actual route
-    navigate(`/document-details/${documentId}`);
+    navigate(`/documents/${documentId}`);
   }, [navigate]);
 
   const handleDownload = async (e, id, name) => {
@@ -103,7 +104,7 @@ export const CompanyDocs = () => {
   return (
     <div className="flex h-screen font-sans">
       <Sidebar role={"HR"} />
-      <div className="flex-1 overflow-y-auto p-4 bg-white flex flex-col gap-4">
+      <div className="flex-1 h-screen overflow-y-auto p-4 bg-white flex flex-col gap-4">
         {(navId === "all" || navId === "upload") &&
           <Navbar
             type="companyDocuments"
@@ -213,6 +214,17 @@ export const CompanyDocs = () => {
             </div>
           )
         )}
+        {navId !== "all" && navId !== "upload" && (() => {
+          const selectedDoc = documents.find((doc) => doc._id === navId);
+          return (
+            <DocumentViewer
+              documentId={navId}
+              documentName={selectedDoc?.documentName || "Document"}
+            />
+          );
+        })()}
+
+
 
       </div>
     </div>
