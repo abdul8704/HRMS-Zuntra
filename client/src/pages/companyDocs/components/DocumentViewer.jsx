@@ -50,15 +50,12 @@ export const DocumentViewer = ({ documentId, documentName }) => {
     return (
         <>
             <div className="w-full relative bg-[#BBD3CC] rounded-xl flex items-center py-4 px-4">
-                {/* Back Button */}
                 <button
                     className="text-2xl font-bold text-black hover:scale-110 transition"
                     onClick={() => navigate("/documents/all")}
                 >
                     ←
                 </button>
-
-                {/* Center Title */}
                 <div className="flex-1 flex justify-center items-center">
                     <span className="text-lg">{documentName}</span>
                 </div>
