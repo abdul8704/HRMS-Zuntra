@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Upload, File, Calendar, Check, X } from 'lucide-react';
+import { Upload, File, Calendar, Check } from 'lucide-react';
+import api from '../../../api/axios';
 
 export function DocumentUploadForm() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [documentName, setDocumentName] = useState("");
-  const [validUpto, setValidUpto] = useState("");
+  const [documentName, setDocumentName] = useState('');
+  const [validUpto, setValidUpto] = useState('');
   const [dragOver, setDragOver] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (file) => {
     if (file && file.type === 'application/pdf') {
@@ -16,7 +18,7 @@ export function DocumentUploadForm() {
       setSelectedFile(null);
       setPreviewUrl(null);
       if (file) {
-        alert("Please select a valid PDF file.");
+        alert('Please select a valid PDF file.');
       }
     }
   };
@@ -46,14 +48,58 @@ export function DocumentUploadForm() {
   const handleNameChange = (e) => setDocumentName(e.target.value);
   const handleDateChange = (e) => setValidUpto(e.target.value);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedFile || !documentName.trim() || !validUpto) {
-      alert("Please fill in all fields and upload a valid PDF.");
+
+    if (!documentName.trim() || !validUpto) {
+      alert('Please fill in both Document Name and Valid Until Date.');
       return;
     }
-    console.log({ documentName, validUpto, selectedFile });
-    alert("Document uploaded successfully!");
+
+    if (!selectedFile) {
+      alert('Please select a PDF file to upload.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // 1️⃣ Submit metadata
+      const metadataPayload = { documentName, validUpto };
+      const metadataResponse = await api.post('/api/docs/add', metadataPayload);
+
+      if (!metadataResponse?.data?.data?._id) {
+        throw new Error('No document ID returned from server');
+      }
+
+      const documentId = metadataResponse.data.data._id;
+      const encodedName = encodeURIComponent(documentName);
+
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      const uploadResponse = await api.post(
+        `/api/docs/upload/${documentId}/${encodedName}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      alert('Document uploaded successfully!');
+      console.log('Upload response:', uploadResponse.data);
+
+      setDocumentName('');
+      setValidUpto('');
+      setSelectedFile(null);
+      setPreviewUrl(null);
+    } catch (error) {
+      console.error('Upload failed:', error);
+      alert('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -108,8 +154,8 @@ export function DocumentUploadForm() {
                 dragOver
                   ? 'border-blue-500 bg-blue-50'
                   : selectedFile
-                    ? 'border-green-400 bg-green-50'
-                    : 'border-gray-300 hover:border-gray-400'
+                  ? 'border-green-400 bg-green-50'
+                  : 'border-gray-300 hover:border-gray-400'
               }`}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -120,7 +166,6 @@ export function DocumentUploadForm() {
                 accept="application/pdf"
                 onChange={handleFileInput}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                required
               />
 
               {selectedFile ? (
@@ -149,9 +194,10 @@ export function DocumentUploadForm() {
           <div className="pt-2">
             <button
               type="submit"
+              disabled={loading}
               className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all transform hover:scale-105 active:scale-95"
             >
-              Upload Document
+              {loading ? 'Uploading...' : 'Upload Document'}
             </button>
           </div>
         </form>
@@ -160,7 +206,6 @@ export function DocumentUploadForm() {
       {/* Right: PDF Preview */}
       <div className="flex flex-col flex-1 bg-white rounded-xl shadow-lg p-6">
         <h2 className="text-xl font-semibold text-gray-800 mb-6">Document Preview</h2>
-
         <div className="flex-1 overflow-hidden">
           {previewUrl ? (
             <iframe

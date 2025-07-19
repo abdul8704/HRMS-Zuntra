@@ -43,7 +43,7 @@ export const CompanyDocs = () => {
     };
 
     fetchDocuments();
-  }, []);
+  }, [navId]);
 
   const includesSearchTerm = useCallback((str, term) => {
     return str?.toLowerCase().includes(term.toLowerCase()) || false;
