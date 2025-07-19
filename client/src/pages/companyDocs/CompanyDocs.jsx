@@ -1,10 +1,13 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
 import { FaDownload } from 'react-icons/fa';
 import api, { BASE_URL } from '../../api/axios';
 
 export const CompanyDocs = () => {
+  const navigate = useNavigate();
+  const { navId } = useParams();
   const [documents, setDocuments] = useState([]);
   const [isFilterActive, setIsFilterActive] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -56,7 +59,16 @@ export const CompanyDocs = () => {
     setIsFilterActive(false);
   }, []);
 
-  const handleDownload = async (id, name) => {
+  // Add navigation handler
+  const handleRowClick = useCallback((documentId) => {
+    // Replace '/document-details' with your actual route
+    navigate(`/document-details/${documentId}`);
+  }, [navigate]);
+
+  const handleDownload = async (e, id, name) => {
+    // Prevent row click when download button is clicked
+    e.stopPropagation();
+
     try {
       const response = await fetch(`${BASE_URL}/uploads/companyDocuments/${id}.pdf`, {
         method: 'GET',
@@ -77,17 +89,30 @@ export const CompanyDocs = () => {
     }
   };
 
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return !isNaN(date)
+      ? date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      })
+      : "-";
+  };
+
   return (
     <div className="flex h-screen font-sans">
       <Sidebar role={"HR"} />
       <div className="flex-1 overflow-y-auto p-4 bg-white flex flex-col gap-4">
-        <Navbar
-          type="companyDocuments"
-          showFilter={true}
-          isFilterActive={isFilterActive}
-          setIsFilterActive={setIsFilterActive}
-          handleClearFilters={handleClearFilters}
-        />
+        {(navId === "all" || navId === "upload") &&
+          <Navbar
+            type="companyDocuments"
+            showFilter={true}
+            isFilterActive={isFilterActive}
+            setIsFilterActive={setIsFilterActive}
+            handleClearFilters={handleClearFilters}
+          />
+        }
 
         {isFilterActive && (
           <div className="w-full bg-[#BBD3CC] rounded-xl flex gap-2 p-2">
@@ -125,55 +150,70 @@ export const CompanyDocs = () => {
           </div>
         )}
 
-        {loading || errorMessage ? (
-          <div className="flex-1 flex justify-center items-center text-gray-600 text-lg">
-            {loading ? "Loading..." : errorMessage}
-          </div>
-        ) : (
-          <div className="bg-[#f8f9fb] rounded-lg overflow-hidden shadow border flex-1">
-            <table className="min-w-full table-auto text-sm">
-              <thead className="bg-[#f8f9fb] text-left font-semibold text-black">
-                <tr>
-                  <th className="px-6 py-3">Document</th>
-                  <th className="px-6 py-3 text-right">Given Date</th>
-                  <th className="px-6 py-3 text-right">Valid Upto</th>
-                  <th className="px-6 py-3 text-center w-12"></th>
-                </tr>
-              </thead>
-              <tbody className="text-gray-700">
-                {filteredDocuments.length === 0 ? (
+        {navId === "all" && (
+          loading || errorMessage ? (
+            <div className="flex-1 flex justify-center items-center text-gray-600 text-lg">
+              {loading ? "Loading..." : errorMessage}
+            </div>
+          ) : (
+            <div className="bg-[#f8f9fb] rounded-lg overflow-hidden shadow border flex-1">
+              <table className="min-w-full table-auto text-sm">
+                <thead className="bg-[#f8f9fb] text-left font-semibold text-black">
                   <tr>
-                    <td colSpan="4" className="px-6 py-8 text-center text-gray-500 font-medium">
-                      {documents.length === 0
-                        ? "No documents available"
-                        : "No documents match the current search"}
-                    </td>
+                    <th className="px-6 py-3">Document</th>
+                    <th className="px-6 py-3 text-right">Given Date</th>
+                    <th className="px-6 py-3 text-right">Valid Upto</th>
+                    <th className="px-6 py-3 text-center w-12"></th>
                   </tr>
-                ) : (
-                  filteredDocuments.map((item, index) => (
-                    <tr key={index} className="border-t group hover:bg-gray-50 transition-colors duration-150">
-                      <td className="px-6 py-3">{item.documentName}</td>
-                      <td className="px-6 py-3 text-right">
-                        {new Date(item.givenDate).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-3 text-right">
-                        {new Date(item.validUpto).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-3 text-center">
-                        <button
-                          onClick={() => handleDownload(item._id, item.documentName)}
-                          className="inline-block text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                        >
-                          <FaDownload size={16} />
-                        </button>
+                </thead>
+                <tbody className="text-gray-700">
+                  {filteredDocuments.length === 0 ? (
+                    <tr>
+                      <td colSpan="4" className="px-6 py-8 text-center text-gray-500 font-medium">
+                        {documents.length === 0
+                          ? "No documents available"
+                          : "No documents match the current search"}
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : (
+                    filteredDocuments.map((item, index) => {
+                      const createdDate = formatDate(item.createdAt);
+                      const validUptoDate = formatDate(item.validUpto);
+
+                      return (
+                        <tr
+                          key={index}
+                          className="border-t group hover:bg-blue-50 hover:shadow-sm transition-all duration-200 cursor-pointer select-none"
+                          onClick={() => handleRowClick(item._id)}
+                        >
+                          <td className="px-6 py-4 font-medium text-gray-900 group-hover:text-blue-700 transition-colors duration-200">
+                            {item.documentName}
+                          </td>
+                          <td className="px-6 py-4 text-right text-gray-600 group-hover:text-gray-800 transition-colors duration-200">
+                            {createdDate}
+                          </td>
+                          <td className="px-6 py-4 text-right text-gray-600 group-hover:text-gray-800 transition-colors duration-200">
+                            {validUptoDate}
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <button
+                              onClick={(e) => handleDownload(e, item._id, item.documentName)}
+                              className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-100 rounded-full transition-all duration-200 opacity-60 group-hover:opacity-100 cursor-pointer"
+                              title="Download document"
+                            >
+                              <FaDownload size={14} />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )
         )}
+
       </div>
     </div>
   );
