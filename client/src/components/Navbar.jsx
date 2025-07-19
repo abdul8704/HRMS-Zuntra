@@ -238,6 +238,34 @@ const UpskillNavItems = [
     path: 'completed',
   }
 ];
+const companyDocumentsNavItems =[
+  {
+    label: 'Company Documents',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" viewBox="0 0 25 25">
+        <path fill="#000" d="M10.467 14.11c1.74-3.872 6.25-5.577 10.076-3.817 3.826 1.76 5.51 6.325 3.772 10.197A7.582 7.582 0 0 1 17.39 25c-2.935 0-5.62-1.716-6.88-4.4H0v-2.2c.065-1.254.913-2.277 2.543-3.102 1.63-.825 3.674-1.254 6.153-1.298.62 0 1.206.055 1.771.11ZM8.696 3c1.217.033 2.239.462 3.054 1.287s1.217 1.859 1.217 3.113-.402 2.288-1.217 3.113c-.815.825-1.837 1.232-3.054 1.232-1.218 0-2.24-.407-3.055-1.232S4.424 8.654 4.424 7.4s.402-2.288 1.217-3.113C6.456 3.462 7.478 3.033 8.696 3Zm8.695 19.8c1.441 0 2.824-.58 3.843-1.61a5.534 5.534 0 0 0 1.592-3.89 5.534 5.534 0 0 0-1.592-3.89 5.402 5.402 0 0 0-3.843-1.61c-1.441 0-2.824.58-3.843 1.61a5.534 5.534 0 0 0-1.592 3.89c0 1.459.573 2.858 1.592 3.89a5.402 5.402 0 0 0 3.843 1.61Z" />
+        <path fill="#000" d="M15 2.75c0 .11-.041.184-.124.222l-6.32 2.52A.19.19 0 0 1 8.5 5.5a.19.19 0 0 1-.056-.007l-3.68-1.475c-.161.162-.295.428-.4.798a5.64 5.64 0 0 0-.192 1.278c.237.172.356.432.356.781 0 .33-.11.585-.327.766l.327 3.101a.25.25 0 0 1-.045.18.157.157 0 0 1-.136.078H3.264a.154.154 0 0 1-.136-.079.25.25 0 0 1-.045-.179l.328-3.1c-.219-.182-.328-.438-.328-.767 0-.349.123-.614.367-.795.041-.988.226-1.776.553-2.363l-1.879-.745C2.041 2.934 2 2.86 2 2.75s.041-.184.124-.222l6.32-2.52A.19.19 0 0 1 8.5 0a.19.19 0 0 1 .056.007l6.32 2.521c.083.038.124.112.124.222ZM20.418 14 22 15.492 16.165 21 13 18.013l1.582-1.492 1.583 1.492L20.418 14Z" />
+      </svg>
+
+    ),
+    filter: true,
+    role: "hr",
+    path: 'all',
+  },
+  {
+    label: 'Upload Documents',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none" viewBox="0 0 25 25">
+        <path fill="#000" d="M10.467 14.11c1.74-3.872 6.25-5.577 10.076-3.817 3.826 1.76 5.51 6.325 3.772 10.197A7.582 7.582 0 0 1 17.39 25c-2.935 0-5.62-1.716-6.88-4.4H0v-2.2c.065-1.254.913-2.277 2.543-3.102 1.63-.825 3.674-1.254 6.153-1.298.62 0 1.206.055 1.771.11ZM8.696 3c1.217.033 2.239.462 3.054 1.287s1.217 1.859 1.217 3.113-.402 2.288-1.217 3.113c-.815.825-1.837 1.232-3.054 1.232-1.218 0-2.24-.407-3.055-1.232S4.424 8.654 4.424 7.4s.402-2.288 1.217-3.113C6.456 3.462 7.478 3.033 8.696 3Zm8.695 19.8c1.441 0 2.824-.58 3.843-1.61a5.534 5.534 0 0 0 1.592-3.89 5.534 5.534 0 0 0-1.592-3.89 5.402 5.402 0 0 0-3.843-1.61c-1.441 0-2.824.58-3.843 1.61a5.534 5.534 0 0 0-1.592 3.89c0 1.459.573 2.858 1.592 3.89a5.402 5.402 0 0 0 3.843 1.61Z" />
+        <path fill="#000" d="M15 2.75c0 .11-.041.184-.124.222l-6.32 2.52A.19.19 0 0 1 8.5 5.5a.19.19 0 0 1-.056-.007l-3.68-1.475c-.161.162-.295.428-.4.798a5.64 5.64 0 0 0-.192 1.278c.237.172.356.432.356.781 0 .33-.11.585-.327.766l.327 3.101a.25.25 0 0 1-.045.18.157.157 0 0 1-.136.078H3.264a.154.154 0 0 1-.136-.079.25.25 0 0 1-.045-.179l.328-3.1c-.219-.182-.328-.438-.328-.767 0-.349.123-.614.367-.795.041-.988.226-1.776.553-2.363l-1.879-.745C2.041 2.934 2 2.86 2 2.75s.041-.184.124-.222l6.32-2.52A.19.19 0 0 1 8.5 0a.19.19 0 0 1 .056.007l6.32 2.521c.083.038.124.112.124.222ZM20.418 14 22 15.492 16.165 21 13 18.013l1.582-1.492 1.583 1.492L20.418 14Z" />
+      </svg>
+
+    ),
+    filter: false,
+    role: "hr",
+    path: 'upload',
+  }
+]
 
 
 export const Navbar = ({
@@ -271,9 +299,10 @@ export const Navbar = ({
     } else {
       navItems = AttendanceNavItems.filter(item => item.role === 'emp');
     }
-  }
-  else if (type === 'upskill') {
+  } else if (type === 'upskill') {
     navItems = UpskillNavItems;
+  } else if (type === 'companyDocuments') {
+    navItems = companyDocumentsNavItems;
   }
 
   const [activeNavId, setActiveNavId] = useState('');
@@ -303,6 +332,8 @@ export const Navbar = ({
       finalPath = `/attendance/${path}`;
     } else if (type === 'upskill') {
       finalPath = `/upskill/${path}`;
+    } else if (type === 'companyDocuments') {
+      finalPath = `/documents/${path}`;
     }
 
     navigate(finalPath);
@@ -316,24 +347,23 @@ export const Navbar = ({
     let updatedNavId = '';
 
     if (type === 'employeeManagement') {
-      updatedNavId =
-        navItems.find(item => currentPath.startsWith(item.path))?.path || navItems[0]?.path;
+      updatedNavId = navItems.find(item => currentPath.startsWith(item.path))?.path || navItems[0]?.path;
     } else if (type === 'courseManagement') {
       const courseSegment = currentPath.split('/courses/')[1]?.split('/')[0];
-      updatedNavId =
-        navItems.find(item => item.path === courseSegment)?.path || navItems[0]?.path;
+      updatedNavId = navItems.find(item => item.path === courseSegment)?.path || navItems[0]?.path;
     } else if (type === 'employeeDetails') {
       const detailsSegment = currentPath.split('/details')[1];
-      updatedNavId =
-        navItems.find(item => detailsSegment?.startsWith(item.path))?.path || navItems[0]?.path;
+      updatedNavId = navItems.find(item => detailsSegment?.startsWith(item.path))?.path || navItems[0]?.path;
     } else if (type === 'attendance') {
       const attendanceSegment = currentPath.split('/attendance/')[1]?.split('/')[0];
       updatedNavId = navItems.find(item => item.path === attendanceSegment)?.path || navItems[0]?.path;
     } else if (type === 'upskill') {
       const attendanceSegment = currentPath.split('/upskill/')[1]?.split('/')[0];
       updatedNavId = navItems.find(item => item.path === attendanceSegment)?.path || navItems[0]?.path;
+    } else if (type === 'companyDocuments') {
+      const documentsSegment = currentPath.split('/documents/')[1]?.split('/')[0];
+      updatedNavId = navItems.find(item => item.path === documentsSegment)?.path || navItems[0]?.path;
     }
-
 
     setActiveNavId(updatedNavId);
     setTimeout(() => updateSlider(updatedNavId), 0);
@@ -349,7 +379,6 @@ export const Navbar = ({
       observer.disconnect();
     };
   }, [location.pathname, type, role, navItems]);
-
 
   if (!navItems.length) return null;
 
@@ -381,8 +410,9 @@ export const Navbar = ({
         ))}
         {showFilter && activeItem?.filter && (
           <li
-            className={`relative z-[2] flex items-center justify-center cursor-pointer font-medium px-4 py-4 select-none duration-200 ${isFilterActive ? 'bg-white/40' : ''
-              }`}
+            className={`relative z-[2] flex items-center justify-center cursor-pointer font-medium px-4 py-4 select-none duration-200 ${
+              isFilterActive ? 'bg-white/40' : ''
+            }`}
             onClick={() => setIsFilterActive?.(prev => !prev)}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="20" fill="none" viewBox="0 0 20 20">
@@ -402,8 +432,9 @@ export const Navbar = ({
             <span className="mr-2 flex items-center">{activeItem?.icon}</span>
             <span className="flex-1 text-left">{activeItem?.label}</span>
             <svg
-              className={`w-3 h-3 ml-2 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''
-                }`}
+              className={`w-3 h-3 ml-2 transition-transform duration-200 ${
+                isDropdownOpen ? 'rotate-180' : ''
+              }`}
               viewBox="0 0 12 12"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
