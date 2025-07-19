@@ -161,6 +161,7 @@ export const Sidebar = ({ role = "HR" }) => {
     if (currentPath.startsWith("/dashboard")) return visibleItems.findIndex(i => i.label === "Dashboard");
     if (currentPath.startsWith("/attendance")) return visibleItems.findIndex(i => i.label === "Attendance");
     if (currentPath.startsWith("/upskill")) return visibleItems.findIndex(i => i.label === "UpSkill");
+    if (currentPath.startsWith("/documents")) return visibleItems.findIndex(i => i.label === "Documents");
     return visibleItems.findIndex(i => i.path === "/");
   };
 
