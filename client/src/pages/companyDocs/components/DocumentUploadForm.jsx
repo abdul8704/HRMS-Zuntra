@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, File, Calendar, Check } from 'lucide-react';
+import { Upload, File, Calendar, Check, X } from 'lucide-react';
 import api from '../../../api/axios';
 
 export function DocumentUploadForm() {
@@ -51,8 +51,8 @@ export function DocumentUploadForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!documentName.trim() || !validUpto) {
-      alert('Please fill in both Document Name and Valid Until Date.');
+    if (!documentName.trim()) {
+      alert('Please fill in Document Name.');
       return;
     }
 
@@ -63,9 +63,10 @@ export function DocumentUploadForm() {
 
     try {
       setLoading(true);
-
-      // 1️⃣ Submit metadata
-      const metadataPayload = { documentName, validUpto };
+      const metadataPayload = {
+        documentName,
+        validUpto: validUpto.trim() === '' ? null : validUpto,
+      };
       const metadataResponse = await api.post('/api/docs/add', metadataPayload);
 
       if (!metadataResponse?.data?.data?._id) {
@@ -127,19 +128,30 @@ export function DocumentUploadForm() {
             />
           </div>
 
-          {/* Valid Until Date */}
+          {/* Valid Until Date with Clear Button */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
               <Calendar className="w-4 h-4 mr-1" />
               Valid Until
             </label>
-            <input
-              type="date"
-              value={validUpto}
-              onChange={handleDateChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-              required
-            />
+            <div className="relative flex items-center">
+              <input
+                type="date"
+                value={validUpto}
+                onChange={handleDateChange}
+                className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              />
+              {validUpto && (
+                <button
+                  type="button"
+                  onClick={() => setValidUpto('')}
+                  className="absolute right-3 text-red-500 hover:text-red-700"
+                  title="Clear date"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* File Upload */}

@@ -88,9 +88,36 @@ const uploadCompanyDocument = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc Delete a company document
+// @route DELETE /api/docs/:documentId
+const deleteCompanyDocument = asyncHandler(async (req, res) => {
+  const { documentId } = req.params;
+
+  if (!documentId) {
+    throw new ApiError(400, 'Document ID is required');
+  }
+
+  const deleted = await companyDocService.deleteCompanyDocument(documentId);
+
+  if (!deleted) {
+    throw new ApiError(404, 'Company document not found or already deleted');
+  }
+
+  const filePath = path.resolve(`uploads/companyDocuments/${documentId}.pdf`);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+
+  res.status(200).json({
+    success: true,
+    message: 'Company document deleted successfully',
+  });
+});
 
 module.exports = {
   getAllCompanyDocuments,
   uploadCompanyDocument,
   addNewCompanyDocuments,
+  deleteCompanyDocument,
 };
+
