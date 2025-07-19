@@ -42,6 +42,7 @@ function App() {
           <Route path="/attendance/:navId" element={ <Attendance /> } />
           <Route path="/attendance/" element={ <HrPersonalAttendance /> } />
           <Route path="/upskill/:navId" element={ <Upskill />} />
+          <Route path="/documents/:navId" element={ <CompanyDocs />} />
 
           {/* Not Found Route */}
           <Route path="*" element={<NotFound />} />
