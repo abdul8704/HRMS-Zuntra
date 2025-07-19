@@ -31,17 +31,6 @@ const uploadVideo = multer({
 })
 
 // profilePicture
-    const profileStorage = multer.diskStorage({
-        destination:(req,file,cb)=>{
-            cb(null,"uploads/profilePictures");
-        },
-        filename:(req,file,cb)=>{
-            const _id = req.params.userId;
-            const extension = ".png";
-            const newFileName = `${_id}${extension}`;
-            cb(null,newFileName);
-        }
-    })
 
     const profileFileFilter=(req,file,cb) => {
         const allowedTypes= /jpeg|jpg|png/;
@@ -55,7 +44,7 @@ const uploadVideo = multer({
     };
 
     const uploadProfile = multer({
-        storage: profileStorage,
+        storage: multer.memoryStorage(),
         fileFilter: profileFileFilter,
     })
 
