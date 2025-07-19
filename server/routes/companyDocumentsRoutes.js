@@ -1,8 +1,9 @@
 // routes/companyDoc.routes.js
 const express = require('express');
 const router = express.Router();
-const companyDocController = require('../controllers/companyDocumentsController');
+const { uploadDocument } = require("../middlewares/uploadHandler");
+const companyDocumentsController = require('../controllers/companyDocumentsController');
 
-router.get('/', companyDocController.getAllCompanyDocuments);
-
+router.get('/', companyDocumentsController.getAllCompanyDocuments);
+router.post('/upload/:documentId', uploadDocument.single("file"), companyDocumentsController.uploadCompanyDocument);
 module.exports = router;

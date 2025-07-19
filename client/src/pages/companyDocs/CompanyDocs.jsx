@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
 import { FaDownload } from 'react-icons/fa';
-import api from '../../api/axios';
+import api, { BASE_URL } from '../../api/axios';
 
 export const CompanyDocs = () => {
   const [documents, setDocuments] = useState([]);
@@ -26,13 +26,11 @@ export const CompanyDocs = () => {
         }
       } catch (error) {
         console.error("API Error:", error);
-
         const message =
           error.response?.data?.data?.message ||
           error.response?.data?.message ||
           error.message ||
           "Something went wrong while fetching documents.";
-
         setErrorMessage(message);
       } finally {
         setLoading(false);
@@ -48,7 +46,6 @@ export const CompanyDocs = () => {
 
   const filteredDocuments = useMemo(() => {
     if (!searchTerm.trim()) return documents;
-
     return documents.filter((doc) =>
       includesSearchTerm(doc.documentName, searchTerm)
     );
@@ -59,7 +56,26 @@ export const CompanyDocs = () => {
     setIsFilterActive(false);
   }, []);
 
-  const getPdfUrl = (id) => `/uploads/companyDocuments/${id}.pdf`;
+  const handleDownload = async (id, name) => {
+    try {
+      const response = await fetch(`${BASE_URL}/uploads/companyDocuments/${id}.pdf`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${name}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  };
 
   return (
     <div className="flex h-screen font-sans">
@@ -73,7 +89,6 @@ export const CompanyDocs = () => {
           handleClearFilters={handleClearFilters}
         />
 
-        {/* Filter Section */}
         {isFilterActive && (
           <div className="w-full bg-[#BBD3CC] rounded-xl flex gap-2 p-2">
             <input
@@ -95,7 +110,6 @@ export const CompanyDocs = () => {
           </div>
         )}
 
-        {/* Filter Summary */}
         {isFilterActive && (
           <div className="flex items-center justify-between text-sm text-gray-600">
             <div>
@@ -111,7 +125,6 @@ export const CompanyDocs = () => {
           </div>
         )}
 
-        {/* Loading & Error */}
         {loading || errorMessage ? (
           <div className="flex-1 flex justify-center items-center text-gray-600 text-lg">
             {loading ? "Loading..." : errorMessage}
@@ -124,7 +137,7 @@ export const CompanyDocs = () => {
                   <th className="px-6 py-3">Document</th>
                   <th className="px-6 py-3 text-right">Given Date</th>
                   <th className="px-6 py-3 text-right">Valid Upto</th>
-                  <th className="px-6 py-3 text-center w-12">{/* Download */}</th>
+                  <th className="px-6 py-3 text-center w-12"></th>
                 </tr>
               </thead>
               <tbody className="text-gray-700">
@@ -147,13 +160,12 @@ export const CompanyDocs = () => {
                         {new Date(item.validUpto).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-3 text-center">
-                        <a
-                          href={getPdfUrl(item._id)}
-                          download
+                        <button
+                          onClick={() => handleDownload(item._id, item.documentName)}
                           className="inline-block text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                         >
                           <FaDownload size={16} />
-                        </a>
+                        </button>
                       </td>
                     </tr>
                   ))
