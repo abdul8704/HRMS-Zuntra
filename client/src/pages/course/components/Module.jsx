@@ -1,41 +1,18 @@
 import React from "react";
 
-const Module = ({
-  moduleTitle,
-  onChange,
-  isError,
-  moduleNumber,
-  onDelete,
-  disableDelete = false,
-}) => {
+const ModuleStep = ({ formData, setFormData }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 w-full max-w-5xl mb-4 border border-gray-200">
-      <div className="flex justify-between items-center border-l-4 border-cyan-500 pl-3 mb-4">
-        <h3 className="text-md font-bold text-black">Module {moduleNumber}</h3>
-        <button
-          onClick={onDelete}
-          disabled={disableDelete}
-          className={`text-lg px-2 py-1 rounded ${
-            disableDelete
-              ? "text-gray-400 cursor-not-allowed"
-              : "text-red-500 hover:text-red-700"
-          }`}
-          title={disableDelete ? "Cannot delete the only module" : "Delete Module"}
-        >
-          ✕
-        </button>
-      </div>
+    <div>
+      <h2 className="text-xl font-semibold mb-4">Module Details</h2>
       <input
         type="text"
-        value={moduleTitle}
-        onChange={(e) => onChange(e.target.value)}
         placeholder="Module Title"
-        className={`w-full p-3 bg-gray-100 rounded outline-none ${
-          isError ? "border-2 border-red-500" : "border"
-        }`}
+        value={formData.moduleTitle}
+        onChange={(e) => setFormData({ ...formData, moduleTitle: e.target.value })}
+        className="w-full p-2 border rounded"
       />
     </div>
   );
 };
 
-export default Module;
+export default ModuleStep;

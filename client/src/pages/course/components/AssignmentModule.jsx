@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 
-const AssignmentModuleDropdown = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
+const AssignmentModuleForm = () => {
   const [questions, setQuestions] = useState([
     {
       questionText: "",
@@ -11,8 +9,6 @@ const AssignmentModuleDropdown = () => {
       newOptionText: "",
     },
   ]);
-
-  const toggleDropdown = () => setIsOpen((prev) => !prev);
 
   const updateQuestionField = (index, key, value) => {
     const updated = [...questions];
@@ -72,97 +68,84 @@ const AssignmentModuleDropdown = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-4">
-      {/* Toggle Dropdown */}
-      <button
-        onClick={toggleDropdown}
-        className="w-full text-left px-4 py-3 bg-blue-600 text-white font-bold rounded-md shadow-md"
-      >
-        {isOpen ? "▾" : "▸"} Assignment Module
-      </button>
+    <div className="w-full max-w-5xl mx-auto p-4 mt-6 bg-white rounded-md shadow border space-y-6">
+      <div className="border-l-4 border-purple-500 pl-3 mb-4">
+        <h3 className="text-xl font-semibold text-purple-700">Assignment Builder</h3>
+      </div>
 
-      {/* Dropdown Content */}
-      {isOpen && (
-        <div className="bg-white rounded-lg shadow-md p-4 mt-4 border border-gray-200">
-          <div className="border-l-4 border-purple-500 pl-3 mb-4">
-            <h3 className="text-md font-semibold text-purple-700">Assignment Builder</h3>
-          </div>
+      {questions.map((q, qIndex) => (
+        <div key={qIndex} className="mb-6 relative">
+          {questions.length > 1 && (
+            <button
+              onClick={() => deleteQuestion(qIndex)}
+              title="Delete Question"
+              className="absolute top-0 right-0 text-red-500 hover:text-red-700"
+            >
+              ✕
+            </button>
+          )}
 
-          {questions.map((q, qIndex) => (
-            <div key={qIndex} className="mb-6 relative">
-              {questions.length > 1 && (
-                <button
-                  onClick={() => deleteQuestion(qIndex)}
-                  title="Delete Question"
-                  className="absolute top-0 right-0 text-red-500 hover:text-red-700"
-                >
-                  ✕
-                </button>
-              )}
+          <input
+            type="text"
+            value={q.questionText}
+            onChange={(e) =>
+              updateQuestionField(qIndex, "questionText", e.target.value)
+            }
+            placeholder={`Enter question ${qIndex + 1}`}
+            className="bg-gray-100 p-3 rounded w-full mb-3 border"
+          />
 
+          {q.options.map((opt, optIndex) => (
+            <div key={optIndex} className="flex items-center gap-2 mb-2">
               <input
-                type="text"
-                value={q.questionText}
-                onChange={(e) =>
-                  updateQuestionField(qIndex, "questionText", e.target.value)
-                }
-                placeholder={`What is the answer for question ${qIndex + 1}?`}
-                className="bg-gray-100 p-3 rounded w-full mb-3"
+                type="radio"
+                name={`correct-${qIndex}`}
+                checked={opt === q.correctAnswer}
+                onChange={() => setCorrectAnswer(qIndex, opt)}
               />
-
-              {q.options.map((opt, optIndex) => (
-                <div key={optIndex} className="flex items-center gap-2 mb-2">
-                  <input
-                    type="radio"
-                    name={`correct-${qIndex}`}
-                    checked={opt === q.correctAnswer}
-                    onChange={() => setCorrectAnswer(qIndex, opt)}
-                  />
-                  <span className="flex-grow">{opt}</span>
-                  <button
-                    onClick={() => removeOption(qIndex, optIndex)}
-                    className="text-red-600 hover:text-red-800 transition"
-                    title="Remove Option"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-
-              <div className="flex items-center gap-2 mb-4">
-                <input
-                  type="text"
-                  value={q.newOptionText}
-                  onChange={(e) =>
-                    updateQuestionField(qIndex, "newOptionText", e.target.value)
-                  }
-                  placeholder="Enter a choice"
-                  className="bg-gray-100 p-2 rounded flex-grow"
-                />
-                <button
-                  onClick={() => addOption(qIndex)}
-                  className="bg-gray-300 px-3 py-2 rounded hover:bg-gray-400"
-                >
-                  +
-                </button>
-                <button
-                  onClick={addNewQuestion}
-                  disabled={!canAddQuestion()}
-                  className={`px-3 py-2 rounded ${
-                    canAddQuestion()
-                      ? "bg-gray-300 hover:bg-gray-400"
-                      : "bg-gray-200 cursor-not-allowed"
-                  }`}
-                >
-                  Add Question
-                </button>
-              </div>
+              <span className="flex-grow">{opt}</span>
+              <button
+                onClick={() => removeOption(qIndex, optIndex)}
+                className="text-red-600 hover:text-red-800 transition"
+                title="Remove Option"
+              >
+                ✕
+              </button>
             </div>
           ))}
+
+          <div className="flex items-center gap-2 mb-4">
+            <input
+              type="text"
+              value={q.newOptionText}
+              onChange={(e) =>
+                updateQuestionField(qIndex, "newOptionText", e.target.value)
+              }
+              placeholder="Enter an option"
+              className="bg-gray-100 p-2 rounded flex-grow border"
+            />
+            <button
+              onClick={() => addOption(qIndex)}
+              className="bg-gray-300 px-3 py-2 rounded hover:bg-gray-400"
+            >
+              +
+            </button>
+            <button
+              onClick={addNewQuestion}
+              disabled={!canAddQuestion()}
+              className={`px-3 py-2 rounded ${
+                canAddQuestion()
+                  ? "bg-gray-300 hover:bg-gray-400"
+                  : "bg-gray-200 cursor-not-allowed"
+              }`}
+            >
+              Add Question
+            </button>
+          </div>
         </div>
-      )}
+      ))}
     </div>
   );
 };
 
-export default AssignmentModuleDropdown;
+export default AssignmentModuleForm;
