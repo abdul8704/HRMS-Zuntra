@@ -88,7 +88,7 @@ export const EmployeeDetails = ({ type }) => {
                   <>
                     <p>Courses</p>
                     <div className="h-[9rem] w-full sm:w-[24rem]">
-                      <EmployeeCourseProgress />
+                      <EmployeeCourseProgress type={"course"} />
                     </div>
 
                     <button
