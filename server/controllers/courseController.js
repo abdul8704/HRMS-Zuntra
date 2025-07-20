@@ -1,6 +1,6 @@
 const asyncHandler = require('express-async-handler')
 const courseService = require("../services/courseService");
-
+const ApiError = require('../errors/ApiError');
 const createCourseIntroController = asyncHandler(async (req, res) => {
   const courseData = req.body;
 
