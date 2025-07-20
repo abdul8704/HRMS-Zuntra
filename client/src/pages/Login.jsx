@@ -4,9 +4,11 @@ import userIcon from "../assets/user-icon.jpg";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { PopupCard } from '../components/PopupCard';
-import { Loading } from "../components/Loading";
+import { Loading } from "./utils/Loading";
+import { useAuth } from "../context/AuthContext"
 
 export const Login = () => {
+  const { setUser } = useAuth();
   const [isSignup, setIsSignup] = useState(false);
   const [showReset, setShowReset] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -40,7 +42,7 @@ export const Login = () => {
 
   const [profileImage, setProfileImage] = useState(null);
 
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleToggle = () => {
     setIsSignup(!isSignup);
@@ -132,7 +134,7 @@ export const Login = () => {
 
     setFormErrors(errors);
     if (!valid) return;
-    setLoading(true);
+    setIsLoading(true);
     try {
       const response = await api.post("/auth/login", loginData);
       if (response.status !== 200) {
@@ -140,7 +142,8 @@ export const Login = () => {
         setShowPopup(true);
         return;
       }
-      const token = response.data.accessToken;
+
+      setUser(response.data.credentials) // set creds on a global level
 
       navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -151,10 +154,8 @@ export const Login = () => {
 
           if (res.status === 200) {
             console.log("Attendance Marked");
-            localStorage.setItem("accessToken", token);
-
-            setLoading(false);
             navigate("/dashboard");
+            setIsLoading(false);
           }
           else if (res.status === 206) {
             console.log("Request Pending Approval");
@@ -193,7 +194,7 @@ export const Login = () => {
       }
     }
     finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -227,7 +228,7 @@ export const Login = () => {
 
       setFormErrors(errors);
       if (!valid) return;
-      setLoading(true);
+      setIsLoading(true);
       try {
         const userExist = await api.post("/auth/check", { email });
         if (userExist.data.exists) {
@@ -259,7 +260,7 @@ export const Login = () => {
           setShowPopup(true);
         }
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
 
     } else {
@@ -268,7 +269,7 @@ export const Login = () => {
         return;
       }
 
-      setLoading(true);
+      setIsLoading(true);
       try {
         const verifyOtp = await api.post("/auth/signup/verify-otp", { useremail: email, otp });
         if (verifyOtp.status === 200) {
@@ -276,11 +277,20 @@ export const Login = () => {
             username: name, email, phoneNum: phone, password
           });
 
+          const formData = new FormData();
+          formData.append("profilePicture", profileImage);
+          const profilePic = await api.post(`/auth/signup/uploadprofile/${newUser.data.userId}`, formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
+
           if (newUser.status === 200) {
-            localStorage.setItem("accessToken", newUser.data.accessToken);
             setPopupContent({ type: 'success', title: 'Signup Successful', message: 'Signup successful! Login to your account.' });
             setShowPopup(true);
             setSignupData({ name: '', email: '', phone: '', password: '', confirmPassword: '', otp: '' });
+            setProfileImage(null);
             setFormErrors({});
             setIsSignup(false);
             setOtpPhase(false);
@@ -307,7 +317,7 @@ export const Login = () => {
         }
       }
       finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
   };
@@ -324,13 +334,13 @@ export const Login = () => {
       else if (!validateEmail(email)) { errors.email = "Enter a valid email."; valid = false; }
       setFormErrors(errors);
       if (!valid) return;
-      setLoading(true);
+      setIsLoading(true);
       try {
         const userExist = await api.post("/auth/check", { email });
         if (!userExist.data.exists) {
           setPopupContent({ type: 'error', title: 'OTP not sent!', message: "We couldn't find a user with this email" });
           setShowPopup(true);
-          setLoading(false);
+          setIsLoading(false);
           return;
         }
 
@@ -358,15 +368,15 @@ export const Login = () => {
         }
       }
       finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     } else if (!otpVerified) {
       if (!otp) {
-        setLoading(false);
+        setIsLoading(false);
         setFormErrors(prev => ({ ...prev, otp: "Please enter the OTP." }));
         return;
       }
-      setLoading(true);
+      setIsLoading(true);
       try {
         const verifyOtp = await api.post("/auth/signup/verify-otp", { useremail: email, otp });
         if (verifyOtp.status === 200) {
@@ -392,7 +402,7 @@ export const Login = () => {
         }
       }
       finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     } else {
       if (!password) { errors.password = "Password is required."; valid = false; }
@@ -403,7 +413,7 @@ export const Login = () => {
 
       setFormErrors(errors);
       if (!valid) return;
-      setLoading(true);
+      setIsLoading(true);
       try {
         const resetPass = await api.post("/auth/reset-password", { email, password });
         if (resetPass) {
@@ -429,7 +439,7 @@ export const Login = () => {
         }
       }
       finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
   };
@@ -493,7 +503,7 @@ export const Login = () => {
                             )}
                           </div>
 
-                          <label htmlFor="profile-upload" className="profile-edit-icon">
+                          <label htmlFor="profile-upload" className={`profile-edit-icon ${otpPhase?'opacity-0':'cursor-pointer'}`}>
                             <span className="edit-icon">
                               {profileImage ? '✎' : '+'}
                             </span>
@@ -503,20 +513,21 @@ export const Login = () => {
                               accept="image/*"
                               onChange={handleProfileImageUpload}
                               hidden
+                              disabled={otpPhase}
                             />
                           </label>
                         </div>
 
                         <div>
-                          <input name="name" value={signupData.name} onChange={handleSignupChange} className="login-input" type="text" placeholder="Name" />
+                          <input name="name" value={signupData.name} onChange={handleSignupChange} className={`login-input ${isLoading || otpPhase?'cursor-not-allowed opacity-60':''}`} type="text" placeholder="Name" disabled={otpPhase}/>
                           {formErrors.name && <p className="login-error-text">{formErrors.name}</p>}
                         </div>
                         <div>
-                          <input name="email" value={signupData.email} onChange={handleSignupChange} className="login-input" type="text" placeholder="Email" />
+                          <input name="email" value={signupData.email} onChange={handleSignupChange} className={`login-input ${isLoading || otpPhase?'cursor-not-allowed opacity-60':''}`} type="text" placeholder="Email" disabled={otpPhase}/>
                           {formErrors.email && <p className="login-error-text">{formErrors.email}</p>}
                         </div>
                         <div>
-                          <input name="phone" value={signupData.phone} onChange={handleSignupChange} className="login-input" type="text" placeholder="Phone Number" />
+                          <input name="phone" value={signupData.phone} onChange={handleSignupChange} className={`login-input ${isLoading || otpPhase?'cursor-not-allowed opacity-60':''}`} type="text" placeholder="Phone Number" disabled={otpPhase}/>
                           {formErrors.phone && <p className="login-error-text">{formErrors.phone}</p>}
                         </div>
 
@@ -528,7 +539,7 @@ export const Login = () => {
                                   name="password"
                                   value={signupData.password}
                                   onChange={handleSignupChange}
-                                  className="login-input"
+                                  className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`}
                                   type={showPassword ? "text" : "password"}
                                   placeholder="Password"
                                 />
@@ -558,7 +569,7 @@ export const Login = () => {
                                   name="confirmPassword"
                                   value={signupData.confirmPassword}
                                   onChange={handleSignupChange}
-                                  className="login-input"
+                                  className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`}
                                   type={showConfirmPassword ? "text" : "password"}
                                   placeholder="Confirm Password"
                                 />
@@ -592,7 +603,7 @@ export const Login = () => {
                           </div>
                         )}
                       </div>
-                      {loading ? <button className={`login-button ${loading ? 'cursor-none' : 'cursor-pointer'}`}><Loading useGif={true} /></button> : <button type="submit" className="login-button" style={{ marginTop: '1rem' }}>{otpPhase ? "Submit" : "Sign Up"}</button>}
+                      {isLoading ? <button className={`login-button ${isLoading ? 'cursor-none' : 'cursor-pointer'}`}><Loading useGif={true} /></button> : <button type="submit" className="login-button" style={{ marginTop: '1rem' }}>{otpPhase ? "Submit" : "Sign Up"}</button>}
                     </form>
                     {renderGoogleButton()}
                   </>
@@ -601,13 +612,13 @@ export const Login = () => {
                     <h1 className="login-title">Login</h1>
                     <form className="login-form" onSubmit={(e) => {
                       e.preventDefault();
-                      if (!loading) {
+                      if (!isLoading) {
                         handleLoginSubmit(e);
                       }
                     }}>
                       <div className="login-input-container">
                         <div>
-                          <input name="email" value={loginData.email} onChange={handleLoginChange} className="login-input" type="text" placeholder="Email" />
+                          <input name="email" value={loginData.email} onChange={handleLoginChange} className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`} type="text" placeholder="Email" />
                           {formErrors.email && <p className="login-error-text">{formErrors.email}</p>}
                         </div>
                         <div className="password-field-container">
@@ -616,7 +627,7 @@ export const Login = () => {
                               name="password"
                               value={loginData.password}
                               onChange={handleLoginChange}
-                              className="login-input"
+                              className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`}
                               type={showLoginPassword ? "text" : "password"}
                               placeholder="Password"
                             />
@@ -644,7 +655,7 @@ export const Login = () => {
                         {formErrors.password && <p className="login-error-text flex-[1]">{formErrors.password}</p>}
                         <label className="login-forgot" onClick={() => setShowReset(true)}>Forgot Password?</label>
                       </div>
-                      {loading ? <button className={`login-button ${loading ? 'cursor-none' : 'cursor-pointer'}`} disabled={loading}><Loading useGif={true} /></button> :
+                      {isLoading ? <button className={`login-button ${isLoading ? 'cursor-none' : 'cursor-pointer'}`} disabled={isLoading}><Loading useGif={true} /></button> :
                         <button type="submit" className="login-button">Clock in</button>}
                     </form>
                     {renderGoogleButton()}
@@ -657,13 +668,13 @@ export const Login = () => {
                     <div className="login-input-container">
                       {!otpSent && (
                         <div>
-                          <input name="email" value={resetData.email} onChange={handleResetChange} className="login-input" type="text" placeholder="Enter Email" />
+                          <input name="email" value={resetData.email} onChange={handleResetChange} className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`} type="text" placeholder="Enter Email" />
                           {formErrors.email && <p className="login-error-text">{formErrors.email}</p>}
                         </div>
                       )}
                       {otpSent && !otpVerified && (
                         <div>
-                          <input name="otp" value={resetData.otp} onChange={handleResetChange} className="login-input" type="text" placeholder="Enter OTP" />
+                          <input name="otp" value={resetData.otp} onChange={handleResetChange} className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`} type="text" placeholder="Enter OTP" />
                           {formErrors.otp && <p className="login-error-text">{formErrors.otp}</p>}
                         </div>
                       )}
@@ -675,7 +686,7 @@ export const Login = () => {
                                 name="password"
                                 value={resetData.password}
                                 onChange={handleResetChange}
-                                className="login-input"
+                                className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`}
                                 type={showResetPassword ? "text" : "password"}
                                 placeholder="New Password"
                               />
@@ -705,7 +716,7 @@ export const Login = () => {
                                 name="confirmPassword"
                                 value={resetData.confirmPassword}
                                 onChange={handleResetChange}
-                                className="login-input"
+                                className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`}
                                 type={showResetConfirmPassword ? "text" : "password"}
                                 placeholder="Confirm Password"
                               />
@@ -731,7 +742,7 @@ export const Login = () => {
                         </>
                       )}
                     </div>
-                    {loading ? <button className={`login-button ${loading ? 'cursor-none' : 'cursor-pointer'}`}><Loading useGif={true} /></button>
+                    {isLoading ? <button className={`login-button ${isLoading ? 'cursor-none' : 'cursor-pointer'}`}><Loading useGif={true} /></button>
                       : <button type="submit" className="login-button" style={{ marginTop: '1rem' }}>
                         {!otpSent ? "Send OTP" : !otpVerified ? "Submit" : "Confirm"}
                       </button>}
@@ -809,7 +820,6 @@ export const Login = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   border: 2px solid white;
 }
 

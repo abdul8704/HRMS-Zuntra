@@ -5,6 +5,7 @@ const getAllRolesData = async () => {
         const rolesData = await Role.find({}, {
             role: 1,
             color: 1,
+            baseSalary: 1,
             _id: 1,
         });
         return rolesData;

@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-
 import { Sidebar } from "../../components/Sidebar";
 import { Navbar } from "../../components/Navbar";
-
 import { CourseCard } from "./components/CourseCard";
 import AddCourse from "./components/AddCourse";
 import Module from "./components/Module";
 import SubModule from "./components/SubModule";
 import AssignmentModule from "./components/AssignmentModule";
-
-import { Loading } from "../../components/Loading";
+import { Loading } from "../utils/Loading";
 import api from "../../api/axios";
 import AddCourseWizard from "./AddCourseWizard";
 
