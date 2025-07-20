@@ -9,6 +9,7 @@ import SubModule from "./components/SubModule";
 import AssignmentModule from "./components/AssignmentModule";
 import { Loading } from "../utils/Loading";
 import api from "../../api/axios";
+import { AddCourseMod } from "./components/AddCourseMod";
 
 
 export const CourseManagement = () => {
@@ -470,35 +471,34 @@ export const CourseManagement = () => {
         )}
 
         {navId === "add" && (
-          <div className="flex-1 overflow-y-auto px-4">
-            <div className="flex-1 flex flex-col items-center space-y-6 max-w-4xl mx-auto overflow-y-auto p-4">
+          <div className="flex-1 overflow-hidden px-4">
               {/* Course Basic Info */}
-              <AddCourse
+              {/* <AddCourse
                 courseData={courseInfo}
                 onChange={setCourseInfo}
                 errors={errorFields}
                 submitted={submitted}
-              />
+              /> */}
+              <AddCourseMod />
 
               {/* Assignment Dropdown */}
-              <AssignmentModule
+              {/* <AssignmentModule
                 initialQuestions={modules[0].subModules[0].assignment}
                 onAssignmentChange={(assignment) => {
                   const updatedModules = [...modules];
                   updatedModules[0].subModules[0].assignment = assignment;
                   setModules(updatedModules);
                 }}
-              />
+              /> */}
 
-              {/* Submit Button */}
+              {/* Submit Button
               <button
                 onClick={handleSubmit}
                 className="bg-gray-500 text-white mt-6 px-8 py-3 rounded hover:bg-gray-600"
               >
                 Submit Course
-              </button>
+              </button> */}
             </div>
-          </div>
         )}
 
       </div>
