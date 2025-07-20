@@ -23,7 +23,7 @@ export function SidebarDetails({ type, data }) {
   const [isMobile, setIsMobile] = useState(false);
   const [showEditCard, setShowEditCard] = useState(false);
 
-  const handleEditProfile = () => setShowEditCard(true);
+  const handleEditProfile = () => setShowEditCard(prev => !prev);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -34,35 +34,22 @@ export function SidebarDetails({ type, data }) {
 
   return (
     <>
+      {/* Overlay for mobile sidebar */}
       <div
         className={`fixed inset-0 bg-black bg-opacity-50 z-[999] transition-opacity duration-300 ${isMobile && isOpen ? "block" : "hidden"
           }`}
         onClick={() => setIsOpen(false)}
       ></div>
 
-      <div className="absolute top-4 left-4 z-10">
-        <button
-          className="text-2xl font-bold text-black hover:scale-110 transition"
-          onClick={() => {
-            if (type === "user") {
-              navigate('/employee/all');
-              console.log("Navigate to /employee/all");
-            } else if (type === "role") {
-              console.log("Navigate to /employee/roles");
-            }
-          }}
-        >
-          ←
-        </button>
-      </div>
-
+      {/* Sidebar */}
       <div
         className={`${isMobile
-            ? `fixed top-0 left-0 z-[1000] transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"
-            }`
-            : "relative"
+          ? `fixed top-0 left-0 z-[1000] transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`
+          : "relative"
           } bg-[#BBD3CC] shadow-2xl w-full md:w-[320px] min-h-screen flex flex-col`}
       >
+        {/* Close button for mobile */}
         {isMobile && isOpen && (
           <div className="absolute top-4 right-4 z-10">
             <button
@@ -74,6 +61,23 @@ export function SidebarDetails({ type, data }) {
           </div>
         )}
 
+        {/* Back button for both desktop and mobile */}
+        <div className="absolute top-4 left-4 z-10">
+          <button
+            className="text-xl font-bold text-black hover:scale-110 transition"
+            onClick={() => {
+              if (type === "user") {
+                navigate("/employee/all");
+              } else if (type === "role") {
+                navigate("/employee/roles");
+              }
+            }}
+          >
+            ←
+          </button>
+        </div>
+
+        {/* Logo */}
         <div className="pt-16 md:pt-6 pb-4 px-6 flex justify-center">
           <img
             src={ZuntraLogo}
@@ -82,9 +86,10 @@ export function SidebarDetails({ type, data }) {
           />
         </div>
 
+        {/* User Details */}
         {type === "user" && (
           <>
-            {/* Profile Header - Fixed */}
+            {/* Header */}
             <div className="px-6 pb-6">
               <div className="flex justify-center mb-6">
                 <div className="w-[5rem] h-[5rem] md:w-[8rem] md:h-[8rem] bg-white rounded-full p-1 shadow-xl">
@@ -202,6 +207,7 @@ export function SidebarDetails({ type, data }) {
         )}
       </div>
 
+      {/* Sidebar toggle for mobile */}
       {!isOpen && isMobile && (
         <div className="fixed top-[4rem] -left-[10px] w-12 h-12 bg-[#bcd4cd] rounded-full flex items-center justify-center shadow-lg transition-all duration-300 z-[1000]">
           <button
@@ -213,11 +219,14 @@ export function SidebarDetails({ type, data }) {
         </div>
       )}
 
+      {/* Edit Profile Modal */}
       {showEditCard && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-[1100] flex items-center justify-center animate-fadeIn">
-            <EditProfileCard />
+          <EditProfileCard onClose={handleEditProfile} />
         </div>
       )}
+
+      {/* Animation styles */}
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: scale(0.95); }
