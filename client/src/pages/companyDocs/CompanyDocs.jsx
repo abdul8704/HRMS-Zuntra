@@ -7,7 +7,7 @@ import { DocumentViewer } from './components/DocumentViewer'
 import api, { BASE_URL } from '../../api/axios';
 import { DocumentUploadForm } from './components/DocumentUploadForm';
 import { useAuth } from "../../context/AuthContext";
-import { Loading } from '../../components/Loading';
+import { Loading } from "../utils/Loading";
 
 export const CompanyDocs = () => {
   const navigate = useNavigate();

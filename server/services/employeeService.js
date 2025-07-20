@@ -3,6 +3,7 @@ const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
 const attendanceHelper = require("../utils/attendanceHelper.js");
 const LeaveApplication = require('../models/leaveApplication.js')
+const userPersonal = require("../models/userPersonal.js");
 
 const getAttendanceDataByUserId = async (
     userid,
@@ -273,22 +274,44 @@ const getAllEmployees = async () => {
 };
 
 // @desc Get details of a user
-const getDetailsOfaEmployee = async (userid) => {
+const getDetailsOfaEmployee = async (empId) => {
     try {
-        if (!userid) {
+        if (!empId) {
             throw new ApiError(400, "Employee ID is required");
         }
 
-        const userCreds = await User.findById(userid, { passwordHash: 0 })
-            .populate("role", "role")
-            .populate("shift", "startTime endTime")
-            .populate("campus", "campusName");
-
+        const userCreds = await User.findById(empId, { passwordHash: 0 })
+            .populate("role", "role color")
+            .populate("shift", )
+            .populate("campus", "campusName embedURL");
         if (!userCreds) {
             throw new ApiError(404, "Employee not found");
         }
 
         return userCreds;
+    } catch (error) {
+        if (error instanceof ApiError) throw error;
+        throw new ApiError(
+            500,
+            "Error while fetching details of a user",
+            error.message
+        );
+    }
+};
+// @desc Get personal details of a user
+const getPersonalDetailsOfaEmployee = async (empId) => {
+    try {
+        if (!empId) {
+            throw new ApiError(400, "Employee ID is required");
+        }
+
+        const userPersonalDetails = await userPersonal.findById(empId);
+        console.log(userPersonalDetails);
+        if (!userPersonalDetails) {
+            throw new ApiError(404, "Employee not found");
+        }
+
+        return userPersonalDetails;
     } catch (error) {
         if (error instanceof ApiError) throw error;
         throw new ApiError(
@@ -335,5 +358,6 @@ module.exports = {
     getDetailsOfaEmployee,
     getEmployeeByRole,
     applyLeave,
-    getLeaveRequests
+    getLeaveRequests,
+    getPersonalDetailsOfaEmployee,
 };

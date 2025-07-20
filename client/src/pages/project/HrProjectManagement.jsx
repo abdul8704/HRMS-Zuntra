@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 // Sidebar, Navbar, and Loading
 import { Sidebar } from "../../components/Sidebar";
 import { Navbar } from "../../components/Navbar";
-import { Loading } from "../../components/Loading";
+import { Loading } from "../utils/Loading";
 
 // Project-specific components
 import { ProjectCard } from "./components/ProjectCard";

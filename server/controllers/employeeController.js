@@ -88,13 +88,19 @@ const getEmployeeByRole = asyncHandler(async (req, res) => {
 });
 
 const getDetailsOfaEmployee = asyncHandler(async (req, res) => {
-    const { userid } = req.params;
-
-    if (!userid) throw new ApiError(400, "userid not provided");
-
-    const employeeDetail = await employeeService.getDetailsOfaEmployee(userid);
-    res.status(200).json({ success: true, employeeDetail });
+    const { empId } = req.params;
+    if (!empId) throw new ApiError(400, "empId not provided");
+    const employeeDetail = await employeeService.getDetailsOfaEmployee(empId);
+    const personalDetail = await employeeService.getPersonalDetailsOfaEmployee(empId);
+    res.status(200).json({
+        success: true,
+        employeeDetail: {
+            ...employeeDetail.toObject(),  // Convert Mongoose doc to plain JS object
+            personalDetail: personalDetail || {},  // Nest personal details
+        },
+    });
 });
+
 
 const applyForLeave = asyncHandler(async (req, res) => {
     const { userid } = req.user;

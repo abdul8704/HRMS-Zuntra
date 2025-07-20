@@ -4,7 +4,7 @@ import userIcon from "../assets/user-icon.jpg";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { PopupCard } from '../components/PopupCard';
-import { Loading } from "../components/Loading";
+import { Loading } from "./utils/Loading";
 import { useAuth } from "../context/AuthContext"
 
 export const Login = () => {
