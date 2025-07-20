@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-export function EmployeeCourseProgress() {
-  const [viewType] = useState("employee"); // Change to "course" to switch
+export function EmployeeCourseProgress({type}) {
   const [tooltip, setTooltip] = useState({ show: false, text: "", anchorRef: null });
   const progressBarRef = useRef(null);
   const cardRef = useRef(null);
@@ -26,10 +25,10 @@ export function EmployeeCourseProgress() {
   };
 
   const handleMouseEnter = () => {
-    const progress = viewType === "employee" ? employeeData.progress : courseData.progress;
+    const progress = type === "employee" ? employeeData.progress : courseData.progress;
     setTooltip({
       show: true,
-      text: `${viewType === "employee" ? "Course Progress" : "Completion"}: ${progress}%`,
+      text: `${type === "employee" ? "Course Progress" : "Completion"}: ${progress}%`,
       anchorRef: progressBarRef,
     });
   };
@@ -91,7 +90,7 @@ export function EmployeeCourseProgress() {
   }, []);
 
   const styles = getResponsiveStyles();
-  const data = viewType == "employee" ? employeeData : courseData;
+  const data = type == "employee" ? employeeData : courseData;
 
   return (
     <div ref={cardRef} className="h-full w-full">
@@ -99,7 +98,7 @@ export function EmployeeCourseProgress() {
         <div className="flex-shrink-0 h-full">
           <img
             src={data.image}
-            alt={viewType}
+            alt={type}
             className="h-full object-cover rounded-l-xl"
             style={{ width: styles.imageSize }}
           />
@@ -111,9 +110,9 @@ export function EmployeeCourseProgress() {
               className="font-bold text-gray-800 leading-tight truncate"
               style={{ fontSize: styles.nameFontSize }}
             >
-              {viewType === "employee" ? data.name : data.name}
+              {type === "employee" ? data.name : data.name}
             </p>
-            {viewType === "employee" ? (
+            {type === "employee" ? (
               <>
                 <p className="text-gray-600 truncate" style={{ fontSize: styles.smallFontSize }}>
                   {data.email}
