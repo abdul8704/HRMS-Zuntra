@@ -14,7 +14,7 @@ import {
   Calendar,
 } from "lucide-react";
 import ZuntraLogo from "../../assets/Zuntra.svg";
-import EditProfileCard from "../employee/components/EditProfilePopup";
+import { EditProfileCard } from "../employee/components/EditProfileCard";
 import { useNavigate } from "react-router-dom";
 
 export function SidebarDetails({ type, data }) {
@@ -92,7 +92,7 @@ export function SidebarDetails({ type, data }) {
             {/* Header */}
             <div className="px-6 pb-6">
               <div className="flex justify-center mb-6">
-                <div className="w-[5rem] h-[5rem] md:w-[8rem] md:h-[8rem] bg-white rounded-full p-1 shadow-xl">
+                <div className="w-[4.5rem] h-[4.5rem] md:w-[6rem] md:h-[6rem] bg-white rounded-full p-1 shadow-xl">
                   <div className="w-full h-full rounded-full overflow-hidden bg-gray-300">
                     <img
                       src={data.profilePicture}
@@ -222,7 +222,7 @@ export function SidebarDetails({ type, data }) {
       {/* Edit Profile Modal */}
       {showEditCard && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-[1100] flex items-center justify-center animate-fadeIn">
-          <EditProfileCard onClose={handleEditProfile} />
+          <EditProfileCard data={data} onClose={handleEditProfile} />
         </div>
       )}
 
