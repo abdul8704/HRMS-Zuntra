@@ -162,7 +162,7 @@ export const EmpAssignmentPopUp = ({ employee, onClose, onSave }) => {
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
         <div className="bg-white rounded-2xl shadow-2xl flex w-full max-w-4xl mx-4 overflow-hidden">
-          <div className="w-2/5 bg-gradient-to-br from-blue-50 to-indigo-100 p-8 flex flex-col justify-center items-center text-center">
+          <div className="w-2/5 bg-gradient-to-br from-[#BBD3CC] to-[#A6C4BA] p-8 flex flex-col justify-center items-center text-center">
             <div className="relative mb-6">
               <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
                 <User size={48} className="text-white" />
@@ -283,15 +283,15 @@ export const EmpAssignmentPopUp = ({ employee, onClose, onSave }) => {
               <div className="flex justify-end space-x-4 pt-4">
                 <button
                   onClick={handleCancel}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors font-medium"
+                  className="py-3 min-w-[120px] border border-gray-300 text-gray-700 rounded-full font-medium transition-colors duration-300 hover:bg-[#E1BEC5] hover:text-white hover:border-[#E1BEC5]"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={!isFormValid}
-                  className={`px-6 py-3 rounded-lg font-medium transition-colors ${isFormValid
-                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  className={`py-3 min-w-[120px] rounded-full font-medium transition-colors duration-300 ${isFormValid
+                    ? 'bg-[#BBD3CC] text-gray-700 hover:bg-[#A6C4BA]'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'}
                   `}
                 >
