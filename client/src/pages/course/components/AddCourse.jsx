@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
-const SingleDropdownCourseForm = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const SingleCourseForm = () => {
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState([]);
 
@@ -22,7 +21,6 @@ const SingleDropdownCourseForm = () => {
   const [uploadedIntroVideoName, setUploadedIntroVideoName] = useState("");
   const [introVideoError, setIntroVideoError] = useState("");
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
   const isError = (field) => submitted && errors.includes(field);
 
   const handleCourseChange = (field, value) => {
@@ -84,12 +82,9 @@ const SingleDropdownCourseForm = () => {
 
   const handleAddSubModule = () => {
     if (modules.length === 0) return;
-
     setModules((prev) => {
       const updated = [...prev];
       const lastModule = updated[updated.length - 1];
-
-      // ✅ Only add one submodule if none exist yet
       if (lastModule.subModules.length === 0) {
         lastModule.subModules.push({
           submoduleTitle: "",
@@ -99,7 +94,6 @@ const SingleDropdownCourseForm = () => {
           videoError: "",
         });
       }
-
       return updated;
     });
   };
@@ -133,147 +127,136 @@ const SingleDropdownCourseForm = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-4">
-      <button
-        onClick={toggleDropdown}
-        className="w-full text-left px-4 py-3 bg-blue-600 text-white font-bold rounded-md shadow-md"
-      >
-        {isOpen ? "▾" : "▸"} Course, Module & SubModule Form
-      </button>
-
-      {isOpen && (
-        <div className="mt-4 p-6 bg-white rounded-md shadow border space-y-6">
-          {/* Course Details */}
-          <div>
-            <h2 className="text-lg font-semibold mb-2 text-cyan-700">Course Introduction</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <input
-                type="text"
-                placeholder="Course Name"
-                value={course.courseName}
-                onChange={(e) => handleCourseChange("courseName", e.target.value)}
-                className={`p-3 bg-gray-100 rounded ${isError("courseName") ? "border-2 border-red-500" : ""}`}
-              />
-              <input
-                type="text"
-                placeholder="Instructor"
-                value={course.instructor}
-                onChange={(e) => handleCourseChange("instructor", e.target.value)}
-                className={`p-3 bg-gray-100 rounded ${isError("instructor") ? "border-2 border-red-500" : ""}`}
-              />
-              <div className={`p-2 bg-gray-100 rounded border ${isError("introVideoUrl") ? "border-red-500" : "border-gray-300"}`}>
-                <label className="block text-sm font-medium mb-1">Upload Intro Video</label>
-                <input type="file" accept="video/*" onChange={handleIntroVideoUpload} />
-                {introVideoError && <p className="text-red-500 text-xs">{introVideoError}</p>}
-                {uploadedIntroVideoName && (
-                  <p className="text-green-600 text-xs truncate">Uploaded: {uploadedIntroVideoName}</p>
-                )}
-              </div>
-            </div>
-            <textarea
-              placeholder="Course Description"
-              value={course.courseDescription}
-              onChange={(e) => handleCourseChange("courseDescription", e.target.value)}
-              className={`w-full p-3 bg-gray-100 rounded resize-none ${
-                isError("courseDescription") ? "border-2 border-red-500" : ""
-              }`}
-              rows={3}
-            />
+    <div className="w-full max-w-5xl mx-auto p-4 mt-6 bg-white rounded-md shadow border space-y-6">
+      {/* Course Details */}
+      <div>
+        <h2 className="text-xl font-semibold mb-2 text-cyan-700">Course Introduction</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <input
+            type="text"
+            placeholder="Course Name"
+            value={course.courseName}
+            onChange={(e) => handleCourseChange("courseName", e.target.value)}
+            className={`p-3 bg-gray-100 rounded ${isError("courseName") ? "border-2 border-red-500" : ""}`}
+          />
+          <input
+            type="text"
+            placeholder="Instructor"
+            value={course.instructor}
+            onChange={(e) => handleCourseChange("instructor", e.target.value)}
+            className={`p-3 bg-gray-100 rounded ${isError("instructor") ? "border-2 border-red-500" : ""}`}
+          />
+          <div className={`p-2 bg-gray-100 rounded border ${isError("introVideoUrl") ? "border-red-500" : "border-gray-300"}`}>
+            <label className="block text-sm font-medium mb-1">Upload Intro Video</label>
+            <input type="file" accept="video/*" onChange={handleIntroVideoUpload} />
+            {introVideoError && <p className="text-red-500 text-xs">{introVideoError}</p>}
+            {uploadedIntroVideoName && (
+              <p className="text-green-600 text-xs truncate">Uploaded: {uploadedIntroVideoName}</p>
+            )}
           </div>
+        </div>
+        <textarea
+          placeholder="Course Description"
+          value={course.courseDescription}
+          onChange={(e) => handleCourseChange("courseDescription", e.target.value)}
+          className={`w-full p-3 bg-gray-100 rounded resize-none ${
+            isError("courseDescription") ? "border-2 border-red-500" : ""
+          }`}
+          rows={3}
+        />
+      </div>
 
-          {/* Modules and SubModules */}
-          {modules.map((mod, modIdx) => (
-            <div key={modIdx} className="space-y-4 border-t pt-4">
-              <h3 className="text-md font-bold text-cyan-600">Module {modIdx + 1}</h3>
-              <input
-                type="text"
-                placeholder="Module Title"
-                value={mod.moduleTitle}
-                onChange={(e) => handleModuleChange(modIdx, e.target.value)}
-                className={`w-full p-3 bg-gray-100 rounded ${
-                  isError(`moduleTitle-${modIdx}`) ? "border-2 border-red-500" : "border"
-                }`}
-              />
+      {/* Modules and SubModules */}
+      {modules.map((mod, modIdx) => (
+        <div key={modIdx} className="space-y-4 border-t pt-4">
+          <h3 className="text-md font-bold text-cyan-600">Module {modIdx + 1}</h3>
+          <input
+            type="text"
+            placeholder="Module Title"
+            value={mod.moduleTitle}
+            onChange={(e) => handleModuleChange(modIdx, e.target.value)}
+            className={`w-full p-3 bg-gray-100 rounded ${
+              isError(`moduleTitle-${modIdx}`) ? "border-2 border-red-500" : "border"
+            }`}
+          />
 
-              {mod.subModules.map((sub, subIdx) => (
-                <div key={subIdx} className="bg-gray-50 p-4 rounded shadow">
-                  <h4 className="font-semibold text-gray-700 mb-2">Sub Module {subIdx + 1}</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
-                    <input
-                      type="text"
-                      placeholder="Sub Module Title"
-                      value={sub.submoduleTitle}
-                      onChange={(e) =>
-                        handleSubModuleChange(modIdx, subIdx, "submoduleTitle", e.target.value)
-                      }
-                      className={`p-3 bg-white rounded ${
-                        isError(`submoduleTitle-${modIdx}-${subIdx}`) ? "border-2 border-red-500" : "border"
-                      }`}
-                    />
-                    <div
-                      className={`p-2 bg-white rounded border ${
-                        isError(`videoUrl-${modIdx}-${subIdx}`) ? "border-red-500" : "border-gray-300"
-                      }`}
-                    >
-                      <label className="block text-sm font-medium mb-1">Upload Video</label>
-                      <input
-                        type="file"
-                        accept="video/*"
-                        onChange={(e) =>
-                          handleSubVideoUpload(modIdx, subIdx, e.target.files[0])
-                        }
-                      />
-                      {sub.videoError && (
-                        <p className="text-red-500 text-xs">{sub.videoError}</p>
-                      )}
-                      {sub.uploadedVideoName && (
-                        <p className="text-green-600 text-xs truncate">Uploaded: {sub.uploadedVideoName}</p>
-                      )}
-                    </div>
-                  </div>
-                  <textarea
-                    placeholder="Description"
-                    value={sub.description}
+          {mod.subModules.map((sub, subIdx) => (
+            <div key={subIdx} className="bg-gray-50 p-4 rounded shadow">
+              <h4 className="font-semibold text-gray-700 mb-2">Sub Module {subIdx + 1}</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                <input
+                  type="text"
+                  placeholder="Sub Module Title"
+                  value={sub.submoduleTitle}
+                  onChange={(e) =>
+                    handleSubModuleChange(modIdx, subIdx, "submoduleTitle", e.target.value)
+                  }
+                  className={`p-3 bg-white rounded ${
+                    isError(`submoduleTitle-${modIdx}-${subIdx}`) ? "border-2 border-red-500" : "border"
+                  }`}
+                />
+                <div
+                  className={`p-2 bg-white rounded border ${
+                    isError(`videoUrl-${modIdx}-${subIdx}`) ? "border-red-500" : "border-gray-300"
+                  }`}
+                >
+                  <label className="block text-sm font-medium mb-1">Upload Video</label>
+                  <input
+                    type="file"
+                    accept="video/*"
                     onChange={(e) =>
-                      handleSubModuleChange(modIdx, subIdx, "description", e.target.value)
+                      handleSubVideoUpload(modIdx, subIdx, e.target.files[0])
                     }
-                    className={`w-full p-3 bg-white rounded resize-none ${
-                      isError(`description-${modIdx}-${subIdx}`) ? "border-2 border-red-500" : "border"
-                    }`}
-                    rows={3}
                   />
+                  {sub.videoError && (
+                    <p className="text-red-500 text-xs">{sub.videoError}</p>
+                  )}
+                  {sub.uploadedVideoName && (
+                    <p className="text-green-600 text-xs truncate">Uploaded: {sub.uploadedVideoName}</p>
+                  )}
                 </div>
-              ))}
+              </div>
+              <textarea
+                placeholder="Description"
+                value={sub.description}
+                onChange={(e) =>
+                  handleSubModuleChange(modIdx, subIdx, "description", e.target.value)
+                }
+                className={`w-full p-3 bg-white rounded resize-none ${
+                  isError(`description-${modIdx}-${subIdx}`) ? "border-2 border-red-500" : "border"
+                }`}
+                rows={3}
+              />
             </div>
           ))}
-
-          {/* Add Buttons */}
-          <div className="flex gap-4 mt-6">
-            <button
-              onClick={handleAddModule}
-              className="bg-gray-500 text-white px-6 py-2 rounded w-48 hover:bg-gray-600"
-            >
-              Add Module
-            </button>
-            <button
-              onClick={handleAddSubModule}
-              className="bg-gray-500 text-white px-6 py-2 rounded w-48 hover:bg-gray-600"
-            >
-              Add Sub Module
-            </button>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            onClick={handleSubmit}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-md shadow"
-          >
-            Submit
-          </button>
         </div>
-      )}
+      ))}
+
+      {/* Add Buttons */}
+      <div className="flex gap-4 mt-6">
+        <button
+          onClick={handleAddModule}
+          className="bg-gray-500 text-white px-6 py-2 rounded w-48 hover:bg-gray-600"
+        >
+          Add Module
+        </button>
+        <button
+          onClick={handleAddSubModule}
+          className="bg-gray-500 text-white px-6 py-2 rounded w-48 hover:bg-gray-600"
+        >
+          Add Sub Module
+        </button>
+      </div>
+
+      {/* Submit Button */}
+      <button
+        onClick={handleSubmit}
+        className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-md shadow"
+      >
+        Submit
+      </button>
     </div>
   );
 };
 
-export default SingleDropdownCourseForm;
+export default SingleCourseForm;
