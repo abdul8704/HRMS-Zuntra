@@ -350,6 +350,42 @@ const getLeaveRequests = async (userid) => {
     return leaveRequests
 }
 
+//@desc User Personal Data update
+const updateEmpData = async ({ userid, dob, religion, address }) => {
+  try {
+    if (!userid) {
+      throw new ApiError(400, "User ID is required");
+    }
+
+    const updateFields = {};
+
+    if (dob) updateFields.DOB = new Date(dob);
+    if (religion) updateFields.religion = religion;
+    if (address) updateFields.Address = address;
+    console.log(userid);
+    const updatedUser = await userPersonal.findByIdAndUpdate(
+      userid,
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      throw new ApiError(404, "User not found");
+    }
+
+    return updatedUser;
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+
+    throw new ApiError(
+      500,
+      "Failed to update personal details",
+      error.message
+    );
+  }
+};
+
+
 module.exports = {
     getAttendanceDataByUserId,
     markAttendanceOnLogin,
@@ -360,4 +396,5 @@ module.exports = {
     applyLeave,
     getLeaveRequests,
     getPersonalDetailsOfaEmployee,
+    updateEmpData,
 };

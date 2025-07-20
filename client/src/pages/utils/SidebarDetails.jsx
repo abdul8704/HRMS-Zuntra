@@ -161,7 +161,13 @@ export function SidebarDetails({ type, data }) {
                 <div>
                   <span className="font-medium">DOB:</span>{" "}
                   <span className="text-black/80">
-                    {new Date(data.personalDetail?.DOB).toLocaleDateString()}
+                    {(() => {
+                      const dob = new Date(data.personalDetail?.DOB);
+                      const day = String(dob.getDate()).padStart(2, '0');
+                      const month = String(dob.getMonth() + 1).padStart(2, '0');
+                      const year = dob.getFullYear();
+                      return `${day}-${month}-${year}`;
+                    })()}
                   </span>
                 </div>
               </div>

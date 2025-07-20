@@ -10,7 +10,7 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${day}-${month}`;
+    return `${year}-${month}-${day}`;
   };
 
   const [dob, setDob] = useState(formatDateForInput(data.personalDetail?.DOB) || '');
@@ -27,7 +27,8 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     if (!isFormValid) return;
 
     try {
-      // const profile = await api.post('/api/')
+      const userData = {dob,religion,address};
+      const profileUpdate = await api.patch('/api/employee/updateprofile',userData);
       alert('Profile updated successfully');
       onSave?.();
       onClose?.();
