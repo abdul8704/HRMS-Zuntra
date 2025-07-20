@@ -51,7 +51,7 @@ const employeeDetailsNavItems = [
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 35">
         <path fill="#000" d="M16 0a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm0 20c8.84 0 16 2 9.5 2s-5 9.5-3 10.5S0 33 0 33v-5c0-4.42 7.16-8 16-8Z" />
-        <path fill="#000" fill-rule="evenodd" d="M26.966 22.45a4.979 4.979 0 0 1 4.51 5.408c-.154 1.694-1.203 2.996-2.267 3.903-.53.447-1.101.845-1.705 1.187l-.249.139-.117.063-.22.113-.195.096-.241.113a1.035 1.035 0 0 1-1.022-.093l-.217-.154-.27-.202-.1-.079-.212-.17a11.388 11.388 0 0 1-1.576-1.569c-.883-1.083-1.68-2.553-1.527-4.246a4.98 4.98 0 0 1 5.409-4.51Zm1.398 3.45-2.55 2.126-.886-1.062a.553.553 0 1 0-.85.709l1.204 1.444a.607.607 0 0 0 .858.078l2.932-2.445a.554.554 0 0 0-.707-.85Z" clip-rule="evenodd" />
+        <path fill="#000" fillRule="evenodd" d="M26.966 22.45a4.979 4.979 0 0 1 4.51 5.408c-.154 1.694-1.203 2.996-2.267 3.903-.53.447-1.101.845-1.705 1.187l-.249.139-.117.063-.22.113-.195.096-.241.113a1.035 1.035 0 0 1-1.022-.093l-.217-.154-.27-.202-.1-.079-.212-.17a11.388 11.388 0 0 1-1.576-1.569c-.883-1.083-1.68-2.553-1.527-4.246a4.98 4.98 0 0 1 5.409-4.51Zm1.398 3.45-2.55 2.126-.886-1.062a.553.553 0 1 0-.85.709l1.204 1.444a.607.607 0 0 0 .858.078l2.932-2.445a.554.554 0 0 0-.707-.85Z" clipRule="evenodd" />
       </svg>
 
     ),
@@ -238,11 +238,38 @@ const UpskillNavItems = [
     path: 'completed',
   }
 ];
+const companyDocumentsNavItems = [
+  {
+    label: 'Documents',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="000">
+        <path d="M240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520h200L520-800v200Z" />
+      </svg>
+
+    ),
+    filter: true,
+    access: "all",
+    path: 'all',
+  },
+  {
+    label: 'Upload Documents',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="000">
+        <path d="M440-240h80v-120h120v-80H520v-120h-80v120H320v80h120v120ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520h200L520-800v200Z" />
+      </svg>
+
+    ),
+    filter: false,
+    access: "companyDocs",
+    path: 'upload',
+  }
+]
 
 
 export const Navbar = ({
   type,
   role,
+  companyDocumentAccess = true,
   showFilter = false,
   isFilterActive,
   setIsFilterActive,
@@ -271,10 +298,14 @@ export const Navbar = ({
     } else {
       navItems = AttendanceNavItems.filter(item => item.role === 'emp');
     }
-  }
-  else if (type === 'upskill') {
+  } else if (type === 'upskill') {
     navItems = UpskillNavItems;
+  } else if (type === 'companyDocuments') {
+    navItems = companyDocumentsNavItems.filter((item) => {
+      return item.access === 'all' || (item.access === 'companyDocs' && companyDocumentAccess);
+    });
   }
+
 
   const [activeNavId, setActiveNavId] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -303,6 +334,8 @@ export const Navbar = ({
       finalPath = `/attendance/${path}`;
     } else if (type === 'upskill') {
       finalPath = `/upskill/${path}`;
+    } else if (type === 'companyDocuments') {
+      finalPath = `/documents/${path}`;
     }
 
     navigate(finalPath);
@@ -316,24 +349,23 @@ export const Navbar = ({
     let updatedNavId = '';
 
     if (type === 'employeeManagement') {
-      updatedNavId =
-        navItems.find(item => currentPath.startsWith(item.path))?.path || navItems[0]?.path;
+      updatedNavId = navItems.find(item => currentPath.startsWith(item.path))?.path || navItems[0]?.path;
     } else if (type === 'courseManagement') {
       const courseSegment = currentPath.split('/courses/')[1]?.split('/')[0];
-      updatedNavId =
-        navItems.find(item => item.path === courseSegment)?.path || navItems[0]?.path;
+      updatedNavId = navItems.find(item => item.path === courseSegment)?.path || navItems[0]?.path;
     } else if (type === 'employeeDetails') {
       const detailsSegment = currentPath.split('/details')[1];
-      updatedNavId =
-        navItems.find(item => detailsSegment?.startsWith(item.path))?.path || navItems[0]?.path;
+      updatedNavId = navItems.find(item => detailsSegment?.startsWith(item.path))?.path || navItems[0]?.path;
     } else if (type === 'attendance') {
       const attendanceSegment = currentPath.split('/attendance/')[1]?.split('/')[0];
       updatedNavId = navItems.find(item => item.path === attendanceSegment)?.path || navItems[0]?.path;
     } else if (type === 'upskill') {
       const attendanceSegment = currentPath.split('/upskill/')[1]?.split('/')[0];
       updatedNavId = navItems.find(item => item.path === attendanceSegment)?.path || navItems[0]?.path;
+    } else if (type === 'companyDocuments') {
+      const documentsSegment = currentPath.split('/documents/')[1]?.split('/')[0];
+      updatedNavId = navItems.find(item => item.path === documentsSegment)?.path || navItems[0]?.path;
     }
-
 
     setActiveNavId(updatedNavId);
     setTimeout(() => updateSlider(updatedNavId), 0);
@@ -350,7 +382,6 @@ export const Navbar = ({
     };
   }, [location.pathname, type, role, navItems]);
 
-
   if (!navItems.length) return null;
 
   const activeItem = navItems.find(item => item.path === activeNavId) || navItems[0];
@@ -362,10 +393,10 @@ export const Navbar = ({
         className="relative hidden md:flex list-none p-0 rounded-xl overflow-hidden"
         ref={tabContainerRef}
       >
-        <div
+        {navItems.length > 1 && (<div
           ref={sliderRef}
           className="absolute top-0 left-0 h-full bg-white/50 rounded-xl transition-all duration-500 ease-in-out z-[1]"
-        />
+        />)}
         {navItems.map((item, index) => (
           <li
             key={item.path}

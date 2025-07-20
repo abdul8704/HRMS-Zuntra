@@ -3,6 +3,8 @@ import { TimeCard } from "../../dashboard/components/TimeCard";
 import { ToolTip } from "../../../components/ToolTip";
 
 export const EmployeeCard = ({
+  // id =  "687a5a67cd620a8964a67952",
+  // image = `http://localhost:5000/uploads/profilePictures/${userId}.png`,
   name,
   email,
   phone,

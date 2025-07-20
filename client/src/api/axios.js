@@ -23,16 +23,13 @@ const processQueue = (error, token = null) => {
 
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem("accessToken");
-        if (token) {
-            config.headers["Authorization"] = `Bearer ${token}`;
-        }
+        config.withCredentials = true; // always send cookies with requests
         return config;
     },
     (error) => Promise.reject(error)
 );
 
-// response interceotor incase jwt token is expired. 
+// response interceptor to handle expired access tokens
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -47,11 +44,7 @@ api.interceptors.response.use(
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
                 })
-                    .then((token) => {
-                        originalRequest.headers["Authorization"] =
-                            "Bearer " + token;
-                        return api(originalRequest);
-                    })
+                    .then(() => api(originalRequest))
                     .catch((err) => Promise.reject(err));
             }
 
@@ -59,29 +52,31 @@ api.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                const res = await axios.post(
-                    `${BASE_URL}/auth/refresh-token`, 
+                // hit refresh-token route which sets new cookie from server
+                await axios.post(
+                    `${BASE_URL}/auth/refresh-token`,
                     {},
-                    { withCredentials: true } 
+                    { withCredentials: true }
                 );
 
-                const newToken = res.data.accessToken;
-                localStorage.setItem("accessToken", newToken);
-                api.defaults.headers["Authorization"] = "Bearer " + newToken;
-                processQueue(null, newToken);
+                processQueue(null); // no token needed in cookie-based approach
                 return api(originalRequest);
             } catch (err) {
-                processQueue(err, null);
-                localStorage.removeItem("accessToken");
-                window.location.href = "/";             // kick out incase of refresh token expires
+                processQueue(err);
+                console.log("Refresh token failed", err);
+                window.location.href = "/"; // redirect to login
                 return Promise.reject(err);
             } finally {
                 isRefreshing = false;
             }
+        }
+        else{
+            console.log("Error response", error.response);
         }
 
         return Promise.reject(error);
     }
 );
 
+export { BASE_URL };
 export default api;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../../api/axios';
-import { Loading } from '../../../components/Loading';
+import { Loading } from "../../utils/Loading";
 
 export const ProjectDeadline = () => {
   const [projectDate, setProjectDate] = useState(new Date());
@@ -65,7 +65,7 @@ export const ProjectDeadline = () => {
       {/* Project List */}
       <div className="flex-1 overflow-y-auto">
         {loading ? (
-          <div className="text-center italic text-gray-600 py-4"><Loading/></div>
+          <div className="text-center italic text-gray-600 py-4"><Loading useGif={true}/></div>
         ) : projects.length === 0 ? (
           <div className="text-center italic text-gray-600 py-4">
             {apiMessage || 'No projects for this date.'}

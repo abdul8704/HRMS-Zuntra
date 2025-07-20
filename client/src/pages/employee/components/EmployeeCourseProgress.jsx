@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 
-export function EmployeeCourseProgress() {
-  const [viewType, setViewType] = useState("employee");
+export function EmployeeCourseProgress({type}) {
   const [tooltip, setTooltip] = useState({ show: false, text: "", anchorRef: null });
   const progressBarRef = useRef(null);
   const cardRef = useRef(null);
-  const [fontSize, setFontSize] = useState("0.8rem");
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   const employeeData = {
     name: "Jai Atithya A",
@@ -18,18 +17,18 @@ export function EmployeeCourseProgress() {
 
   const courseData = {
     name: "Advanced React Development",
-    image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=200&h=200&fit=crop&crop=center",
+    image:
+      "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=200&h=200&fit=crop&crop=center",
     instructor: "Dr. Sarah Johnson",
     role: "React Specialist",
     progress: 65,
   };
 
-  const currentData = viewType === "employee" ? employeeData : courseData;
-
   const handleMouseEnter = () => {
+    const progress = type === "employee" ? employeeData.progress : courseData.progress;
     setTooltip({
       show: true,
-      text: `${viewType === "employee" ? "Course Progress" : "Completion"}: ${currentData.progress}%`,
+      text: `${type === "employee" ? "Course Progress" : "Completion"}: ${progress}%`,
       anchorRef: progressBarRef,
     });
   };
@@ -48,96 +47,117 @@ export function EmployeeCourseProgress() {
     );
   };
 
-  // ResizeObserver to scale font size
+  const getResponsiveStyles = () => {
+    const { width, height } = dimensions;
+    const baseWidth = 384;
+    const baseHeight = 144;
+    const widthScale = width / baseWidth;
+    const heightScale = height / baseHeight;
+    const minScale = Math.min(widthScale, heightScale);
+    const baseFontSize = Math.max(minScale * 14, 10);
+    const nameFontSize = Math.max(minScale * 16, 12);
+    const smallFontSize = Math.max(minScale * 12, 9);
+    const tagFontSize = Math.max(minScale * 11, 8);
+    const padding = Math.max(minScale * 12, 8);
+    const imageSize = Math.max(minScale * 96, 60);
+    const gap = Math.max(minScale * 4, 2);
+    const progressHeight = Math.max(minScale * 8, 4);
+    const tagPadding = Math.max(minScale * 8, 4);
+    return {
+      fontSize: `${baseFontSize}px`,
+      nameFontSize: `${nameFontSize}px`,
+      smallFontSize: `${smallFontSize}px`,
+      tagFontSize: `${tagFontSize}px`,
+      padding: `${padding}px`,
+      imageSize: `${imageSize}px`,
+      gap: `${gap}px`,
+      progressHeight: `${progressHeight}px`,
+      tagPadding: `${tagPadding}px`,
+    };
+  };
+
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return;
-
-    const observer = new ResizeObserver(entries => {
-      for (let entry of entries) {
-        const width = entry.contentRect.width;
-        const newFontSize = `clamp(0.6rem, ${width / 40}px, 0.85rem)`;
-        setFontSize(newFontSize);
-      }
-    });
-
+    const updateDimensions = () => {
+      const rect = card.getBoundingClientRect();
+      setDimensions({ width: rect.width, height: rect.height });
+    };
+    updateDimensions();
+    const observer = new ResizeObserver(updateDimensions);
     observer.observe(card);
     return () => observer.disconnect();
   }, []);
 
-  return (
-    <div ref={cardRef} style={{ fontSize }} className="h-full w-full flex flex-col gap-1">
-      {/* Toggle Buttons */}
-      <div className="flex gap-2 flex-shrink-0">
-        <button
-          onClick={() => setViewType("employee")}
-          className={`px-2 py-[2px] rounded-md text-xs font-medium transition-colors ${
-            viewType === "employee"
-              ? "bg-teal-500 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-        >
-          Employee View
-        </button>
-        <button
-          onClick={() => setViewType("course")}
-          className={`px-2 py-[2px] rounded-md text-xs font-medium transition-colors ${
-            viewType === "course"
-              ? "bg-teal-500 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-          }`}
-        >
-          Course View
-        </button>
-      </div>
+  const styles = getResponsiveStyles();
+  const data = type == "employee" ? employeeData : courseData;
 
-      {/* Card */}
+  return (
+    <div ref={cardRef} className="h-full w-full">
       <div className="flex flex-row bg-[#eef8f8] rounded-xl shadow-md w-full h-full overflow-hidden">
-        {/* Image */}
-        <div className="w-24 h-full flex-shrink-0">
+        <div className="flex-shrink-0 h-full">
           <img
-            src={currentData.image}
-            alt="Profile"
-            className="w-full h-full object-cover rounded-l-xl"
+            src={data.image}
+            alt={type}
+            className="h-full object-cover rounded-l-xl"
+            style={{ width: styles.imageSize }}
           />
         </div>
 
-        {/* Info */}
-        <div className="flex-1 px-3 py-2 flex flex-col justify-between">
-          <div className="flex flex-col gap-0.5">
-            <p className="font-bold text-gray-800 leading-tight truncate">
-              {currentData.name}
+        <div className="flex-1 flex flex-col justify-between" style={{ padding: styles.padding }}>
+          <div className="flex flex-col" style={{ gap: styles.gap }}>
+            <p
+              className="font-bold text-gray-800 leading-tight truncate"
+              style={{ fontSize: styles.nameFontSize }}
+            >
+              {type === "employee" ? data.name : data.name}
             </p>
-            {viewType === "employee" ? (
+            {type === "employee" ? (
               <>
-                <p className="text-gray-600 text-xs truncate">{currentData.email}</p>
-                <p className="text-gray-600 text-xs truncate">{currentData.phone}</p>
+                <p className="text-gray-600 truncate" style={{ fontSize: styles.smallFontSize }}>
+                  {data.email}
+                </p>
+                <p className="text-gray-600 truncate" style={{ fontSize: styles.smallFontSize }}>
+                  {data.phone}
+                </p>
               </>
             ) : (
               <>
-                <p className="text-gray-600 text-xs truncate">
-                  Instructor: {courseData.instructor}
+                <p className="text-gray-600 truncate" style={{ fontSize: styles.smallFontSize }}>
+                  Instructor: {data.instructor}
                 </p>
-                <p className="text-gray-600 text-xs truncate">Duration: 6 weeks</p>
+                <p className="text-gray-600 truncate" style={{ fontSize: styles.smallFontSize }}>
+                  Duration: 6 weeks
+                </p>
               </>
             )}
 
-            <span className="mt-[2px] inline-block text-xs text-teal-700 bg-teal-100 rounded-full px-2 py-[1px] w-fit">
-              {currentData.role}
+            <span
+              className="inline-block text-teal-700 bg-teal-100 rounded-full w-fit"
+              style={{
+                fontSize: styles.tagFontSize,
+                padding: `${parseInt(styles.tagPadding) / 2}px ${styles.tagPadding}`,
+                marginTop: styles.gap,
+              }}
+            >
+              {data.role}
             </span>
           </div>
 
-          {/* Progress bar */}
-          <div className="mt-1">
+          <div style={{ marginTop: styles.gap }}>
             <div
               ref={progressBarRef}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              className="w-full h-2 bg-gray-300 rounded-full relative"
+              className="w-full bg-gray-300 rounded-full relative"
+              style={{ height: styles.progressHeight }}
             >
               <div
-                className="h-2 bg-teal-500 rounded-full absolute top-0 left-0 transition-all duration-300"
-                style={{ width: `${currentData.progress}%` }}
+                className="bg-teal-500 rounded-full absolute top-0 left-0 transition-all duration-300"
+                style={{
+                  width: `${data.progress}%`,
+                  height: styles.progressHeight,
+                }}
               ></div>
               <SimpleTooltip text={tooltip.text} show={tooltip.show} />
             </div>

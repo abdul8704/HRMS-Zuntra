@@ -92,10 +92,10 @@ const sidebarItems = [
   {
     role: "EMP",
     label: "Documents",
-    path: "/documentations",
+    path: "/documents/all",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="none" viewBox="0 0 16 20">
-        <path fill="#000" fill-rule="evenodd" d="M10.25.5A.25.25 0 0 0 10 .25H3A2.75 2.75 0 0 0 .25 3v14A2.75 2.75 0 0 0 3 19.75h10A2.75 2.75 0 0 0 15.75 17V7.147a.25.25 0 0 0-.25-.25H11a.75.75 0 0 1-.75-.75V.5Zm.75 9.75a.75.75 0 1 1 0 1.5H5a.75.75 0 1 1 0-1.5h6Zm0 4a.75.75 0 1 1 0 1.5H5a.75.75 0 1 1 0-1.5h6Z" clip-rule="evenodd" />
+        <path fill="#000" fillRule="evenodd" d="M10.25.5A.25.25 0 0 0 10 .25H3A2.75 2.75 0 0 0 .25 3v14A2.75 2.75 0 0 0 3 19.75h10A2.75 2.75 0 0 0 15.75 17V7.147a.25.25 0 0 0-.25-.25H11a.75.75 0 0 1-.75-.75V.5Zm.75 9.75a.75.75 0 1 1 0 1.5H5a.75.75 0 1 1 0-1.5h6Zm0 4a.75.75 0 1 1 0 1.5H5a.75.75 0 1 1 0-1.5h6Z" clipRule="evenodd" />
         <path fill="#000" d="M11.75.823c0-.184.193-.3.336-.186.121.098.229.212.323.342l3.013 4.197c.068.096-.006.22-.124.22H12a.25.25 0 0 1-.25-.25V.823Z" />
       </svg>
 
@@ -104,7 +104,7 @@ const sidebarItems = [
   {
     role: "EMP",
     label: "Logout",
-    path: "/",
+    path: "",
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 18 18">
         <path fill="#000" d="M15.791 2h-6c-.55 0-1-.45-1-1s.45-1 1-1h6c1.1 0 2 .9 2 2v14c0 1.1-.9 2-2 2h-6c-.55 0-1-.45-1-1s.45-1 1-1h6V2Z" />
@@ -161,6 +161,7 @@ export const Sidebar = ({ role = "HR" }) => {
     if (currentPath.startsWith("/dashboard")) return visibleItems.findIndex(i => i.label === "Dashboard");
     if (currentPath.startsWith("/attendance")) return visibleItems.findIndex(i => i.label === "Attendance");
     if (currentPath.startsWith("/upskill")) return visibleItems.findIndex(i => i.label === "UpSkill");
+    if (currentPath.startsWith("/documents")) return visibleItems.findIndex(i => i.label === "Documents");
     return visibleItems.findIndex(i => i.path === "/");
   };
 

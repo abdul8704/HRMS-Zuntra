@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import { Sidebar } from "../../components/Sidebar";
 import { Navbar } from '../../components/Navbar';
-import { Loading } from '../../components/Loading';
+import { Loading } from "../utils/Loading";
 
 import { EmployeeCard } from './components/EmployeeCard';
 import { RoleCard } from './components/RoleCard';
@@ -276,6 +276,7 @@ export const EmployeeManagement = () => {
     setSelectedEmployee(employee);
     setShowAssignPopup(true);
   }, []);
+
 
   const handleSaveAssignment = useCallback(() => {
     handleClosePopup();
@@ -706,9 +707,7 @@ export const EmployeeManagement = () => {
       {showAssignPopup && selectedEmployee && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-[2000]">
           <EmpAssignmentPopUp
-            email={selectedEmployee.email}
             employee={selectedEmployee}
-            isOpen={true}
             onClose={handleClosePopup}
             onSave={handleSaveAssignment}
           />
