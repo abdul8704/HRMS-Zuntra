@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Upload, File, Calendar, Check, X } from 'lucide-react';
 import api from '../../../api/axios';
 
@@ -9,6 +9,11 @@ export function DocumentUploadForm() {
   const [validUpto, setValidUpto] = useState('');
   const [dragOver, setDragOver] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false); // ✅ Validation state
+
+  useEffect(() => {
+    setIsFormValid(documentName.trim() !== '' && selectedFile !== null);
+  }, [documentName, selectedFile]);
 
   const handleFileChange = (file) => {
     if (file && file.type === 'application/pdf') {
@@ -207,10 +212,14 @@ export function DocumentUploadForm() {
           <div className="pt-2">
             <button
               type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all transform hover:scale-105 active:scale-95"
+              disabled={!isFormValid || loading}
+              className={`w-full py-3 min-w-[120px] rounded-lg font-medium transition-colors duration-300 
+                ${!isFormValid || loading
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-[#BBD3CC] text-gray-700 hover:bg-[#A6C4BA]'
+                }`}
             >
-              {loading ? 'Uploading...' : 'Upload Document'}
+              {loading ? 'Uploading...' : 'Add Document'}
             </button>
           </div>
         </form>
