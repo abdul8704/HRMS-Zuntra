@@ -9,7 +9,8 @@ import SubModule from "./components/SubModule";
 import AssignmentModule from "./components/AssignmentModule";
 import { Loading } from "../utils/Loading";
 import api from "../../api/axios";
-import AddCourseWizard from "./AddCourseWizard";
+import { AddCourseMod } from "./components/AddCourseMod";
+
 
 export const CourseManagement = () => {
   const { navId } = useParams();
@@ -23,10 +24,6 @@ export const CourseManagement = () => {
   const [selectedInstructor, setSelectedInstructor] = useState("All Instructors");
   const [showCourseTypeDropdown, setShowCourseTypeDropdown] = useState(false);
   const [selectedCourseType, setSelectedCourseType] = useState("All Types");
-
-  // Form step management
-  const [currentStep, setCurrentStep] = useState(1);
-  const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
 
   // Declare instructors array (you can replace this with API data later)
   const instructors = [
@@ -76,16 +73,6 @@ export const CourseManagement = () => {
     if (!validTabs.includes(navId)) {
       navigate("/404");
       return;
-    }
-  }, [navId]);
-
-  useEffect(() => {
-    // Reset form state when switching to add page
-    if (navId === "add") {
-      setCurrentStep(1);
-      setCurrentModuleIndex(0);
-      setSubmitted(false);
-      setErrorFields([]);
     }
   }, [navId]);
 
@@ -227,11 +214,6 @@ export const CourseManagement = () => {
     const updatedModules = [...modules];
     updatedModules.splice(moduleIndex, 1);
     setModules(updatedModules);
-
-    // Adjust current module index if needed
-    if (currentModuleIndex >= modules.length - 1) {
-      setCurrentModuleIndex(Math.max(0, modules.length - 2));
-    }
   };
 
   const isSubModuleValid = (subModule) =>
@@ -259,67 +241,47 @@ export const CourseManagement = () => {
   };
 
   const handleAddModule = () => {
-    const newModule = {
-      moduleTitle: "",
-      subModules: [
-        {
-          submoduleTitle: "",
-          videoUrl: "",
-          description: "",
-          assignment: [],
-        },
-      ],
-    };
-    setModules([...modules, newModule]);
-    setCurrentModuleIndex(modules.length); // Set to the new module index
-    setCurrentStep(3); // Go to module editing step
-  };
-
-  const validateCourseInfo = () => {
-    const errors = [];
-    for (const key in courseInfo) {
-      if (!courseInfo[key]) errors.push(key);
+    const lastModule = modules.at(-1);
+    if (!isModuleValid(lastModule)) {
+      alert("Complete all Module and SubModule fields before adding another module.");
+      return;
     }
-    setErrorFields(errors);
-    setSubmitted(true);
-    return errors.length === 0;
-  };
-
-  const validateCurrentModule = () => {
-    const errors = [];
-    const currentModule = modules[currentModuleIndex];
-
-    if (!currentModule.moduleTitle) errors.push(`module-${currentModuleIndex}`);
-
-    currentModule.subModules.forEach((sub, subIndex) => {
-      if (!sub.submoduleTitle) errors.push(`submoduleTitle-${currentModuleIndex}-${subIndex}`);
-      if (!sub.videoUrl) errors.push(`videoUrl-${currentModuleIndex}-${subIndex}`);
-      if (!sub.description) errors.push(`description-${currentModuleIndex}-${subIndex}`);
-    });
-
-    setErrorFields(errors);
-    setSubmitted(true);
-    return errors.length === 0;
+    setModules([
+      ...modules,
+      {
+        moduleTitle: "",
+        subModules: [
+          {
+            submoduleTitle: "",
+            videoUrl: "",
+            description: "",
+            assignment: [],
+          },
+        ],
+      },
+    ]);
   };
 
   const handleSubmit = () => {
-    // Validate all modules
-    let allErrors = [];
+    setSubmitted(true);
+    let errors = [];
+
+    for (const key in courseInfo) {
+      if (!courseInfo[key]) errors.push(key);
+    }
 
     modules.forEach((mod, modIndex) => {
-      if (!mod.moduleTitle) allErrors.push(`module-${modIndex}`);
+      if (!mod.moduleTitle) errors.push(`module-${modIndex}`);
       mod.subModules.forEach((sub, subIndex) => {
-        if (!sub.submoduleTitle) allErrors.push(`submoduleTitle-${modIndex}-${subIndex}`);
-        if (!sub.videoUrl) allErrors.push(`videoUrl-${modIndex}-${subIndex}`);
-        if (!sub.description) allErrors.push(`description-${modIndex}-${subIndex}`);
+        if (!sub.submoduleTitle) errors.push(`submoduleTitle-${modIndex}-${subIndex}`);
+        if (!sub.videoUrl) errors.push(`videoUrl-${modIndex}-${subIndex}`);
+        if (!sub.description) errors.push(`description-${modIndex}-${subIndex}`);
       });
     });
 
-    setErrorFields(allErrors);
-    setSubmitted(true);
-
-    if (allErrors.length > 0) {
-      alert("Please fill all required fields in all modules!");
+    setErrorFields(errors);
+    if (errors.length > 0) {
+      alert("Please fill all required fields!");
       return;
     }
 
@@ -329,49 +291,13 @@ export const CourseManagement = () => {
 
   const isError = (fieldId) => submitted && errorFields.includes(fieldId);
 
-  // Navigation functions
-  const goToCourseInfo = () => {
-    setCurrentStep(1);
-    setSubmitted(false);
-    setErrorFields([]);
-  };
-
-  const goToModulesList = () => {
-    if (currentStep === 1) {
-      if (!validateCourseInfo()) {
-        alert("Please fill all required course information fields!");
-        return;
-      }
-    }
-    setCurrentStep(2);
-    setSubmitted(false);
-    setErrorFields([]);
-  };
-
-  const goToModuleEdit = (moduleIndex) => {
-    setCurrentModuleIndex(moduleIndex);
-    setCurrentStep(3);
-    setSubmitted(false);
-    setErrorFields([]);
-  };
-
-  const saveAndGoBack = () => {
-    if (validateCurrentModule()) {
-      setCurrentStep(2);
-      setSubmitted(false);
-      setErrorFields([]);
-    } else {
-      alert("Please complete all fields in this module before going back!");
-    }
-  };
-
   return (
     <div className="flex h-screen">
       <Sidebar />
       <div className="flex flex-col flex-1 min-w-0 p-4 gap-4 overflow-hidden">
         <Navbar
           type="courseManagement"
-          showFilter={navId === "all"}
+          showFilter={true}
           isFilterActive={isFilterActive}
           setIsFilterActive={setIsFilterActive}
           handleClearFilters={handleClearFilters}
@@ -544,19 +470,35 @@ export const CourseManagement = () => {
           </div>
         )}
 
-
         {navId === "add" && (
-          <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto pt-4">
-            <div className="w-full sm:w-[600px] max-w-2xl">
-              <AddCourseWizard
-                AddCourse={AddCourse}
-                Module={Module}
-                SubModule={SubModule}
-                AssignmentModule={AssignmentModule}
-              // If you want, you can pass initialCourseInfo and initialModules as props
-              />
+          <div className="flex-1 overflow-hidden px-4">
+              {/* Course Basic Info */}
+              {/* <AddCourse
+                courseData={courseInfo}
+                onChange={setCourseInfo}
+                errors={errorFields}
+                submitted={submitted}
+              /> */}
+              <AddCourseMod />
+
+              {/* Assignment Dropdown */}
+              {/* <AssignmentModule
+                initialQuestions={modules[0].subModules[0].assignment}
+                onAssignmentChange={(assignment) => {
+                  const updatedModules = [...modules];
+                  updatedModules[0].subModules[0].assignment = assignment;
+                  setModules(updatedModules);
+                }}
+              /> */}
+
+              {/* Submit Button
+              <button
+                onClick={handleSubmit}
+                className="bg-gray-500 text-white mt-6 px-8 py-3 rounded hover:bg-gray-600"
+              >
+                Submit Course
+              </button> */}
             </div>
-          </div>
         )}
 
       </div>
