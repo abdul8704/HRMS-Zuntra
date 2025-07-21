@@ -88,13 +88,6 @@ export const NotificationPopup = ({ setShowPopup }) => {
       return;
     }
 
-    console.log('Sending notification:', {
-      message: notification,
-      recipientType,
-      recipients: selectedRecipients,
-      userRole
-    });
-
     alert('Notification sent successfully!');
     setShowPopup(false);
   };

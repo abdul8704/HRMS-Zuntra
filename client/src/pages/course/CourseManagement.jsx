@@ -99,7 +99,6 @@ export const CourseManagement = () => {
 
       try {
         const res = await api.get(`/api/course/`);
-        console.log(res);
         if (res.data.success) {
           setCourses(Array.isArray(res.data.data) ? res.data.data : []);
         } else {
@@ -286,7 +285,6 @@ export const CourseManagement = () => {
     }
 
     alert("✅ Course Submitted!");
-    console.log({ courseInfo, modules });
   };
 
   const isError = (fieldId) => submitted && errorFields.includes(fieldId);

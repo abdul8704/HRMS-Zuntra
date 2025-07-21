@@ -5,15 +5,6 @@ const authService = require("../services/authService")
 
 const HrService = require('../services/hrServices')
 
-const addNewCampusLocation = asyncHandler(async (req, res) => {
-    const { campusName, latitude, longitude , radius} = req.body;
-    if (!campusName || !latitude || !longitude || !radius)
-        throw new ApiError(400, "Incomplete data");
-
-    const newCampus = await GeoService.addNewCampusLocation(campusName, latitude, longitude, radius);
-    res.status(201).json({ success: true, campus: newCampus });
-})
-
 const acceptUser = asyncHandler(async (req, res) => {
     const { email, shiftId, campusId, roleId, salary } = req.body;
     const userData = await authService.getUserByEmail(email);
@@ -80,7 +71,6 @@ const getAllLeaveReqs = asyncHandler(async (req, res) => {
 })
 
 module.exports = {
-    addNewCampusLocation,
     acceptUser,
     getPendingEmployees,
     getPendingLeaveReqs,

@@ -189,9 +189,9 @@ export const Login = () => {
           message: msg === "Wrong Password" ? "Wrong Password!!" : "User not found with this email!!"
         });
         setShowPopup(true);
-      } else {
-        console.log(err.response);
-      }
+      } 
+        console.error(err.response);
+      
     }
     finally {
       setIsLoading(false);

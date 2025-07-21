@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000"; 
+const BASE_URL = "http://localhost:5000";
 
 const api = axios.create({
     baseURL: BASE_URL,
-    withCredentials: true, 
+    withCredentials: true,
 });
 
 let isRefreshing = false;
@@ -35,11 +35,25 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        if (
+        // Prevent infinite loops by limiting to 1 retry per request
+        originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
+        
+        if (originalRequest._retryCount > 1) {
+            console.warn("Too many retries, redirecting...");
+            window.location.href = "/";
+            return Promise.reject(error);
+        }
+
+        if (error.response && error.response.status === 403) {
+            console.error("Unauthorized", error.response.data.message);
+            window.location.href = "/unauthorized";
+        } else if (
             error.response &&
-            error.response.status === 403 &&
+            error.response.status === 401 &&
             !originalRequest._retry
         ) {
+            console.error("Token expired", error.response.data.message);
+
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     failedQueue.push({ resolve, reject });
@@ -63,15 +77,14 @@ api.interceptors.response.use(
                 return api(originalRequest);
             } catch (err) {
                 processQueue(err);
-                console.log("Refresh token failed", err);
+                console.error("Refresh token failed", err);
                 window.location.href = "/"; // redirect to login
                 return Promise.reject(err);
             } finally {
                 isRefreshing = false;
             }
-        }
-        else{
-            console.log("Error response", error.response);
+        } else {
+            console.error("Error response", error.response);
         }
 
         return Promise.reject(error);

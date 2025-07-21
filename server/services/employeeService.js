@@ -11,7 +11,6 @@ const getAttendanceDataByUserId = async (
     endDate,
     holidays = []
 ) => {
-    console.log(startDate, endDate)
     try {
         const start = attendanceHelper.normalizeToUTCDate(startDate);
         start.setUTCHours(0, 0, 0, 0);
@@ -19,7 +18,6 @@ const getAttendanceDataByUserId = async (
         const end = attendanceHelper.normalizeToUTCDate(endDate);
         end.setUTCHours(23, 59, 59, 999);
 
-    console.log(start, end);
 
         // Fetch attendance records within the date range
         const attendanceRecords = await Attendance.find({
@@ -306,7 +304,7 @@ const getPersonalDetailsOfaEmployee = async (empId) => {
         }
 
         const userPersonalDetails = await userPersonal.findById(empId);
-        console.log(userPersonalDetails);
+
         if (!userPersonalDetails) {
             throw new ApiError(404, "Employee not found");
         }
@@ -362,7 +360,7 @@ const updateEmpData = async ({ userid, dob, religion, address }) => {
     if (dob) updateFields.DOB = new Date(dob);
     if (religion) updateFields.religion = religion;
     if (address) updateFields.Address = address;
-    console.log(userid);
+
     const updatedUser = await userPersonal.findByIdAndUpdate(
       userid,
       { $set: updateFields },

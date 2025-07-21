@@ -47,13 +47,11 @@
             api.get(`/api/employee/${empId}`),
             api.get(`/api/course/enrolledCourses`),
           ]);
-          console.log("Employee Details Response:", empRes.data);
+          ("Employee Details Response:", empRes.data);
           if (empRes.data.success) {
             setEmployeeDetail(empRes.data.employeeDetail || empRes.data.data);
           }
-          if(courseRes.data.success){
-            console.log(courseRes.data);
-          }
+          
         } catch (err) {
           console.error("Error fetching employee details:", err?.response?.data?.message || err.message);
         } finally {

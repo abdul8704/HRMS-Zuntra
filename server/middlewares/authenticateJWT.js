@@ -13,7 +13,7 @@ const authenticateToken = asyncHandler((req, res, next) => {
         req.user = user;
         next();
     } catch (err) {
-        throw new ApiError( 403,
+        throw new ApiError( 401,
             err.name === "TokenExpiredError"
                 ? "Token has expired"
                 : "Invalid or malformed JWT",
