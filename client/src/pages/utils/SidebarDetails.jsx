@@ -16,15 +16,46 @@ import {
 import ZuntraLogo from "../../assets/Zuntra.svg";
 import { EditProfileCard } from "../employee/components/EditProfileCard";
 import { useNavigate } from "react-router-dom";
+import api, { BASE_URL } from '../../api/axios';
+import { useAuth } from "../../context/AuthContext";
+import { Loading } from "./Loading";
 
-export function SidebarDetails({ type, data }) {
+export function SidebarDetails({ type, empId }) {
   const navigate = useNavigate();
+  const {user, loading} = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showEditCard, setShowEditCard] = useState(false);
 
   const handleEditProfile = () => setShowEditCard(prev => !prev);
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    const fetchdatas = async () => {
+      setIsLoading(true);
+      try {
+        const [empRes, courseRes] = await Promise.all([
+          api.get(`/api/employee/${empId}`),
+          api.get(`/api/course/enrolledCourses`),
+        ]);
+        // console.log("Employee Details Response:", empRes.data.employeeDetail);
+        if (empRes.data.success) {
+          setData(empRes.data.employeeDetail);
+        }
+        if (courseRes.data.success) {
+          console.log(courseRes.data);
+        }
+      } catch (err) {
+        console.error("Error fetching employee details:", err?.response?.data?.message || err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
+    if (!loading) {
+      fetchdatas();
+    }
+  }, [type, showEditCard]);
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -85,17 +116,18 @@ export function SidebarDetails({ type, data }) {
             className="h-[50px] w-auto object-contain"
           />
         </div>
-
+        
+        {type === "user" && isLoading && (<Loading />)}
         {/* User Details */}
-        {type === "user" && (
+        {type === "user" && !isLoading && (
           <>
             {/* Header */}
             <div className="px-6 pb-6">
               <div className="flex justify-center mb-6">
-                <div className="w-[4.5rem] h-[4.5rem] md:w-[6rem] md:h-[6rem] bg-white rounded-full p-1 shadow-xl">
+                <div className="w-[4.5rem] h-[4.5rem] md:w-[6rem] md:h-[6rem] rounded-full">
                   <div className="w-full h-full rounded-full overflow-hidden bg-gray-300">
                     <img
-                      src={data.profilePicture}
+                      src={`${BASE_URL}/uploads/profilePictures/${data._id}.png`}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />
@@ -135,7 +167,13 @@ export function SidebarDetails({ type, data }) {
                 <div>
                   <span className="font-medium">Joined Date:</span>{" "}
                   <span className="text-black/80">
-                    {new Date(data.dateJoined).toLocaleDateString()}
+                    {(() => {
+                      const dob = new Date(data.dateJoined);
+                      const day = String(dob.getDate()).padStart(2, '0');
+                      const month = String(dob.getMonth() + 1).padStart(2, '0');
+                      const year = dob.getFullYear();
+                      return `${day}-${month}-${year}`;
+                    })()}
                   </span>
                 </div>
               </div>
@@ -212,7 +250,6 @@ export function SidebarDetails({ type, data }) {
           </>
         )}
       </div>
-
       {/* Sidebar toggle for mobile */}
       {!isOpen && isMobile && (
         <div className="fixed top-[4rem] -left-[10px] w-12 h-12 bg-[#bcd4cd] rounded-full flex items-center justify-center shadow-lg transition-all duration-300 z-[1000]">

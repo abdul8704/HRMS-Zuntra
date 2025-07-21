@@ -16,35 +16,7 @@
     const { empId, navId } = useParams();
     const [roleProfiles, setRolesProfiles] = useState([]);
     const [showAssignCourse, setShowAssignCourse] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [employeeDetail, setEmployeeDetail] = useState(null);
-
-    useEffect(() => {
-      const fetchEmployeeDetails = async () => {
-        setIsLoading(true);
-        try {
-          const [empRes, courseRes] = await Promise.all([
-            api.get(`/api/employee/${empId}`),
-            api.get(`/api/course/enrolledCourses`),
-          ]);
-          console.log("Employee Details Response:", empRes.data);
-          if (empRes.data.success) {
-            setEmployeeDetail(empRes.data.employeeDetail || empRes.data.data);
-          }
-          if(courseRes.data.success){
-            console.log(courseRes.data);
-          }
-        } catch (err) {
-          console.error("Error fetching employee details:", err?.response?.data?.message || err.message);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      if (!loading) {
-        fetchEmployeeDetails();
-      }
-    }, [empId, loading]);
+    
 
     useEffect(() => {
       if (type === "role") {
@@ -66,16 +38,15 @@
 
     return (
       <div className="flex h-screen overflow-hidden">
-        {(loading || isLoading) ? (
+        {(loading) ? (
           <Loading />
         ) : (
           <>
-            {employeeDetail && (
-              <SidebarDetails
+            <SidebarDetails
                 type={type}
-                data={employeeDetail}
-              />
-            )}
+                empId={empId}
+            />
+            
 
             <div className="flex flex-col flex-1 gap-[1rem] p-[1rem]">
               {type === "user" && (
