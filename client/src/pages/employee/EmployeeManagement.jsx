@@ -684,7 +684,7 @@ export const EmployeeManagement = () => {
                   phone={emp.phone || emp.phoneNumber}
                   role={emp.date}
                   bgColor={bgColorList[index]}
-                  image={emp.image || emp.profilePicture}
+                  image={`${BASE_URL}/uploads/profilePictures/${emp._id}.png`}
                   isNewUser={true}
                   onApprove={() => handleApprove(emp)}
                 />

@@ -282,7 +282,7 @@ const getDetailsOfaEmployee = async (empId) => {
 
         const userCreds = await User.findById(empId, { passwordHash: 0 })
             .populate("role", "role color")
-            .populate("shift", )
+            .populate("shift", "shiftName")
             .populate("campus", "campusName embedURL");
         if (!userCreds) {
             throw new ApiError(404, "Employee not found");

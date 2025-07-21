@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { User, ChevronDown, Search } from 'lucide-react';
-import api from '../../../api/axios';
+import api, { BASE_URL } from '../../../api/axios';
 
 export const EmpAssignmentPopUp = ({ employee, onClose, onSave }) => {
   const [selectedRole, setSelectedRole] = useState('');
@@ -165,7 +165,11 @@ export const EmpAssignmentPopUp = ({ employee, onClose, onSave }) => {
           <div className="w-2/5 bg-gradient-to-br from-[#BBD3CC] to-[#A6C4BA] p-8 flex flex-col justify-center items-center text-center">
             <div className="relative mb-6">
               <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
-                <User size={48} className="text-white" />
+                <img
+                  src={`${BASE_URL}/uploads/profilePictures/${employee._id}.png`}
+                  alt="Profile"
+                  className="w-full h-full object-cover rounded-full"
+                />
               </div>
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-2">{employee.name}</h3>
