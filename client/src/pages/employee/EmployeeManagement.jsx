@@ -14,6 +14,7 @@ import { EmpAssignmentPopUp } from './components/EmployeeAssignmentPopup';
 import { AddLocationForm } from './components/AddLocationForm';
 
 import api from '../../api/axios';
+import { BASE_URL } from '../../api/axios';
 
 
 export const EmployeeManagement = () => {
@@ -565,7 +566,7 @@ export const EmployeeManagement = () => {
                     name={emp.username || emp.name}
                     email={emp.email}
                     phone={emp.phoneNumber || emp.phone}
-                    image={emp.profilePicture || emp.image}
+                    image={`${BASE_URL}/uploads/profilePictures/${emp._id}.png`}
                     role={emp.role?.role || emp.role?.name || emp.role || "N/A"}
                     inTime={emp.loginTime || "N/A"}
                     outTime={emp.logoutTime || "N/A"}

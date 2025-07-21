@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from "../../components/Sidebar";
-import { jwtDecode } from 'jwt-decode';
 
 import { UserGreetings } from "./components/UserGreetings";
 import { TimeCard } from "./components/TimeCard";
@@ -13,6 +12,7 @@ import { NotificationPopup } from './components/NotificationPopup';
 import { ProjectDeadline } from "../project/components/ProjectDeadline";
 import { PlusButton } from '../../components/PlusButton';
 import { useAuth } from "../../context/AuthContext";
+import { BASE_URL } from '../../api/axios';
 
 export const DashBoard = () => {
 
@@ -60,7 +60,7 @@ export const DashBoard = () => {
           <div className="h-[10vh] md:h-full col-span-2 md:col-span-4 md:row-span-1 rounded-2xl flex items-center overflow-hidden px-[0.3rem] animate-slide-in-left">
             <UserGreetings
               name={user?.username}
-              profileImageURL={user?.profilePicture}
+              profileImageURL={`${BASE_URL}/uploads/profilePictures/${user.userid}.png`}
               marqueeText={quote}
             />
           </div>
