@@ -10,7 +10,7 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${day}-${month}`;
+    return `${year}-${month}-${day}`;
   };
 
   const [dob, setDob] = useState(formatDateForInput(data.personalDetail?.DOB) || '');
@@ -27,7 +27,8 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     if (!isFormValid) return;
 
     try {
-      // const profile = await api.post('/api/')
+      const userData = {dob,religion,address};
+      const profileUpdate = await api.patch('/api/employee/updateprofile',userData);
       alert('Profile updated successfully');
       onSave?.();
       onClose?.();
@@ -58,7 +59,7 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl flex w-full max-w-4xl mx-4 overflow-hidden">
         {/* Left: Profile Summary */}
-        <div className="w-2/5 bg-gradient-to-br from-blue-50 to-indigo-100 p-8 flex flex-col justify-center items-center text-center">
+        <div className="w-2/5 bg-gradient-to-br from-[#BBD3CC] to-[#A6C4BA] p-8 flex flex-col justify-center items-center text-center">
           <div className="relative mb-6">
             <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
               <img

@@ -140,6 +140,24 @@ const getMyData = asyncHandler(async (req, res) => {
         .json({ success: true, data: { userid, username, allowedAccess } });
 });
 
+const updateEmpDataController = asyncHandler(async(req,res)=>{
+    const {dob, religion, address} = req.body;
+    const { userid } = req.user;
+    console.log(userid);
+    const updatedData = await employeeService.updateEmpData({
+        userid,
+        dob,
+        religion,
+        address,
+    });
+
+    res.status(200).json({
+        success: true,
+        message: "Employee personal details updated successfully",
+        data: updatedData,
+    });
+})
+
 module.exports = {
     handleLogout,
     getAttendanceData,
@@ -149,4 +167,5 @@ module.exports = {
     applyForLeave,
     getEmployeeRequests,
     getMyData,
+    updateEmpDataController,
 };
