@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { User, ChevronDown, Search } from 'lucide-react';
-import api from '../../../api/axios';
+import api, { BASE_URL } from '../../../api/axios';
 
 export const EmpAssignmentPopUp = ({ employee, onClose, onSave }) => {
   const [selectedRole, setSelectedRole] = useState('');
@@ -166,7 +166,7 @@ export const EmpAssignmentPopUp = ({ employee, onClose, onSave }) => {
             <div className="relative mb-6">
               <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
                 <img
-                  src={`${BASE_URL}/uploads/profilePictures/${data._id}.png`}
+                  src={`${BASE_URL}/uploads/profilePictures/${employee._id}.png`}
                   alt="Profile"
                   className="w-full h-full object-cover rounded-full"
                 />
