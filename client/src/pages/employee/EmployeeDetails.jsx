@@ -20,7 +20,27 @@
     const [employeeDetail, setEmployeeDetail] = useState(null);
 
     useEffect(() => {
-      const fetchEmployeeDetails = async () => {
+      
+    }, [empId, loading]);
+
+    useEffect(() => {
+      if (type === "role") {
+        const dummyProfiles = [
+          {
+            username: "Alice Johnson",
+            role: { role: "Team Leader", color: "#E57373" },
+            profilePicture: "https://via.placeholder.com/150",
+          },
+          {
+            username: "Bob Smith",
+            role: { role: "Developer", color: "#64B5F6" },
+            profilePicture: "https://via.placeholder.com/150",
+          },
+        ];
+        setRolesProfiles(dummyProfiles);
+      }
+      else{
+        const fetchEmployeeDetails = async () => {
         setIsLoading(true);
         try {
           const [empRes, courseRes] = await Promise.all([
@@ -44,23 +64,6 @@
       if (!loading) {
         fetchEmployeeDetails();
       }
-    }, [empId, loading]);
-
-    useEffect(() => {
-      if (type === "role") {
-        const dummyProfiles = [
-          {
-            username: "Alice Johnson",
-            role: { role: "Team Leader", color: "#E57373" },
-            profilePicture: "https://via.placeholder.com/150",
-          },
-          {
-            username: "Bob Smith",
-            role: { role: "Developer", color: "#64B5F6" },
-            profilePicture: "https://via.placeholder.com/150",
-          },
-        ];
-        setRolesProfiles(dummyProfiles);
       }
     }, [type]);
 
