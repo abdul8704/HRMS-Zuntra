@@ -9,7 +9,7 @@ export const EmployeeCard = ({
   email,
   phone,
   role,
-  image = "https://www.pngitem.com/pimgs/m/678-6785829_my-account-instagram-profile-icon-hd-png-download.png",
+  image,
   inTime,
   outTime,
   workTime,

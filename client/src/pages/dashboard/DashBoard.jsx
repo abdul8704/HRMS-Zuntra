@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from "../../components/Sidebar";
-import { jwtDecode } from 'jwt-decode';
 
 import { UserGreetings } from "./components/UserGreetings";
 import { TimeCard } from "./components/TimeCard";
