@@ -16,16 +16,46 @@ import {
 import ZuntraLogo from "../../assets/Zuntra.svg";
 import { EditProfileCard } from "../employee/components/EditProfileCard";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from '../../api/axios';
+import api, { BASE_URL } from '../../api/axios';
+import { useAuth } from "../../context/AuthContext";
+import { Loading } from "./Loading";
 
-export function SidebarDetails({ type, data }) {
+export function SidebarDetails({ type, empId }) {
   const navigate = useNavigate();
+  const {user, loading} = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showEditCard, setShowEditCard] = useState(false);
 
   const handleEditProfile = () => setShowEditCard(prev => !prev);
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    const fetchdatas = async () => {
+      setIsLoading(true);
+      try {
+        const [empRes, courseRes] = await Promise.all([
+          api.get(`/api/employee/${empId}`),
+          api.get(`/api/course/enrolledCourses`),
+        ]);
+        // console.log("Employee Details Response:", empRes.data.employeeDetail);
+        if (empRes.data.success) {
+          setData(empRes.data.employeeDetail);
+        }
+        if (courseRes.data.success) {
+          console.log(courseRes.data);
+        }
+      } catch (err) {
+        console.error("Error fetching employee details:", err?.response?.data?.message || err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
+    if (!loading) {
+      fetchdatas();
+    }
+  }, [type, showEditCard]);
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -86,9 +116,10 @@ export function SidebarDetails({ type, data }) {
             className="h-[50px] w-auto object-contain"
           />
         </div>
-
+        
+        {type === "user" && isLoading && (<Loading />)}
         {/* User Details */}
-        {type === "user" && (
+        {type === "user" && !isLoading && (
           <>
             {/* Header */}
             <div className="px-6 pb-6">
