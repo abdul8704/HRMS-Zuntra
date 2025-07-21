@@ -176,8 +176,17 @@ export const EmpAssignmentPopUp = ({ employee, onClose, onSave }) => {
             <div className="bg-white bg-opacity-80 px-4 py-2 rounded-full mb-2">
               <p className="text-sm font-medium text-gray-700">{employee.email}</p>
             </div>
-            <p className="text-sm text-gray-600 mb-1">{employee.phone}</p>
-            <p className="text-sm text-gray-600">Applied on: {employee.date}</p>
+            <div className="flex items-center gap-1 text-sm text-gray-600 overflow-hidden cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="12" fill="none" viewBox="0 0 13 12">
+                <path
+                  fill="#000"
+                  fillOpacity=".5"
+                  d="M2.536 5.166C3.544 7.018 5.169 8.53 7.15 9.477l1.541-1.439a.732.732 0 0 1 .715-.157 8.507 8.507 0 0 0 2.5.373c.386 0 .7.294.7.654v2.283c0 .36-.314.654-.7.654C5.33 11.845 0 6.867 0 .726 0 .364.315.07.7.07h2.452c.385 0 .7.295.7.654 0 .818.14 1.603.4 2.336a.626.626 0 0 1-.175.667l-1.541 1.44Z"
+                />
+              </svg>
+              <span className="truncate">{employee.phoneNumber}</span>
+            </div>
+            <p className="text-sm text-gray-600">Applied on: {employee.dateJoined}</p>
           </div>
 
           <div className="flex-1 p-8">

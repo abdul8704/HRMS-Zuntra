@@ -7,7 +7,7 @@ import { Loading } from "../utils/Loading";
 
 import { EmployeeCard } from './components/EmployeeCard';
 import { RoleCard } from './components/RoleCard';
-import  AddRole  from './components/AddRole';
+import AddRole from './components/AddRole';
 import { EditRolePopup } from './components/EditRolePopup';
 import { GeoFencing } from './components/GeoFencing';
 import { EmpAssignmentPopUp } from './components/EmployeeAssignmentPopup';
@@ -26,7 +26,7 @@ export const EmployeeManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("All Roles");
   const [selectedLoginStatus, setSelectedLoginStatus] = useState("All Users");
-  
+
   // Role dropdown states
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [roleSearchTerm, setRoleSearchTerm] = useState("All Roles");
@@ -104,6 +104,7 @@ export const EmployeeManagement = () => {
         setRolesData(roles.data || []);
         setEmployees(emps.data.employees || []);
         setPendingEmployees(pending.data.pendingEmployees || []);
+        console.log(pending.data.pendingEmployees);
         setBranches(brs.data.branches || []);
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -177,13 +178,13 @@ export const EmployeeManagement = () => {
       // Search filter (name, email, phone)
       if (searchTerm.trim()) {
         const term = searchTerm.toLowerCase();
-        const matchesSearch = 
+        const matchesSearch =
           includesSearchTerm(emp.username, term) ||
           includesSearchTerm(emp.name, term) ||
           includesSearchTerm(emp.email, term) ||
           includesSearchTerm(emp.phoneNumber, term) ||
           includesSearchTerm(emp.phone, term);
-        
+
         if (!matchesSearch) return false;
       }
 
@@ -206,12 +207,12 @@ export const EmployeeManagement = () => {
       // Search filter
       if (searchTerm.trim()) {
         const term = searchTerm.toLowerCase();
-        const matchesSearch = 
+        const matchesSearch =
           includesSearchTerm(emp.name, term) ||
           includesSearchTerm(emp.email, term) ||
           includesSearchTerm(emp.phone, term) ||
           includesSearchTerm(emp.phoneNumber, term);
-        
+
         if (!matchesSearch) return false;
       }
 
@@ -362,11 +363,11 @@ export const EmployeeManagement = () => {
     <div className="flex w-screen h-screen">
       <Sidebar />
       <div className="flex gap-[1rem] flex-col flex-1 p-[1rem] h-screen">
-        <Navbar 
-          type="employeeManagement" 
-          showFilter={true} 
-          isFilterActive={isFilterActive} 
-          setIsFilterActive={setIsFilterActive} 
+        <Navbar
+          type="employeeManagement"
+          showFilter={true}
+          isFilterActive={isFilterActive}
+          setIsFilterActive={setIsFilterActive}
           handleClearFilters={handleClearFilters}
         />
 
@@ -378,9 +379,9 @@ export const EmployeeManagement = () => {
               <input
                 type="text"
                 placeholder={
-                  navId === "roles" ? "Search roles" : 
-                  navId === "locations" ? "Search locations" : 
-                  "Search by name, email, or phone"
+                  navId === "roles" ? "Search roles" :
+                    navId === "locations" ? "Search locations" :
+                      "Search by name, email, or phone"
                 }
                 className="bg-white/50 flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A6C4BA]"
                 value={searchTerm}
@@ -504,8 +505,8 @@ export const EmployeeManagement = () => {
             <div>
               Showing {currentData.data.length} of {currentData.total} {
                 navId === "all" ? "employees" :
-                navId === "newusers" ? "new users" :
-                navId === "locations" ? "locations" : "roles"
+                  navId === "newusers" ? "new users" :
+                    navId === "locations" ? "locations" : "roles"
               }
             </div>
             <div className="flex gap-2">
@@ -539,7 +540,7 @@ export const EmployeeManagement = () => {
         )}
 
         {/* Content Sections */}
-        
+
         {/* All Employees */}
         {navId === "all" && (
           <div className="px-[1rem] grid grid-cols-1 md:grid-cols-2 gap-[1rem] overflow-y-auto">
@@ -682,7 +683,13 @@ export const EmployeeManagement = () => {
                   name={emp.name}
                   email={emp.email}
                   phone={emp.phone || emp.phoneNumber}
-                  role={emp.date}
+                  role={(() => {
+                    const dob = new Date(emp.dateJoined);
+                    const day = String(dob.getDate()).padStart(2, '0');
+                    const month = String(dob.getMonth() + 1).padStart(2, '0');
+                    const year = dob.getFullYear();
+                    return `${day}-${month}-${year}`;
+                  })()}
                   bgColor={bgColorList[index]}
                   image={`${BASE_URL}/uploads/profilePictures/${emp._id}.png`}
                   isNewUser={true}
