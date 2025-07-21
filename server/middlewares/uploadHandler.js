@@ -4,7 +4,7 @@ const path = require("path");
 // profilePicture
 
 const profileFileFilter=(req,file,cb) => {
-    const allowedTypes= /jpeg|jpg|png/;
+    const allowedTypes= /jpeg|jpg|png|gif/;
     const isAllowed  = allowedTypes.test(file.mimetype);
     if(isAllowed){
         cb(null,true);
