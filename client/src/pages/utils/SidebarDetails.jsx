@@ -18,6 +18,7 @@ import { EditProfileCard } from "../employee/components/EditProfileCard";
 import { useNavigate } from "react-router-dom";
 import api, { BASE_URL } from '../../api/axios';
 import { useAuth } from "../../context/AuthContext";
+import { Loading } from "./Loading";
 
 export function SidebarDetails({ type, empId }) {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export function SidebarDetails({ type, empId }) {
           api.get(`/api/employee/${empId}`),
           api.get(`/api/course/enrolledCourses`),
         ]);
-        console.log("Employee Details Response:", empRes.data.employeeDetail);
+        // console.log("Employee Details Response:", empRes.data.employeeDetail);
         if (empRes.data.success) {
           setData(empRes.data.employeeDetail);
         }
@@ -115,7 +116,8 @@ export function SidebarDetails({ type, empId }) {
             className="h-[50px] w-auto object-contain"
           />
         </div>
-
+        
+        {type === "user" && isLoading && (<Loading />)}
         {/* User Details */}
         {type === "user" && !isLoading && (
           <>

@@ -71,18 +71,17 @@ export const EmployeeCard = ({
         style={{ backgroundColor: bgColor, transition: "0.5s" }}
       >
         <div
-          className={`flex ${
-            isNewUser ? "flex-row" : "flex-col"
-          } lg:flex-row items-stretch w-full gap-4`}
+          className={`flex ${isNewUser ? "flex-row" : "flex-col"
+            } lg:flex-row items-stretch w-full gap-4`}
         >
           {/* Left Section */}
           <div className="flex items-center flex-[7] gap-4 min-w-0">
             <div className="flex items-center sm:items-stretch justify-center sm:justify-start self-stretch max-w-[8rem]">
-             <img
-  src={image}
-  alt="Profile"
-  className="w-full h-full object-cover block rounded-tl-2xl rounded-bl-2xl"
-/>
+              <img
+                src={image}
+                alt="Profile"
+                className="w-full h-full object-cover block rounded-tl-2xl rounded-bl-2xl"
+              />
 
             </div>
 
