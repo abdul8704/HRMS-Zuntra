@@ -16,12 +16,7 @@
     const { empId, navId } = useParams();
     const [roleProfiles, setRolesProfiles] = useState([]);
     const [showAssignCourse, setShowAssignCourse] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [employeeDetail, setEmployeeDetail] = useState(null);
-
-    useEffect(() => {
-      
-    }, [empId, loading]);
+    
 
     useEffect(() => {
       if (type === "role") {
@@ -67,16 +62,15 @@
 
     return (
       <div className="flex h-screen overflow-hidden">
-        {(loading || isLoading) ? (
+        {(loading) ? (
           <Loading />
         ) : (
           <>
-            {employeeDetail && (
-              <SidebarDetails
+            <SidebarDetails
                 type={type}
-                data={employeeDetail}
-              />
-            )}
+                empId={empId}
+            />
+            
 
             <div className="flex flex-col flex-1 gap-[1rem] p-[1rem]">
               {type === "user" && (

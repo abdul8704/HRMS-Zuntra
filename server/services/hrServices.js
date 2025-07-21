@@ -27,7 +27,7 @@ const updateUserData = async (email, shiftId, campusId, roleId) => {
 
 const getPendingUsers = async () => {
     try {
-        const users = await UserCredentials.find({ role: { $exists: false } });
+        const users = await UserCredentials.find({ role: { $exists: false }},{passwordHash: 0, __v: 0});
         return users;
     } catch (error) {
         throw new ApiError(`Failed to fetch pending users`, error.message);

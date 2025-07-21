@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { User, ChevronDown } from 'lucide-react';
-import api from '../../../api/axios'
-import { BASE_URL } from '../../../api/axios';
+import api, { BASE_URL } from '../../../api/axios';
 
 export const EditProfileCard = ({ data, onClose, onSave }) => {
 

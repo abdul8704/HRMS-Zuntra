@@ -22,17 +22,15 @@ const acceptUser = asyncHandler(async (req, res) => {
 
 const getPendingEmployees = asyncHandler(async (req, res) => {
     const pendingEmployees = await HrService.getPendingUsers();
-    
-    const formattedPendingEmployees = pendingEmployees.map((emp) => ({
-        name: emp.username,
-        email: emp.email,
-        phone: emp.phoneNumber,
-        role: emp.role,
-        date: emp.dateJoined.toISOString().split('T')[0], 
+
+    const formattedEmployees = pendingEmployees.map(emp => ({
+        ...emp.toObject?.() ?? emp,
+        dateJoined: emp.dateJoined?.toISOString().split('T')[0] || null,
     }));
 
-    res.status(200).json({ success: true, pendingEmployees: formattedPendingEmployees });
-})
+    res.status(200).json({ success: true, pendingEmployees: formattedEmployees });
+});
+
 
 const getPendingLeaveReqs = asyncHandler(async (req, res) => {
     const pendingLeaveReqs = await HrService.getPendingLeaveRequests();

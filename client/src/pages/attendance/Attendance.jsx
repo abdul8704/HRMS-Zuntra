@@ -10,6 +10,7 @@ import { AttendanceCalendar } from './components/AttendanceCalendar';
 import { AttendanceCard } from './components/AttendanceCard';
 import { LeaveForm } from './components/LeaveForm';
 import { ScheduleForm } from './components/ScheduleForm';
+import { SampleCard } from './components/samplecard';
 import  LeaveFormHistory  from './components/LeaveFormHistory';
 
 
@@ -73,8 +74,13 @@ export const Attendance = () => {
                             <div className='flex-1'>
                                 <AttendanceCalendar />
                             </div>
-                            <div className='flex-1'>
-                                <ScheduleForm />
+                            <div className='flex-1 flex flex-col gap-[1rem]'>
+                                <div className='flex-1'>
+                                    <SampleCard />
+                                </div>
+                                <div className='flex-1'>
+                                    <ScheduleForm />
+                                </div>
                             </div>
                         </div>
                     )}
