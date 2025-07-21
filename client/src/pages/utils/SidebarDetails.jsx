@@ -16,6 +16,7 @@ import {
 import ZuntraLogo from "../../assets/Zuntra.svg";
 import { EditProfileCard } from "../employee/components/EditProfileCard";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from '../../api/axios';
 
 export function SidebarDetails({ type, data }) {
   const navigate = useNavigate();
@@ -92,10 +93,10 @@ export function SidebarDetails({ type, data }) {
             {/* Header */}
             <div className="px-6 pb-6">
               <div className="flex justify-center mb-6">
-                <div className="w-[4.5rem] h-[4.5rem] md:w-[6rem] md:h-[6rem] bg-white rounded-full p-1 shadow-xl">
+                <div className="w-[4.5rem] h-[4.5rem] md:w-[6rem] md:h-[6rem] rounded-full">
                   <div className="w-full h-full rounded-full overflow-hidden bg-gray-300">
                     <img
-                      src={data.profilePicture}
+                      src={`${BASE_URL}/uploads/profilePictures/${data._id}.png`}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />
@@ -135,7 +136,13 @@ export function SidebarDetails({ type, data }) {
                 <div>
                   <span className="font-medium">Joined Date:</span>{" "}
                   <span className="text-black/80">
-                    {new Date(data.dateJoined).toLocaleDateString()}
+                    {(() => {
+                      const dob = new Date(data.dateJoined);
+                      const day = String(dob.getDate()).padStart(2, '0');
+                      const month = String(dob.getMonth() + 1).padStart(2, '0');
+                      const year = dob.getFullYear();
+                      return `${day}-${month}-${year}`;
+                    })()}
                   </span>
                 </div>
               </div>

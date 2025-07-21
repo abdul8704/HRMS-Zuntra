@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { User, ChevronDown } from 'lucide-react';
 import api from '../../../api/axios'
+import { BASE_URL } from '../../../api/axios';
 
 export const EditProfileCard = ({ data, onClose, onSave }) => {
 
@@ -63,7 +64,7 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
           <div className="relative mb-6">
             <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
               <img
-                src={data.profilePicture}
+                src={`${BASE_URL}/uploads/profilePictures/${data._id}.png`}
                 alt="Profile"
                 className="w-full h-full object-cover rounded-full"
               />
