@@ -18,7 +18,11 @@ export const EmployeeCard = ({
   isNewUser = false,
   onApprove,
 }) => {
-  const [tooltip, setTooltip] = useState({ show: false, text: "", anchorRef: null });
+  const [tooltip, setTooltip] = useState({
+    show: false,
+    text: "",
+    anchorRef: null,
+  });
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef(null);
   const nameRef = useRef(null);
@@ -59,7 +63,8 @@ export const EmployeeCard = ({
     }
   };
 
-  const hideTooltip = () => setTooltip({ show: false, text: "", anchorRef: null });
+  const hideTooltip = () =>
+    setTooltip({ show: false, text: "", anchorRef: null });
 
   return (
     <>
@@ -75,23 +80,22 @@ export const EmployeeCard = ({
         <div
           className={`flex ${
             isNewUser ? "flex-row" : "flex-col"
-          } lg:flex-row items-stretch w-full gap-4`}
+          } lg:flex-row w-full gap-1`}
         >
           {/* Left Section */}
-          <div className="flex items-center flex-[7] gap-4 min-w-0">
-            <div className="flex items-center sm:items-stretch justify-center sm:justify-start self-stretch max-w-[8rem]">
-             <img
-  src={image}
-  alt="Profile"
-  className="w-full h-full object-cover block rounded-tl-2xl rounded-bl-2xl"
-/>
-
+          <div className="flex flex-1 gap-2 min-w-0">
+            <div className="h-full overflow-hidden rounded-tl-2xl rounded-bl-2xl">
+              <img
+                src={image}
+                alt="Profile"
+                className="w-[8rem] h-[8rem] object-fill object-top block"
+              />
             </div>
 
-            <div className="flex flex-col flex-1 min-w-0 max-w-full items-center sm:items-start justify-center overflow-hidden py-4">
+            <div className="flex flex-col flex-[2] justify-center ">
               <h6
                 ref={nameRef}
-                className="text-md m-0 cursor-pointer truncate w-full max-w-full text-center sm:text-left"
+                className="text-md m-0 cursor-pointer truncate w-full text-center sm:text-left"
                 onMouseEnter={() => showTooltipIfTruncated(nameRef, name)}
                 onMouseLeave={hideTooltip}
               >
@@ -100,18 +104,34 @@ export const EmployeeCard = ({
 
               <div
                 ref={emailRef}
-                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden cursor-pointer"
+                className="flex items-center gap-1 text-sm text-gray-800 cursor-pointer"
                 onMouseEnter={() => showTooltipIfTruncated(emailRef, email)}
                 onMouseLeave={hideTooltip}
+                style={{ maxWidth: "220px", overflow: "hidden" }} // ← Fixed max width for email container
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="12" fill="none" viewBox="0 0 18 12">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="12"
+                  fill="none"
+                  viewBox="0 0 18 12"
+                >
                   <path
                     fill="#000"
                     fillOpacity=".5"
                     d="M1.72 11.775c-.474 0-.878-.144-1.215-.432-.336-.288-.504-.634-.505-1.04V1.472C0 1.067.168.72.505.432A1.81 1.81 0 0 1 1.72 0h13.754c.473 0 .878.144 1.215.433.337.288.505.635.505 1.039v8.831c0 .405-.169.752-.505 1.04a1.801 1.801 0 0 1-1.215.432H1.72Zm6.876-5.151 6.877-3.68V1.472l-6.877 3.68-6.877-3.68v1.472l6.877 3.68Z"
                   />
                 </svg>
-                <span className="truncate">{email}</span>
+                <span
+                  className="truncate block"
+                  style={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {email}
+                </span>
               </div>
 
               <div
@@ -120,7 +140,13 @@ export const EmployeeCard = ({
                 onMouseEnter={() => showTooltipIfTruncated(phoneRef, phone)}
                 onMouseLeave={hideTooltip}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="12" fill="none" viewBox="0 0 13 12">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13"
+                  height="12"
+                  fill="none"
+                  viewBox="0 0 13 12"
+                >
                   <path
                     fill="#000"
                     fillOpacity=".5"
@@ -145,28 +171,46 @@ export const EmployeeCard = ({
               >
                 ✓
               </button>
-              <button
-                className="h-[3rem] bg-[#E1BEC5] text-black rounded-xl shadow hover:bg-[#FFBEC5] text-lg font-semibold"
-              >
+              <button className="h-[3rem] bg-[#E1BEC5] text-black rounded-xl shadow hover:bg-[#FFBEC5] text-lg font-semibold">
                 ✕
               </button>
             </div>
           ) : (
-            <div className="flex flex-col flex-wrap justify-center gap-3 flex-[3] p-2.5">
+            <div className="flex flex-col flex-wrap justify-center gap-3 p-2.5">
               <div className="flex gap-2.5 w-full flex-[1] justify-center">
                 <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                  <TimeCard state="in" time={inTime} showLabel={false} color={true} />
+                  <TimeCard
+                    state="in"
+                    time={inTime}
+                    showLabel={false}
+                    color={true}
+                  />
                 </div>
                 <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                  <TimeCard state="out" time={outTime} showLabel={false} color={true} />
+                  <TimeCard
+                    state="out"
+                    time={outTime}
+                    showLabel={false}
+                    color={true}
+                  />
                 </div>
               </div>
               <div className="flex flex-[1] gap-2.5 w-full justify-center">
                 <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                  <TimeCard state="break" time={breakTime} showLabel={false} color={true} />
+                  <TimeCard
+                    state="break"
+                    time={breakTime}
+                    showLabel={false}
+                    color={true}
+                  />
                 </div>
                 <div className="flex-1 min-w-[6rem] flex justify-center items-center">
-                  <TimeCard state="work" time={workTime} showLabel={false} color={true} />
+                  <TimeCard
+                    state="work"
+                    time={workTime}
+                    showLabel={false}
+                    color={true}
+                  />
                 </div>
               </div>
             </div>
