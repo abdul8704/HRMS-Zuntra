@@ -47,7 +47,7 @@ export const DashBoard = () => {
   const isPlusButtonClicked = () => {
     setShowNotification(prev => !prev);
   }
-
+  console.log("UR RIGHTS ", user.allowedAccess);
   return (
     <div className="flex h-screen">
       <PlusButton />
