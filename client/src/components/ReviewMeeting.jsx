@@ -48,43 +48,42 @@ export const ReviewMeeting = () => {
   const meeting = ReviewMeetings[currentIndex];
 
   return (
-    <div className="w-full h-full p-4 flex">
-      {/* Meeting Details */}
+    <div className="relative w-full px-6 py-10">
+      {/* Arrow Buttons */}
       {ReviewMeetings.length > 1 && (
-        <button 
-          onClick={prev} 
-          className="text-xl px-2 flex-1 rounded-l-lg hover:opacity-90 bg-gradient-to-r from-[#F2C3B9] to-white"
-        >
-          &lt;
-        </button>
+        <>
+          <button
+            onClick={prev}
+            className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-[#eaa396] text-white px-3 py-2 rounded-full shadow-lg hover:bg-[#d88f81] transition"
+          >
+            &lt;
+          </button>
+
+          <button
+            onClick={next}
+            className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-[#eaa396] text-white px-3 py-2 rounded-full shadow-lg hover:bg-[#d88f81] transition"
+          >
+            &gt;
+          </button>
+        </>
       )}
-      
-      <div className="rounded-lg p-4 bg-[#F2C3B9] flex-[9] flex flex-col h-full">
-        {/* Top section - 90% */}
-        <div className="flex-[9] mb-2 overflow-auto">
-          <h1 className="text-lg font-semibold">{meeting.title}</h1>
-          <p className="text-sm text-gray-700">{meeting.desc}</p>
+
+      {/* Main Card */}
+      <div className="w-full max-w-4xl mx-auto bg-[#F2C3B9] rounded-2xl p-8 min-h-[250px] flex flex-col justify-between shadow-md">
+        <div className="flex-grow">
+          <h1 className="text-2xl font-bold mb-2">{meeting.title}</h1>
+          <p className="text-base text-gray-700">{meeting.desc}</p>
         </div>
 
-        {/* Bottom section - 10% */}
-        <div className="flex-[1] gap-2 text-sm font-medium flex items-center flex-wrap">
-          <span className="px-3 py-1 rounded-lg bg-white/50">{meeting.type}</span>
-          <span className="px-3 py-1 rounded-lg bg-white/50">{meeting.date}</span>
-          <span className="px-3 py-1 rounded-lg bg-white/50">
+        <div className="flex flex-wrap gap-3 mt-6 text-sm font-medium">
+          <span className="px-4 py-1.5 rounded-lg bg-white/50">{meeting.type}</span>
+          <span className="px-4 py-1.5 rounded-lg bg-white/50">{meeting.date}</span>
+          <span className="px-4 py-1.5 rounded-lg bg-white/50">
             {meeting.startTime} - {meeting.endTime}
           </span>
-          <span className="px-3 py-1 rounded-lg bg-white/50">{meeting.spot}</span>
+          <span className="px-4 py-1.5 rounded-lg bg-white/50">{meeting.spot}</span>
         </div>
       </div>
-
-      {ReviewMeetings.length > 1 && (
-        <button 
-          onClick={next} 
-          className="text-xl px-2 flex-1 rounded-r-lg hover:opacity-90 bg-gradient-to-l from-[#F2C3B9] to-white"
-        >
-          &gt;
-        </button>
-      )}
     </div>
   );
 };
