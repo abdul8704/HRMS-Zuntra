@@ -1,7 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { ToolTip } from '../../../components/ToolTip'; // Adjust the path as needed
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 
 export const UserGreetings = ({ name, profileImageURL, marqueeText }) => {
+  const {user, loading} = useAuth();
+  if(!loading) console.log(user);
+  const navigate = useNavigate();
   const nameRef = useRef(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
@@ -44,7 +49,7 @@ export const UserGreetings = ({ name, profileImageURL, marqueeText }) => {
       </div>
 
       {/* Profile Picture */}
-      <div className="ml-4 shrink-0">
+      <div className="ml-4 shrink-0 cursor-pointer" onClick={()=> navigate(`/employee/${user.userid}/details/attendance`)}>
         <img
           src={profileImageURL}
           alt="Profile"
