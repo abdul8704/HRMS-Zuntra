@@ -219,7 +219,6 @@ export function SidebarDetails({ type, data }) {
           </>
         )}
       </div>
-
       {/* Sidebar toggle for mobile */}
       {!isOpen && isMobile && (
         <div className="fixed top-[4rem] -left-[10px] w-12 h-12 bg-[#bcd4cd] rounded-full flex items-center justify-center shadow-lg transition-all duration-300 z-[1000]">
