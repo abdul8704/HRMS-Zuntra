@@ -31,9 +31,6 @@ const acceptUser = asyncHandler(async (req, res) => {
 
 const getPendingEmployees = asyncHandler(async (req, res) => {
     const pendingEmployees = await HrService.getPendingUsers();
-
-    if (pendingEmployees.length === 0) 
-        return res.status(404).json({ success: false, message: "No pending employees found" });
     
     const formattedPendingEmployees = pendingEmployees.map((emp) => ({
         name: emp.username,
