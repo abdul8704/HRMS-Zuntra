@@ -20,7 +20,7 @@ export const UserGreetings = ({ name, profileImageURL, marqueeText }) => {
   }, [name]);
 
   return (
-    <div className="w-full h-full flex items-center rounded-2xl overflow-hidden">
+    <div className="w-full h-full flex items-center rounded-2xl">
       {/* Left Side: Greeting and Marquee */}
       <div className="flex-1 h-full flex flex-col justify-center overflow-hidden">
         {/* Greeting with Conditional Tooltip */}
@@ -53,7 +53,7 @@ export const UserGreetings = ({ name, profileImageURL, marqueeText }) => {
         <img
           src={profileImageURL}
           alt="Profile"
-          className="w-[3rem] h-[3rem] rounded-full object-cover"
+          className="w-[4rem] h-[4rem] rounded-full object-cover"
         />
       </div>
 
