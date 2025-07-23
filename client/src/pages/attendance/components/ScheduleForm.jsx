@@ -25,7 +25,7 @@ export const ScheduleForm = ({ handleClose }) => {
       religion: actionType === 'leave' ? selectedReligion : null,
       roles: actionType === 'event' ? selectedRoles : null,
     };
-    console.log('Scheduled:', data);
+    // console.log('Scheduled:', data);
     if (handleClose) handleClose();
   };
 

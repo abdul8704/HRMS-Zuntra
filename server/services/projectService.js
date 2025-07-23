@@ -6,7 +6,6 @@ const ApiError = require("../errors/ApiError");
 const getAllOnGoingProjects = async () => {
     try {
         const projectsList = await Project.find({ status: { $eq: "Ongoing" } });
-        console.log(projectsList);
         return projectsList;
     } catch (error) {
         throw new ApiError("Failed to fetch ongoing projects:", error.message);

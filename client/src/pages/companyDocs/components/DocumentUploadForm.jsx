@@ -95,7 +95,6 @@ export function DocumentUploadForm() {
 
       alert('Document uploaded successfully!');
       if (!window.confirm("Document Uploaded, go to vscode and git push!!")) return;
-      console.log('Upload response:', uploadResponse.data);
 
       setDocumentName('');
       setValidUpto('');

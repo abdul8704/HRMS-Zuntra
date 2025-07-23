@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { uploadDocument } = require("../middlewares/uploadHandler");
 const companyDocumentsController = require('../controllers/companyDocumentsController');
-const requirePermission  = require("../middlewares/requirePermission")
+const { requirePermission, requireAdminOrMe } = require("../middlewares/requirePermission");
 
 // public routes
 router.get('/', companyDocumentsController.getAllCompanyDocuments);

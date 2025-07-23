@@ -39,8 +39,6 @@ export const GeoFencing = ({ embedUrl, branchName }) => {
                   key={idx}
                   onClick={() => {
                     setShowMenu(false);
-                    console.log(`${option} clicked for ${branchName}`);
-                    // You can replace console.log with handlers
                   }}
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >

@@ -34,6 +34,30 @@
         ];
         setRolesProfiles(dummyProfiles);
       }
+      else{
+        const fetchEmployeeDetails = async () => {
+        setIsLoading(true);
+        try {
+          const [empRes, courseRes] = await Promise.all([
+            api.get(`/api/employee/${empId}`),
+            api.get(`/api/course/enrolledCourses`),
+          ]);
+          ("Employee Details Response:", empRes.data);
+          if (empRes.data.success) {
+            setEmployeeDetail(empRes.data.employeeDetail || empRes.data.data);
+          }
+          
+        } catch (err) {
+          console.error("Error fetching employee details:", err?.response?.data?.message || err.message);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      if (!loading) {
+        fetchEmployeeDetails();
+      }
+      }
     }, [type]);
 
     return (
