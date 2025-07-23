@@ -16,6 +16,10 @@ import { Attendance } from './pages/attendance/Attendance';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
 import { CeoDashboard } from './pages/dashboard/CeoDashboard';
 import { CompanyDocs } from './pages/companyDocs/CompanyDocs';
+import { ToDo } from './pages/project/ToDo';
+import { Progress } from './pages/project/Progress';
+import { Review } from './pages/project/Review';
+import { Completed } from './pages/project/Completed';
 import { AuthProvider } from './context/AuthContext';
 import './App.css'
 import './index.css'
@@ -25,7 +29,7 @@ import { Unauthorized } from './pages/Unauthorized';
 
 function App() {
   const [userid, setUserid] = useState('');
-    
+
   return (
     <>
       <BrowserRouter>
@@ -45,6 +49,10 @@ function App() {
             <Route path="/attendance/" element={<HrPersonalAttendance />} />
             <Route path="/upskill/:navId" element={<Upskill />} />
             <Route path="/documents/:navId" element={<CompanyDocs />} />
+            <Route path="/todo" element={<ToDo />} />
+            <Route path="/progress" element={<Progress />} />
+            <Route path="/review" element={<Review />} />
+            <Route path="/completed" element={<Completed />} />
             <Route path="/ceo" element={<CeoDashboard />} />
 
             <Route path="/unauthorized" element={<Unauthorized />} />
