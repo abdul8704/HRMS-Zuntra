@@ -260,7 +260,7 @@ const companyDocumentsNavItems = [
 
     ),
     filter: false,
-    access: "companyDocs",
+    access: "all",
     path: 'upload',
   }
 ]
