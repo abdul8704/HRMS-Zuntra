@@ -16,41 +16,51 @@ import { Attendance } from './pages/attendance/Attendance';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
 import { CeoDashboard } from './pages/dashboard/CeoDashboard';
 import { CompanyDocs } from './pages/companyDocs/CompanyDocs';
+import { ToDo } from './pages/project/ToDo';
+import { Progress } from './pages/project/Progress';
+import { Review } from './pages/project/Review';
+import { Completed } from './pages/project/Completed';
 import { AuthProvider } from './context/AuthContext';
 import './App.css'
 import './index.css'
 import { ShiftDetails } from './pages/employee/components/ShiftDetails';
+import { Unauthorized } from './pages/Unauthorized';
 
 
 function App() {
   const [userid, setUserid] = useState('');
-    
-  return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={ <Login />} />
-          <Route path="/dashboard" element={ <DashBoard />} />
-          <Route path="/employee/:navId" element={ <EmployeeManagement /> } />
-          <Route path="/employee/:empId/details/:navId" element={ <EmployeeDetails type="user" /> } />
-          <Route path="/employee/role/:roleId/details" element={ <EmployeeDetails type="role" /> } />
-          <Route path="/courses/:navId" element={ <CourseManagement /> } />
-          <Route path="/course/:courseId/intro" element={ <CourseIntro /> } />
-          <Route path="/course/learn/:courseId" element={ <CourseLearn /> } />
-          <Route path="/projects/:navId" element={ <ProjectOverview /> } />
-          <Route path="/project/:projectId/:navId" element={ <HrProjectDetails /> } />
-          <Route path="/attendance/:navId" element={ <Attendance /> } />
-          <Route path="/attendance/" element={ <HrPersonalAttendance /> } />
-          <Route path="/upskill/:navId" element={ <Upskill />} />
-          <Route path="/documents/:navId" element={ <CompanyDocs />} />
-           <Route path="/ceo" element={ <CeoDashboard
-            />} />
 
-          {/* Not Found Route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+  return (
+    <>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/dashboard" element={<DashBoard />} />
+            <Route path="/employee/:navId" element={<EmployeeManagement />} />
+            <Route path="/employee/:empId/details/:navId" element={<EmployeeDetails type="user" />} />
+            <Route path="/employee/role/:roleId/details" element={<EmployeeDetails type="role" />} />
+            <Route path="/courses/:navId" element={<CourseManagement />} />
+            <Route path="/course/:courseId/intro" element={<CourseIntro />} />
+            <Route path="/course/learn/:courseId" element={<CourseLearn />} />
+            <Route path="/projects/:navId" element={<ProjectOverview />} />
+            <Route path="/project/:projectId/:navId" element={<HrProjectDetails />} />
+            <Route path="/attendance/:navId" element={<Attendance />} />
+            <Route path="/attendance/" element={<HrPersonalAttendance />} />
+            <Route path="/upskill/:navId" element={<Upskill />} />
+            <Route path="/documents/:navId" element={<CompanyDocs />} />
+            <Route path="/todo" element={<ToDo />} />
+            <Route path="/progress" element={<Progress />} />
+            <Route path="/review" element={<Review />} />
+            <Route path="/completed" element={<Completed />} />
+            <Route path="/ceo" element={<CeoDashboard />} />
+
+            <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
-    </AuthProvider>
+    </>
   );
 }
 

@@ -7,13 +7,7 @@ const LeaveApplication = require('../models/leaveApplication')
 
 const updateUserData = async (email, shiftId, campusId, roleId) => {
     try {
-        console.log(
-            "Updating user data for email:",
-            email,
-            shiftId,
-            campusId,
-            roleId
-        );
+
         const update = await UserCredentials.updateOne(
             { email: email },
             {
@@ -33,7 +27,7 @@ const updateUserData = async (email, shiftId, campusId, roleId) => {
 
 const getPendingUsers = async () => {
     try {
-        const users = await UserCredentials.find({ role: { $exists: false } });
+        const users = await UserCredentials.find({ role: { $exists: false }},{passwordHash: 0, __v: 0});
         return users;
     } catch (error) {
         throw new ApiError(`Failed to fetch pending users`, error.message);
@@ -85,7 +79,6 @@ const processLeaveRequest = async (userid, leaveId, decision, comments = '') => 
     }
     const finalDecision = decision.toUpperCase();
     const roleName = user.role.role.toUpperCase();
-    console.log(roleName)
     const leaveApplication = await LeaveApplication.findById(leaveId);
     const now = new Date();
 
@@ -96,7 +89,10 @@ const processLeaveRequest = async (userid, leaveId, decision, comments = '') => 
     const isApproved = finalDecision === "APPROVED";
 
     // ⛔ If Super Admin has already acted, no one else can override
-    if (leaveApplication.superAdminAction !== "PENDING" && roleName === "TEAM LEAD" ) {
+    if (
+        leaveApplication.superAdminAction !== "PENDING" &&
+        roleName !== "HR MANAGER"
+    ) {
         if (leaveApplication.status !== finalDecision)
             throw new ApiError(
                 403,
@@ -105,24 +101,25 @@ const processLeaveRequest = async (userid, leaveId, decision, comments = '') => 
         else {
             leaveApplication.adminAction = finalDecision;
             leaveApplication.adminReviewer = userid;
-            console.log("TL and HR agreed on same decision");
         }
     }
 
     // ✅ TEAM_LEAD logic
-    if (roleName === "TEAM LEAD") {
-        leaveApplication.status = isApproved ? 'APPROVED' : 'REJECTED';
+    if (roleName != "HR MANAGER") {
+        leaveApplication.status = isApproved ? "APPROVED" : "REJECTED";
         leaveApplication.adminAction = finalDecision;
         leaveApplication.adminReviewer = userid;
-        console.log("TL made his decison")
     }
 
     // ✅ HR / SUPER_ADMIN logic
-    else if (roleName === "HR" || roleName === "SUPER_ADMIN" || roleName === 'CEO') {
-        leaveApplication.status = isApproved ? 'APPROVED' : 'REJECTED';
+    else if (
+        roleName === "HR MANAGER" ||
+        roleName === "SUPER_ADMIN" ||
+        roleName === "CEO"
+    ) {
+        leaveApplication.status = isApproved ? "APPROVED" : "REJECTED";
         leaveApplication.superAdminAction = finalDecision;
         leaveApplication.superAdminReviewer = userid;
-        console.log("TL made his decison");
     }
 
     leaveApplication.reviewComment = comments;
@@ -142,7 +139,6 @@ const fetchAllLeaveRequests = async () => {
             path: "reviewedBy",
             select: "username email phoneNumber profilePicture"
         });
-        console.log("DFVFD", leaveData)
         return leaveData;
 }
 

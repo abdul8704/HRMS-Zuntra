@@ -18,9 +18,7 @@ export const CompanyDocs = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { user, loading } = useAuth();
-  if (!loading) {
-    console.log(user.allowedAccess);
-  }
+
   useEffect(() => {
     const fetchDocuments = async () => {
       setIsLoading(true);

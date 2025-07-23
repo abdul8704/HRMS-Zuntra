@@ -1,33 +1,38 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import api from "../api/axios"; 
+import { useLocation } from "react-router-dom";
+import api from "../api/axios";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null); 
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [sessionInitialized, setSessionInitialized] = useState(false);
+    const location = useLocation();
 
     useEffect(() => {
-        // If user already set (e.g. after login), skip fetching /me
-        if (user !== null) {
+        const isLoginRoute = location.pathname === "/";
+
+        if (sessionInitialized || isLoginRoute) {
             setLoading(false);
             return;
         }
 
         const fetchSession = async () => {
             try {
-                const res = await api.get("/api/employee/emp-data/me"); // Reads JWT from HttpOnly cookie
-                setUser(res.data.data); // Set user dtaa globally
+                const res = await api.get("/api/employee/emp-data/me");
+                setUser(res.data.data);
             } catch (err) {
-                console.log("uanble to set global data ", err.message)
-                setUser(null); 
+                console.error("Unable to set global data", err.message);
+                setUser(null);
             } finally {
+                setSessionInitialized(true);
                 setLoading(false);
             }
         };
 
         fetchSession();
-    }, [user]);
+    }, [sessionInitialized, location.pathname]);
 
     return (
         <AuthContext.Provider value={{ user, setUser, loading }}>

@@ -31,10 +31,9 @@ const handleLogout = asyncHandler(async (req, res) => {
 });
 
 const getAttendanceData = asyncHandler(async (req, res) => {
-    const { userid } = req.user;
-    const { startDate, endDate } = req.query;
+    const { userid, startDate, endDate } = req.query;
 
-    if (!startDate || !endDate)
+    if (!userid || !startDate || !endDate)
         throw new ApiError(400, "Start date and end date not provided");
 
     const attendanceData = await employeeService.getAttendanceDataByUserId(
@@ -105,7 +104,6 @@ const getDetailsOfaEmployee = asyncHandler(async (req, res) => {
 const applyForLeave = asyncHandler(async (req, res) => {
     const { userid } = req.user;
     const { leaveCategory, dates, reason } = req.body;
-    console.log(userid, leaveCategory, dates, reason);
 
     if (!leaveCategory || !dates || !reason) {
         throw new ApiError(400, "please send all data reqd to apply leave");
@@ -143,7 +141,7 @@ const getMyData = asyncHandler(async (req, res) => {
 const updateEmpDataController = asyncHandler(async(req,res)=>{
     const {dob, religion, address} = req.body;
     const { userid } = req.user;
-    console.log(userid);
+
     const updatedData = await employeeService.updateEmpData({
         userid,
         dob,

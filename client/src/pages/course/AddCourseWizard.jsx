@@ -375,7 +375,6 @@ export default function AddCourseWizard({
 
   const handleSubmit = () => {
     alert("✅ Course submitted successfully!");
-    console.log({ courseInfo, modules });
     // Reset or redirect as needed
   };
 

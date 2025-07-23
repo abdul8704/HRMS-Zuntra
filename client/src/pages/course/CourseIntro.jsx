@@ -30,7 +30,6 @@ export const CourseIntro = () => {
 
         if (courseRes.data.success) {
           setCourseData(courseRes.data.data);
-          console.log("Course Details:", courseRes.data.data);
         } else {
           setApiMessage(courseRes.data.message || "Course data error.");
         }

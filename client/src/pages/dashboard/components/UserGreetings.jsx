@@ -5,7 +5,6 @@ import { useAuth } from '../../../context/AuthContext';
 
 export const UserGreetings = ({ name, profileImageURL, marqueeText }) => {
   const {user, loading} = useAuth();
-  if(!loading) console.log(user);
   const navigate = useNavigate();
   const nameRef = useRef(null);
   const [isOverflowing, setIsOverflowing] = useState(false);

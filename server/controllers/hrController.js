@@ -5,15 +5,6 @@ const authService = require("../services/authService")
 
 const HrService = require('../services/hrServices')
 
-const addNewCampusLocation = asyncHandler(async (req, res) => {
-    const { campusName, latitude, longitude , radius} = req.body;
-    if (!campusName || !latitude || !longitude || !radius)
-        throw new ApiError(400, "Incomplete data");
-
-    const newCampus = await GeoService.addNewCampusLocation(campusName, latitude, longitude, radius);
-    res.status(201).json({ success: true, campus: newCampus });
-})
-
 const acceptUser = asyncHandler(async (req, res) => {
     const { email, shiftId, campusId, roleId, salary } = req.body;
     const userData = await authService.getUserByEmail(email);
@@ -31,17 +22,15 @@ const acceptUser = asyncHandler(async (req, res) => {
 
 const getPendingEmployees = asyncHandler(async (req, res) => {
     const pendingEmployees = await HrService.getPendingUsers();
-    
-    const formattedPendingEmployees = pendingEmployees.map((emp) => ({
-        name: emp.username,
-        email: emp.email,
-        phone: emp.phoneNumber,
-        role: emp.role,
-        date: emp.dateJoined.toISOString().split('T')[0], 
+
+    const formattedEmployees = pendingEmployees.map(emp => ({
+        ...emp.toObject?.() ?? emp,
+        dateJoined: emp.dateJoined?.toISOString().split('T')[0] || null,
     }));
 
-    res.status(200).json({ success: true, pendingEmployees: formattedPendingEmployees });
-})
+    res.status(200).json({ success: true, pendingEmployees: formattedEmployees });
+});
+
 
 const getPendingLeaveReqs = asyncHandler(async (req, res) => {
     const pendingLeaveReqs = await HrService.getPendingLeaveRequests();
@@ -80,7 +69,6 @@ const getAllLeaveReqs = asyncHandler(async (req, res) => {
 })
 
 module.exports = {
-    addNewCampusLocation,
     acceptUser,
     getPendingEmployees,
     getPendingLeaveReqs,

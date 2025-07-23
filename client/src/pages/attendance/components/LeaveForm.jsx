@@ -66,7 +66,7 @@ export const LeaveForm = ({ handleClose }) => {
         alert("Leave request sent successfully");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       alert("Trouble while applying for leave");
     }
     if (handleClose) handleClose();

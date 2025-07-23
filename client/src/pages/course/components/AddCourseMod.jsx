@@ -176,7 +176,6 @@ export const AddCourseMod = () => {
   const allSteps = generateAllSteps();
 
   // Debug: Log module names array (you can remove this in production)
-  console.log('Module Names Array:', moduleNames);
 
   return (
     <div className="flex w-full h-full gap-4">

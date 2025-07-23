@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const rolesController = require("../controllers/rolesControllers")
+const { requirePermission, requireAdminOrMe } = require("../middlewares/requirePermission");
 
-router.get("/", rolesController.getAllroles)
-router.get("/:roleid", rolesController.getRoleDetails);  
-router.post("/new-role", rolesController.addNewRole);
-router.put("/:roleName", rolesController.editRole);  
-router.delete("/:roleName", rolesController.deleteRole); 
+
+router.get("/", requirePermission("employeeManagement"), rolesController.getAllroles)
+router.get("/:roleid", requirePermission("employeeManagement"), rolesController.getRoleDetails);  
+router.post("/new-role", requirePermission("employeeManagement"), rolesController.addNewRole);
+router.put("/:roleName", requirePermission("employeeManagement"), rolesController.editRole);  
+router.delete("/:roleName", requirePermission("employeeManagement"), rolesController.deleteRole); 
 
 module.exports = router;

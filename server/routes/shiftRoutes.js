@@ -1,10 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const shiftController = require("../controllers/shiftController")
+const { requirePermission, requireAdminOrMe } = require("../middlewares/requirePermission");
 
-router.get('/', shiftController.getAllShifts); 
-router.post("/new-shift", shiftController.addShift);
-router.put("/:shiftName", shiftController.editShift); 
-router.delete("/:shiftName", shiftController.deleteShift); 
+
+router.get('/', requirePermission("employeeManagement"), shiftController.getAllShifts); 
+router.post("/new-shift", requirePermission("employeeManagement"), shiftController.addShift);
+router.put("/:shiftName", requirePermission("employeeManagement"), shiftController.editShift); 
+router.delete("/:shiftName", requirePermission("employeeManagement"), shiftController.deleteShift); 
 
 module.exports = router;

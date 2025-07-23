@@ -14,7 +14,6 @@ const fs = require("fs");
 
 const handleRefreshToken = asyncHandler((req, res) => {
     const cookies = req.cookies;
-    console.log("REfreshinggg")
     if (!cookies?.refreshToken)
         throw new ApiError(401, "Refresh token not found in cookies");
 
@@ -99,7 +98,6 @@ const geoFenceLogin = asyncHandler(async (req, res) => {
     else
         await employeeService.markAttendanceOnLogin(userid, "remote");
 
-    console.log("ALL DONE")
     res.status(200).json({ success: true, message: "Attendance marked" });
 })
 
