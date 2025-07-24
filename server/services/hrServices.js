@@ -94,8 +94,8 @@ const fetchAllLeaveRequests = async () => {
             select: "username email phoneNumber profilePicture",
         })
         .populate({
-            path: "reviewedBy",
-            select: "username email phoneNumber profilePicture"
+            path: "adminReviewer superAdminReviewer",
+            select: "username email phoneNumber profilePicture",
         });
         return leaveData;
 }

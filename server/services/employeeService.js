@@ -427,8 +427,49 @@ const adminProcessLeaveRequest = async (
     leaveApplication.adminReviewedAt = now;
     leaveApplication.adminReviewComment = comments;
 
-    leaveApplication.save();
+    await leaveApplication.save();
 };
+
+const editLeaveRequest = async (leaveId, userid, leaveCategory, dates, reason) => {
+    const leaveApplication = await LeaveApplication.findById(leaveId);
+    const now = Date.now()
+
+    if(String(leaveApplication.userid) !== userid){
+        console.log(userid, leaveApplication.userid);
+        throw new ApiError(403, "YOU CANNOT CHANGE OTHER PEOPLE's LEAVE APPLICATION");
+    }
+
+    if(leaveApplication.status !== "PENDING"){
+        throw new ApiError(403, "FORBIDDEN. ADMINS have already taken action. Cannot edit now.")
+    }
+
+    leaveApplication.leaveType = leaveCategory.toUpperCase();
+    leaveApplication.dates = dates;
+    leaveApplication.reason = reason;
+    leaveApplication.appliedOn = now;
+
+    await leaveApplication.save();
+}
+
+const deleteLeaveRequest = async(leaveId, userid) => {
+    const leaveApplication = await LeaveApplication.findById(leaveId);
+
+    if (String(leaveApplication.userid) !== userid) {
+        throw new ApiError(
+            403,
+            "YOU CANNOT DELETE OTHER PEOPLE's LEAVE APPLICATION"
+        );
+    }
+
+    if (leaveApplication.status !== "PENDING") {
+        throw new ApiError(
+            403,
+            "FORBIDDEN. ADMINS have already taken action. Cannot delete now."
+        );
+    }
+
+    await LeaveApplication.findByIdAndDelete(leaveId);
+}
 
 module.exports = {
     getAttendanceDataByUserId,
@@ -442,4 +483,6 @@ module.exports = {
     getPersonalDetailsOfaEmployee,
     updateEmpData,
     adminProcessLeaveRequest,
+    editLeaveRequest,
+    deleteLeaveRequest,
 };

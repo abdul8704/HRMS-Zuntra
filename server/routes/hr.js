@@ -12,6 +12,7 @@ router.get('/leave/pending-req', requirePermission("leaveManagement"), hrControl
 router.post('/leave/process-req', requirePermission("leaveManagement"), hrController.processLeaveReq)
 router.get('/leave/all-req', requirePermission("leaveManagement"), hrController.getAllLeaveReqs)
 router.post('/leave/process-req', requirePermission("leaveManagement"), hrController.processLeaveReq)
+router.patch('/leave/edit-req-action', requirePermission("leaveManagement"), employeeController.processLeaveRequest);
 
 module.exports = router;
 

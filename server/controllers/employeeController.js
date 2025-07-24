@@ -175,6 +175,41 @@ const processLeaveRequest = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, updatedLeave });
 });
 
+const editLeaveRequest = asyncHandler(async (req, res) => {
+    const { userid } = req.user;
+    const { leaveId, leaveCategory, dates, reason } = req.body;
+
+    if( !leaveId || !leaveCategory || !dates || !reason ){
+        throw new ApiError(400, "Incomplete data given to update leave request");
+    }
+
+    await employeeService.editLeaveRequest(
+        leaveId,
+        userid,
+        leaveCategory,
+        dates,
+        reason
+    );
+
+    res.status(200).json({ success: true, message: "successfullt updated"})
+})
+
+const deleteLeaveRequest = asyncHandler(async (req, res) => {
+    const { userid } = req.user;
+    const { leaveId } = req.body;
+
+    if (!leaveId) {
+        throw new ApiError(
+            400,
+            "Incomplete data given to delete leave request"
+        );
+    }
+
+    await employeeService.deleteLeaveRequest(leaveId, userid);
+
+    res.status(200).json({ success: true, message: "successfullt deleted" });
+})
+
 module.exports = {
     handleLogout,
     getAttendanceData,
@@ -186,4 +221,6 @@ module.exports = {
     getMyData,
     updateEmpDataController,
     processLeaveRequest,
+    deleteLeaveRequest,
+    editLeaveRequest,
 };

@@ -18,6 +18,12 @@ router.get("/:empId", requireAdminOrMe("employeeManagement"), employeeController
 router.get("/", requirePermission("employeeManagement"), employeeController.fetchAllEmployees);
 router.get("/role/:role", requirePermission("employeeManagement"), employeeController.getEmployeeByRole);
 router.get("/leave/requests", requirePermission("leaveManagement"), employeeController.getEmployeeRequests)
-router.post('/leave/process-req', requirePermission("leaveManagement"), employeeController.processLeaveRequest)
+router.post('/leave/process-req', requirePermission("leaveManagement"), employeeController.processLeaveRequest);
+router.patch('/leave/edit-req-action', requirePermission("leaveManagement"), employeeController.processLeaveRequest);
+
+
+
+router.patch('/leave/update-req', employeeController.editLeaveRequest);
+router.delete('/leave/delete-req', employeeController.deleteLeaveRequest) //TODO: need a rbac controller that check if only me
 
 module.exports = router;
