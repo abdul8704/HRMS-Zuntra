@@ -90,16 +90,17 @@ const getDetailsOfaEmployee = asyncHandler(async (req, res) => {
     const { empId } = req.params;
     if (!empId) throw new ApiError(400, "empId not provided");
     const employeeDetail = await employeeService.getDetailsOfaEmployee(empId);
-    const personalDetail = await employeeService.getPersonalDetailsOfaEmployee(empId);
+    const personalDetail = await employeeService.getPersonalDetailsOfaEmployee(
+        empId
+    );
     res.status(200).json({
         success: true,
         employeeDetail: {
-            ...employeeDetail.toObject(),  // Convert Mongoose doc to plain JS object
-            personalDetail: personalDetail || {},  // Nest personal details
+            ...employeeDetail.toObject(), // Convert Mongoose doc to plain JS object
+            personalDetail: personalDetail || {}, // Nest personal details
         },
     });
 });
-
 
 const applyForLeave = asyncHandler(async (req, res) => {
     const { userid } = req.user;
@@ -138,8 +139,8 @@ const getMyData = asyncHandler(async (req, res) => {
         .json({ success: true, data: { userid, username, allowedAccess } });
 });
 
-const updateEmpDataController = asyncHandler(async(req,res)=>{
-    const {dob, religion, address} = req.body;
+const updateEmpDataController = asyncHandler(async (req, res) => {
+    const { dob, religion, address } = req.body;
     const { userid } = req.user;
 
     const updatedData = await employeeService.updateEmpData({
@@ -154,7 +155,25 @@ const updateEmpDataController = asyncHandler(async(req,res)=>{
         message: "Employee personal details updated successfully",
         data: updatedData,
     });
-})
+});
+
+const processLeaveRequest = asyncHandler(async (req, res) => {
+    // TODO: logic to check if user is recpient's TL
+    const { leaveId, decision, comment } = req.body;
+    const { userid } = req.user;
+
+    if (!leaveId || !decision)
+        throw new ApiError(400, "Incomplete data to process leave request");
+
+    const updatedLeave = await employeeService.adminProcessLeaveRequest(
+        userid,
+        leaveId,
+        decision,
+        comment
+    );
+
+    res.status(200).json({ success: true, updatedLeave });
+});
 
 module.exports = {
     handleLogout,
@@ -166,4 +185,5 @@ module.exports = {
     getEmployeeRequests,
     getMyData,
     updateEmpDataController,
+    processLeaveRequest,
 };

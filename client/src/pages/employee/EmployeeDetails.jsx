@@ -19,6 +19,7 @@
     
 
     useEffect(() => {
+      console.log(type)
       if (type === "role") {
         const dummyProfiles = [
           {
@@ -44,7 +45,7 @@
           ]);
           ("Employee Details Response:", empRes.data);
           if (empRes.data.success) {
-            setEmployeeDetail(empRes.data.employeeDetail || empRes.data.data);
+            setRolesProfiles(empRes.data.employeeDetail || empRes.data.data);
           }
           
         } catch (err) {

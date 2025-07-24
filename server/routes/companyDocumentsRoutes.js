@@ -5,7 +5,7 @@ const companyDocumentsController = require('../controllers/companyDocumentsContr
 const { requirePermission, requireAdminOrMe } = require("../middlewares/requirePermission");
 
 // public routes
-router.get('/', companyDocumentsController.getAllCompanyDocuments);
+router.get('/', requirePermission("general"), companyDocumentsController.getAllCompanyDocuments);
 
 // protected routes
 router.post('/add', requirePermission("companyDocs"), companyDocumentsController.addNewCompanyDocuments);

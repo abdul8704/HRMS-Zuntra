@@ -8,7 +8,6 @@ const requirePermission = (requiredPermission) => {
             .status(403)
             .json({ message: "Forbidden: Insufficient role", log: [requiredPermission, user.allowedAccess] });
     }
-
     next();
   };
 }

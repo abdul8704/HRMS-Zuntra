@@ -37,17 +37,24 @@ const leaveApplicationSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "UserCredentials", // Super admin user
         },
-        reviewedAt: {
+        adminReviewedAt: {
             type: Date,
         },
-        reviewComment: {
+        adminReviewComment: {
+            type: String,
+            default: "",
+        },
+        superAdminReviewedAt: {
+            type: Date,
+        },
+        superAdminReviewComment: {
             type: String,
             default: "",
         },
         superAdminAction: {
             type: String,
             enum: ["PENDING", "APPROVED", "REJECTED"],
-            default: "PENDING"
+            default: "PENDING",
         },
         adminAction: {
             type: String,

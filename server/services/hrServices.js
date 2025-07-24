@@ -68,17 +68,8 @@ const getPendingLeaveRequests = async () => {
     return pendingReqs;
 }
 
-const processLeaveRequest = async (userid, leaveId, decision, comments = '') => {
-    const user = await UserCredentials.findById(userid).populate({
-        path: 'role',
-        select: 'role'
-    });
-
-    if (!user || !user.role || !user.role.role) {
-        throw new ApiError(403, 'User role not found or invalid');
-    }
+const superAdminProcessLeaveRequest = async (userid, leaveId, decision, comments = 'NIL') => {
     const finalDecision = decision.toUpperCase();
-    const roleName = user.role.role.toUpperCase();
     const leaveApplication = await LeaveApplication.findById(leaveId);
     const now = new Date();
 
@@ -86,44 +77,11 @@ const processLeaveRequest = async (userid, leaveId, decision, comments = '') => 
         throw new ApiError(400, 'Requested Leave application not found');
     }
 
-    const isApproved = finalDecision === "APPROVED";
-
-    // ⛔ If Super Admin has already acted, no one else can override
-    if (
-        leaveApplication.superAdminAction !== "PENDING" &&
-        roleName !== "HR MANAGER"
-    ) {
-        if (leaveApplication.status !== finalDecision)
-            throw new ApiError(
-                403,
-                "Leave already reviewed by super admin. You can't override."
-            );
-        else {
-            leaveApplication.adminAction = finalDecision;
-            leaveApplication.adminReviewer = userid;
-        }
-    }
-
-    // ✅ TEAM_LEAD logic
-    if (roleName != "HR MANAGER") {
-        leaveApplication.status = isApproved ? "APPROVED" : "REJECTED";
-        leaveApplication.adminAction = finalDecision;
-        leaveApplication.adminReviewer = userid;
-    }
-
-    // ✅ HR / SUPER_ADMIN logic
-    else if (
-        roleName === "HR MANAGER" ||
-        roleName === "SUPER_ADMIN" ||
-        roleName === "CEO"
-    ) {
-        leaveApplication.status = isApproved ? "APPROVED" : "REJECTED";
-        leaveApplication.superAdminAction = finalDecision;
-        leaveApplication.superAdminReviewer = userid;
-    }
-
-    leaveApplication.reviewComment = comments;
-    leaveApplication.reviewedAt = now;
+   leaveApplication.status = finalDecision === "APPROVED" ? "APPROVED" : "REJECTED";
+   leaveApplication.superAdminAction = finalDecision;
+   leaveApplication.superAdminReviewer = userid;
+   leaveApplication.superAdminReviewComment = comments;
+   leaveApplication.superAdminReviewedAt = now;
 
     await leaveApplication.save();
 };
@@ -148,6 +106,6 @@ module.exports = {
     creatUserPersonal,
     createUserCourse,
     getPendingLeaveRequests,
-    processLeaveRequest,
+    superAdminProcessLeaveRequest,
     fetchAllLeaveRequests,
 };

@@ -2,7 +2,7 @@ const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
 const attendanceHelper = require("../utils/attendanceHelper.js");
-const LeaveApplication = require('../models/leaveApplication.js')
+const LeaveApplication = require("../models/leaveApplication.js");
 const userPersonal = require("../models/userPersonal.js");
 
 const getAttendanceDataByUserId = async (
@@ -17,7 +17,6 @@ const getAttendanceDataByUserId = async (
 
         const end = attendanceHelper.normalizeToUTCDate(endDate);
         end.setUTCHours(23, 59, 59, 999);
-
 
         // Fetch attendance records within the date range
         const attendanceRecords = await Attendance.find({
@@ -48,16 +47,14 @@ const getAttendanceDataByUserId = async (
             if (holidays.includes(currentDateStr)) {
                 holidayCount++;
                 result.push({ date: currentDateStr, status: "holiday" });
-            } 
-            else if (attendanceMap.has(currentDateStr)) {
+            } else if (attendanceMap.has(currentDateStr)) {
                 presentCount++;
                 result.push({
                     date: currentDateStr,
                     status: "present",
                     ...attendanceMap.get(currentDateStr)._doc,
                 });
-            } 
-            else {
+            } else {
                 absentCount++;
                 result.push({ date: currentDateStr, status: "absent" });
             }
@@ -99,7 +96,10 @@ const markAttendanceOnLogin = async (userid, mode) => {
         }
 
         if (!shiftData.shift) {
-            throw new ApiError(400, "User does not have a shift assigned or assigned shift is invalid");
+            throw new ApiError(
+                400,
+                "User does not have a shift assigned or assigned shift is invalid"
+            );
         }
 
         const shiftStart = new Date(shiftData.shift.startTime);
@@ -108,7 +108,7 @@ const markAttendanceOnLogin = async (userid, mode) => {
         const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart);
         const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
 
-        if (isNaN(shiftStartTime.getTime(), isNaN(shiftEndTime.getTime()))){
+        if (isNaN(shiftStartTime.getTime(), isNaN(shiftEndTime.getTime()))) {
             throw new ApiError(400, "Unable to process shift timings");
         }
 
@@ -116,7 +116,8 @@ const markAttendanceOnLogin = async (userid, mode) => {
 
         let attendance = await Attendance.findOne({ userid, date: today });
 
-        if (!attendance) {      // this statement determines if, this is the first session of the day. create a record, mark present.
+        if (!attendance) {
+            // this statement determines if, this is the first session of the day. create a record, mark present.
             attendance = new Attendance({
                 userid,
                 date: today,
@@ -170,7 +171,8 @@ const markAttendanceOnLogin = async (userid, mode) => {
                 mode: isWithinShift ? mode : "extra",
             });
 
-            if (isWithinShift && breakDurationMinutes > 1) {        // TODO: update this to whatever client wants
+            if (isWithinShift && breakDurationMinutes > 1) {
+                // TODO: update this to whatever client wants
                 attendance.breakMinutes += breakDurationMinutes;
             }
         } else {
@@ -207,29 +209,37 @@ const markEndOfSession = async (userid, logout) => {
         const attendance = await Attendance.findOne({ userid, date: today });
 
         if (!attendance) {
-            throw new ApiError(400, "No attendance found for today", today)
+            throw new ApiError(400, "No attendance found for today", today);
         }
 
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
 
         if (!lastSession) {
-            throw new ApiError(400, "No sessions found for today, cant close a session that doesnt exist");
+            throw new ApiError(
+                400,
+                "No sessions found for today, cant close a session that doesnt exist"
+            );
         }
 
         if (lastSession.logoutTime) {
-              throw new ApiError(400, "Session already logged out");
+            throw new ApiError(400, "Session already logged out");
         }
 
         const logout = attendanceHelper.toUTCTimeOnly(new Date(logoutTime));
-        
+
         if (isNaN(logout.getTime())) {
             throw new ApiError(400, "Invalid 'logoutTime' format");
         }
 
-        const login = attendanceHelper.toUTCTimeOnly(new Date(lastSession.loginTime));
+        const login = attendanceHelper.toUTCTimeOnly(
+            new Date(lastSession.loginTime)
+        );
 
         if (logout < login) {
-            throw new Error(400, "How did u even logout before u logged in? Time Travel?")
+            throw new Error(
+                400,
+                "How did u even logout before u logged in? Time Travel?"
+            );
         }
 
         const sessionDurationMs = logout - login;
@@ -330,7 +340,6 @@ const getEmployeeByRole = async (roleId) => {
 
 // TODO: if employee sends multiple request for same day, handle it
 const applyLeave = async (userid, leaveCategory, dates, reason) => {
-    
     const leaveType = leaveCategory.toUpperCase();
     const leave = new LeaveApplication({
         userid: userid,
@@ -341,48 +350,85 @@ const applyLeave = async (userid, leaveCategory, dates, reason) => {
     });
 
     await leave.save();
-}
+};
 
 const getLeaveRequests = async (userid) => {
     const leaveRequests = LeaveApplication.find({ userid: userid });
-    return leaveRequests
-}
+    return leaveRequests;
+};
 
 //@desc User Personal Data update
 const updateEmpData = async ({ userid, dob, religion, address }) => {
-  try {
-    if (!userid) {
-      throw new ApiError(400, "User ID is required");
+    try {
+        if (!userid) {
+            throw new ApiError(400, "User ID is required");
+        }
+
+        const updateFields = {};
+
+        if (dob) updateFields.DOB = new Date(dob);
+        if (religion) updateFields.religion = religion;
+        if (address) updateFields.Address = address;
+
+        const updatedUser = await userPersonal.findByIdAndUpdate(
+            userid,
+            { $set: updateFields },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedUser) {
+            throw new ApiError(404, "User not found");
+        }
+
+        return updatedUser;
+    } catch (error) {
+        if (error instanceof ApiError) throw error;
+
+        throw new ApiError(
+            500,
+            "Failed to update personal details",
+            error.message
+        );
     }
-
-    const updateFields = {};
-
-    if (dob) updateFields.DOB = new Date(dob);
-    if (religion) updateFields.religion = religion;
-    if (address) updateFields.Address = address;
-
-    const updatedUser = await userPersonal.findByIdAndUpdate(
-      userid,
-      { $set: updateFields },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedUser) {
-      throw new ApiError(404, "User not found");
-    }
-
-    return updatedUser;
-  } catch (error) {
-    if (error instanceof ApiError) throw error;
-
-    throw new ApiError(
-      500,
-      "Failed to update personal details",
-      error.message
-    );
-  }
 };
 
+const adminProcessLeaveRequest = async (
+    userid,
+    leaveId,
+    decision,
+    comments = "NIL"
+) => {
+    const finalDecision = decision.toUpperCase();
+    const leaveApplication = await LeaveApplication.findById(leaveId);
+    const now = new Date();
+
+    if (!leaveApplication) {
+        throw new ApiError(400, "Requested Leave application not found");
+    }
+    if (leaveApplication.superAdminAction !== "PENDING") {
+        if (leaveApplication.status !== finalDecision)
+            throw new ApiError(
+                403,
+                "Leave already reviewed by super admin. You can't override."
+            );
+        else {
+            leaveApplication.adminAction = finalDecision;
+            leaveApplication.adminReviewer = userid;
+            leaveApplication.adminReviewedAt = now;
+            leaveApplication.adminReviewComment = comments;
+            return;
+        }
+    }
+
+    leaveApplication.status =
+        finalDecision === "APPROVED" ? "APPROVED" : "REJECTED";
+    leaveApplication.adminAction = finalDecision;
+    leaveApplication.adminReviewer = userid;
+    leaveApplication.adminReviewedAt = now;
+    leaveApplication.adminReviewComment = comments;
+
+    leaveApplication.save();
+};
 
 module.exports = {
     getAttendanceDataByUserId,
@@ -395,4 +441,5 @@ module.exports = {
     getLeaveRequests,
     getPersonalDetailsOfaEmployee,
     updateEmpData,
+    adminProcessLeaveRequest,
 };
