@@ -8,6 +8,7 @@ const employees = [
   'Sundar M',
   'Priya Sharma',
   'Aman Verma',
+  'dharanish',
 ];
 
 const TaskCard = ({ color, daysLeft, name, description, assignedTo }) => (
