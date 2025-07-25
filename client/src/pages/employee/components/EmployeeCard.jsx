@@ -82,8 +82,8 @@ export const EmployeeCard = ({
         >
           {/* Left Section */}
           <div className="flex flex-1 gap-2 min-w-0">
-            {/* Profile Image - Hidden on mobile, visible on desktop/laptop */}
-            <div className="hidden md:block h-full overflow-hidden rounded-tl-2xl rounded-bl-2xl">
+            {/* Profile Image - Hidden on mobile and tablets, visible on desktop/laptop */}
+            <div className="hidden lg:block h-full overflow-hidden rounded-tl-2xl rounded-bl-2xl">
               <img
                 src={image}
                 alt="Profile"
@@ -95,7 +95,7 @@ export const EmployeeCard = ({
             <div className="flex flex-col flex-[2] justify-center">
               <h6
                 ref={nameRef}
-                className="text-md m-0 cursor-pointer truncate w-full text-center md:text-left"
+                className="text-md m-0 cursor-pointer truncate w-full text-center lg:text-left"
                 onMouseEnter={() => showTooltipIfTruncated(nameRef, name)}
                 onMouseLeave={hideTooltip}
               >
@@ -104,7 +104,7 @@ export const EmployeeCard = ({
 
               <div
                 ref={emailRef}
-                className="flex items-center gap-1 text-sm text-gray-800 cursor-pointer justify-center md:justify-start w-full"
+                className="flex items-center gap-1 text-sm text-gray-800 cursor-pointer justify-center lg:justify-start w-full"
                 onMouseEnter={() => showTooltipIfTruncated(emailRef, email)}
                 onMouseLeave={hideTooltip}
                 style={{ maxWidth: "100%", overflow: "hidden" }}
@@ -136,7 +136,7 @@ export const EmployeeCard = ({
 
               <div
                 ref={phoneRef}
-                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden cursor-pointer justify-center md:justify-start"
+                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden cursor-pointer justify-center lg:justify-start"
                 onMouseEnter={() => showTooltipIfTruncated(phoneRef, phone)}
                 onMouseLeave={hideTooltip}
               >
@@ -156,7 +156,7 @@ export const EmployeeCard = ({
                 <span className="truncate">{phone}</span>
               </div>
 
-              <div className="mt-1 py-1 px-2 rounded-xl w-fit text-xs text-black bg-white/40 truncate mx-auto md:mx-0">
+              <div className="mt-1 py-1 px-2 rounded-xl w-fit text-xs text-black bg-white/40 truncate mx-auto lg:mx-0">
                 {role}
               </div>
             </div>
