@@ -1,6 +1,7 @@
 const GeoUtils = require("../utils/geoFencing");
 const GeoLocation = require("../models/geoLocations");
 const ApiError = require("../errors/ApiError");
+const UserCreds = require("../models/userCredentials");
 
 const isWithinGeofence = async (latitude, longitude, campusId) => {
     try {
@@ -69,8 +70,44 @@ const getAllCampusLocations = async () => {
     }
 };
 
+const editCampusLocation = async (campusId, updates) => {
+    const { campusName, embedURL, radius } = updates;
+    const campus = await GeoLocation.findById(campusId);
+    if (!campus) {
+        throw new ApiError(404, "Campus location not found");
+    }
+
+    campus.campusName = campusName || campus.campusName;
+    campus.embedURL = embedURL || campus.embedURL;
+    campus.radius = radius || campus.radius;
+    await campus.save();
+};
+
+const deleteCampusLocation = async (campusId, newCampusId) => {
+    const campus = await GeoLocation.findById(campusId);
+
+    if (!campus) {
+        throw new ApiError(404, "Campus location not found");
+    }
+    
+    const newCampus = await GeoLocation.findById(newCampusId);
+    if (!newCampus) {
+        throw new ApiError(404, "New campus location not found");
+    }
+
+    const oldCampusUsers = await UserCreds.find({ campusId: campusId });
+    for (const user of oldCampusUsers) {
+        user.campusId = newCampusId;
+        await user.save();
+    }
+
+    await campus.deleteOne();
+};
+
 module.exports = {
     isWithinGeofence,
     addNewCampusLocation,
     getAllCampusLocations,
+    editCampusLocation,
+    deleteCampusLocation,
 };
