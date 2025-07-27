@@ -8,6 +8,8 @@ router.get("/", requirePermission("general"), geoLocationController.getAllBranch
 
 //private routes
 router.post("/new-branch", requirePermission("companyManagement"), geoLocationController.addNewBranch);
+router.patch("/edit-branch", requirePermission("companyManagement"), geoLocationController.editCampusLocation);
+router.post("/delete-branch", requirePermission("companyManagement"), geoLocationController.deleteCampusLocation);
 
 module.exports = router;
 
