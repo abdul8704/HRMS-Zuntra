@@ -125,13 +125,6 @@ export const CompanyDocs = () => {
   const [editModal, setEditModal] = useState({ isOpen: false, document: null });
   const { user, loading } = useAuth();
 
-  // Redirect unauthorized users
-  useEffect(() => {
-    if (!loading && !user.allowedAccess.includes("companyDocs")) {
-      navigate('/404');
-    }
-  }, [loading, user, navigate]);
-
   useEffect(() => {
     const fetchDocuments = async () => {
       setIsLoading(true);
