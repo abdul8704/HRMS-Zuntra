@@ -206,7 +206,7 @@ const UpskillNavItems = [
   }
 ];
 
-const AttendanceNavItems = [
+const attendanceNavItems = [
   {
     label: 'Inbox',
     icon: (
@@ -283,14 +283,12 @@ const companyDocumentsNavItems = [
 
 export const Navbar = ({
   type,
-  role,
-  companyDocumentAccess = false,
   showFilter = false,
   isFilterActive,
   setIsFilterActive,
   handleClearFilters,
 }) => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuth(); 
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
@@ -309,11 +307,9 @@ export const Navbar = ({
   } else if (type === 'courseManagement') {
     navItems = courseManagementNavItems;
   } else if (type === 'attendance') {
-    if (role === 'hr') {
-      navItems = AttendanceNavItems;
-    } else {
-      navItems = AttendanceNavItems.filter(item => item.role === 'emp');
-    }
+        navItems = attendanceNavItems.filter((item) => {
+      return item.access === 'all' || (item.access === 'leaveManagement' && user.allowedAccess.includes("leaveManagement"));
+    });
   } else if (type === 'upskill') {
     navItems = UpskillNavItems;
   } else if (type === 'companyDocuments') {
@@ -375,42 +371,22 @@ export const Navbar = ({
       return null;
     };
 
-    if (type === 'employeeManagement') {
-      const matchedItem = navItems.find(
-        item =>
-          currentPath.startsWith(item.path) &&
-          (item.access === 'all' || user.allowedAccess.includes(item.access))
-      );
-      updatedNavId = matchedItem?.path;
-      if (!updatedNavId) {
-        navigate('/404');
-        return;
-      }
+     if (type === 'employeeManagement') {
+      updatedNavId = navItems.find(item => currentPath.startsWith(item.path))?.path || navItems[0]?.path;
     } else if (type === 'courseManagement') {
       const courseSegment = currentPath.split('/courses/')[1]?.split('/')[0];
-      updatedNavId = findOr404(courseSegment);
-      if (!updatedNavId) return;
+      updatedNavId = navItems.find(item => item.path === courseSegment)?.path || navItems[0]?.path;
     } else if (type === 'employeeDetails') {
       const detailsSegment = currentPath.split('/details')[1];
-      const matchedItem = navItems.find(
-        item =>
-          detailsSegment?.startsWith(item.path) &&
-          (item.access === 'all' || user.allowedAccess.includes(item.access))
-      );
-      updatedNavId = matchedItem?.path;
-      if (!updatedNavId) {
-        navigate('/404');
-        return;
-      }
+      updatedNavId = navItems.find(item => detailsSegment?.startsWith(item.path))?.path || navItems[0]?.path;
     } else if (type === 'attendance') {
       const attendanceSegment = currentPath.split('/attendance/')[1]?.split('/')[0];
       updatedNavId = findOr404(attendanceSegment);
       if (!updatedNavId) return;
     } else if (type === 'upskill') {
-      const upskillSegment = currentPath.split('/upskill/')[1]?.split('/')[0];
-      updatedNavId = findOr404(upskillSegment);
-      if (!updatedNavId) return;
-    } else if (type === 'companyDocuments') {
+      const attendanceSegment = currentPath.split('/upskill/')[1]?.split('/')[0];
+      updatedNavId = navItems.find(item => item.path === attendanceSegment)?.path || navItems[0]?.path;
+    }  else if (type === 'companyDocuments') {
       const documentsSegment = currentPath.split('/documents/')[1]?.split('/')[0];
       updatedNavId = findOr404(documentsSegment);
       if (!updatedNavId) return;
