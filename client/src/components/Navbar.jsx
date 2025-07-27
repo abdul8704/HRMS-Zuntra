@@ -288,17 +288,78 @@ export const Navbar = ({
   setIsFilterActive,
   handleClearFilters,
 }) => {
-  const { user, loading } = useAuth(); 
+  const { user, authDataLoading } = useAuth(); 
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams();
   const employeeId = params.empId || '';
-
   const navRefs = useRef([]);
   const sliderRef = useRef(null);
   const tabContainerRef = useRef(null);
+  const [activeNavId, setActiveNavId] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   let navItems = [];
+
+  useEffect(() => {
+    if (authDataLoading || !user) return;
+    const currentPath = location.pathname;
+    let updatedNavId = '';
+
+    const findOr404 = (segment) => {
+      const matchedItem = navItems.find(
+        item =>
+          item.path === segment &&
+          (item.access === 'all' || user.allowedAccess.includes(item.access))
+      );
+      if (matchedItem) return matchedItem.path;
+      navigate('/404');
+      return;
+    };
+
+    if (type === 'employeeManagement') {
+      updatedNavId = navItems.find(item => currentPath.startsWith(item.path))?.path || navItems[0]?.path;
+    } else if (type === 'courseManagement') {
+      const courseSegment = currentPath.split('/courses/')[1]?.split('/')[0];
+      updatedNavId = navItems.find(item => item.path === courseSegment)?.path || navItems[0]?.path;
+    } else if (type === 'employeeDetails') {
+      const detailsSegment = currentPath.split('/details')[1];
+      updatedNavId = navItems.find(item => detailsSegment?.startsWith(item.path))?.path || navItems[0]?.path;
+    } else if (type === 'attendance') {
+      const attendanceSegment = currentPath.split('/attendance/')[1]?.split('/')[0];
+      updatedNavId = findOr404(attendanceSegment);
+      if (!updatedNavId) return;
+    } else if (type === 'upskill') {
+      const attendanceSegment = currentPath.split('/upskill/')[1]?.split('/')[0];
+      updatedNavId = navItems.find(item => item.path === attendanceSegment)?.path || navItems[0]?.path;
+    } else if (type === 'companyDocuments') {
+      const documentsSegment = currentPath.split('/documents/')[1]?.split('/')[0];
+      updatedNavId = findOr404(documentsSegment);
+      if (!updatedNavId) return;
+    }
+
+    setActiveNavId(updatedNavId);
+    setTimeout(() => updateSlider(updatedNavId), 0);
+
+    const handleResize = () => updateSlider(updatedNavId);
+    window.addEventListener('resize', handleResize);
+
+    const observer = new ResizeObserver(handleResize);
+    if (tabContainerRef.current) observer.observe(tabContainerRef.current);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      observer.disconnect();
+    };
+  }, [location.pathname, type, navItems]);
+
+  if (authDataLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   if (type === 'employeeManagement') {
     navItems = employeeManagementNavItems;
@@ -318,9 +379,6 @@ export const Navbar = ({
     });
   }
 
-
-  const [activeNavId, setActiveNavId] = useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const updateSlider = (targetPath = activeNavId) => {
     const index = navItems.findIndex(item => item.path === targetPath);
@@ -355,58 +413,6 @@ export const Navbar = ({
     setIsFilterActive?.(false);
     handleClearFilters?.();
   };
-
-  useEffect(() => {
-    const currentPath = location.pathname;
-    let updatedNavId = '';
-
-    const findOr404 = (segment) => {
-      const matchedItem = navItems.find(
-        item =>
-          item.path === segment &&
-          (item.access === 'all' || user.allowedAccess.includes(item.access))
-      );
-      if (matchedItem) return matchedItem.path;
-      navigate('/404');
-      return null;
-    };
-
-     if (type === 'employeeManagement') {
-      updatedNavId = navItems.find(item => currentPath.startsWith(item.path))?.path || navItems[0]?.path;
-    } else if (type === 'courseManagement') {
-      const courseSegment = currentPath.split('/courses/')[1]?.split('/')[0];
-      updatedNavId = navItems.find(item => item.path === courseSegment)?.path || navItems[0]?.path;
-    } else if (type === 'employeeDetails') {
-      const detailsSegment = currentPath.split('/details')[1];
-      updatedNavId = navItems.find(item => detailsSegment?.startsWith(item.path))?.path || navItems[0]?.path;
-    } else if (type === 'attendance') {
-      const attendanceSegment = currentPath.split('/attendance/')[1]?.split('/')[0];
-      updatedNavId = findOr404(attendanceSegment);
-      if (!updatedNavId) return;
-    } else if (type === 'upskill') {
-      const attendanceSegment = currentPath.split('/upskill/')[1]?.split('/')[0];
-      updatedNavId = navItems.find(item => item.path === attendanceSegment)?.path || navItems[0]?.path;
-    }  else if (type === 'companyDocuments') {
-      const documentsSegment = currentPath.split('/documents/')[1]?.split('/')[0];
-      updatedNavId = findOr404(documentsSegment);
-      if (!updatedNavId) return;
-    }
-
-    setActiveNavId(updatedNavId);
-    setTimeout(() => updateSlider(updatedNavId), 0);
-
-    const handleResize = () => updateSlider(updatedNavId);
-    window.addEventListener('resize', handleResize);
-
-    const observer = new ResizeObserver(handleResize);
-    if (tabContainerRef.current) observer.observe(tabContainerRef.current);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      observer.disconnect();
-    };
-  }, [location.pathname, type, navItems, user.allowedAccess]);
-
 
   if (!navItems.length) return null;
 

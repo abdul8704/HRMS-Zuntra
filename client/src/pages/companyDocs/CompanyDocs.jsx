@@ -123,14 +123,15 @@ export const CompanyDocs = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [editModal, setEditModal] = useState({ isOpen: false, document: null });
-  const { user, loading } = useAuth();
+  const { user, authDataLoading } = useAuth();
+  
 
   // Redirect unauthorized users
   useEffect(() => {
-    if (!loading && !user.allowedAccess.includes("companyDocs")) {
+    if (!authDataLoading && !user.allowedAccess.includes("companyDocs")) {
       navigate('/404');
     }
-  }, [loading, user, navigate]);
+  }, [authDataLoading, user, navigate]);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -259,7 +260,7 @@ export const CompanyDocs = () => {
     <div className="flex h-screen font-sans">
       <Sidebar role={"HR"} />
       <div className="flex-1 h-screen overflow-y-auto p-4 bg-white flex flex-col gap-4">
-        {loading ? <Loading /> : (
+        {authDataLoading ? <Loading /> : (
           <>
             {(navId === "all" || navId === "upload") && (
               <Navbar
