@@ -25,6 +25,7 @@ import './App.css'
 import './index.css'
 import { ShiftDetails } from './pages/employee/components/ShiftDetails';
 import { Unauthorized } from './pages/Unauthorized';
+import { RemoveEmployeePopup } from './pages/employee/components/RemoveEmployeePopup';
 
 
 function App() {
@@ -54,7 +55,7 @@ function App() {
             <Route path="/review" element={<Review />} />
             <Route path="/completed" element={<Completed />} />
             <Route path="/ceo" element={<CeoDashboard />} />
-
+            <Route path="/remove-emp-request" element={<RemoveEmployeePopup />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

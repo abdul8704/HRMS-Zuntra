@@ -2,12 +2,117 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
-import { Download, Trash2 } from 'lucide-react';
+import { Download, Trash2, Edit3 } from 'lucide-react';
 import { DocumentViewer } from './components/DocumentViewer';
 import api, { BASE_URL } from '../../api/axios';
 import { DocumentUploadForm } from './components/DocumentUploadForm';
 import { useAuth } from "../../context/AuthContext";
 import { Loading } from "../utils/Loading";
+
+// Edit Modal Component
+const EditDocumentModal = ({ isOpen, onClose, document, onSave }) => {
+  const [documentName, setDocumentName] = useState('');
+  const [validUpto, setValidUpto] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (document) {
+      setDocumentName(document.documentName || '');
+      // Format date for input field (YYYY-MM-DD)
+      if (document.validUpto) {
+        const date = new Date(document.validUpto);
+        const formattedDate = date.toISOString().split('T')[0];
+        setValidUpto(formattedDate);
+      }
+    }
+  }, [document]);
+
+  const handleSave = async () => {
+    if (!documentName.trim()) {
+      alert('Document name is required');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await api.put(`/api/docs/${document._id}`, {
+        documentName: documentName.trim(),
+        validUpto: validUpto || null
+      });
+
+      if (response.data.success) {
+        onSave({
+          ...document,
+          documentName: documentName.trim(),
+          validUpto: validUpto || null
+        });
+        onClose();
+      } else {
+        alert(response.data.message || 'Failed to update document');
+      }
+    } catch (error) {
+      console.error('Update error:', error);
+      const message = error.response?.data?.message || error.message || 'Failed to update document';
+      alert(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-96 max-w-90vw shadow-xl">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Edit Document</h3>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Document Name
+            </label>
+            <input
+              type="text"
+              value={documentName}
+              onChange={(e) => setDocumentName(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A6C4BA] focus:border-transparent"
+              placeholder="Enter document name"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Valid Upto
+            </label>
+            <input
+              type="date"
+              value={validUpto}
+              onChange={(e) => setValidUpto(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A6C4BA] focus:border-transparent"
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3 mt-6">
+          <button
+            onClick={onClose}
+            disabled={isLoading}
+            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={isLoading}
+            className="px-4 py-2 bg-[#A6C4BA] text-white rounded-lg hover:bg-[#95B3A8] transition-colors disabled:opacity-50"
+          >
+            {isLoading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export const CompanyDocs = () => {
   const navigate = useNavigate();
@@ -17,6 +122,7 @@ export const CompanyDocs = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [editModal, setEditModal] = useState({ isOpen: false, document: null });
   const { user, loading } = useAuth();
 
   // Redirect unauthorized users
@@ -96,6 +202,19 @@ export const CompanyDocs = () => {
     } catch (error) {
       console.error("Download failed:", error);
     }
+  };
+
+  const handleEdit = (e, document) => {
+    e.stopPropagation();
+    setEditModal({ isOpen: true, document });
+  };
+
+  const handleEditSave = (updatedDocument) => {
+    setDocuments(prev => 
+      prev.map(doc => 
+        doc._id === updatedDocument._id ? updatedDocument : doc
+      )
+    );
   };
 
   const handleDelete = async (e, id) => {
@@ -200,7 +319,7 @@ export const CompanyDocs = () => {
                         <th className="px-6 py-3">Document</th>
                         <th className="px-6 py-3 text-right">Uploaded On</th>
                         <th className="px-6 py-3 text-right">Valid Upto</th>
-                        <th className="px-6 py-3 w-32"></th>
+                        <th className="px-6 py-3 w-40"></th>
                       </tr>
                     </thead>
                     <tbody className="text-gray-700">
@@ -234,9 +353,19 @@ export const CompanyDocs = () => {
                               </td>
                               <td className="px-6 py-4">
                                 <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                  {user.allowedAccess.includes('companyDocs') && (
+                                    <button
+                                      onClick={(e) => handleEdit(e, item)}
+                                      className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-100 rounded-full transition-all duration-200"
+                                      title="Edit document"
+                                    >
+                                      <Edit3 size={14} />
+                                    </button>
+                                  )}
                                   <button
                                     onClick={(e) => handleDownload(e, item._id, item.documentName)}
                                     className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-green-600 hover:bg-green-100 rounded-full transition-all duration-200"
+                                    title="Download document"
                                   >
                                     <Download size={14} />
                                   </button>
@@ -244,6 +373,7 @@ export const CompanyDocs = () => {
                                     <button
                                       onClick={(e) => handleDelete(e, item._id)}
                                       className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-full transition-all duration-200"
+                                      title="Delete document"
                                     >
                                       <Trash2 size={14} />
                                     </button>
@@ -274,6 +404,14 @@ export const CompanyDocs = () => {
           </>
         )}
       </div>
+
+      {/* Edit Modal */}
+      <EditDocumentModal
+        isOpen={editModal.isOpen}
+        onClose={() => setEditModal({ isOpen: false, document: null })}
+        document={editModal.document}
+        onSave={handleEditSave}
+      />
     </div>
   );
 };
