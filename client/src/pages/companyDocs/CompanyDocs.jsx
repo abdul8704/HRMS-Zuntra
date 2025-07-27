@@ -2,8 +2,8 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
-import { Download, Edit, Trash2 } from 'lucide-react';
-import { DocumentViewer } from './components/DocumentViewer'
+import { Download, Trash2 } from 'lucide-react';
+import { DocumentViewer } from './components/DocumentViewer';
 import api, { BASE_URL } from '../../api/axios';
 import { DocumentUploadForm } from './components/DocumentUploadForm';
 import { useAuth } from "../../context/AuthContext";
@@ -18,6 +18,13 @@ export const CompanyDocs = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { user, loading } = useAuth();
+
+  // Redirect unauthorized users
+  useEffect(() => {
+    if (!loading && !user.allowedAccess.includes("companyDocs")) {
+      navigate('/404');
+    }
+  }, [loading, user, navigate]);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -64,14 +71,11 @@ export const CompanyDocs = () => {
     setIsFilterActive(false);
   }, []);
 
-  // Add navigation handler
   const handleRowClick = useCallback((documentId) => {
-    // Replace '/document-details' with your actual route
     navigate(`/documents/${documentId}`);
   }, [navigate]);
 
   const handleDownload = async (e, id, name) => {
-    // Prevent row click when download button is clicked
     e.stopPropagation();
 
     try {
@@ -94,12 +98,11 @@ export const CompanyDocs = () => {
     }
   };
 
-
   const handleDelete = async (e, id) => {
     e.stopPropagation();
 
     if (!window.confirm("Are you sure you want to delete this document?")) return;
-    if (!window.confirm("After you delete git push in vscode")) return;
+    if (!window.confirm("After you delete, push your changes in VSCode.")) return;
 
     try {
       const response = await api.delete(`/api/docs/${id}`);
@@ -120,20 +123,18 @@ export const CompanyDocs = () => {
     }
   };
 
-
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
 
     const date = new Date(dateStr);
-    return isNaN(date.getTime())
-      ? "-"
-      : date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      });
-  };
+    if (isNaN(date.getTime())) return "-";
 
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+  };
 
   return (
     <div className="flex h-screen font-sans">
@@ -141,7 +142,7 @@ export const CompanyDocs = () => {
       <div className="flex-1 h-screen overflow-y-auto p-4 bg-white flex flex-col gap-4">
         {loading ? <Loading /> : (
           <>
-            {(navId === "all" || navId === "upload") &&
+            {(navId === "all" || navId === "upload") && (
               <Navbar
                 type="companyDocuments"
                 companyDocumentAccess={user.allowedAccess.includes("companyDocs")}
@@ -150,7 +151,7 @@ export const CompanyDocs = () => {
                 setIsFilterActive={setIsFilterActive}
                 handleClearFilters={handleClearFilters}
               />
-            }
+            )}
 
             {isFilterActive && (
               <div className="w-full bg-[#BBD3CC] rounded-xl flex gap-2 p-2">
@@ -178,13 +179,11 @@ export const CompanyDocs = () => {
                 <div>
                   Showing {filteredDocuments.length} of {documents.length} documents
                 </div>
-                <div className="flex gap-2">
-                  {searchTerm && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">
-                      Search: "{searchTerm}"
-                    </span>
-                  )}
-                </div>
+                {searchTerm && (
+                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                    Search: "{searchTerm}"
+                  </span>
+                )}
               </div>
             )}
 
@@ -242,14 +241,12 @@ export const CompanyDocs = () => {
                                     <Download size={14} />
                                   </button>
                                   {user.allowedAccess.includes('companyDocs') && (
-                                    <>
-                                      <button
-                                        onClick={(e) => handleDelete(e, item._id)}
-                                        className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-full transition-all duration-200"
-                                      >
-                                        <Trash2 size={14} />
-                                      </button>
-                                    </>
+                                    <button
+                                      onClick={(e) => handleDelete(e, item._id)}
+                                      className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-full transition-all duration-200"
+                                    >
+                                      <Trash2 size={14} />
+                                    </button>
                                   )}
                                 </div>
                               </td>
@@ -262,9 +259,9 @@ export const CompanyDocs = () => {
                 </div>
               )
             )}
-            {navId === "upload" && (
-              <DocumentUploadForm />
-            )}
+
+            {navId === "upload" && <DocumentUploadForm />}
+
             {navId !== "all" && navId !== "upload" && (() => {
               const selectedDoc = documents.find((doc) => doc._id === navId);
               return (
@@ -276,7 +273,6 @@ export const CompanyDocs = () => {
             })()}
           </>
         )}
-
       </div>
     </div>
   );
