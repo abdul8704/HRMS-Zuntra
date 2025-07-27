@@ -11,7 +11,7 @@ import { AttendanceCard } from './components/AttendanceCard';
 import { LeaveForm } from './components/LeaveForm';
 import { ScheduleForm } from './components/ScheduleForm';
 import { SampleCard } from './components/samplecard';
-import  LeaveFormHistory  from './components/LeaveFormHistory';
+import { LeaveFormHistory } from './components/LeaveFormHistory';
 
 
 export const Attendance = () => {
@@ -54,19 +54,18 @@ export const Attendance = () => {
                         </div>
                     </div>
                     )}
+                    {navId==="inbox" && (
+                        <LeaveFormHistory />
+                    )}
                     {navId === "apply" && (
-                        <div className="flex flex-row w-full h-full overflow-hidden gap-[1rem]">
-                            <div className='flex-1'>
-                                <AttendanceCard />
+                        <div className="flex flex-col w-full md:flex-row h-full overflow-hidden gap-[1rem]">
+                            <div className="flex-[1] h-full">
+                                <LeaveFormHistory />
                             </div>
-                            <div className='flex-1 p-4 flex flex-col gap-[1rem]'>
-                                <div className="flex-[4] overflow-hidden">
-                                    <LeaveFormHistory />
-                                </div>
-                                <div className="flex-[6] overflow-hidden">
-                                    <LeaveForm />
-                                </div>
+                            <div className="flex-[1] h-full">
+                                <LeaveForm />
                             </div>
+
                         </div>
                     )}
                     {navId === "schedule" && (
