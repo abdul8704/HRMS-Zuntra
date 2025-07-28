@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 
+
+
 const employeeManagementNavItems = [
   {
     label: 'Employee',
@@ -329,9 +331,9 @@ export const Navbar = ({
       const attendanceSegment = currentPath.split('/attendance/')[1]?.split('/')[0];
       updatedNavId = findOr404(attendanceSegment);
       if (!updatedNavId) return;
-    } else if (type === 'upskill') {
-      const attendanceSegment = currentPath.split('/upskill/')[1]?.split('/')[0];
-      updatedNavId = navItems.find(item => item.path === attendanceSegment)?.path || navItems[0]?.path;
+    } else if (type === 'project') {
+      const projectSegment = currentPath.split('/project/')[1]?.split('/')[0];
+      updatedNavId = navItems.find(item => item.path === projectSegment)?.path || navItems[0]?.path;
     } else if (type === 'companyDocuments') {
       const documentsSegment = currentPath.split('/documents/')[1]?.split('/')[0];
       updatedNavId = findOr404(documentsSegment);
@@ -365,6 +367,10 @@ export const Navbar = ({
     navItems = employeeManagementNavItems;
   } else if (type === 'employeeDetails') {
     navItems = employeeDetailsNavItems;
+  } else if (type === 'courseManagement') {
+    navItems = courseManagementNavItems;
+  } else if (type === 'project') {
+    navItems = projectManagementNavItems;
   } else if (type === 'courseManagement') {
     navItems = courseManagementNavItems;
   } else if (type === 'attendance') {
