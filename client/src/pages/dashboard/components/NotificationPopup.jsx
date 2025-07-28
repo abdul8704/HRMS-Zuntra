@@ -292,7 +292,7 @@ export const NotificationPopup = ({ setShowPopup }) => {
           </button>
           <button
             onClick={handleSend}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            className="px-4 py-2 bg-[#BBD3CC] text-gray-700 rounded-md hover:bg-[#A6C4BA] transition-colors"
           >
             Send
           </button>
