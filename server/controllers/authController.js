@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const authService = require("../services/authService");
-const employeeService = require("../services/employeeService");
+const attendanceService = require("../services/attendanceService");
 const authOTP = require("../models/authOTP");
 const generateOTP = require("../utils/generateOTP");
 const transporter = require("../utils/sendOTP");
@@ -94,9 +94,9 @@ const geoFenceLogin = asyncHandler(async (req, res) => {
     );
 
     if(isInsideGeofence)
-        await employeeService.markAttendanceOnLogin(userid, "onsite");
+        await attendanceService.markAttendanceOnLogin(userid, "onsite");
     else
-        await employeeService.markAttendanceOnLogin(userid, "remote");
+        await attendanceService.markAttendanceOnLogin(userid, "remote");
 
     res.status(200).json({ success: true, message: "Attendance marked" });
 })

@@ -6,7 +6,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [authDataLoading, setAuthDataLoading] = useState(true);
     const [sessionInitialized, setSessionInitialized] = useState(false);
     const location = useLocation();
 
@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
         const isLoginRoute = location.pathname === "/";
 
         if (sessionInitialized || isLoginRoute) {
-            setLoading(false);
+            setAuthDataLoading(false);
             return;
         }
 
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
                 setUser(null);
             } finally {
                 setSessionInitialized(true);
-                setLoading(false);
+                setAuthDataLoading(false);
             }
         };
 
@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     }, [sessionInitialized, location.pathname]);
 
     return (
-        <AuthContext.Provider value={{ user, setUser, loading }}>
+        <AuthContext.Provider value={{ user, setUser, authDataLoading }}>
             {children}
         </AuthContext.Provider>
     );

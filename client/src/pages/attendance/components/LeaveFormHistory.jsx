@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Eye } from 'lucide-react';
 import api from '../../../api/axios'
 import { Loading } from '../../utils/Loading';
-const LeaveFormHistory = () => {
+
+export const LeaveFormHistory = () => {
   const [leaveHistory, setLeaveHistory] = useState([]);
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [isLoading, setLoading] = useState(false);
+
   useEffect(() => {
     try {
       const fetchLeaveReqs = async () => {
@@ -23,7 +25,6 @@ const LeaveFormHistory = () => {
       console.error(err)
     }
   }, [])
-
 
   const formatDate = (rawDate) => {
     const date = new Date(rawDate);
@@ -82,17 +83,19 @@ const LeaveFormHistory = () => {
                   <td className={`p-2 font-medium ${getStatusColor(item.status)}`}>
                     {item.status}
                   </td>
-                  <td className="p-2 text-center">
-                    <Eye
-                      className="w-5 h-5 text-gray-600 cursor-pointer hover:text-blue-600"
-                      onClick={() => {
-                        setShowPopup(false);
-                        setTimeout(() => {
-                          setSelectedLeave(item);
-                          setShowPopup(true);
-                        }, 0);
-                      }}
-                    />
+                  <td className="p-2">
+                    <div className="flex justify-center items-center">
+                      <Eye
+                        className="w-5 h-5 text-gray-600 cursor-pointer hover:text-blue-600 transition-colors duration-200"
+                        onClick={() => {
+                          setShowPopup(false);
+                          setTimeout(() => {
+                            setSelectedLeave(item);
+                            setShowPopup(true);
+                          }, 0);
+                        }}
+                      />
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -180,5 +183,3 @@ const LeaveFormHistory = () => {
     </>
   );
 };
-
-export default LeaveFormHistory;
