@@ -13,6 +13,7 @@ import { ProjectDeadline } from "../project/components/ProjectDeadline";
 import { PlusButton } from '../../components/PlusButton';
 import { useAuth } from "../../context/AuthContext";
 import { BASE_URL } from '../../api/axios';
+import { NewUser } from './NewUser';
 
 export const DashBoard = () => {
 
@@ -54,6 +55,9 @@ export const DashBoard = () => {
         <p className="text-lg font-medium">Loading dashboard...</p>
       </div>
     ) : (
+      (isNewUser) ? (
+        <NewUser/>
+      ) : (
       <div className="flex h-screen">
         <PlusButton />
         <Sidebar role={isNewUser ? "newUser" : "HR"} />
@@ -146,6 +150,7 @@ export const DashBoard = () => {
         }
       `}</style>
       </div >
+      )
     )
   )
 }
