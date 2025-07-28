@@ -87,7 +87,6 @@ const getAttendanceDataByUserId = async (
 
 const markAttendanceOnLogin = async (userid, mode) => {
     const today = attendanceHelper.normalizeToUTCDate(new Date());
-
     try {
         const shiftData = await User.findById(userid).populate(
             "shift",
@@ -105,11 +104,8 @@ const markAttendanceOnLogin = async (userid, mode) => {
             );
         }
 
-        const shiftStart = new Date(shiftData.shift.startTime);
-        const shiftEnd = new Date(shiftData.shift.endTime);
-
-        const shiftStartTime = attendanceHelper.toUTCTimeOnly(shiftStart);
-        const shiftEndTime = attendanceHelper.toUTCTimeOnly(shiftEnd);
+        const shiftStartTime = new Date(shiftData.shift.startTime);
+        const shiftEndTime = new Date(shiftData.shift.endTime);
 
         if (isNaN(shiftStartTime.getTime(), isNaN(shiftEndTime.getTime()))) {
             throw new ApiError(400, "Unable to process shift timings");
@@ -137,6 +133,10 @@ const markAttendanceOnLogin = async (userid, mode) => {
                 breakMinutes: 0,
                 status: mode === "remote" ? "remote" : "present",
             });
+
+            if (shiftStartTime - now <= 60 * 60 * 1000 || now - shiftStartTime >= 0) {
+                attendance.lateBy = (now - shiftStartTime) / 60_000;
+            }
 
             await attendance.save();
 
@@ -174,6 +174,9 @@ const markAttendanceOnLogin = async (userid, mode) => {
                 mode: isWithinShift ? mode : "extra",
             });
 
+            if(!attendance.lateBy && (shiftStartTime - now >= 60 * 60 * 1000 || now - shiftStartTime > 0))
+                attendance.lateBy = (now - shiftStartTime) / 60_000;
+            
             if (isWithinShift && breakDurationMinutes > 1) {
                 // TODO: update this to whatever client wants
                 attendance.breakMinutes += breakDurationMinutes;
@@ -326,7 +329,6 @@ const editLeaveRequest = async (leaveId, userid, leaveCategory, dates, reason) =
     const now = Date.now()
 
     if(String(leaveApplication.userid) !== userid){
-        console.log(userid, leaveApplication.userid);
         throw new ApiError(403, "YOU CANNOT CHANGE OTHER PEOPLE's LEAVE APPLICATION");
     }
 
