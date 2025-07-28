@@ -31,15 +31,17 @@ const attendanceSchema = new mongoose.Schema({
     sessions: [sessionSchema], // multiple login/logout pairs
 
     workingMinutes: {
-        type: Number, // in hours (decimal), e.g. 7.5
+        type: Number, // in minutes 
         default: 0,
     },
 
     breakMinutes: {
-        type: Number, // in hours (decimal)
+        type: Number, // in minutes
         default: 0,
     },
-
+    lateBy: {
+        type: Number, // in minutes
+    },
     status: {
         type: String,
         enum: ["present", "remote", "absent"],
@@ -48,7 +50,6 @@ const attendanceSchema = new mongoose.Schema({
     leaveType: {
         type: String,
         enum: ['casual', 'earned', 'unpaid', 'sick', 'onduty', ''],
-        default: '',
     }
 });
 
