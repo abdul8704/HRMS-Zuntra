@@ -283,7 +283,7 @@ export const NotificationPopup = ({ setShowPopup }) => {
         </div>
 
         {/* Footer */}
-        <div className="flex justify-center space-x-3 p-4 border-t bg-gray-50">
+        <div className="flex justify-center space-x-3 p-4 border-t bg-gray-50 rounded-b-lg">
           <button
             onClick={handleClose}
             className="px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
@@ -292,7 +292,7 @@ export const NotificationPopup = ({ setShowPopup }) => {
           </button>
           <button
             onClick={handleSend}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            className="px-4 py-2 bg-[#BBD3CC] text-gray-700 rounded-md hover:bg-[#A6C4BA] transition-colors"
           >
             Send
           </button>

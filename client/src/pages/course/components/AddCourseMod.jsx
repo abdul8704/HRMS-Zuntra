@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AddCourseIntro } from './AddCourseIntro';
 import { AddCourseNavigator } from './AddCourseNavigator';
 import { AddCourseModule } from './AddCourseModule';
+import { AddCourseSubModule } from './AddCourseSubModule';
+import { AssignmentModule } from './AssignmentModule';
+import { Plus } from 'lucide-react';
 
 export const AddCourseMod = () => {
   const [courseData, setCourseData] = useState({
@@ -16,17 +19,19 @@ export const AddCourseMod = () => {
   const [completedSteps, setCompletedSteps] = useState([]);
   const [currentStep, setCurrentStep] = useState('Course Intro');
   const [moduleCount, setModuleCount] = useState(0);
-  
-  // New state to store module names and data
   const [moduleNames, setModuleNames] = useState([]);
-  const [moduleData, setModuleData] = useState({}); // Store all module data by step name
+  const [moduleData, setModuleData] = useState({});
+  const [subModuleData, setSubModuleData] = useState({});
+  const [assignmentData, setAssignmentData] = useState({});
 
   const generateAllSteps = () => {
     const steps = ['Course Intro'];
     for (let i = 1; i <= moduleCount; i++) steps.push(`Module ${i}`);
-    steps.push('Submodules', 'Publish');
+    steps.push('Publish');
     return steps;
   };
+
+  const allSteps = generateAllSteps();
 
   const handleInputChange = (field, value) => {
     setCourseData(prev => ({ ...prev, [field]: value }));
@@ -45,8 +50,7 @@ export const AddCourseMod = () => {
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') setDragActive(true);
-    else if (e.type === 'dragleave') setDragActive(false);
+    setDragActive(e.type === 'dragenter' || e.type === 'dragover');
   };
 
   const handleDrop = (e) => {
@@ -108,27 +112,31 @@ export const AddCourseMod = () => {
     if (!completedSteps.includes(moduleStep)) {
       setCompletedSteps(prev => [...prev, moduleStep]);
     }
-    
-    // Store the module data by step name
-    setModuleData(prev => ({
-      ...prev,
-      [moduleStep]: moduleFormData
-    }));
-    
-    // Store the module name in the array
+    setModuleData(prev => ({ ...prev, [moduleStep]: moduleFormData }));
     const moduleNumber = parseInt(moduleStep.split(' ')[1]);
-    const moduleIndex = moduleNumber - 1; // Convert to 0-based index
-    
+    const moduleIndex = moduleNumber - 1;
     setModuleNames(prev => {
       const newModuleNames = [...prev];
-      // Ensure the array is large enough
       while (newModuleNames.length <= moduleIndex) {
         newModuleNames.push('');
       }
-      // Store the module name at the correct index
       newModuleNames[moduleIndex] = moduleFormData.moduleName;
       return newModuleNames;
     });
+  };
+
+  const handleSubModuleChange = (moduleStep, updatedData) => {
+    setSubModuleData(prev => ({
+      ...prev,
+      [moduleStep]: updatedData
+    }));
+  };
+
+  const handleAssignmentChange = (moduleStep, updatedData) => {
+    setAssignmentData(prev => ({
+      ...prev,
+      [moduleStep]: updatedData
+    }));
   };
 
   const handleModuleNext = (moduleStep) => {
@@ -149,10 +157,7 @@ export const AddCourseMod = () => {
         setCurrentStep(step);
         setErrors({});
       }
-    } else if (step === 'Submodules' && completedSteps.some(s => s.startsWith('Module'))) {
-      setCurrentStep(step);
-      setErrors({});
-    } else if (step === 'Publish' && completedSteps.includes('Submodules')) {
+    } else if (step === 'Publish' && completedSteps.some(s => s.startsWith('Module'))) {
       setCurrentStep(step);
       setErrors({});
     }
@@ -164,18 +169,7 @@ export const AddCourseMod = () => {
     setCurrentStep(`Module ${newModuleNumber}`);
   };
 
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024, sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
   const isCourseIntroDisabled = () => completedSteps.includes('Course Intro');
-
-  const allSteps = generateAllSteps();
-
-  // Debug: Log module names array (you can remove this in production)
 
   return (
     <div className="flex w-full h-full gap-4">
@@ -202,7 +196,6 @@ export const AddCourseMod = () => {
             handleDrag={handleDrag}
             handleDrop={handleDrop}
             removeVideo={removeVideo}
-            formatFileSize={formatFileSize}
             onNext={handleNext}
             isFormComplete={isFormComplete() || completedSteps.includes('Course Intro')}
             disabled={isCourseIntroDisabled()}
@@ -211,30 +204,34 @@ export const AddCourseMod = () => {
         )}
 
         {currentStep.startsWith('Module') && (
-          <AddCourseModule
-            moduleNumber={currentStep.split(' ')[1]}
-            onNext={() => handleModuleNext(currentStep)}
-            onComplete={(moduleFormData) => handleModuleComplete(currentStep, moduleFormData)}
-            disabled={completedSteps.includes(currentStep)}
-            initialData={moduleData[currentStep] || { moduleName: '' }}
-            type={completedSteps.includes(currentStep) ? 'review' : 'new'}
-          />
-        )}
+          <>
+            <AddCourseModule
+              moduleNumber={currentStep.split(' ')[1]}
+              onNext={() => handleModuleNext(currentStep)}
+              onComplete={(moduleFormData) => handleModuleComplete(currentStep, moduleFormData)}
+              disabled={completedSteps.includes(currentStep)}
+              initialData={moduleData[currentStep] || { moduleName: '' }}
+              type={completedSteps.includes(currentStep) ? 'review' : 'new'}
+            />
 
-        {/* Debug section - you can remove this in production */}
-        {moduleNames.length > 0 && (
-          <div className="mt-4 p-4 bg-gray-100 rounded-lg">
-            <h4 className="font-semibold mb-2">Module Names Array:</h4>
-            <ul className="list-disc list-inside">
-              {moduleNames.map((name, index) => (
-                <li key={index}>Module {index + 1}: {name || 'Not completed yet'}</li>
-              ))}
-            </ul>
-          </div>
+            {completedSteps.includes(currentStep) && (
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold mb-4">Add SubModules for {currentStep}</h2>
+                <AddCourseSubModule
+                  initialData={subModuleData[currentStep] || []}
+                  onChange={(updatedData) => handleSubModuleChange(currentStep, updatedData)}
+                />
+                <h3 className="text-lg font-medium mt-6 mb-2">Assignments for {currentStep}</h3>
+                <AssignmentModule
+                  initialData={assignmentData[currentStep] || []}
+                  onChange={(updatedData) => handleAssignmentChange(currentStep, updatedData)}
+                />
+              </div>
+            )}
+          </>
         )}
-
-        {/* Submodules and Publish steps are included in the original code */}
       </div>
     </div>
   );
 };
+

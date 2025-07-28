@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { User, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import api, { BASE_URL } from '../../../api/axios';
 
 export const EditProfileCard = ({ data, onClose, onSave }) => {
-
   const formatDateForInput = (dateStr) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
@@ -13,12 +12,16 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     return `${year}-${month}-${day}`;
   };
 
+  const [profileImage, setProfileImage] = useState(null);
+  const [profileImageEdited, setProfileImageEdited] = useState(false);
   const [dob, setDob] = useState(formatDateForInput(data.personalDetail?.DOB) || '');
   const [religion, setReligion] = useState(data.personalDetail?.religion || '');
   const [address, setAddress] = useState(data.personalDetail?.Address || '');
   const [showReligionDropdown, setShowReligionDropdown] = useState(false);
 
   const religionInputRef = useRef(null);
+  const fileInputRef = useRef(null);
+
   const religions = ['Hindu', 'Muslim', 'Christian', 'Atheist', 'Other'];
 
   const isFormValid = dob.trim() && religion.trim() && address.trim();
@@ -27,8 +30,18 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     if (!isFormValid) return;
 
     try {
-      const userData = {dob,religion,address};
-      const profileUpdate = await api.patch('/api/employee/updateprofile',userData);
+      const userData = { dob, religion, address };
+      await api.patch('/api/employee/updateprofile', userData);
+      if (profileImageEdited) {
+        const formData = new FormData();
+        formData.append("profilePicture", profileImage);
+        const profilePic = await api.post(`/auth/signup/uploadprofile/${data._id}`, formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+      }
       alert('Profile updated successfully');
       onSave?.();
       onClose?.();
@@ -42,7 +55,17 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     setDob('');
     setReligion('');
     setAddress('');
+    setProfileImage(null);
+    setProfileImageEdited(false);
     onClose?.();
+  };
+
+  const handleProfileImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+      setProfileImageEdited(true);
+    }
   };
 
   useEffect(() => {
@@ -61,11 +84,30 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
         {/* Left: Profile Summary */}
         <div className="w-2/5 bg-gradient-to-br from-[#BBD3CC] to-[#A6C4BA] p-8 flex flex-col justify-center items-center text-center">
           <div className="relative mb-6">
-            <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+            <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg relative overflow-hidden">
               <img
-                src={`${BASE_URL}/uploads/profilePictures/${data._id}.png`}
+                src={
+                  profileImage
+                    ? URL.createObjectURL(profileImage)
+                    : `${BASE_URL}/uploads/profilePictures/${data._id}.png`
+                }
                 alt="Profile"
                 className="w-full h-full object-cover rounded-full"
+              />
+              <button
+                onClick={() => fileInputRef.current.click()}
+                className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full shadow-md hover:bg-gray-100 flex items-center justify-center transition"
+                title="Edit Profile Picture"
+              >
+                ✎
+              </button>
+              <input
+                id="profile-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleProfileImageUpload}
+                hidden
+                ref={fileInputRef}
               />
             </div>
           </div>
@@ -149,14 +191,13 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
                 onClick={handleSubmit}
                 disabled={!isFormValid}
                 className={`py-3 min-w-[120px] rounded-full font-medium transition-colors duration-300
-    ${isFormValid
+                  ${isFormValid
                     ? 'bg-[#BBD3CC] text-gray-700 hover:bg-[#A6C4BA]'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
               >
                 Save
               </button>
-
             </div>
           </div>
         </div>
