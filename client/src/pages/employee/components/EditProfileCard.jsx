@@ -32,24 +32,16 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     try {
       const userData = { dob, religion, address };
       await api.patch('/api/employee/updateprofile', userData);
-
-      // You can now check the flag:
       if (profileImageEdited) {
-        console.log('Image has been edited. Proceed to upload image API.');
-        // Example:
-        // const formData = new FormData();
-        // formData.append('image', profileImage);
-        // await api.post('/api/employee/uploadProfilePicture', formData);
+        const formData = new FormData();
+        formData.append("profilePicture", profileImage);
+        const profilePic = await api.post(`/auth/signup/uploadprofile/${data._id}`, formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
       }
-      // const formData = new FormData();
-      // formData.append("profilePicture", profileImage);
-      // const profilePic = await api.post(`/auth/signup/uploadprofile/${newUser.data.userId}`, formData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   });
-
       alert('Profile updated successfully');
       onSave?.();
       onClose?.();
