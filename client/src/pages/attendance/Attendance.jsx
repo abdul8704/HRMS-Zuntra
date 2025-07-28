@@ -89,17 +89,8 @@ export const Attendance = () => {
                 {/* ----- 'apply' tab ----- */}
                 {navId === 'apply' && (
                     <div className="flex flex-col md:flex-row w-full h-full overflow-hidden gap-[1rem]">
-                        <div className="flex-1 h-full overflow-auto">
-                            <AttendanceCard />
-                        </div>
-                        <div className="flex-1 h-full flex flex-col gap-4">
-                            <div className="flex-1 overflow-auto">
-                                <LeaveFormHistory />
-                            </div>
-                            <div className="flex-1 overflow-auto">
-                                <LeaveForm />
-                            </div>
-                        </div>
+                        <LeaveFormHistory />
+                        <LeaveForm />
                     </div>
                 )}
 

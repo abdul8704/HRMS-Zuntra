@@ -6,11 +6,10 @@ import { NotFound } from './pages/NotFound';
 import { CourseManagement } from './pages/course/CourseManagement';
 import { CourseIntro } from './pages/course/CourseIntro';
 import { CourseLearn } from './pages/course/CourseLearn';
-import { ProjectOverview } from './pages/project/ProjectOverview';
+import { ProjectDetails } from './pages/project/ProjectDetails';
 import { EmployeeDetails } from './pages/employee/EmployeeDetails';
 import { EmployeeManagement } from './pages/employee/EmployeeManagement';
-import { HrProjectDetails } from './pages/HrProjectDetails';
-import { HrProjectManagement } from './pages/project/HrProjectManagement';
+import { ProjectManagement } from './pages/project/ProjectManagement';
 import { Upskill } from './pages/course/Upskill';
 import { Attendance } from './pages/attendance/Attendance';
 import { HrPersonalAttendance } from './pages/HrPersonalAttendance';
@@ -45,8 +44,8 @@ function App() {
             <Route path="/courses/:navId" element={<CourseManagement />} />
             <Route path="/course/:courseId/intro" element={<CourseIntro />} />
             <Route path="/course/learn/:courseId" element={<CourseLearn />} />
-            <Route path="/projects/:navId" element={<ProjectOverview />} />
-            <Route path="/project/:projectId/:navId" element={<HrProjectDetails />} />
+            <Route path="/projects/:navId" element={<ProjectManagement />} />
+            <Route path="/project/:projectId/:navId" element={<ProjectDetails />} />
             <Route path="/attendance/:navId" element={<Attendance />} />
             <Route path="/attendance/" element={<HrPersonalAttendance />} />
             <Route path="/upskill/:navId" element={<Upskill />} />
