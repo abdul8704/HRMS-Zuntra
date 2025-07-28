@@ -102,12 +102,21 @@ const fetchAllLeaveRequests = async () => {
 }
 
 //@desc onboarding courses by role id
-const getOnboardingCoursesById = async (roleid) => {
+const setOnboardingCourses = async (userId, roleid) => {
     try {
-        const roleDetail = await Role.findOne({ _id: roleid }).select("onboardingCourses");
-        return roleDetail?.onboardingCourses || [];
+        const roleDetail = await Role.findById(roleid).select("onboardingCourses");
+        const courses = roleDetail?.onboardingCourses || [];
+
+        if (courses.length === 0) return;
+
+        const user = await UserCourse.findByIdAndUpdate(
+            userId,
+            { assignedCourses: courses },
+            { new: true }
+        );
+        console.log(user);
     } catch (error) {
-        throw new ApiError(500, "failed to fetch role onboarding courses: " + error.message);
+        throw new ApiError(500, "Failed to assign onboarding courses: " + error.message);
     }
 };
 
@@ -120,5 +129,5 @@ module.exports = {
     getPendingLeaveRequests,
     superAdminProcessLeaveRequest,
     fetchAllLeaveRequests,
-    getOnboardingCoursesById,
+    setOnboardingCourses,
 };
