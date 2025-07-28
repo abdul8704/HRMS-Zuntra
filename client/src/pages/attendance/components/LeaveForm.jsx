@@ -193,13 +193,15 @@ export const LeaveForm = ({ handleClose }) => {
                     className="border border-gray-300 rounded-lg px-3 py-2 bg-white flex-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
-                  <button
-                    type="button"
-                    onClick={() => removeSpecificDateField(index)}
-                    className="text-red-500 hover:text-red-700 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors"
-                  >
-                    ✕
-                  </button>
+                  {index >= 2 && (
+                    <button
+                      type="button"
+                      onClick={() => removeSpecificDateField(index)}
+                      className="text-red-500 hover:text-red-700 text-lg font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 transition-colors"
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
               ))}
               <button

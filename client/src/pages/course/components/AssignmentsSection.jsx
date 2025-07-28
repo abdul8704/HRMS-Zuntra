@@ -1,214 +1,185 @@
-import React, { useState, useEffect } from 'react';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus, X, Check, AlertCircle } from 'lucide-react';
 
-export const AssignmentsSection = ({ quiz, markProgress }) => {
-  const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [submitted, setSubmitted] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-
-  // Reset state when a new quiz/submodule is loaded
-  useEffect(() => {
-    setSelectedAnswers({});
-    setSubmitted(false);
-    setShowResults(false);
-  }, [quiz]);
-
-  const handleAnswerChange = (questionIndex, answer) => {
-    setSelectedAnswers(prev => ({
-      ...prev,
-      [questionIndex]: answer
-    }));
-  };
-
-  const handleSubmit = () => {
-    setSubmitted(true);
-    setShowResults(true);
-    const score = calculateScore();
-    if (score === quiz.questions.length && typeof markProgress === 'function') {
-      markProgress();
+export default function AssignmentCard() {
+  const [assignments, setAssignments] = useState([
+    {
+      id: 1,
+      question: "What is the capital of France?",
+      options: ["London", "Berlin", "Paris", "Madrid"],
+      selectedAnswer: null,
+      correctAnswer: 2
     }
+  ]);
+
+  const [nextId, setNextId] = useState(2);
+
+  const addNewQuestion = () => {
+    const newQuestion = {
+      id: nextId,
+      question: "Enter your question here...",
+      options: ["Option A", "Option B", "Option C", "Option D"],
+      selectedAnswer: null,
+      correctAnswer: 0
+    };
+    setAssignments([...assignments, newQuestion]);
+    setNextId(nextId + 1);
   };
 
-  const calculateScore = () => {
-    let correct = 0;
-    quiz.questions.forEach((question, index) => {
-      if (selectedAnswers[index] === question.correctAnswer) {
-        correct++;
-      }
-    });
-    return correct;
+  const removeAssignment = (id) => {
+    setAssignments(assignments.filter(assignment => assignment.id !== id));
   };
 
-  const isAnswerCorrect = (questionIndex, answer) => {
-    return answer === quiz.questions[questionIndex].correctAnswer;
+  const selectAnswer = (assignmentId, optionIndex) => {
+    setAssignments(assignments.map(assignment => 
+      assignment.id === assignmentId 
+        ? { ...assignment, selectedAnswer: optionIndex }
+        : assignment
+    ));
   };
 
-  const allQuestionsAnswered = quiz.questions.every((_, index) =>
-    selectedAnswers[index] !== undefined
-  );
+  const updateQuestion = (assignmentId, newQuestion) => {
+    setAssignments(assignments.map(assignment => 
+      assignment.id === assignmentId 
+        ? { ...assignment, question: newQuestion }
+        : assignment
+    ));
+  };
+
+  const updateOption = (assignmentId, optionIndex, newOption) => {
+    setAssignments(assignments.map(assignment => 
+      assignment.id === assignmentId 
+        ? { 
+            ...assignment, 
+            options: assignment.options.map((opt, idx) => 
+              idx === optionIndex ? newOption : opt
+            )
+          }
+        : assignment
+    ));
+  };
+
+  const canAddNextQuestion = () => {
+    if (assignments.length === 0) return true;
+    const lastAssignment = assignments[assignments.length - 1];
+    return lastAssignment.selectedAnswer !== null;
+  };
+
+  const getValidationMessage = () => {
+    if (assignments.length === 0) return null;
+    const lastAssignment = assignments[assignments.length - 1];
+    if (lastAssignment.selectedAnswer === null) {
+      return "Please select an answer to add the next question";
+    }
+    return null;
+  };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-sm">
-      <div className="flex items-center mb-6">
-        <div className="w-1 h-6 bg-gradient-to-b from-teal-500 to-teal-600 mr-3 rounded-full" />
-        <h4 className="text-xl font-bold text-gray-800">Assignments</h4>
-        <div className="ml-auto text-sm text-gray-500">
-          {quiz.questions.length} question{quiz.questions.length !== 1 ? 's' : ''}
+    <div className="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen">
+      <div className="mb-6 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Assignment Manager</h1>
+          <p className="text-gray-600">Create and manage assignment questions with validation</p>
         </div>
+        
+        {/* Small Add Question Button in Right Corner */}
+        <button
+          onClick={addNewQuestion}
+          disabled={!canAddNextQuestion()}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            canAddNextQuestion()
+              ? 'bg-blue-500 hover:bg-blue-600 text-white shadow-sm hover:shadow-md'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          }`}
+          title={canAddNextQuestion() ? "Add new question" : "Select an answer first"}
+        >
+          <Plus size={16} />
+          <span>Add Question</span>
+        </button>
       </div>
 
-      {showResults && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-teal-50 to-blue-50 rounded-lg border border-teal-200">
-          <div className="flex items-center">
-            <CheckCircle className="w-6 h-6 text-teal-600 mr-2" />
-            <span className="text-lg font-semibold text-teal-800">
-              Score: {calculateScore()}/{quiz.questions.length}
-            </span>
-            <span className="ml-2 text-sm text-teal-600">
-              ({Math.round((calculateScore() / quiz.questions.length) * 100)}%)
-            </span>
-          </div>
-        </div>
-      )}
-
       <div className="space-y-6">
-        {quiz.questions.map((question, questionIndex) => {
-          if (!question.questionText || !question.options || !Array.isArray(question.options)) {
-            return (
-              <div key={questionIndex} className="p-4 bg-red-50 rounded-lg border border-red-200">
-                <div className="flex items-center text-red-700">
-                  <AlertCircle className="w-5 h-5 mr-2" />
-                  <span className="text-sm">
-                    Question {questionIndex + 1} has invalid structure
+        {assignments.map((assignment, index) => (
+          <div key={assignment.id} className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center space-x-2">
+                <span className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-semibold">
+                  {index + 1}
+                </span>
+                <h2 className="text-lg font-semibold text-gray-800">Question {index + 1}</h2>
+              </div>
+              {assignments.length > 1 && (
+                <button
+                  onClick={() => removeAssignment(assignment.id)}
+                  className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 transition-colors"
+                  title="Remove assignment"
+                >
+                  <X size={20} />
+                </button>
+              )}
+            </div>
+
+            <div className="mb-4">
+              <textarea
+                value={assignment.question}
+                onChange={(e) => updateQuestion(assignment.id, e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                rows="2"
+                placeholder="Enter your question here..."
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Select the correct answer:
+              </label>
+              {assignment.options.map((option, optionIndex) => (
+                <div key={optionIndex} className="flex items-center space-x-3">
+                  <button
+                    onClick={() => selectAnswer(assignment.id, optionIndex)}
+                    className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                      assignment.selectedAnswer === optionIndex
+                        ? 'bg-blue-500 border-blue-500 text-white'
+                        : 'border-gray-300 hover:border-blue-400'
+                    }`}
+                  >
+                    {assignment.selectedAnswer === optionIndex && <Check size={14} />}
+                  </button>
+                  <input
+                    type="text"
+                    value={option}
+                    onChange={(e) => updateOption(assignment.id, optionIndex, e.target.value)}
+                    className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder={`Option ${String.fromCharCode(65 + optionIndex)}`}
+                  />
+                  <span className="text-sm text-gray-500 w-8">
+                    {String.fromCharCode(65 + optionIndex)}
                   </span>
                 </div>
-              </div>
-            );
-          }
-
-          if (question.options.length === 0) {
-            return (
-              <div key={questionIndex} className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                <p className="font-medium text-gray-800 mb-2">
-                  {questionIndex + 1}. {question.questionText}
-                </p>
-                <div className="flex items-center text-yellow-700">
-                  <AlertCircle className="w-5 h-5 mr-2" />
-                  <span className="text-sm">No options available for this question</span>
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <div
-              key={questionIndex}
-              className={`p-5 rounded-lg border-2 transition-all duration-200 ${
-                showResults
-                  ? selectedAnswers[questionIndex] === question.correctAnswer
-                    ? 'bg-green-50 border-green-200'
-                    : 'bg-red-50 border-red-200'
-                  : 'bg-gray-50 border-gray-200 hover:border-teal-300'
-              }`}
-            >
-              <p className="font-semibold text-gray-800 mb-4 text-lg">
-                {questionIndex + 1}. {question.questionText}
-              </p>
-
-              <div className="space-y-3">
-                {question.options.map((option, optionIndex) => {
-                  const isSelected = selectedAnswers[questionIndex] === option;
-                  const isCorrect = showResults && isAnswerCorrect(questionIndex, option);
-                  const isWrong = showResults && isSelected && !isCorrect;
-
-                  return (
-                    <label
-                      key={optionIndex}
-                      className={`flex items-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                        submitted ? 'cursor-not-allowed' : 'hover:bg-white hover:shadow-sm'
-                      } ${
-                        isCorrect
-                          ? 'bg-green-100 border-green-300'
-                          : isWrong
-                          ? 'bg-red-100 border-red-300'
-                          : isSelected
-                          ? 'bg-teal-100 border-teal-300'
-                          : 'bg-white border-gray-200'
-                      } border`}
-                    >
-                      <input
-                        type="radio"
-                        name={`question_${questionIndex}`}
-                        value={option}
-                        checked={isSelected}
-                        onChange={(e) => handleAnswerChange(questionIndex, e.target.value)}
-                        disabled={submitted}
-                        className="mr-3 text-teal-600 focus:ring-teal-500 disabled:opacity-50"
-                      />
-                      <span
-                        className={`text-sm ${
-                          isCorrect
-                            ? 'text-green-800 font-medium'
-                            : isWrong
-                            ? 'text-red-800'
-                            : 'text-gray-700'
-                        }`}
-                      >
-                        {option}
-                      </span>
-                      {showResults && isCorrect && (
-                        <CheckCircle className="w-4 h-4 text-green-600 ml-auto" />
-                      )}
-                    </label>
-                  );
-                })}
-              </div>
-
-              {showResults &&
-                selectedAnswers[questionIndex] !== question.correctAnswer && (
-                  <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                    <span className="text-sm text-green-800">
-                      <strong>Correct answer:</strong> {question.correctAnswer}
-                    </span>
-                  </div>
-                )}
+              ))}
             </div>
-          );
-        })}
 
-        {!submitted && (
-          <div className="flex justify-center pt-4">
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={!allQuestionsAnswered}
-              className={`px-8 py-3 rounded-full font-medium transition-all duration-300 ${
-                allQuestionsAnswered
-                  ? 'bg-teal-600 text-white hover:bg-teal-700 hover:shadow-lg transform hover:scale-105'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              Submit Assignment
-            </button>
+            {assignment.selectedAnswer !== null && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-2">
+                <Check className="text-green-600" size={16} />
+                <span className="text-green-700 text-sm">
+                  Answer selected: Option {String.fromCharCode(65 + assignment.selectedAnswer)}
+                </span>
+              </div>
+            )}
           </div>
-        )}
+        ))}
 
-        {submitted && (
-          <div className="flex justify-center pt-4">
-            <button
-              type="button"
-              onClick={() => {
-                setSubmitted(false);
-                setShowResults(false);
-                setSelectedAnswers({});
-              }}
-              className="px-8 py-3 rounded-full font-medium bg-gray-600 text-white hover:bg-gray-700 transition-all duration-300"
-            >
-              Try Again
-            </button>
+        {/* Validation Message */}
+        {!canAddNextQuestion() && (
+          <div className="flex justify-center">
+            <div className="flex items-center space-x-2 text-amber-600 bg-amber-50 px-4 py-2 rounded-lg border border-amber-200">
+              <AlertCircle size={16} />
+              <span className="text-sm">{getValidationMessage()}</span>
+            </div>
           </div>
         )}
       </div>
     </div>
   );
-};
+}
