@@ -26,6 +26,7 @@ import './index.css'
 import { ShiftDetails } from './pages/employee/components/ShiftDetails';
 import { Unauthorized } from './pages/Unauthorized';
 import { RemoveEmployeePopup } from './pages/employee/components/RemoveEmployeePopup';
+import { NewUser } from './pages/dashboard/NewUser';
 
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
             <Route path="/remove-emp-request" element={<RemoveEmployeePopup />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="/newdashboard" element={<NewUser />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

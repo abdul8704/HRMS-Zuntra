@@ -15,10 +15,10 @@ export const NewUser = () => {
       </div>
 
       <div className="flex flex-row min-h-screen flex-wrap md:flex-nowrap">
-        {/* BLURRED SIDEBAR */}
-        <div className={`w-64 bg-[#aabfb9] pt-24 px-4 flex flex-col gap-4 
+        {/* BLURRED SIDEBAR - Hidden on mobile and spaced below logo */}
+        <div className={`w-64 bg-[#aabfb9] pt-40 px-4 gap-4 
                         ${!hasAccess ? 'blur-sm pointer-events-none select-none' : ''} 
-                        md:w-64 w-full md:flex-col flex-row overflow-x-auto`}>
+                        hidden md:flex md:flex-col md:w-64 overflow-x-auto`}>
           {Array.from({ length: 7 }).map((_, i) => (
             <div key={i} className="h-12 bg-[#d3d3d3] rounded-md flex-shrink-0 w-full md:w-auto" />
           ))}
@@ -51,8 +51,10 @@ export const NewUser = () => {
       {/* Overlay if no access */}
       {!hasAccess && (
         <div className="absolute top-1/2 left-1/2 z-[1000] -translate-x-1/2 -translate-y-1/2 text-center p-8 rounded-xl bg-transparent">
-          <h1 className="text-[2.4rem] font-bold text-[#111011] mb-4">You’re in! Well… almost.</h1>
-          <h2 className="text-[1.4rem] font-medium text-[#616161] leading-relaxed">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#111011] mb-4 text-balance">
+            You’re in! Well… almost.
+          </h1>
+          <h2 className="text-base sm:text-lg md:text-xl font-medium text-[#616161] leading-relaxed text-balance">
             Please wait until HR grants access. HR is still deciding whether to open the door or pretend they’re not home.
           </h2>
         </div>
