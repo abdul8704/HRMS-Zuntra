@@ -13,7 +13,6 @@ import { ScheduleForm } from './components/ScheduleForm';
 import { SampleCard } from './components/samplecard';
 import { LeaveFormHistory } from './components/LeaveFormHistory';
 
-
 export const Attendance = () => {
     const { navId } = useParams();
 
@@ -26,7 +25,7 @@ export const Attendance = () => {
                 {/* ----- 'me' tab ----- */}
                 {navId === 'me' && (
                     <>
-                        {/* Desktop/Laptop View (md and up) */}
+                        {/* Desktop/Laptop View */}
                         <div className="hidden md:grid flex-1 bg-[#FFFFFF] grid-cols-8 grid-rows-8 gap-[1rem] overflow-hidden">
                             <div className="row-start-1 col-start-1 col-span-2 row-span-1 rounded-lg">
                                 <TimeCard state="in" time="09:20" showLabel={false} color={true} />
@@ -51,7 +50,7 @@ export const Attendance = () => {
                             </div>
                         </div>
 
-                        {/* Mobile View (below md) */}
+                        {/* Mobile View */}
                         <div className="grid md:hidden gap-4">
                             <TimeCard state="in" time="09:20" showLabel={false} color={true} />
                             <TimeCard state="out" time="09:20" showLabel={false} color={true} />
@@ -66,27 +65,20 @@ export const Attendance = () => {
 
                 {/* ----- 'apply' tab ----- */}
                 {navId === 'apply' && (
-                    <div className="flex flex-col lg:flex-row w-full h-full gap-4 overflow-auto">
-                        <div className="w-full lg:w-1/2">
-                            <AttendanceCard />
+                    <div className="flex flex-col w-full md:flex-row h-full overflow-hidden gap-[1rem]">
+                        <div className="flex-1 h-full">
+                            <LeaveFormHistory />
                         </div>
-                        <div className="w-full lg:w-1/2 flex flex-col gap-4">
-                            <div className="flex-1 overflow-hidden">
-                                <LeaveFormHistory />
+                        <div className="flex-1 h-full">
+                            <LeaveForm />
+                        </div>
                     </div>
-                    )}
-                    {navId==="inbox" && (
+                )}
+
+                {/* ----- 'inbox' tab ----- */}
+                {navId === 'inbox' && (
+                    <div className="w-full h-full">
                         <LeaveFormHistory />
-                    )}
-                    {navId === "apply" && (
-                        <div className="flex flex-col w-full md:flex-row h-full overflow-hidden gap-[1rem]">
-                            <div className="flex-[1] h-full">
-                                <LeaveFormHistory />
-                            </div>
-                            <div className="flex-1 overflow-hidden">
-                                <LeaveForm />
-                            </div>
-                        </div>
                     </div>
                 )}
 
@@ -110,29 +102,3 @@ export const Attendance = () => {
         </div>
     );
 };
-                            <div className="flex-[1] h-full">
-                                <LeaveForm />
-                            </div>
-
-                        </div>
-                    )}
-                    {navId === "schedule" && (
-                        <div className="flex flex-row w-full h-full overflow-hidden gap-[1rem]">
-                            <div className='flex-1'>
-                                <AttendanceCalendar />
-                            </div>
-                            <div className='flex-1 flex flex-col gap-[1rem]'>
-                                <div className='flex-1'>
-                                    <SampleCard />
-                                </div>
-                                <div className='flex-1'>
-                                    <ScheduleForm />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-        </>
-    )
-}
