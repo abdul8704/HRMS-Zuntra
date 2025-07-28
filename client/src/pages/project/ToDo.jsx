@@ -9,7 +9,7 @@ import { Sidebar } from '../../components/Sidebar'; // ✅ Adjust path if needed
 
 export const ToDo = () => {
   const [activeTab, setActiveTab] = useState('To-do');
-
+ 
   const TaskCard = ({ task, color }) => (
     <div className={`${color} rounded-2xl p-6 mb-6 shadow-sm border border-[#e2e8f0] min-h-[220px]`}>
       <div className="flex justify-between items-start mb-4">
