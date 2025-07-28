@@ -92,9 +92,10 @@ export const LeaveForm = ({ handleClose }) => {
   };
 
   return (
+    <>
     <div className="w-full h-full flex flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto px-4 py-4">
-        <div className="flex flex-col gap-4 text-gray-700 max-w-2xl mx-auto">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-gray-700 max-w-2xl mx-auto">
           <h1 className="text-xl font-semibold text-gray-800">Apply for Leave</h1>
 
           {/* Leave Category */}
@@ -233,18 +234,25 @@ export const LeaveForm = ({ handleClose }) => {
             />
           </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-center mt-6 pb-4">
+          {/* Action Buttons */}
+          <div className="flex gap-4 justify-center mt-6 pb-4">
             <button
               type="button"
-              onClick={handleSubmit}
-              className="bg-blue-500 text-white px-8 py-2 rounded-lg hover:bg-blue-600 transition-colors w-full sm:w-auto font-medium"
+              onClick={handleCancel}
+              className="bg-gray-500 text-white px-8 py-2 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-8 py-2 rounded-lg hover:bg-blue-600 transition-colors font-medium"
             >
               Apply for Leave
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
+    </>
   );
 };
