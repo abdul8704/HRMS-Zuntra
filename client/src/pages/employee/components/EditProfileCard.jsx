@@ -12,11 +12,17 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     return `${year}-${month}-${day}`;
   };
 
+  // Initial Values
+  const initialDob = formatDateForInput(data.personalDetail?.DOB) || '';
+  const initialReligion = data.personalDetail?.religion || '';
+  const initialAddress = data.personalDetail?.Address || '';
+
+  // State
   const [profileImage, setProfileImage] = useState(null);
   const [profileImageEdited, setProfileImageEdited] = useState(false);
-  const [dob, setDob] = useState(formatDateForInput(data.personalDetail?.DOB) || '');
-  const [religion, setReligion] = useState(data.personalDetail?.religion || '');
-  const [address, setAddress] = useState(data.personalDetail?.Address || '');
+  const [dob, setDob] = useState(initialDob);
+  const [religion, setReligion] = useState(initialReligion);
+  const [address, setAddress] = useState(initialAddress);
   const [showReligionDropdown, setShowReligionDropdown] = useState(false);
 
   const religionInputRef = useRef(null);
@@ -24,7 +30,16 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
 
   const religions = ['Hindu', 'Muslim', 'Christian', 'Atheist', 'Other'];
 
-  const isFormValid = dob.trim() && religion.trim() && address.trim();
+  const isFormValid =
+    dob.trim() &&
+    religion.trim() &&
+    address.trim() &&
+    (
+      dob !== initialDob ||
+      religion !== initialReligion ||
+      address !== initialAddress ||
+      profileImageEdited
+    );
 
   const handleSubmit = async () => {
     if (!isFormValid) return;
@@ -32,24 +47,15 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     try {
       const userData = { dob, religion, address };
       await api.patch('/api/employee/updateprofile', userData);
-
-      // You can now check the flag:
       if (profileImageEdited) {
-        console.log('Image has been edited. Proceed to upload image API.');
-        // Example:
-        // const formData = new FormData();
-        // formData.append('image', profileImage);
-        // await api.post('/api/employee/uploadProfilePicture', formData);
+        const formData = new FormData();
+        formData.append("profilePicture", profileImage);
+        await api.post(`/auth/signup/uploadprofile/${data._id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
       }
-      // const formData = new FormData();
-      // formData.append("profilePicture", profileImage);
-      // const profilePic = await api.post(`/auth/signup/uploadprofile/${newUser.data.userId}`, formData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //     },
-      //   });
-
       alert('Profile updated successfully');
       onSave?.();
       onClose?.();
@@ -60,9 +66,9 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
   };
 
   const handleCancel = () => {
-    setDob('');
-    setReligion('');
-    setAddress('');
+    setDob(initialDob);
+    setReligion(initialReligion);
+    setAddress(initialAddress);
     setProfileImage(null);
     setProfileImageEdited(false);
     onClose?.();
