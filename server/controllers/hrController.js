@@ -23,7 +23,7 @@ const acceptUser = asyncHandler(async (req, res) => {
     await HrService.updateUserData(email, shiftId, campusId, roleId);
     await HrService.creatUserPersonal(userData._id, salary);
     await HrService.createUserCourse(userData._id); 
-    await HrService.getOnboardingCoursesById(roleId);
+    await HrService.setOnboardingCourses(userData._id, roleId);
 
     return res
         .status(201)

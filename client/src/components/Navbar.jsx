@@ -117,7 +117,7 @@ const courseManagementNavItems = [
   }
 ];
 
-const projectManagementNavItems = [
+const projectDetailsNavItems = [
   {
     label: 'Overview',
     icon: (
@@ -126,7 +126,6 @@ const projectManagementNavItems = [
       </svg>
     ),
     filter: false,
-    role: "hr",
     path: 'overview',
   },
   {
@@ -137,7 +136,6 @@ const projectManagementNavItems = [
       </svg>
     ),
     filter: true,
-    role: "hr",
     path: 'progress'
   },
   {
@@ -146,7 +144,6 @@ const projectManagementNavItems = [
       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M680-80q-83 0-141.5-58.5T480-280q0-83 58.5-141.5T680-480q83 0 141.5 58.5T880-280q0 83-58.5 141.5T680-80Zm67-105 28-28-75-75v-112h-40v128l87 87Zm-547 65q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h167q11-35 43-57.5t70-22.5q40 0 71.5 22.5T594-840h166q33 0 56.5 23.5T840-760v250q-18-13-38-22t-42-16v-212h-80v120H280v-120h-80v560h212q7 22 16 42t22 38H200Zm280-640q17 0 28.5-11.5T520-800q0-17-11.5-28.5T480-840q-17 0-28.5 11.5T440-800q0 17 11.5 28.5T480-760Z"/></svg>
     ),
     filter: true,
-    role: "hr",
     path: 'todo'
   },
   {
@@ -155,7 +152,6 @@ const projectManagementNavItems = [
       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-80 360-642l-88 402H80v-80h128l113-520h79l122 572 78-332h80l72 280h128v80H690l-48-188-82 348h-80Z"/></svg>
     ),
     filter: true,
-    role: "hr",
     path: 'review'
   },
   {
@@ -164,7 +160,6 @@ const projectManagementNavItems = [
      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z"/></svg>
     ),
     filter: true,
-    role: "hr",
     path: 'schedule',
   }
 ];
@@ -347,8 +342,8 @@ export const Navbar = ({
       const attendanceSegment = currentPath.split('/attendance/')[1]?.split('/')[0];
       updatedNavId = findOr404(attendanceSegment);
       if (!updatedNavId) return;
-    } else if (type === 'project') {
-      const projectSegment = currentPath.split('/project/')[1]?.split('/')[0];
+    } else if (type === 'projectDetails') {
+      const projectSegment = currentPath.split('/projects/')[1]?.split('/')[0];
       updatedNavId = navItems.find(item => item.path === projectSegment)?.path || navItems[0]?.path;
     } else if (type === 'companyDocuments') {
       const documentsSegment = currentPath.split('/documents/')[1]?.split('/')[0];
@@ -385,8 +380,8 @@ export const Navbar = ({
     navItems = employeeDetailsNavItems;
   } else if (type === 'courseManagement') {
     navItems = courseManagementNavItems;
-  } else if (type === 'project') {
-    navItems = projectManagementNavItems;
+  } else if (type === 'projectDetails') {
+    navItems = projectDetailsNavItems;
   } else if (type === 'courseManagement') {
     navItems = courseManagementNavItems;
   } else if (type === 'attendance') {
@@ -428,6 +423,8 @@ export const Navbar = ({
       finalPath = `/upskill/${path}`;
     } else if (type === 'companyDocuments') {
       finalPath = `/documents/${path}`;
+    } else if (type === 'projectDetails') {
+      finalPath = `/projects/${path}`;
     }
 
     navigate(finalPath);
