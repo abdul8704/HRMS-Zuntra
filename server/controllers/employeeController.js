@@ -124,20 +124,6 @@ const handleLogout = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, message: "Logout time recorded" });
 });
 
-const getAttendanceData = asyncHandler(async (req, res) => {
-    const { userid, startDate, endDate } = req.query;
-
-    if (!userid || !startDate || !endDate)
-        throw new ApiError(400, "Start date and end date not provided");
-
-    const attendanceData = await attendanceService.getAttendanceDataByUserId(
-        userid,
-        startDate,
-        endDate
-    );
-    res.status(200).json({ success: true, attendanceData });
-});
-
 const applyForLeave = asyncHandler(async (req, res) => {
     const { userid } = req.user;
     const { leaveCategory, dates, reason } = req.body;
@@ -211,10 +197,50 @@ const deleteLeaveRequest = asyncHandler(async (req, res) => {
 
     await attendanceService.deleteLeaveRequest(leaveId, userid);
 
-    res.status(200).json({ success: true, message: "successfullt deleted" });
+    res.status(200).json({ success: true, message: "successfully deleted" });
 });
 
+const getCalendarData = asyncHandler(async (req, res) => {
+    const { userid, startDate, endDate } = req.query;
 
+    if (!userid || !startDate || !endDate)
+        throw new ApiError(400, "Start date and end date not provided");
+
+    const calendarData = await attendanceService.getCalendarDataOnly(
+        userid,
+        startDate,
+        endDate
+    );
+    res.status(200).json({ success: true, calendarData });
+});
+
+const getWorkBreakComposition = asyncHandler(async (req, res) => {
+    const { userid, startDate, endDate } = req.query;
+
+    if (!userid || !startDate || !endDate)
+        throw new ApiError(400, "Start date and end date not provided");
+
+    const workBreakComposition = await attendanceService.getWorkBreakCompositionOnly(
+        userid,
+        startDate,
+        endDate
+    );
+    res.status(200).json({ success: true, workBreakComposition });
+});
+
+const getAttendanceData = asyncHandler(async (req, res) => {
+    const { userid, startDate, endDate } = req.query;
+
+    if (!userid || !startDate || !endDate)
+        throw new ApiError(400, "Start date and end date not provided");
+
+    const attendanceData = await attendanceService.getAttendanceDataOnly(
+        userid,
+        startDate,
+        endDate
+    );
+    res.status(200).json({ success: true, attendanceData });
+});
 
 module.exports = {
     handleLogout,
@@ -229,4 +255,7 @@ module.exports = {
     processLeaveRequest,
     deleteLeaveRequest,
     editLeaveRequest,
+    getCalendarData,
+    getWorkBreakComposition,
+    getAttendanceData,
 };
