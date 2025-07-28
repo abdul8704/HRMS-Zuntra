@@ -13,6 +13,7 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     return `${year}-${month}-${day}`;
   };
 
+  const [profileImage, setProfileImage] = useState(null);
   const [dob, setDob] = useState(formatDateForInput(data.personalDetail?.DOB) || '');
   const [religion, setReligion] = useState(data.personalDetail?.religion || '');
   const [address, setAddress] = useState(data.personalDetail?.Address || '');
@@ -27,8 +28,8 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     if (!isFormValid) return;
 
     try {
-      const userData = {dob,religion,address};
-      const profileUpdate = await api.patch('/api/employee/updateprofile',userData);
+      const userData = { dob, religion, address };
+      const profileUpdate = await api.patch('/api/employee/updateprofile', userData);
       alert('Profile updated successfully');
       onSave?.();
       onClose?.();
@@ -44,6 +45,18 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
     setAddress('');
     onClose?.();
   };
+
+  const handleProfileImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+    }
+  };
+
+  const handleProfilePicture = async () => {
+
+  }
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -61,12 +74,21 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
         {/* Left: Profile Summary */}
         <div className="w-2/5 bg-gradient-to-br from-[#BBD3CC] to-[#A6C4BA] p-8 flex flex-col justify-center items-center text-center">
           <div className="relative mb-6">
-            <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+            <div className="w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg relative">
               <img
                 src={`${BASE_URL}/uploads/profilePictures/${data._id}.png`}
                 alt="Profile"
                 className="w-full h-full object-cover rounded-full"
               />
+              <button
+                // onClick={handleEditPicture} // define this function as needed
+                type="file"
+                accept="image/*"
+                className="absolute bottom-1 right-1 w-8 h-8 bg-white rounded-full shadow-md hover:bg-gray-100 flex items-center justify-center transition"
+                title="Edit Profile Picture"
+              >
+                ✎ 
+              </button>
             </div>
           </div>
           <h3 className="text-2xl font-bold text-gray-800 mb-2">{data.username || 'No name'}</h3>

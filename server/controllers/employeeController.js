@@ -1,48 +1,8 @@
 const employeeService = require("../services/employeeService");
+const attendanceService = require("../services/attendanceService");
 const roleService = require("../services/rolesService");
 const ApiError = require("../errors/ApiError");
 const asyncHandler = require("express-async-handler");
-
-const handleLogout = asyncHandler(async (req, res) => {
-    const { userid } = req.user;
-    const { logoutTime } = req.body;
-
-    if (!logoutTime) throw new ApiError(400, "Logout time not provided");
-
-    res.clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-    });
-
-    res.clearCookie("accessToken", {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-    });
-
-    const logout = await employeeService.markEndOfSession(userid, logoutTime);
-
-    if (logout.success !== true)
-        return res
-            .status(400)
-            .json({ success: false, message: logout.message });
-    res.status(200).json({ success: true, message: "Logout time recorded" });
-});
-
-const getAttendanceData = asyncHandler(async (req, res) => {
-    const { userid, startDate, endDate } = req.query;
-
-    if (!userid || !startDate || !endDate)
-        throw new ApiError(400, "Start date and end date not provided");
-
-    const attendanceData = await employeeService.getAttendanceDataByUserId(
-        userid,
-        startDate,
-        endDate
-    );
-    res.status(200).json({ success: true, attendanceData });
-});
 
 const fetchAllEmployees = asyncHandler(async (req, res) => {
     const employees = await employeeService.getAllEmployees();
@@ -102,30 +62,10 @@ const getDetailsOfaEmployee = asyncHandler(async (req, res) => {
     });
 });
 
-const applyForLeave = asyncHandler(async (req, res) => {
-    const { userid } = req.user;
-    const { leaveCategory, dates, reason } = req.body;
-
-    if (!leaveCategory || !dates || !reason) {
-        throw new ApiError(400, "please send all data reqd to apply leave");
-    }
-
-    const applyLeave = await employeeService.applyLeave(
-        userid,
-        leaveCategory.split(" ")[0],
-        dates,
-        reason
-    );
-
-    return res
-        .status(201)
-        .json({ success: true, message: "Request sent successfully" });
-});
-
 const getEmployeeRequests = asyncHandler(async (req, res) => {
     const { userid } = req.user;
 
-    const applicationData = await employeeService.getLeaveRequests(userid);
+    const applicationData = await attendanceService.getLeaveRequests(userid);
     return res
         .status(200)
         .json({ success: true, leaveRequests: applicationData });
@@ -157,6 +97,67 @@ const updateEmpDataController = asyncHandler(async (req, res) => {
     });
 });
 
+const handleLogout = asyncHandler(async (req, res) => {
+    const { userid } = req.user;
+    const { logoutTime } = req.body;
+
+    if (!logoutTime) throw new ApiError(400, "Logout time not provided");
+
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+    });
+
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+    });
+
+    const logout = await attendanceService.markEndOfSession(userid, logoutTime);
+
+    if (logout.success !== true)
+        return res
+            .status(400)
+            .json({ success: false, message: logout.message });
+    res.status(200).json({ success: true, message: "Logout time recorded" });
+});
+
+const getAttendanceData = asyncHandler(async (req, res) => {
+    const { userid, startDate, endDate } = req.query;
+
+    if (!userid || !startDate || !endDate)
+        throw new ApiError(400, "Start date and end date not provided");
+
+    const attendanceData = await attendanceService.getAttendanceDataByUserId(
+        userid,
+        startDate,
+        endDate
+    );
+    res.status(200).json({ success: true, attendanceData });
+});
+
+const applyForLeave = asyncHandler(async (req, res) => {
+    const { userid } = req.user;
+    const { leaveCategory, dates, reason } = req.body;
+
+    if (!leaveCategory || !dates || !reason) {
+        throw new ApiError(400, "please send all data reqd to apply leave");
+    }
+
+    await attendanceService.applyLeave(
+        userid,
+        leaveCategory.split(" ")[0],
+        dates,
+        reason
+    );
+
+    return res
+        .status(201)
+        .json({ success: true, message: "Request sent successfully" });
+});
+
 const processLeaveRequest = asyncHandler(async (req, res) => {
     // TODO: logic to check if user is recpient's TL
     const { leaveId, decision, comment } = req.body;
@@ -165,7 +166,7 @@ const processLeaveRequest = asyncHandler(async (req, res) => {
     if (!leaveId || !decision)
         throw new ApiError(400, "Incomplete data to process leave request");
 
-    const updatedLeave = await employeeService.adminProcessLeaveRequest(
+    const updatedLeave = await attendanceService.adminProcessLeaveRequest(
         userid,
         leaveId,
         decision,
@@ -179,11 +180,14 @@ const editLeaveRequest = asyncHandler(async (req, res) => {
     const { userid } = req.user;
     const { leaveId, leaveCategory, dates, reason } = req.body;
 
-    if( !leaveId || !leaveCategory || !dates || !reason ){
-        throw new ApiError(400, "Incomplete data given to update leave request");
+    if (!leaveId || !leaveCategory || !dates || !reason) {
+        throw new ApiError(
+            400,
+            "Incomplete data given to update leave request"
+        );
     }
 
-    await employeeService.editLeaveRequest(
+    await attendanceService.editLeaveRequest(
         leaveId,
         userid,
         leaveCategory,
@@ -191,8 +195,8 @@ const editLeaveRequest = asyncHandler(async (req, res) => {
         reason
     );
 
-    res.status(200).json({ success: true, message: "successfullt updated"})
-})
+    res.status(200).json({ success: true, message: "successfullt updated" });
+});
 
 const deleteLeaveRequest = asyncHandler(async (req, res) => {
     const { userid } = req.user;
@@ -205,10 +209,12 @@ const deleteLeaveRequest = asyncHandler(async (req, res) => {
         );
     }
 
-    await employeeService.deleteLeaveRequest(leaveId, userid);
+    await attendanceService.deleteLeaveRequest(leaveId, userid);
 
     res.status(200).json({ success: true, message: "successfullt deleted" });
-})
+});
+
+
 
 module.exports = {
     handleLogout,

@@ -19,7 +19,32 @@ const addNewBranch = asyncHandler(async (req, res) => {
     res.status(201).json({ success: true, branch: newBranch });
 });
 
+const editCampusLocation = asyncHandler(async (req, res) => {
+    const { oldCampusId, campusName, embedURL, radius } = req.body;
+
+    if (!campusName && !embedURL && !radius) {
+        throw new ApiError(400, "Please provide at least one field to update");
+    }
+
+    const updatedCampus = await GeoService.editCampusLocation(oldCampusId, {
+        campusName,
+        embedURL,
+        radius
+    });
+
+    res.status(200).json({ success: true, campus: updatedCampus });
+});
+
+const deleteCampusLocation = asyncHandler(async (req, res) => {
+    const { oldCampusId, newCampusId } = req.body;
+
+    await GeoService.deleteCampusLocation(oldCampusId, newCampusId);
+    res.status(204).send();
+});
+
 module.exports = {
     getAllBranches,
     addNewBranch,
+    editCampusLocation,
+    deleteCampusLocation
 };
