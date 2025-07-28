@@ -10,7 +10,7 @@ import { AttendanceCalendar } from './components/AttendanceCalendar';
 import { AttendanceCard } from './components/AttendanceCard';
 import { LeaveForm } from './components/LeaveForm';
 import { ScheduleForm } from './components/ScheduleForm';
-import { SampleCard } from './components/samplecard';
+import { SampleCard } from './components/SampleCard';
 import { LeaveFormHistory } from './components/LeaveFormHistory';
 
 export const Attendance = () => {
@@ -65,34 +65,39 @@ export const Attendance = () => {
 
                 {/* ----- 'apply' tab ----- */}
                 {navId === 'apply' && (
-                    <div className="flex flex-col w-full md:flex-row h-full overflow-hidden gap-[1rem]">
+                    <div className="flex flex-col md:flex-row w-full h-full overflow-hidden gap-[1rem]">
                         <div className="flex-1 h-full">
-                            <LeaveFormHistory />
+                            <AttendanceCard />
                         </div>
-                        <div className="flex-1 h-full">
-                            <LeaveForm />
+                        <div className="flex-1 h-full flex flex-col gap-4">
+                            <div className="flex-1">
+                                <LeaveFormHistory />
+                            </div>
+                            <div className="flex-1">
+                                <LeaveForm />
+                            </div>
                         </div>
                     </div>
                 )}
 
                 {/* ----- 'inbox' tab ----- */}
                 {navId === 'inbox' && (
-                    <div className="w-full h-full">
+                    <div className="flex-1">
                         <LeaveFormHistory />
                     </div>
                 )}
 
                 {/* ----- 'schedule' tab ----- */}
                 {navId === 'schedule' && (
-                    <div className="flex flex-col lg:flex-row w-full h-full gap-4 overflow-auto">
-                        <div className="w-full lg:w-1/2">
+                    <div className="flex flex-col md:flex-row w-full h-full overflow-hidden gap-[1rem]">
+                        <div className='flex-1'>
                             <AttendanceCalendar />
                         </div>
-                        <div className="w-full lg:w-1/2 flex flex-col gap-4">
-                            <div className="w-full">
+                        <div className='flex-1 flex flex-col gap-[1rem]'>
+                            <div className='flex-1'>
                                 <SampleCard />
                             </div>
-                            <div className="w-full">
+                            <div className='flex-1'>
                                 <ScheduleForm />
                             </div>
                         </div>
