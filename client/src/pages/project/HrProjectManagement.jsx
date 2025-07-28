@@ -135,7 +135,7 @@ export const HrProjectManagement = () => {
                     }}
                   />
                 ))
-              )}
+              )}.
             </div>
           )}
         </div>

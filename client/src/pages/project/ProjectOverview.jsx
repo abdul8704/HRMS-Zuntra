@@ -18,7 +18,7 @@ export const ProjectOverview = () => {
         <div className="flex w-screen h-screen">
             <Sidebar />
             <div className="flex gap-[1rem] flex-col flex-1 p-[1rem] h-screen">
-                {/* <Navbar type="employeeManagement" /> */}
+                <Navbar type="project" />
 
                 <div className="flex-1 bg-[#FFFFFF] grid grid-cols-8 grid-rows-8 gap-[1rem] overflow-hidden">
                     {/* 1. HR Management */}
