@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const AssignmentModuleForm = () => {
+ export const AssignmentModule = () => {
   const [questions, setQuestions] = useState([
     {
       questionText: "",
@@ -148,4 +148,4 @@ const AssignmentModuleForm = () => {
   );
 };
 
-export default AssignmentModuleForm;
+export default  AssignmentModule;

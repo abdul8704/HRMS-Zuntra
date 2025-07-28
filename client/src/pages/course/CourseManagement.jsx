@@ -6,10 +6,10 @@ import { CourseCard } from "./components/CourseCard";
 import AddCourse from "./components/AddCourse";
 import Module from "./components/Module";
 import SubModule from "./components/SubModule";
-import AssignmentModule from "./components/AssignmentModule";
 import { Loading } from "../utils/Loading";
 import api from "../../api/axios";
 import { AddCourseMod } from "./components/AddCourseMod";
+import {AddCourseSubModule} from "./components/AddCourseSubModule"
 
 
 export const CourseManagement = () => {
@@ -478,6 +478,7 @@ export const CourseManagement = () => {
                 submitted={submitted}
               /> */}
               <AddCourseMod />
+              <AddCourseSubModule/>
 
               {/* Assignment Dropdown */}
               {/* <AssignmentModule
