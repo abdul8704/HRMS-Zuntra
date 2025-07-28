@@ -4,10 +4,10 @@ export const AttendanceCalendar = () => {
   const [selectedYear, setSelectedYear] = useState(2025);
   const [selectedMonth, setSelectedMonth] = useState(2); // February
   const [showSidebar, setShowSidebar] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const sidebarRef = useRef();
 
-  // Detect clicks outside sidebar
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
@@ -35,6 +35,7 @@ export const AttendanceCalendar = () => {
   ];
 
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
   const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
   const firstDay = getFirstDayOfMonth(selectedYear, selectedMonth);
 
@@ -44,20 +45,36 @@ export const AttendanceCalendar = () => {
 
   const handleMonthClick = (index) => {
     setSelectedMonth(index + 1);
+    setSelectedDate(null);
     setShowSidebar(false);
   };
 
+  const today = new Date();
+  const isToday = (day) =>
+    day === today.getDate() &&
+    selectedMonth === today.getMonth() + 1 &&
+    selectedYear === today.getFullYear();
+
+  const isFutureDate = (day) => {
+    if (!day) return false;
+    const currentDate = new Date(selectedYear, selectedMonth - 1, day);
+    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    return currentDate > todayDate;
+  };
+
+  const isSelected = (day) =>
+    selectedDate &&
+    selectedDate.year === selectedYear &&
+    selectedDate.month === selectedMonth &&
+    selectedDate.day === day;
+
   return (
     <div className="relative w-full h-full flex flex-col bg-white border-2 rounded-lg overflow-hidden">
-
       {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`
-          absolute inset-y-0 left-0 bg-white z-30 shadow-lg w-64 max-w-full transition-transform duration-300
-          flex flex-col p-4
-          ${showSidebar ? 'translate-x-0' : '-translate-x-full'}
-        `}
+        className={`absolute inset-y-0 left-0 bg-white z-30 shadow-lg w-64 max-w-full transition-transform duration-300
+          flex flex-col p-4 ${showSidebar ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {/* Year Navigation */}
         <div className="flex items-center justify-between mb-4">
@@ -85,7 +102,6 @@ export const AttendanceCalendar = () => {
 
       {/* Header */}
       <div className="relative flex items-center p-[1rem] flex-shrink-0">
-        {/* Hamburger Icon */}
         <div className="flex items-center gap-4">
           <button
             onClick={() => setShowSidebar(!showSidebar)}
@@ -99,7 +115,6 @@ export const AttendanceCalendar = () => {
           </button>
         </div>
 
-        {/* Centered Month-Year */}
         <div className="absolute left-1/2 transform -translate-x-1/2 text-base font-bold tracking-wide text-gray-800">
           {months[selectedMonth - 1]} {selectedYear}
         </div>
@@ -123,17 +138,27 @@ export const AttendanceCalendar = () => {
               {Array.from({ length: 7 }, (_, dayIndex) => {
                 const dayNumber = calendarDays[weekIndex * 7 + dayIndex];
                 const isSunday = dayIndex === 0;
+                const future = isFutureDate(dayNumber);
+                const todayFlag = isToday(dayNumber);
+                const selected = isSelected(dayNumber);
 
                 return (
                   <div key={dayIndex} className="flex items-center justify-center h-8 w-8 mx-auto">
                     {dayNumber && (
                       <div
-                        className={`w-8 h-8 flex items-center justify-center text-xs font-medium cursor-pointer
-                transition-colors duration-200
-                ${isSunday
-                            ? 'bg-red-100 text-red-600 rounded-full'
-                            : 'text-gray-700 hover:bg-gray-100'}
-              `}
+                        onClick={() => !future && setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber })}
+                        className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer
+                          transition-colors duration-200
+                          ${future
+                            ? 'text-gray-400 opacity-50 pointer-events-none'
+                            : selected
+                              ? 'bg-blue-500 text-white'
+                              : isSunday
+                                ? 'bg-red-100 text-red-600'
+                                : todayFlag
+                                  ? 'border border-blue-500 text-blue-600'
+                                  : 'text-gray-700 hover:bg-gray-100'
+                          }`}
                       >
                         {dayNumber}
                       </div>
@@ -143,7 +168,6 @@ export const AttendanceCalendar = () => {
               })}
             </div>
           ))}
-
         </div>
       </div>
     </div>
