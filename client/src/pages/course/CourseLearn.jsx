@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-  import { UpskillSideBar } from './components/UpskillSideBar';
-import { AssignmentsSection } from "./components/AssignmentsSection";
+import { UpskillSideBar } from './components/UpskillSideBar';
 import { PopupCard } from '../../components/PopupCard';
 import api from "../../api/axios";
 
@@ -142,7 +141,6 @@ export const CourseLearn = () => {
                   </p>
                 </div>
               </div>
-              <AssignmentsSection quiz={selectedSubmodule.quiz} markProgress={handleQuizCompleted} />
             </>
           )}
         </div>
