@@ -1,6 +1,7 @@
 const UserCredentials = require("../models/userCredentials");
 const UserPersonal = require("../models/userPersonal");
 const UserCourse = require("../models/userCourse");
+const Role = require("../models/roles");
 const attendanceHelper = require("../utils/attendanceHelper");
 const ApiError = require("../errors/ApiError");
 const LeaveApplication = require('../models/leaveApplication')
@@ -100,6 +101,17 @@ const fetchAllLeaveRequests = async () => {
         return leaveData;
 }
 
+//@desc onboarding courses by role id
+const getOnboardingCoursesById = async (roleid) => {
+    try {
+        const roleDetail = await Role.findOne({ _id: roleid }).select("onboardingCourses");
+        return roleDetail?.onboardingCourses || [];
+    } catch (error) {
+        throw new ApiError(500, "failed to fetch role onboarding courses: " + error.message);
+    }
+};
+
+
 module.exports = {
     updateUserData,
     getPendingUsers,
@@ -108,4 +120,5 @@ module.exports = {
     getPendingLeaveRequests,
     superAdminProcessLeaveRequest,
     fetchAllLeaveRequests,
+    getOnboardingCoursesById,
 };

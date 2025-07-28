@@ -22,7 +22,9 @@ const acceptUser = asyncHandler(async (req, res) => {
         throw new Error("give me full data. shift, campus, role");
     await HrService.updateUserData(email, shiftId, campusId, roleId);
     await HrService.creatUserPersonal(userData._id, salary);
-    await HrService.createUserCourse(userData._id);
+    await HrService.createUserCourse(userData._id); 
+    await HrService.getOnboardingCoursesById(roleId);
+
     return res
         .status(201)
         .json({ success: true, message: "User updated successfully" });
