@@ -25,7 +25,7 @@ export const Attendance = () => {
                 {/* ----- 'me' tab ----- */}
                 {navId === 'me' && (
                     <>
-                        {/* Desktop/Laptop View (md and up) */}
+                        {/* Desktop/Laptop View */}
                         <div className="hidden md:grid flex-1 bg-[#FFFFFF] grid-cols-8 grid-rows-8 gap-[1rem] overflow-hidden">
                             <div className="row-start-1 col-start-1 col-span-2 row-span-1 rounded-lg">
                                 <TimeCard state="in" time="09:20" showLabel={false} color={true} />
@@ -50,7 +50,7 @@ export const Attendance = () => {
                             </div>
                         </div>
 
-                        {/* Mobile View (below md) */}
+                        {/* Mobile View */}
                         <div className="grid md:hidden gap-4">
                             <TimeCard state="in" time="09:20" showLabel={false} color={true} />
                             <TimeCard state="out" time="09:20" showLabel={false} color={true} />
