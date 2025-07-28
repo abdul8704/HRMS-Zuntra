@@ -82,7 +82,8 @@ export const EmployeeCard = ({
         >
           {/* Left Section */}
           <div className="flex flex-1 gap-2 min-w-0">
-            <div className="h-full overflow-hidden rounded-tl-2xl rounded-bl-2xl">
+            {/* Profile Image - Hidden on mobile and tablets, visible on desktop/laptop */}
+            <div className="hidden lg:block h-full overflow-hidden rounded-tl-2xl rounded-bl-2xl">
               <img
                 src={image}
                 alt="Profile"
@@ -90,10 +91,11 @@ export const EmployeeCard = ({
               />
             </div>
 
-            <div className="flex flex-col flex-[2] justify-center ">
+            {/* Employee Details */}
+            <div className="flex flex-col flex-[2] justify-center">
               <h6
                 ref={nameRef}
-                className="text-md m-0 cursor-pointer truncate w-full text-center sm:text-left"
+                className="text-md m-0 cursor-pointer truncate w-full text-center lg:text-left"
                 onMouseEnter={() => showTooltipIfTruncated(nameRef, name)}
                 onMouseLeave={hideTooltip}
               >
@@ -102,10 +104,10 @@ export const EmployeeCard = ({
 
               <div
                 ref={emailRef}
-                className="flex items-center gap-1 text-sm text-gray-800 cursor-pointer"
+                className="flex items-center gap-1 text-sm text-gray-800 cursor-pointer justify-center lg:justify-start w-full"
                 onMouseEnter={() => showTooltipIfTruncated(emailRef, email)}
                 onMouseLeave={hideTooltip}
-                style={{ maxWidth: "220px", overflow: "hidden" }} // ← Fixed max width for email container
+                style={{ maxWidth: "100%", overflow: "hidden" }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -134,7 +136,7 @@ export const EmployeeCard = ({
 
               <div
                 ref={phoneRef}
-                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden cursor-pointer"
+                className="flex items-center gap-1 text-sm text-gray-800 w-full max-w-full overflow-hidden cursor-pointer justify-center lg:justify-start"
                 onMouseEnter={() => showTooltipIfTruncated(phoneRef, phone)}
                 onMouseLeave={hideTooltip}
               >
@@ -154,7 +156,7 @@ export const EmployeeCard = ({
                 <span className="truncate">{phone}</span>
               </div>
 
-              <div className="mt-1 py-1 px-2 rounded-xl w-fit text-xs text-black bg-white/40 truncate">
+              <div className="mt-1 py-1 px-2 rounded-xl w-fit text-xs text-black bg-white/40 truncate mx-auto lg:mx-0">
                 {role}
               </div>
             </div>
