@@ -106,6 +106,7 @@ const setOnboardingCourses = async (userId, roleid) => {
     try {
         const roleDetail = await Role.findById(roleid).select("onboardingCourses");
         const courses = roleDetail?.onboardingCourses || [];
+        console.log(courses);
 
         if (courses.length === 0) return;
 
