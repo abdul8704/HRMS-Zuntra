@@ -328,6 +328,7 @@ const getCalendarDataOnly = async (
         attendanceMap,
         holidays: hol,
     } = await fetchAttendanceRecords(userid, startDate, endDate, holidays);
+    console
     const calendar = [];
 
     for (let i = 0; i < totalDays; i++) {
@@ -368,8 +369,8 @@ const getWorkBreakCompositionOnly = async (
         if (hol.includes(currentDateStr)) {
             workBreakComposition.push({
                 date: currentDateStr,
-                workingMinutes: 0,
-                breakMinutes: 0,
+                work: 0,
+                break: 0,
             });
             continue;
         }
@@ -377,8 +378,8 @@ const getWorkBreakCompositionOnly = async (
         const record = attendanceMap.get(currentDateStr);
         workBreakComposition.push({
             date: currentDateStr,
-            workingMinutes: record?.workingMinutes || 0,
-            breakMinutes: record?.breakMinutes || 0,
+            work: record?.workingMinutes || 0,
+            break: record?.breakMinutes || 0,
         });
     }
 

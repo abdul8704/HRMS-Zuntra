@@ -3,6 +3,7 @@ const attendanceService = require("../services/attendanceService");
 const roleService = require("../services/rolesService");
 const ApiError = require("../errors/ApiError");
 const asyncHandler = require("express-async-handler");
+const { processWorkBreakData } = require("../utils/attendanceHelper");
 
 const fetchAllEmployees = asyncHandler(async (req, res) => {
     const employees = await employeeService.getAllEmployees();
@@ -225,7 +226,17 @@ const getWorkBreakComposition = asyncHandler(async (req, res) => {
         startDate,
         endDate
     );
-    res.status(200).json({ success: true, workBreakComposition });
+
+    if (!workBreakComposition || workBreakComposition.length === 0) {
+        return res.status(200).json({ success: true, workBreakComposition: [] });
+    }
+
+    const work_breakData = processWorkBreakData(workBreakComposition, endDate );
+
+    res.status(200).json({
+        success: true,
+        workBreakComposition: work_breakData,
+    });
 });
 
 const getAttendanceData = asyncHandler(async (req, res) => {
