@@ -13,7 +13,7 @@ export const EmployeeCard = ({
   workTime,
   breakTime,
   bgColor = "#cfd9ea",
-  isNewUser = false,
+  option = 2, // default to option 1 (details only)
   onApprove,
 }) => {
   const [tooltip, setTooltip] = useState({
@@ -61,8 +61,7 @@ export const EmployeeCard = ({
     }
   };
 
-  const hideTooltip = () =>
-    setTooltip({ show: false, text: "", anchorRef: null });
+  const hideTooltip = () => setTooltip({ show: false, text: "", anchorRef: null });
 
   return (
     <>
@@ -75,11 +74,7 @@ export const EmployeeCard = ({
         `}
         style={{ backgroundColor: bgColor, transition: "0.5s" }}
       >
-        <div
-          className={`flex ${
-            isNewUser ? "flex-row" : "flex-col"
-          } lg:flex-row w-full gap-1`}
-        >
+        <div className={`flex flex-col lg:flex-row w-full gap-1`}>
           {/* Left Section */}
           <div className="flex flex-1 gap-2 min-w-0">
             {/* Profile Image - Hidden on mobile and tablets, visible on desktop/laptop */}
@@ -162,8 +157,8 @@ export const EmployeeCard = ({
             </div>
           </div>
 
-          {/* Time Cards or Action Buttons */}
-          {isNewUser ? (
+          {/* Right Section based on option */}
+          {option === 3 && (
             <div className="flex flex-col flex-wrap justify-center gap-3 flex-[1] p-2.5">
               <button
                 onClick={() => onApprove?.()}
@@ -175,7 +170,9 @@ export const EmployeeCard = ({
                 ✕
               </button>
             </div>
-          ) : (
+          )}
+
+          {option === 2 && (
             <div className="flex flex-col flex-wrap justify-center gap-3 p-2.5">
               <div className="flex gap-2.5 w-full flex-[1] justify-center">
                 <div className="flex-1 min-w-[6rem] flex justify-center items-center">
@@ -215,6 +212,8 @@ export const EmployeeCard = ({
               </div>
             </div>
           )}
+
+          {/* If option === 1, show nothing on right side (only details on left) */}
         </div>
       </div>
 
