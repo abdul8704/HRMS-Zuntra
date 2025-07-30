@@ -699,7 +699,7 @@ export const EmployeeManagement = () => {
                       })()}
                       bgColor={bgColorList[index]}
                       image={`${BASE_URL}/uploads/profilePictures/${emp._id}.png`}
-                      isNewUser={true}
+                      option={3}
                       onApprove={() => handleApprove(emp)}
                     />
                   ))
