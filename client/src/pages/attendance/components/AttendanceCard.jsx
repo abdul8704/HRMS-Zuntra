@@ -10,6 +10,7 @@ const overlayBgColors = {
   late: "bg-orange-100",
   absent: "bg-red-100",
   remote: "bg-blue-100",
+  present: "bg-green-200",
 };
 
 const textColors = {
@@ -17,6 +18,7 @@ const textColors = {
   late: "text-orange-700",
   absent: "text-red-700",
   remote: "text-blue-700",
+  present: "text-green-800",
 };
 
 const months = [
@@ -24,11 +26,47 @@ const months = [
   "July", "August", "September", "October", "November", "December",
 ];
 
+const globalAttendanceData = [
+  { date: "2025-07-01", status: "present" },
+  { date: "2025-07-02", status: "absent" },
+  { date: "2025-07-03", status: "absent" },
+  { date: "2025-07-04", status: "remote" },
+  { date: "2025-07-05", status: "remote" },
+  { date: "2025-07-06", status: "remote" },
+  { date: "2025-07-07", status: "present" },
+  { date: "2025-07-08", status: "absent" },
+  { date: "2025-07-09", status: "remote" },
+  { date: "2025-07-10", status: "absent" },
+  { date: "2025-07-11", status: "present" },
+  { date: "2025-07-12", status: "absent" },
+  { date: "2025-07-13", status: "absent" },
+  { date: "2025-07-14", status: "present" },
+  { date: "2025-07-15", status: "absent" },
+  { date: "2025-07-16", status: "present" },
+  { date: "2025-07-17", status: "absent" },
+  { date: "2025-07-18", status: "present" },
+  { date: "2025-07-19", status: "absent" },
+  { date: "2025-07-20", status: "absent" },
+  { date: "2025-07-21", status: "present" },
+  { date: "2025-07-22", status: "absent" },
+  { date: "2025-07-23", status: "absent" },
+  { date: "2025-07-24", status: "remote" },
+  { date: "2025-07-25", status: "absent" },
+  { date: "2025-07-26", status: "absent" },
+  { date: "2025-07-27", status: "remote" },
+  { date: "2025-07-28", status: "remote" },
+  { date: "2025-07-29", status: "absent" },
+  { date: "2025-07-30", status: "absent" },
+  { date: "2025-07-31", status: "absent" },
+  { date: "2025-08-01", status: "absent" },
+];
+
 export const AttendanceCard = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [showFilter, setShowFilter] = useState(false);
   const [filteredDates, setFilteredDates] = useState([]);
+  const [attendanceData, setAttendanceData] = useState([]);
 
   const parseDate = (str) => {
     const [year, month, day] = str.split("-").map(Number);
@@ -50,18 +88,11 @@ export const AttendanceCard = () => {
   };
 
   const generateDateRange = () => {
-    const start = parseDate(fromDate);
-    const end = parseDate(toDate);
-    const dates = [];
-    let current = new Date(start);
-    while (current <= end) {
-      dates.push({
-        date: new Date(current),
-        status: getStatus(),
-      });
-      current.setDate(current.getDate() + 1);
-    }
-    setFilteredDates(dates);
+    const parsedData = globalAttendanceData.map((entry) => ({
+      date: new Date(entry.date),
+      status: entry.status,
+    }));
+    setFilteredDates(parsedData);
   };
 
   const applyDefaultDates = () => {
@@ -88,7 +119,6 @@ export const AttendanceCard = () => {
 
   return (
     <div className="w-full h-full flex flex-col bg-purple-200 p-4 rounded-xl overflow-hidden">
-      {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-2 mb-3">
         <h2 className="text-base font-bold tracking-wide text-gray-800">
           ATTENDANCE RECORD
@@ -116,7 +146,7 @@ export const AttendanceCard = () => {
         </button>
       </div>
 
-      {/* Filter + Table */}
+      {/* Filter */}
       <div className="flex flex-col flex-grow min-h-0 overflow-hidden rounded-md">
         {showFilter && (
           <div className="flex gap-4 px-4 py-1 border-b border-purple-200 flex-wrap bg-transparent">
@@ -141,11 +171,13 @@ export const AttendanceCard = () => {
           </div>
         )}
 
+        {/* Table header */}
         <div className="grid grid-cols-2 bg-black/10 px-4 py-2 font-semibold text-sm flex-shrink-0">
           <div>Date</div>
           <div>Report</div>
         </div>
 
+        {/* Table rows */}
         <div className="overflow-y-auto flex-grow min-h-0">
           {filteredDates.map((entry, idx) => (
             <div key={idx} className="relative py-2">
@@ -163,7 +195,11 @@ export const AttendanceCard = () => {
                       ? "Off Time"
                       : entry.status === "absent"
                       ? "Absent"
-                      : "Remote"}
+                      : entry.status === "remote"
+                      ? "Remote"
+                      : entry.status === "present"
+                      ? "Present"
+                      : entry.status}
                   </span>
                 </div>
               </div>
