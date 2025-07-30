@@ -80,7 +80,7 @@ export const EmployeeDetails = ({ type }) => {
               <>
                 <Navbar type="employeeDetails" showFilter={false} />
 
-                {navId === "attendance" && <EmployeeDetailsAssignment />}
+                {navId === "attendance" && <EmployeeDetailsAssignment userid={empId}/>}
 
                 {navId === "project" && <p>PROJECT</p>}
 
