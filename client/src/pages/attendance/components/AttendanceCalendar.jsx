@@ -2,9 +2,144 @@ import React, { useState, useEffect, useRef } from 'react';
 
 export const AttendanceCalendar = () => {
   const [selectedYear, setSelectedYear] = useState(2025);
-  const [selectedMonth, setSelectedMonth] = useState(2); // February
+  const [selectedMonth, setSelectedMonth] = useState(7); // July to match your data
   const [showSidebar, setShowSidebar] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+
+  // Attendance data
+  const [attendanceData] = useState({
+    success: true,
+    calendarData: [
+      {
+        "date": "2025-07-01",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-02",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-03",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-04",
+        "status": "remote"
+      },
+      {
+        "date": "2025-07-05",
+        "status": "remote"
+      },
+      {
+        "date": "2025-07-06",
+        "status": "remote"
+      },
+      {
+        "date": "2025-07-07",
+        "status": "present"
+      },
+      {
+        "date": "2025-07-08",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-09",
+        "status": "remote"
+      },
+      {
+        "date": "2025-07-10",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-11",
+        "status": "present"
+      },
+      {
+        "date": "2025-07-12",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-13",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-14",
+        "status": "present"
+      },
+      {
+        "date": "2025-07-15",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-16",
+        "status": "present"
+      },
+      {
+        "date": "2025-07-17",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-18",
+        "status": "present"
+      },
+      {
+        "date": "2025-07-19",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-20",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-21",
+        "status": "present"
+      },
+      {
+        "date": "2025-07-22",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-23",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-24",
+        "status": "remote"
+      },
+      {
+        "date": "2025-07-25",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-26",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-27",
+        "status": "remote"
+      },
+      {
+        "date": "2025-07-28",
+        "status": "remote"
+      },
+      {
+        "date": "2025-07-29",
+        "status": "remote"
+      },
+      {
+        "date": "2025-07-30",
+        "status": "absent"
+      },
+      {
+        "date": "2025-07-31",
+        "status": "absent"
+      },
+      {
+        "date": "2025-08-01",
+        "status": "absent"
+      }
+    ]
+  });
 
   const sidebarRef = useRef();
 
@@ -68,6 +203,15 @@ export const AttendanceCalendar = () => {
     selectedDate.month === selectedMonth &&
     selectedDate.day === day;
 
+  // Get attendance status for a specific date
+  const getAttendanceStatus = (day) => {
+    if (!day) return null;
+    
+    const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const attendanceRecord = attendanceData.calendarData.find(record => record.date === dateStr);
+    return attendanceRecord ? attendanceRecord.status : null;
+  };
+
   return (
     <div className="relative w-full h-full flex flex-col bg-white border-2 rounded-lg overflow-hidden">
       {/* Sidebar */}
@@ -122,7 +266,7 @@ export const AttendanceCalendar = () => {
 
       {/* Calendar Grid */}
       <div className="flex-1 px-2 py-1 min-h-0">
-        <div className="h-full grid grid-rows-7 gap-1">
+        <div className="h-full flex flex-col gap-1">
           {/* Weekday Headers */}
           <div className="grid grid-cols-7 gap-1">
             {days.map((day) => (
@@ -133,41 +277,98 @@ export const AttendanceCalendar = () => {
           </div>
 
           {/* Calendar Days */}
-          {Array.from({ length: 6 }, (_, weekIndex) => (
-            <div key={weekIndex} className="grid grid-cols-7 gap-1">
-              {Array.from({ length: 7 }, (_, dayIndex) => {
-                const dayNumber = calendarDays[weekIndex * 7 + dayIndex];
-                const isSunday = dayIndex === 0;
-                const future = isFutureDate(dayNumber);
-                const todayFlag = isToday(dayNumber);
-                const selected = isSelected(dayNumber);
+          <div className="flex-1 grid grid-rows-6 gap-1">
+            {Array.from({ length: 6 }, (_, weekIndex) => (
+              <div key={weekIndex} className="grid grid-cols-7 gap-1">
+                {Array.from({ length: 7 }, (_, dayIndex) => {
+                  const dayNumber = calendarDays[weekIndex * 7 + dayIndex];
+                  const isSunday = dayIndex === 0;
+                  const future = isFutureDate(dayNumber);
+                  const todayFlag = isToday(dayNumber);
+                  const selected = isSelected(dayNumber);
+                  const attendanceStatus = getAttendanceStatus(dayNumber);
 
-                return (
-                  <div key={dayIndex} className="flex items-center justify-center h-8 w-8 mx-auto">
-                    {dayNumber && (
-                      <div
-                        onClick={() => !future && setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber })}
-                        className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer
-                          transition-colors duration-200
-                          ${future
-                            ? 'text-gray-400 opacity-50 pointer-events-none'
-                            : selected
-                              ? 'bg-blue-500 text-white'
-                              : isSunday
-                                ? 'bg-red-100 text-red-600'
-                                : todayFlag
-                                  ? 'border border-blue-500 text-blue-600'
-                                  : 'text-gray-700 hover:bg-gray-100'
-                          }`}
-                      >
-                        {dayNumber}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                  // Priority-based styling WITHOUT borders - only background + text
+                  let dayClasses = '';
+                  let textClasses = 'text-gray-700';
+
+                  if (future) {
+                    dayClasses = '';
+                    textClasses = 'text-gray-400 opacity-50 pointer-events-none';
+                  } else if (attendanceStatus && !(isSunday && attendanceStatus !== 'remote')) {
+                    // Attendance status colors (only background + text, NO borders)
+                    switch (attendanceStatus) {
+                      case 'present':
+                        dayClasses = 'bg-green-100';
+                        textClasses = 'text-green-700 font-semibold';
+                        break;
+                      case 'absent':
+                        dayClasses = 'bg-red-100';
+                        textClasses = 'text-red-700 font-semibold';
+                        break;
+                      case 'remote':
+                        dayClasses = 'bg-blue-100';
+                        textClasses = 'text-blue-700 font-semibold';
+                        break;
+                      case 'holiday':
+                        dayClasses = 'bg-orange-100';
+                        textClasses = 'text-orange-700 font-semibold';
+                        break;
+                    }
+                  } else if (selected) {
+                    dayClasses = 'bg-blue-500';
+                    textClasses = 'text-white';
+                  } else if (isSunday) {
+                    // Sunday default orange styling (NO border, only background + text)
+                    dayClasses = 'bg-orange-100';
+                    textClasses = 'text-orange-700 font-semibold';
+                  } else if (todayFlag) {
+                    dayClasses = 'border border-blue-500';
+                    textClasses = 'text-blue-600';
+                  } else {
+                    dayClasses = 'hover:bg-gray-100';
+                    textClasses = 'text-gray-700';
+                  }
+
+                  return (
+                    <div key={dayIndex} className="flex items-center justify-center h-8 w-8 mx-auto">
+                      {dayNumber && (
+                        <div
+                          onClick={() => !future && setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber })}
+                          className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer
+                            transition-colors duration-200 ${dayClasses} ${textClasses}`}
+                        >
+                          {dayNumber}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+
+          {/* Legend integrated in the bottom space */}
+          <div className="flex items-center justify-center py-2">
+            <div className="flex gap-4 text-xs">
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-full bg-green-100"></div>
+                <span className="text-green-700">Present</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-full bg-red-100"></div>
+                <span className="text-red-700">Absent</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-full bg-blue-100"></div>
+                <span className="text-blue-700">Remote</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded-full bg-orange-100"></div>
+                <span className="text-orange-700">Sunday</span>
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </div>
