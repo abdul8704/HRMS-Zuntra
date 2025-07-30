@@ -232,7 +232,7 @@ export function SidebarDetails({ type, empId }) {
                 <DollarSign className="w-4 h-4 text-black/70 flex-shrink-0" />
                 <div>
                   <span className="font-medium">Salary:</span>{" "}
-                  <span className="text-black/80">₹{data.personalDetail?.Salary || 0}</span>
+                  <span className="text-black/80">₹{data.personalDetail?.Salary || 0}/hr</span>
                 </div>
               </div>
             </div>

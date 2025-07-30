@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
 
 import { Sidebar } from '../../components/Sidebar';
@@ -12,9 +12,40 @@ import { LeaveForm } from './components/LeaveForm';
 import { ScheduleForm } from './components/ScheduleForm';
 import { SampleCard } from './components/SampleCard';
 import { LeaveFormHistory } from './components/LeaveFormHistory';
+import { useAuth } from "../../context/AuthContext";
+import api from "../../api/axios";
 
 export const Attendance = () => {
     const { navId } = useParams();
+      const { user, authDataLoading } = useAuth();
+    const userid = user?.userid;
+    const [calendarData, setCalendarData] = useState([]);
+    useEffect(() => {
+        const fetchCalendarData = async () => {
+            const now = new Date();
+            const endDate = now.toISOString();
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const startDate = startOfMonth.toISOString();
+
+            try {
+                const response = await api.get('/api/employee/attendance/calendar', {
+                    params: {
+                        startDate,
+                        endDate,
+                        userid,
+                    }
+                });
+
+                setCalendarData(response.data.calendarData);
+
+                console.log('Calendar Data:', response.data.calendarData);
+            } catch (err) {
+                console.error('Error fetching calendar data:', err);
+            }
+        };
+
+        fetchCalendarData();
+    }, [userid]);
 
     return (
         <div className="flex flex-col lg:flex-row w-full h-screen overflow-hidden">
@@ -43,7 +74,7 @@ export const Attendance = () => {
                                 <WorkBreakComposition />
                             </div>
                             <div className="row-start-3 col-start-1 col-span-4 row-span-6 rounded-lg overflow-auto">
-                                <AttendanceCalendar />
+                                <AttendanceCalendar calendarData={calendarData} />
                             </div>
                             <div className="row-start-4 col-start-5 col-span-4 row-span-5 rounded-lg overflow-auto">
                                 <AttendanceCard />
@@ -107,7 +138,7 @@ export const Attendance = () => {
                         {/* Calendar Section */}
                         <div className="w-full md:flex-1">
                             <div className="w-full aspect-[4/3] md:aspect-auto">
-                                <AttendanceCalendar />
+                                <AttendanceCalendar calendarData={calendarData} />
                             </div>
                         </div>
 

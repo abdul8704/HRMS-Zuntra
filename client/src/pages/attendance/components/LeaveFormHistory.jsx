@@ -225,8 +225,8 @@ export const LeaveFormHistory = () => {
                         className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value="">PENDING</option>
-                        <option value="accepted">Accepted</option>
-                        <option value="rejected">Rejected</option>
+                        <option value="accepted">Accept</option>
+                        <option value="rejected">Reject</option>
                       </select>
                     </div>
                   </div>
