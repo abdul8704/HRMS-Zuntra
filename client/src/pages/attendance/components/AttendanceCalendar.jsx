@@ -7,7 +7,10 @@ export const AttendanceCalendar = ({ calendarData }) => {
   const [showSidebar, setShowSidebar] = useState(false);
   const sidebarRef = useRef();
 
-  console.log(calendarData);
+  const logFullDate = (year, month, day = null) => {
+    const dateStr = `${year}-${String(month).padStart(2, '0')}${day ? `-${String(day).padStart(2, '0')}` : ''}`;
+    console.log("Selected:", dateStr);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -41,8 +44,6 @@ export const AttendanceCalendar = ({ calendarData }) => {
   const calendarDays = Array(firstDay).fill(null).concat(Array.from({ length: daysInMonth }, (_, i) => i + 1));
 
   const today = new Date();
-  const todayStr = today.toISOString().split('T')[0];
-
   const isFutureDate = (day) => {
     if (!day) return false;
     const current = new Date(selectedYear, selectedMonth - 1, day);
@@ -69,9 +70,17 @@ export const AttendanceCalendar = ({ calendarData }) => {
   };
 
   const handleMonthClick = (index) => {
-    setSelectedMonth(index + 1);
+    const month = index + 1;
+    setSelectedMonth(month);
     setSelectedDate(null);
     setShowSidebar(false);
+    logFullDate(selectedYear, month);
+  };
+
+  const handleYearChange = (delta) => {
+    const newYear = selectedYear + delta;
+    setSelectedYear(newYear);
+    logFullDate(newYear, selectedMonth);
   };
 
   return (
@@ -84,9 +93,9 @@ export const AttendanceCalendar = ({ calendarData }) => {
       >
         {/* Year Nav */}
         <div className="flex items-center justify-between mb-4">
-          <button onClick={() => setSelectedYear(y => y - 1)} className="text-xl font-bold px-2">&lt;</button>
+          <button onClick={() => handleYearChange(-1)} className="text-xl font-bold px-2">&lt;</button>
           <div className="text-lg font-semibold">{selectedYear}</div>
-          <button onClick={() => setSelectedYear(y => y + 1)} className="text-xl font-bold px-2">&gt;</button>
+          <button onClick={() => handleYearChange(1)} className="text-xl font-bold px-2">&gt;</button>
         </div>
 
         {/* Month List */}
@@ -139,18 +148,12 @@ export const AttendanceCalendar = ({ calendarData }) => {
               <div key={weekIndex} className="grid grid-cols-7 gap-1">
                 {Array.from({ length: 7 }, (_, dayIndex) => {
                   const dayNumber = calendarDays[weekIndex * 7 + dayIndex];
-                  const dateStr = dayNumber
-                    ? `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`
-                    : null;
-
                   const future = isFutureDate(dayNumber);
                   const selected = isSelected(dayNumber);
                   const todayFlag = isToday(dayNumber);
                   const isSunday = dayIndex === 0;
-
                   const status = getAttendanceStatus(dayNumber);
 
-                  // Priority coloring
                   let dayClasses = '';
                   let textClasses = 'text-gray-700';
 
@@ -186,10 +189,13 @@ export const AttendanceCalendar = ({ calendarData }) => {
                     <div key={dayIndex} className="flex items-center justify-center h-8 w-8 mx-auto">
                       {dayNumber && (
                         <div
-                          onClick={() =>
-                            !future &&
-                            setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber })
-                          }
+                          onClick={() => {
+                            if (!future) {
+                              const selected = { year: selectedYear, month: selectedMonth, day: dayNumber };
+                              setSelectedDate(selected);
+                              logFullDate(selectedYear, selectedMonth, dayNumber);
+                            }
+                          }}
                           className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 ${dayClasses} ${textClasses}`}
                         >
                           {dayNumber}

@@ -106,7 +106,7 @@ export const Attendance = () => {
                             {/* 📱 Calendar Responsive Fix */}
                             <div className="w-full">
                                 <div className="w-full aspect-[4/3] md:min-w-[700px]">
-                                    <AttendanceCalendar />
+                                    <AttendanceCalendar calendarData={calendarData}/>
                                 </div>
                             </div>
 
@@ -138,7 +138,7 @@ export const Attendance = () => {
                         {/* Calendar Section */}
                         <div className="w-full md:flex-1">
                             <div className="w-full aspect-[4/3] md:aspect-auto">
-                                <AttendanceCalendar calendarData={calendarData} />
+                                <AttendanceCalendar/>
                             </div>
                         </div>
 
