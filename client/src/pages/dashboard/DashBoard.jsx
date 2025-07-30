@@ -12,7 +12,7 @@ import { NotificationPopup } from './components/NotificationPopup';
 import { ProjectDeadline } from "../project/components/ProjectDeadline";
 import { PlusButton } from '../../components/PlusButton';
 import { useAuth } from "../../context/AuthContext";
-import { BASE_URL } from '../../api/axios';
+import api, { BASE_URL } from '../../api/axios';
 import { NewUser } from './NewUser';
 
 export const DashBoard = () => {
@@ -39,6 +39,34 @@ export const DashBoard = () => {
   ];
 
   const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiMessage, setApiMessage] = useState(null);
+  const [startDate, setStartDate] = useState(new Date().toLocaleDateString());
+  useEffect(() => {
+    if(!user?.userid)return;
+    const fetchWorkBreakData = async () => {
+      setIsLoading(true);
+      setApiMessage(null);
+      try{
+        const res = await api.get("/api/employee/attendance/work-break",{
+          params: {
+            startDate: '2025-07-01T18:30:00.000Z',
+            endDate: '2025-07-30T09:28:34.754Z',
+            userid: user?.userid,
+          }
+        });
+        console.log(res);
+      }
+      catch(err){
+        console.error(err);
+      }
+      finally{
+        setIsLoading(false);
+      }
+    }
+    fetchWorkBreakData();
+
+  },[])
 
   const toggleReminderForm = () => {
     setReminderText('');
@@ -48,7 +76,6 @@ export const DashBoard = () => {
   const isPlusButtonClicked = () => {
     setShowNotification(prev => !prev);
   }
-
   return (
     (authDataLoading) ? (
       <div className="flex items-center justify-center h-screen">
