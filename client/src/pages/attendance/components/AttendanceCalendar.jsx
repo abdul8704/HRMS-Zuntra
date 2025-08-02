@@ -1,8 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 export const AttendanceCalendar = ({ calendarData }) => {
-  const [selectedYear, setSelectedYear] = useState(2025);
-  const [selectedMonth, setSelectedMonth] = useState(7); // July
+  const getInitialYearMonth = () => {
+    if (calendarData && calendarData.length > 0) {
+      const firstDate = new Date(calendarData[0].date);
+      return {
+        year: firstDate.getFullYear(),
+        month: firstDate.getMonth() + 1, // JS months are 0-indexed
+      };
+    }
+    const today = new Date();
+    return {
+      year: today.getFullYear(),
+      month: today.getMonth() + 1,
+    };
+  };
+
+  const { year: initialYear, month: initialMonth } = getInitialYearMonth();
+
+  const [selectedYear, setSelectedYear] = useState(initialYear);
+  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const sidebarRef = useRef();
