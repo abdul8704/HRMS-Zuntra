@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-export const AttendanceCalendar = ({ calendarData }) => {
+export const AttendanceCalendar = ({ calendarData, onMonthYearChange }) => {
   const getInitialYearMonth = () => {
     if (calendarData && calendarData.length > 0) {
       const firstDate = new Date(calendarData[0].date);
       return {
         year: firstDate.getFullYear(),
-        month: firstDate.getMonth() + 1, // JS months are 0-indexed
+        month: firstDate.getMonth() + 1,
       };
     }
     const today = new Date();
@@ -92,12 +92,14 @@ export const AttendanceCalendar = ({ calendarData }) => {
     setSelectedDate(null);
     setShowSidebar(false);
     logFullDate(selectedYear, month);
+    if (onMonthYearChange) onMonthYearChange(selectedYear, month); // ✅ notify parent
   };
 
   const handleYearChange = (delta) => {
     const newYear = selectedYear + delta;
     setSelectedYear(newYear);
     logFullDate(newYear, selectedMonth);
+    if (onMonthYearChange) onMonthYearChange(newYear, selectedMonth); // ✅ notify parent
   };
 
   return (
