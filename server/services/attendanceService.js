@@ -418,9 +418,9 @@ const getAttendanceDataOnly = async (
 
             if (typeof record.lateBy === "number") {
                 if (record.lateBy > 0) {
-                    status = `late by ${record.lateBy} minutes`;
+                    status += `-late by ${record.lateBy} minutes`;
                 } else if (record.lateBy < 0) {
-                    status = `early by ${Math.abs(record.lateBy)} minutes`;
+                    status += `-early by ${Math.abs(record.lateBy)} minutes`;
                 }
             }
 
@@ -432,6 +432,7 @@ const getAttendanceDataOnly = async (
 
     return attendanceData;
 };
+
 
 
 module.exports = {
