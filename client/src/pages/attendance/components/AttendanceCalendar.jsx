@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-export const AttendanceCalendar = ({ calendarData, onMonthYearChange }) => {
+export const AttendanceCalendar = ({ calendarData, onMonthYearChange, disableFutureDates = true }) => {
   const getInitialYearMonth = () => {
     if (calendarData && calendarData.length > 0) {
       const firstDate = new Date(calendarData[0].date);
@@ -62,7 +62,7 @@ export const AttendanceCalendar = ({ calendarData, onMonthYearChange }) => {
 
   const today = new Date();
   const isFutureDate = (day) => {
-    if (!day) return false;
+    if (!disableFutureDates || !day) return false;
     const current = new Date(selectedYear, selectedMonth - 1, day);
     const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     return current > todayDate;
@@ -92,14 +92,14 @@ export const AttendanceCalendar = ({ calendarData, onMonthYearChange }) => {
     setSelectedDate(null);
     setShowSidebar(false);
     logFullDate(selectedYear, month);
-    if (onMonthYearChange) onMonthYearChange(selectedYear, month); // ✅ notify parent
+    if (onMonthYearChange) onMonthYearChange(selectedYear, month);
   };
 
   const handleYearChange = (delta) => {
     const newYear = selectedYear + delta;
     setSelectedYear(newYear);
     logFullDate(newYear, selectedMonth);
-    if (onMonthYearChange) onMonthYearChange(newYear, selectedMonth); // ✅ notify parent
+    if (onMonthYearChange) onMonthYearChange(newYear, selectedMonth);
   };
 
   return (
@@ -110,14 +110,12 @@ export const AttendanceCalendar = ({ calendarData, onMonthYearChange }) => {
         className={`absolute inset-y-0 left-0 bg-white z-30 shadow-lg w-64 max-w-full transition-transform duration-300
         flex flex-col p-4 ${showSidebar ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        {/* Year Nav */}
         <div className="flex items-center justify-between mb-4">
           <button onClick={() => handleYearChange(-1)} className="text-xl font-bold px-2">&lt;</button>
           <div className="text-lg font-semibold">{selectedYear}</div>
           <button onClick={() => handleYearChange(1)} className="text-xl font-bold px-2">&gt;</button>
         </div>
 
-        {/* Month List */}
         <div className="flex-1 overflow-y-auto">
           <div className="grid grid-cols-1 gap-2">
             {months.map((month, index) => (
@@ -154,14 +152,12 @@ export const AttendanceCalendar = ({ calendarData, onMonthYearChange }) => {
       {/* Calendar */}
       <div className="flex-1 px-2 py-1 min-h-0">
         <div className="h-full flex flex-col gap-1">
-          {/* Days of Week */}
           <div className="grid grid-cols-7 gap-1">
             {days.map((d) => (
               <div key={d} className="flex items-center justify-center text-xs font-medium text-gray-600 h-8">{d}</div>
             ))}
           </div>
 
-          {/* Day Cells */}
           <div className="flex-1 grid grid-rows-6 gap-1">
             {Array.from({ length: 6 }, (_, weekIndex) => (
               <div key={weekIndex} className="grid grid-cols-7 gap-1">
@@ -228,26 +224,28 @@ export const AttendanceCalendar = ({ calendarData, onMonthYearChange }) => {
           </div>
 
           {/* Legend */}
-          <div className="flex items-center justify-center py-2">
-            <div className="flex gap-4 text-xs">
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-full bg-green-100"></div>
-                <span className="text-green-700">Present</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-full bg-red-100"></div>
-                <span className="text-red-700">Absent</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-full bg-blue-100"></div>
-                <span className="text-blue-700">Remote</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-3 h-3 rounded-full bg-orange-100"></div>
-                <span className="text-orange-700">Sunday</span>
+          {disableFutureDates && (
+            <div className="flex items-center justify-center py-2">
+              <div className="flex gap-4 text-xs">
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-green-100"></div>
+                  <span className="text-green-700">Present</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-red-100"></div>
+                  <span className="text-red-700">Absent</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-blue-100"></div>
+                  <span className="text-blue-700">Remote</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-orange-100"></div>
+                  <span className="text-orange-700">Sunday</span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

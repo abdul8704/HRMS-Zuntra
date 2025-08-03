@@ -22,14 +22,19 @@ export const Attendance = () => {
     const [calendarData, setCalendarData] = useState([]);
 
     useEffect(() => {
-        fetchCalendarData(new Date().getFullYear(), new Date().getMonth() + 1);
-    }, [userid]);
+        if (navId === 'me' && userid) {
+            fetchCalendarData(new Date().getFullYear(), new Date().getMonth() + 1);
+        }
+    }, [userid, navId]);
+
+
 
     const fetchCalendarData = async (year, month) => {
         if (!userid) return;
 
-        const startDate = new Date(year, month - 1, 1).toISOString();
-        const endDate = new Date(year, month, 0, 23, 59, 59).toISOString();
+        const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0)).toISOString();
+        const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59)).toISOString();
+
 
         try {
             const response = await api.get('/api/employee/attendance/calendar', {
@@ -142,7 +147,7 @@ export const Attendance = () => {
                         {/* Calendar Section */}
                         <div className="w-full md:flex-1">
                             <div className="w-full aspect-[4/3] md:aspect-auto">
-                                <AttendanceCalendar />
+                                <AttendanceCalendar disableFutureDates={false} />
                             </div>
                         </div>
 
