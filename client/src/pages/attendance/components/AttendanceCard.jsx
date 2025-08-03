@@ -26,41 +26,6 @@ const months = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-const globalAttendanceData = [
-  { date: "2025-07-01", status: "present" },
-  { date: "2025-07-02", status: "absent" },
-  { date: "2025-07-03", status: "absent" },
-  { date: "2025-07-04", status: "remote" },
-  { date: "2025-07-05", status: "remote" },
-  { date: "2025-07-06", status: "remote" },
-  { date: "2025-07-07", status: "present" },
-  { date: "2025-07-08", status: "absent" },
-  { date: "2025-07-09", status: "remote" },
-  { date: "2025-07-10", status: "absent" },
-  { date: "2025-07-11", status: "present" },
-  { date: "2025-07-12", status: "absent" },
-  { date: "2025-07-13", status: "absent" },
-  { date: "2025-07-14", status: "present" },
-  { date: "2025-07-15", status: "absent" },
-  { date: "2025-07-16", status: "present" },
-  { date: "2025-07-17", status: "absent" },
-  { date: "2025-07-18", status: "present" },
-  { date: "2025-07-19", status: "absent" },
-  { date: "2025-07-20", status: "absent" },
-  { date: "2025-07-21", status: "present" },
-  { date: "2025-07-22", status: "absent" },
-  { date: "2025-07-23", status: "absent" },
-  { date: "2025-07-24", status: "remote" },
-  { date: "2025-07-25", status: "absent" },
-  { date: "2025-07-26", status: "absent" },
-  { date: "2025-07-27", status: "remote" },
-  { date: "2025-07-28", status: "remote" },
-  { date: "2025-07-29", status: "absent" },
-  { date: "2025-07-30", status: "absent" },
-  { date: "2025-07-31", status: "absent" },
-  { date: "2025-08-01", status: "absent" },
-];
-
 export const AttendanceCard = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
