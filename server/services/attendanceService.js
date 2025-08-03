@@ -299,7 +299,7 @@ const fetchAttendanceRecords = async (
         throw new ApiError(400, "Invalid start or end date format");
     }
 
-    const holidays = await Holiday.getHolidaysInRange(start, end);
+    const holidays = await Holiday.getHolidaysInRange(start, end, userid);
 
     const attendanceRecords = await Attendance.find({
         userid,

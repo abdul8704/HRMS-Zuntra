@@ -1,6 +1,7 @@
 const Holiday = require('../models/holiday');
 const ApiError = require('../errors/ApiError');
 const AttendanceHelper = require("../utils/attendanceHelper")
+const UserPersonal = require('../models/userPersonal')
 
 const getAllHolidays = async () => {
     const holidays = await Holiday.find();
@@ -8,20 +9,29 @@ const getAllHolidays = async () => {
   
 }
 
-const getHolidaysInRange = async (startDate, endDate) => {
+const getHolidaysInRange = async (startDate, endDate, userid) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
     
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
         throw new ApiError(400, 'Invalid date range provided');
     }
-    
+
+    const applicableValues = ["all"];
+    const { religion } = await UserPersonal.findById(userid);
+
+    if (religion) 
+        applicableValues.push(religion.toLowerCase());
+
     const holidays = await Holiday.find({
         date: {
             $gte: start,
-            $lte: end
-        }
-    }).sort({date: 1});
+            $lte: end,
+        },
+        applicableTo: {
+            $in: applicableValues
+        },
+    }).sort({ date: 1 });
     return holidays;
 }
 
@@ -42,6 +52,7 @@ const addHolidays = async (holidayData) => {
         }
 
         const parsedDate = AttendanceHelper.parseDateAsUTC(holiday.date);
+        const eligible = holiday.applicableTo || 'all';
 
         if (isNaN(parsedDate)) {
             throw new ApiError(`Invalid date format: ${holiday.date}`, 400);
@@ -49,14 +60,13 @@ const addHolidays = async (holidayData) => {
 
         const updatedOrInserted = await Holiday.findOneAndUpdate(
             { date: parsedDate },
-            { $set: { name: holiday.name } },
+            { $set: { name: holiday.name, applicableTo: eligible.toLowerCase() } },
             { new: true, upsert: true }
         );
 
         upsertedHolidays.push(updatedOrInserted);
     }
 
-    console.log("Upserted holidays:", upsertedHolidays);
     return upsertedHolidays;
 };
 

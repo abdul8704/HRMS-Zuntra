@@ -20,7 +20,7 @@ const getHolidayById = asyncHandler(async (req, res) => {
 })
 
 const getHolidaysInRange = asyncHandler(async (req, res) => {
-    const { startDate, endDate } = req.query;
+    const { startDate, endDate, userid } = req.query;
 
 
     if (!startDate || !endDate) {
@@ -30,7 +30,7 @@ const getHolidaysInRange = asyncHandler(async (req, res) => {
         throw new ApiError(400, 'Start date cannot be after end date');
     }
     
-    const holidays = await HolidayService.getHolidaysInRange(startDate, endDate);
+    const holidays = await HolidayService.getHolidaysInRange(startDate, endDate, userid);
 
     res.status(200).json({
         success: true,

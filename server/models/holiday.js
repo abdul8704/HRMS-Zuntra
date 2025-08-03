@@ -8,6 +8,11 @@ const holidaySchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
+    },
+    applicableTo: {
+        type: String,
+        default: "all",
+        enum: ['muslim', 'hindu', 'christian', 'sikh'] // TODO: change to constant, set to all religions
     }
 })
 
