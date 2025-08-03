@@ -3,6 +3,7 @@ const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
 const attendanceHelper = require("../utils/attendanceHelper.js");
 const LeaveApplication = require("../models/leaveApplication.js");
+const Holiday = require('./holidayService.js')
 
 const markAttendanceOnLogin = async (userid, mode) => {
     const today = attendanceHelper.normalizeToUTCDate(new Date());
@@ -287,7 +288,6 @@ const fetchAttendanceRecords = async (
     userid,
     startDate,
     endDate,
-    holidays = []
 ) => {
     const start = attendanceHelper.normalizeToUTCDate(startDate);
     start.setUTCHours(0, 0, 0, 0);
@@ -299,10 +299,12 @@ const fetchAttendanceRecords = async (
         throw new ApiError(400, "Invalid start or end date format");
     }
 
+    const holidays = await Holiday.getHolidaysInRange(start, end);
+
     const attendanceRecords = await Attendance.find({
         userid,
         date: { $gte: start, $lte: end },
-    }).sort({ date: 1 });
+    }, {sessions: 0}).sort({ date: 1 });
 
     const attendanceMap = new Map();
     for (const record of attendanceRecords) {
@@ -311,7 +313,8 @@ const fetchAttendanceRecords = async (
     }
 
     const oneDay = 24 * 60 * 60 * 1000;
-    const totalDays = Math.ceil((end - start) / oneDay) + 1;
+    const totalDays =
+        Math.floor((end.getTime() - start.getTime()) / oneDay) + 1;
 
     return { start, totalDays, attendanceMap, holidays };
 };
@@ -320,15 +323,14 @@ const getCalendarDataOnly = async (
     userid,
     startDate,
     endDate,
-    holidays = []
 ) => {
     const {
         start,
         totalDays,
         attendanceMap,
         holidays: hol,
-    } = await fetchAttendanceRecords(userid, startDate, endDate, holidays);
-    console
+    } = await fetchAttendanceRecords(userid, startDate, endDate);
+    
     const calendar = [];
 
     for (let i = 0; i < totalDays; i++) {
@@ -352,14 +354,13 @@ const getWorkBreakCompositionOnly = async (
     userid,
     startDate,
     endDate,
-    holidays = []
 ) => {
     const {
         start,
         totalDays,
         attendanceMap,
         holidays: hol,
-    } = await fetchAttendanceRecords(userid, startDate, endDate, holidays);
+    } = await fetchAttendanceRecords(userid, startDate, endDate);
     const workBreakComposition = [];
     for (let i = 0; i < totalDays; i++) {
         const current = new Date(start.getTime() + i * 24 * 60 * 60 * 1000);
@@ -389,50 +390,89 @@ const getWorkBreakCompositionOnly = async (
     return workBreakComposition;
 };
 
-const getAttendanceDataOnly = async (
-    userid,
-    startDate,
-    endDate,
-    holidays = []
-) => {
+const getAttendanceDataOnly = async (userid, startDate, endDate) => {
     const {
         start,
         totalDays,
         attendanceMap,
         holidays: hol,
-    } = await fetchAttendanceRecords(userid, startDate, endDate, holidays);
+    } = await fetchAttendanceRecords(userid, startDate, endDate);
+
     const attendanceData = [];
+
+    let holIndex = 0;
+    const holidayCountRaw = hol.length;
+
+    let presentCount = 0;
+    let remoteCount = 0;
+    let absentCount = 0;
+    let holidayCount = 0;
+    let totalDaysCount = totalDays;
 
     for (let i = 0; i < totalDays; i++) {
         const current = new Date(start.getTime() + i * 24 * 60 * 60 * 1000);
         const currentDateStr = current.toISOString().split("T")[0];
 
-        if (hol.includes(currentDateStr)) {
-            attendanceData.push({ date: currentDateStr, status: "absent" }); // business rule
-            continue;
+        let status = "";
+        const record = attendanceMap.get(currentDateStr);
+
+        let isHoliday = false;
+
+        if (holIndex < holidayCountRaw) {
+            const holDateStr = new Date(hol[holIndex].date)
+                .toISOString()
+                .split("T")[0];
+            if (holDateStr === currentDateStr) {
+                isHoliday = true;
+                status = "holiday";
+                holIndex++;
+                holidayCount++;
+            }
         }
 
-        const record = attendanceMap.get(currentDateStr);
         if (record) {
-            let status = record.status || "present";
+            const workingMins = record.workingMinutes || 0;
+            const baseStatus = record.status || "present";
 
             if (typeof record.lateBy === "number") {
                 if (record.lateBy > 0) {
-                    status = `late by ${record.lateBy} minutes`;
+                    status = `${baseStatus} - late by ${record.lateBy} minutes`;
                 } else if (record.lateBy < 0) {
-                    status = `early by ${Math.abs(record.lateBy)} minutes`;
+                    status = `${baseStatus} - early by ${Math.abs(
+                        record.lateBy
+                    )} minutes`;
+                } else {
+                    status = baseStatus;
                 }
+            } else {
+                status = baseStatus;
             }
 
-            attendanceData.push({ date: currentDateStr, status });
-        } else {
-            attendanceData.push({ date: currentDateStr, status: "absent" });
+            if (baseStatus === "present") presentCount++;
+            else if (baseStatus === "remote") remoteCount++;
+
+            if (isHoliday) {
+                status = `holiday - worked for ${workingMins} minutes`;
+            }
+        } else if (!isHoliday) {
+            status = "absent";
+            absentCount++;
         }
+
+        attendanceData.push({ date: currentDateStr, status });
     }
 
-    return attendanceData;
+    return {
+        attendanceData,
+        stats: {
+            totalDaysCount,
+            presentCount,
+            remoteCount,
+            absentCount,
+            holidayCount,
+        },
+    };
 };
-
 
 module.exports = {
     markAttendanceOnLogin,

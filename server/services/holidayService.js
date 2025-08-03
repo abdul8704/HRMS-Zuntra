@@ -1,5 +1,6 @@
 const Holiday = require('../models/holiday');
 const ApiError = require('../errors/ApiError');
+const AttendanceHelper = require("../utils/attendanceHelper")
 
 const getAllHolidays = async () => {
     const holidays = await Holiday.find();
@@ -10,7 +11,6 @@ const getAllHolidays = async () => {
 const getHolidaysInRange = async (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    console.log("Start Date:", start, "End Date:", end);    
     
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
         throw new ApiError(400, 'Invalid date range provided');
@@ -21,7 +21,7 @@ const getHolidaysInRange = async (startDate, endDate) => {
             $gte: start,
             $lte: end
         }
-    });
+    }).sort({date: 1});
     return holidays;
 }
 
@@ -34,22 +34,32 @@ const getHolidayById = async (id) => {
 }
 
 const addHolidays = async (holidayData) => {
-    const holidays = []
+    const upsertedHolidays = [];
 
-    holidayData.forEach(holiday => {
+    for (const holiday of holidayData) {
         if (!holiday.date || !holiday.name) {
-            throw new ApiError('Holiday date and name are required', 400);
+            throw new ApiError("Holiday date and name are required", 400);
         }
-        holidays.push({
-            date: new Date(holiday.date),
-            name: holiday.name
-        });
-    });
 
-    const inserted = await Holiday.insertMany(holidays, { ordered: false });
-    console.log("Inserted holidays:", inserted);
-    return inserted;
-}
+        const parsedDate = AttendanceHelper.parseDateAsUTC(holiday.date);
+
+        if (isNaN(parsedDate)) {
+            throw new ApiError(`Invalid date format: ${holiday.date}`, 400);
+        }
+
+        const updatedOrInserted = await Holiday.findOneAndUpdate(
+            { date: parsedDate },
+            { $set: { name: holiday.name } },
+            { new: true, upsert: true }
+        );
+
+        upsertedHolidays.push(updatedOrInserted);
+    }
+
+    console.log("Upserted holidays:", upsertedHolidays);
+    return upsertedHolidays;
+};
+
 
 const updateHoliday = async (id, holidayData) => {
     const holiday = await Holiday.findByIdAndUpdate(id, holidayData, { new: true });

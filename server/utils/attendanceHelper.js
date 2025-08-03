@@ -10,6 +10,14 @@ function normalizeToUTCDate(date) {
     return d;
 }
 
+function parseDateAsUTC(dateStr) {
+    const parsed = new Date(dateStr);
+    return new Date(
+        Date.UTC(parsed.getFullYear(), parsed.getMonth(), parsed.getDate())
+    );
+}
+
+
 // Return time-only version of a Date in UTC
 function toUTCTimeOnly(date) {
     const d = new Date(date);
@@ -116,4 +124,5 @@ module.exports = {
     normalizeToUTCDate,
     toUTCTimeOnly,
     processWorkBreakData,
+    parseDateAsUTC
 };
