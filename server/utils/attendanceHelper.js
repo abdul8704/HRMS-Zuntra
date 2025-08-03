@@ -19,70 +19,70 @@ function toUTCTimeOnly(date) {
 }
 
 function processWorkBreakData(workBreakComposition, todayStr) {
-    const today = new Date(todayStr); // already normalized
+    const today = normalizeDate(new Date(todayStr));
 
-    const getWeekRange = (date) => {
-        const dayOfWeek = date.getDay(); // Sunday = 0
-        const sunday = new Date(date);
-        sunday.setDate(date.getDate() - dayOfWeek);
-        return [sunday];
-    };
-
-    const formatDate = (dateStr) => {
-        const d = new Date(dateStr);
-        return `${d.getDate()}/${d.getMonth() + 1}`;
-    };
-
-    const getWeekNumberInMonth = (date) => {
-        const firstOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-        const dayOfMonth = date.getDate();
-        const offset = (firstOfMonth.getDay() + 6) % 7; // Monday = 0
-        return Math.ceil((dayOfMonth + offset) / 7);
-    };
-
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    const workBreakMap = new Map(
-        workBreakComposition.map((entry) => [entry.date, entry])
-    );
-
-    // === This Week ===
-    const [weekStart] = getWeekRange(today);
-    const thisWeek = [];
-
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(weekStart);
-        d.setDate(weekStart.getDate() + i);
-        const dateStr = d.toISOString().split("T")[0];
-
-        if (d.getMonth() !== currentMonth) {
-            thisWeek.push({
-                name: formatDate(d),
-                work: null,
-                break: null,
-            });
-        } else {
-            const data = workBreakMap.get(dateStr);
-            thisWeek.push({
-                name: formatDate(d),
-                work: data ? Math.round(data.work) : 0,
-                break: data ? Math.round(data.break) : 0,
-            });
-        }
+    function normalizeDate(date) {
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        return d;
     }
 
-    // === This Month Shortened ===
-    const monthData = {
-        "Week 1": null,
-        "Week 2": null,
-        "Week 3": null,
-        "Week 4": null,
+    const getWeekStart = (date) => {
+        // given any date, return the start of the week (Monday)
+        const d = normalizeDate(date);
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+        return normalizeDate(new Date(d.setDate(diff)));
     };
 
-    for (const entry of workBreakComposition) {
-        const date = new Date(entry.date);
-        if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
-            const weekNum = getWeekNumberInMonth(date);
+    const formatDate = (dateStr, style = "short") => {
+        const d = new Date(dateStr);
+        const day = d.getDate();
+        const month = d.getMonth() + 1;
+        return style === "short"
+            ? `${day}/${month}`
+            : `${day.toString().padStart(2, "0")}/${month
+                  .toString()
+                  .padStart(2, "0")}`;
+    };
+
+    const getWeekNumber = (d) => {
+        const date = normalizeDate(
+            new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
+        );
+        const firstDay = new Date(
+            Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1)
+        );
+        const dayOfWeek = firstDay.getUTCDay() || 7;
+        const adjusted = date.getUTCDate() + (dayOfWeek - 1);
+        return Math.ceil(adjusted / 7);
+    };
+
+    const weekStart = getWeekStart(today);
+    const weekData = workBreakComposition
+        .filter((entry) => {
+            const d = normalizeDate(new Date(entry.date));
+            return d >= weekStart && d <= today;
+        })
+        .map((entry) => ({
+            name: formatDate(entry.date),
+            work: Math.round(entry.work),
+            break: Math.round(entry.break),
+        }));
+
+    const month = today.getMonth();
+    const year = today.getFullYear();
+    const firstOfMonth = normalizeDate(new Date(year, month, 1));
+    const monthData = {};
+
+    workBreakComposition.forEach((entry) => {
+        const d = normalizeDate(new Date(entry.date));
+        if (
+            d.getFullYear() === year &&
+            d.getMonth() === month &&
+            d >= firstOfMonth
+        ) {
+            const weekNum = getWeekNumber(d);
             const key = `Week ${weekNum}`;
             if (!monthData[key]) {
                 monthData[key] = { work: 0, break: 0 };
@@ -90,22 +90,32 @@ function processWorkBreakData(workBreakComposition, todayStr) {
             monthData[key].work += entry.work;
             monthData[key].break += entry.break;
         }
-    }
-
-    const thisMonthShortened = Object.entries(monthData).map(([week, val]) => {
-        if (!val) {
-            return { name: week, work: null, break: null };
-        }
-        return {
-            name: week,
-            work: Math.round(val.work),
-            break: Math.round(val.break),
-        };
     });
 
+    const sortedWeeks = Object.entries(monthData)
+        .sort(
+            ([a], [b]) => parseInt(a.split(" ")[1]) - parseInt(b.split(" ")[1])
+        )
+        .slice(0, 4);
+
+    const thisMonthShortened = sortedWeeks.map(
+        ([week, { work, break: br }]) => ({
+            name: week,
+            work: Math.round(work),
+            break: Math.round(br),
+        })
+    );
+
+    const allDays = workBreakComposition.map((entry) => ({
+        name: formatDate(entry.date, "short"),
+        work: Math.round(entry.work),
+        break: Math.round(entry.break),
+    }));
+
     return {
-        "this-week": thisWeek,
-        "this-month": thisMonthShortened,
+        "this-week": weekData,
+        "this-month-shortened": thisMonthShortened,
+        "all-days": allDays,
     };
 }
 
