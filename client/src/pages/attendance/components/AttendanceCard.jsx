@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from '../../../api/axios'
 
 const getStatus = () => {
   const statuses = ["ontime", "late", "absent", "remote"];
@@ -32,6 +33,32 @@ export const AttendanceCard = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [filteredDates, setFilteredDates] = useState([]);
   const [attendanceData, setAttendanceData] = useState([]);
+  const [startDate, setStartDate] = useState(new Date("21 July 2025"))
+  const [endDate, setEndDate] = useState(new Date("15 aug 2025"))
+  const [userid, setUserid] = useState("687dceb3fc671e86d4c1959a")
+
+  useEffect(() => {
+    const getAttendanceData = async () => {
+      const response = await api.get('api/employee/attendance/attendance-data', {
+        params: {
+          userid,
+          startDate,
+          endDate
+        }
+      })
+
+      const data = response.data.attendanceData.attendanceData;
+      setAttendanceData(data);
+
+      const parsedData = data.map((entry) => ({
+        date: new Date(entry.date),
+        status: entry.status,
+      }));
+      setFilteredDates(parsedData);
+    }
+
+    getAttendanceData();
+  }, [])
 
   const parseDate = (str) => {
     const [year, month, day] = str.split("-").map(Number);
@@ -44,7 +71,6 @@ export const AttendanceCard = () => {
     const monthName = months[d.getMonth()];
     return `${monthName} ${day}`;
   };
-
   const formatForInput = (date) => {
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -53,7 +79,7 @@ export const AttendanceCard = () => {
   };
 
   const generateDateRange = () => {
-    const parsedData = globalAttendanceData.map((entry) => ({
+    const parsedData = attendanceData.map((entry) => ({
       date: new Date(entry.date),
       status: entry.status,
     }));
@@ -67,20 +93,14 @@ export const AttendanceCard = () => {
     setToDate(formatForInput(now));
   };
 
-  useEffect(() => {
-    if (!fromDate || !toDate) {
-      applyDefaultDates();
-    } else {
-      generateDateRange();
-    }
-  }, [fromDate, toDate]);
-
   const headingMonth = filteredDates[0]
     ? months[filteredDates[0].date.getMonth()]
     : months[new Date().getMonth()];
   const headingYear = filteredDates[0]
     ? filteredDates[0].date.getFullYear()
     : new Date().getFullYear();
+
+    console.log("filtered", filteredDates)
 
   return (
     <div className="w-full h-full flex flex-col bg-purple-200 p-4 rounded-xl overflow-hidden">
@@ -154,17 +174,7 @@ export const AttendanceCard = () => {
                 <div className="text-black">{formatDisplayDate(entry.date)}</div>
                 <div>
                   <span className={`inline-block text-xs font-medium ${textColors[entry.status]}`}>
-                    {entry.status === "ontime"
-                      ? "On Time"
-                      : entry.status === "late"
-                      ? "Off Time"
-                      : entry.status === "absent"
-                      ? "Absent"
-                      : entry.status === "remote"
-                      ? "Remote"
-                      : entry.status === "present"
-                      ? "Present"
-                      : entry.status}
+                    {entry.status}
                   </span>
                 </div>
               </div>

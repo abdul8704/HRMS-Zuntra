@@ -10,7 +10,6 @@ router.get("/emp-data/me", requirePermission("general"), employeeController.getM
 router.patch("/updateprofile", requirePermission("general"), employeeController.updateEmpDataController);
 
 // either user himself or admin
-router.get("/attendance", requireAdminOrMe("employeeManagement"), employeeController.getAttendanceData);
 router.get("/:empId", requireAdminOrMe("employeeManagement"), employeeController.getDetailsOfaEmployee);
 router.get("/attendance/calendar", requireAdminOrMe("employeeManagement"), employeeController.getCalendarData);
 router.get("/attendance/work-break", requireAdminOrMe("employeeManagement"), employeeController.getWorkBreakComposition);
