@@ -361,13 +361,11 @@ const getWorkBreakCompositionOnly = async (
         holidays: hol,
     } = await fetchAttendanceRecords(userid, startDate, endDate, holidays);
     const workBreakComposition = [];
-    
     for (let i = 0; i < totalDays; i++) {
         const current = new Date(start.getTime() + i * 24 * 60 * 60 * 1000);
         const currentDateStr = current.toISOString().split("T")[0];
         const name = `${current.getDate()}/${current.getMonth() + 1}`;
         const day = current.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
-
         if (hol.includes(currentDateStr)) {
             workBreakComposition.push({
                 date: currentDateStr,
@@ -380,7 +378,6 @@ const getWorkBreakCompositionOnly = async (
         }
 
         const record = attendanceMap.get(currentDateStr);
-        console.log("Record: ",record);
         workBreakComposition.push({
             date: currentDateStr,
             name,
