@@ -73,6 +73,7 @@ export const WorkBreakComposition = ({ data }) => {
 
       {/* Filter Sidebar */}
       <div
+      
         className={`absolute top-0 right-0 h-full w-48 bg-white/80 backdrop-blur-md rounded-l-xl transition-transform duration-300 z-30 ${
           showFilters ? "translate-x-0" : "translate-x-full"
         }`}
