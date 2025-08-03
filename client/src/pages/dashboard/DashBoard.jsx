@@ -38,35 +38,39 @@ export const DashBoard = () => {
     "May your day be full of plans that work and work that matters!"
   ];
 
-  const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
-  const [isLoading, setIsLoading] = useState(false);
-  const [apiMessage, setApiMessage] = useState(null);
-  const [startDate, setStartDate] = useState(new Date().toLocaleDateString());
-  useEffect(() => {
-    if(!user?.userid)return;
-    const fetchWorkBreakData = async () => {
-      setIsLoading(true);
-      setApiMessage(null);
-      try{
-        const res = await api.get("/api/employee/attendance/work-break",{
-          params: {
-            startDate: '2025-07-01T18:30:00.000Z',
-            endDate: '2025-07-30T09:28:34.754Z',
-            userid: user?.userid,
-          }
-        });
-        console.log(res);
-      }
-      catch(err){
-        console.error(err);
-      }
-      finally{
-        setIsLoading(false);
-      }
-    }
-    fetchWorkBreakData();
+const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+const [isLoading, setIsLoading] = useState(false);
+const [apiMessage, setApiMessage] = useState(null);
+const [startDate, setStartDate] = useState(new Date());
+const today = new Date();
+const pad = (n) => n.toString().padStart(2, '0');
 
-  },[])
+useEffect(() => {
+  if (!user?.userid) return;
+
+  const fetchWorkBreakData = async () => {
+    setIsLoading(true);
+    setApiMessage(null);
+    try {
+      const res = await api.get("/api/employee/attendance/work-break", {
+        params: {
+          startDate: `${startDate.getFullYear()}-${pad(startDate.getMonth() + 1)}-01`,
+          endDate: `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`,
+          userid: user?.userid,
+        }
+      });
+      console.log("Response: ", res);
+      console.log("User Id:", user.userid);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchWorkBreakData();
+
+}, [authDataLoading]);
 
   const toggleReminderForm = () => {
     setReminderText('');
