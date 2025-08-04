@@ -22,7 +22,7 @@ import { Loading } from "./Loading";
 
 export function SidebarDetails({ type, empId }) {
   const navigate = useNavigate();
-  const {user, loading} = useAuth();
+  const { user, loading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showEditCard, setShowEditCard] = useState(false);
@@ -116,7 +116,7 @@ export function SidebarDetails({ type, empId }) {
             className="h-[50px] w-auto object-contain"
           />
         </div>
-        
+
         {type === "user" && isLoading && (<Loading />)}
         {/* User Details */}
         {type === "user" && !isLoading && (
@@ -238,15 +238,19 @@ export function SidebarDetails({ type, empId }) {
             </div>
 
             {/* Sticky Edit Button */}
-            <div className="sticky bottom-0 bg-[#BBD3CC] px-6 py-4">
-              <button
-                onClick={handleEditProfile}
-                className="w-full bg-white px-4 py-3 rounded-lg shadow-md hover:bg-gray-100 border border-gray-200 flex items-center justify-center gap-2 text-black opacity-70 hover:opacity-100 transition-opacity"
-              >
-                <Edit3 className="w-4 h-4" />
-                <span>Edit Profile</span>
-              </button>
-            </div>
+            {/* Show Edit Button only if the logged-in user is viewing their own profile */}
+            {user?._id === empId && (
+              <div className="sticky bottom-0 bg-[#BBD3CC] px-6 py-4">
+                <button
+                  onClick={handleEditProfile}
+                  className="w-full bg-white px-4 py-3 rounded-lg shadow-md hover:bg-gray-100 border border-gray-200 flex items-center justify-center gap-2 text-black opacity-70 hover:opacity-100 transition-opacity"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  <span>Edit Profile</span>
+                </button>
+              </div>
+            )}
+
           </>
         )}
       </div>
