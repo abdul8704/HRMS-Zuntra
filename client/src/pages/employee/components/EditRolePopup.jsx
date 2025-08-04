@@ -177,7 +177,7 @@ export const EditRolePopup = ({
       <div className="fixed inset-0 bg-black bg-opacity-20 flex items-center justify-center z-[2000] p-4">
         <div ref={containerRef} className="flex items-start justify-center gap-4 w-full max-w-[calc(100vw-2rem)] mx-auto">
           {/* Main Modal */}
-          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-[550px] shadow-lg flex flex-col gap-1 sm:gap-5 relative overflow-y-auto flex-shrink-0">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-[550px] shadow-lg flex flex-col gap-3 sm:gap-5 relative overflow-y-auto flex-shrink-0">
             {/* Header */}
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
