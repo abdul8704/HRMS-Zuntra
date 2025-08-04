@@ -70,7 +70,6 @@ export const AttendanceCard = ({ userid }) => {
   const [toDate, setToDate] = useState(formatForInput(initialEnd));
   const [showFilter, setShowFilter] = useState(false);
   const [filteredDates, setFilteredDates] = useState([]);
-<<<<<<< HEAD
   const [startDate, setStartDate] = useState(initialStart);
   const [endDate, setEndDate] = useState(initialEnd);
 
@@ -107,17 +106,9 @@ export const AttendanceCard = ({ userid }) => {
       console.error("Error fetching attendance:", err);
     }
   };
-=======
-  const [attendanceData, setAttendanceData] = useState([]);
-  const [startDate, setStartDate] = useState(new Date("21 July 2025"))
-  const [endDate, setEndDate] = useState(new Date("15 aug 2025"))
-  const [userid, setUserid] = useState("687dceb3fc671e86d4c1959a")
-  const [flag, setFlag] = useState(false);
->>>>>>> c3478a52f4c5b02ba8893051db169edc83b17612
 
  
   useEffect(() => {
-<<<<<<< HEAD
     const from = parseDate(formatForInput(initialStart));
     const to = parseDate(formatForInput(initialEnd), true);
     getAttendanceData(from, to);
@@ -131,86 +122,6 @@ export const AttendanceCard = ({ userid }) => {
     if (to > today) return;
     getAttendanceData(from, to);
   }, [fromDate, toDate, userid]);
-=======
-    const getAttendanceData = async () => {
-      const response = await api.get('api/employee/attendance/attendance-data', {
-        params: {
-          userid,
-          startDate,
-          endDate
-        }
-      })
-      console.log(response.data)
-      const data = response.data.attendanceData.attendanceData;
-      setAttendanceData(data);
-
-    const parsedData = data.map((entry) => {
-      const statusText = entry.status?.toLowerCase() || "";
-
-      let status = "present";
-      if (statusText.startsWith("remote")) {
-        status = "remote";
-      } else if (statusText.includes("absent")) {
-        status = "absent";
-      } else if (statusText.includes("late")) {
-        status = "late";
-      } else if (statusText.includes("early")) {
-        status = "ontime";
-      }
-
-      return {
-        date: new Date(entry.date),
-        status,
-        report: entry.status,
-      };
-    });
-
-    setFilteredDates(parsedData);
-  };
-
-  getAttendanceData();
-}, [flag]);
-
-
-  const parseDate = (str, isEnd = false) => {
-  const [year, month, day] = str.split("-").map(Number);
-  const date = new Date(year, month - 1, day);
-  if (isEnd) {
-   date.setHours(23, 59, 59, 999);// end of day
-  } else {
-    date.setHours(23, 59, 59, 999); // start of day
-  }
-  return date;
-};
-
-  const formatDisplayDate = (date) => {
-    const d = new Date(date);
-    const day = d.getDate();
-    const monthName = months[d.getMonth()];
-    return `${monthName} ${day}`;
-  };
-  const formatForInput = (date) => {
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${year}-${month}-${day}`;
-  };
-
-  const generateDateRange = () => {
-    const parsedData = attendanceData.map((entry) => ({
-      date: new Date(entry.date),
-      status: entry.status,
-    }));
-    setFilteredDates(parsedData);
-  };
-
-  const applyDefaultDates = () => {
-    const now = new Date();
-    const first = new Date(now.getFullYear(), now.getMonth(), 1);
-    setFromDate(formatForInput(first));
-    setToDate(formatForInput(now));
-  };
->>>>>>> c3478a52f4c5b02ba8893051db169edc83b17612
 
   const headingMonth = filteredDates[0]
     ? months[filteredDates[0].date.getMonth()]
