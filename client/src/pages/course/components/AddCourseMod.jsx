@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AddCourseIntro } from './AddCourseIntro';
 import { AddCourseNavigator } from './AddCourseNavigator';
 import { AddCourseModule } from './AddCourseModule';
 import { AddCourseSubModule } from './AddCourseSubModule';
 import { AssignmentModule } from './AssignmentModule';
-import { Plus } from 'lucide-react';
 
 export const AddCourseMod = () => {
   const [courseData, setCourseData] = useState({
     courseName: '',
     instructorName: '',
     courseDescription: '',
-    introVideo: null
+    introVideo: null,
   });
 
   const [errors, setErrors] = useState({});
@@ -126,17 +125,11 @@ export const AddCourseMod = () => {
   };
 
   const handleSubModuleChange = (moduleStep, updatedData) => {
-    setSubModuleData(prev => ({
-      ...prev,
-      [moduleStep]: updatedData
-    }));
+    setSubModuleData(prev => ({ ...prev, [moduleStep]: updatedData }));
   };
 
   const handleAssignmentChange = (moduleStep, updatedData) => {
-    setAssignmentData(prev => ({
-      ...prev,
-      [moduleStep]: updatedData
-    }));
+    setAssignmentData(prev => ({ ...prev, [moduleStep]: updatedData }));
   };
 
   const handleModuleNext = (moduleStep) => {
@@ -164,16 +157,29 @@ export const AddCourseMod = () => {
   };
 
   const addNewModule = () => {
-    const newModuleNumber = moduleCount + 1;
-    setModuleCount(newModuleNumber);
-    setCurrentStep(`Module ${newModuleNumber}`);
+    const currentModule = currentStep;
+    const module = moduleData[currentModule];
+    const submodules = subModuleData[currentModule] || [];
+    const assignments = assignmentData[currentModule] || [];
+
+    const moduleValid = module?.moduleName?.trim();
+    const submodulesValid = submodules.length > 0 && submodules.every(s => s.submoduleName?.trim());
+    const assignmentsValid = assignments.length > 0 && assignments.every(a => a.assignmentTitle?.trim());
+
+    if (moduleValid && submodulesValid && assignmentsValid) {
+      const newModuleNumber = moduleCount + 1;
+      setModuleCount(newModuleNumber);
+      setCurrentStep(`Module ${newModuleNumber}`);
+    } else {
+      alert('Please complete the current module, submodules, and assignments before adding a new module.');
+    }
   };
 
   const isCourseIntroDisabled = () => completedSteps.includes('Course Intro');
 
   return (
-    <div className="flex w-full h-full gap-4">
-      <div className="w-64">
+    <div className="flex flex-col md:flex-row w-full h-full gap-4 p-4">
+      <div className="md:w-64 w-full md:sticky top-0">
         <AddCourseNavigator
           allSteps={allSteps}
           completedSteps={completedSteps}
@@ -185,7 +191,7 @@ export const AddCourseMod = () => {
         />
       </div>
 
-      <div className="flex-1 max-w-5xl mx-auto bg-white rounded-lg p-6 shadow-lg overflow-y-auto">
+      <div className="flex-1 max-w-5xl mx-auto bg-white rounded-lg p-4 md:p-6 shadow-lg overflow-y-auto">
         {currentStep === 'Course Intro' && (
           <AddCourseIntro
             courseData={courseData}
@@ -226,6 +232,18 @@ export const AddCourseMod = () => {
                   initialData={assignmentData[currentStep] || []}
                   onChange={(updatedData) => handleAssignmentChange(currentStep, updatedData)}
                 />
+
+                <div className="mt-6 pt-4 border-t border-gray-300">
+                  <button
+                    onClick={addNewModule}
+                    className="w-full px-4 py-2 bg-[#A6C4BA] hover:bg-[#8fb5a7] text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Add Module
+                  </button>
+                </div>
               </div>
             )}
           </>
@@ -234,4 +252,3 @@ export const AddCourseMod = () => {
     </div>
   );
 };
-

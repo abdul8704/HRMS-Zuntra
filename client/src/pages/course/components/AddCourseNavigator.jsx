@@ -125,19 +125,7 @@ export const AddCourseNavigator = ({
       </ul>
 
       {/* Add Module Button */}
-      {shouldShowAddModule() && (
-        <div className="mt-6 pt-4 border-t border-gray-300">
-          <button
-            onClick={onAddModule}
-            className="w-full px-4 py-2 bg-[#A6C4BA] hover:bg-[#8fb5a7] text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Add Module
-          </button>
-        </div>
-      )}
+      
 
     </div>
   );

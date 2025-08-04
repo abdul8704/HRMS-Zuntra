@@ -69,8 +69,8 @@ import React, { useState } from "react";
 
   return (
     <div className="w-full max-w-5xl mx-auto p-4 mt-6 bg-white rounded-md shadow border space-y-6">
-      <div className="border-l-4 border-purple-500 pl-3 mb-4">
-        <h3 className="text-xl font-semibold text-purple-700">Assignment Builder</h3>
+      <div className="border-l-4 border-black-500 pl-3 mb-4">
+        <h3 className="text-xl font-semibold text-black-700">Assignment Builder</h3>
       </div>
 
       {questions.map((q, qIndex) => (
