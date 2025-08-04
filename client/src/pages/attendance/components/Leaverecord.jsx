@@ -27,7 +27,14 @@ const months = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-export const AttendanceCard = () => {
+const applicableToOptions = [
+  { value: "all", label: "All Employees" },
+  { value: "department", label: "Department" },
+  { value: "individual", label: "Individual" },
+  { value: "team", label: "Team" },
+];
+
+export const Leaverecord = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [showFilter, setShowFilter] = useState(false);
@@ -36,6 +43,7 @@ export const AttendanceCard = () => {
   const [startDate, setStartDate] = useState(new Date("21 July 2025"))
   const [endDate, setEndDate] = useState(new Date("15 aug 2025"))
   const [userid, setUserid] = useState("687dceb3fc671e86d4c1959a")
+  const [applicableTo, setApplicableTo] = useState("all");
  
   useEffect(() => {
     const getAttendanceData = async () => {
@@ -50,26 +58,33 @@ export const AttendanceCard = () => {
       const data = response.data.attendanceData.attendanceData;
       setAttendanceData(data);
 
-     const parsedData = data.map((entry) => {
-  const statusText = entry.status?.toLowerCase() || "";
+      const parsedData = data.map((entry) => {
+        const statusText = entry.status?.toLowerCase() || "";
 
-  let status = "present";
-  if (statusText.startsWith("remote")) {
-    status = "remote";
-  } else if (statusText.includes("absent")) {
-    status = "absent";
-  } else if (statusText.includes("late")) {
-    status = "late";
-  } else if (statusText.includes("early")) {
-    status = "ontime";
-  }
+        let status = "present";
+        let reason = "N/A";
+        
+        if (statusText.startsWith("remote")) {
+          status = "remote";
+          reason = "Working from home";
+        } else if (statusText.includes("absent")) {
+          status = "absent";
+          reason = entry.reason || "Personal leave";
+        } else if (statusText.includes("late")) {
+          status = "late";
+          reason = entry.reason || "Traffic delay";
+        } else if (statusText.includes("early")) {
+          status = "ontime";
+          reason = "N/A";
+        }
 
-  return {
-    date: new Date(entry.date),
-    status,
-    report: entry.status, // keep the original for display
-  };
-});
+        return {
+          date: new Date(entry.date),
+          status,
+          report: entry.status,
+          reason: reason,
+        };
+      });
 
       setFilteredDates(parsedData);
     }
@@ -88,6 +103,7 @@ export const AttendanceCard = () => {
     const monthName = months[d.getMonth()];
     return `${monthName} ${day}`;
   };
+  
   const formatForInput = (date) => {
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -99,6 +115,7 @@ export const AttendanceCard = () => {
     const parsedData = attendanceData.map((entry) => ({
       date: new Date(entry.date),
       status: entry.status,
+      reason: entry.reason || "N/A",
     }));
     setFilteredDates(parsedData);
   };
@@ -117,13 +134,13 @@ export const AttendanceCard = () => {
     ? filteredDates[0].date.getFullYear()
     : new Date().getFullYear();
 
-    console.log("filtered", filteredDates)
+  console.log("filtered", filteredDates)
 
   return (
     <div className="w-full h-full flex flex-col bg-purple-200 p-4 rounded-xl overflow-hidden">
       <div className="flex items-start justify-between flex-wrap gap-2 mb-3">
         <h2 className="text-base font-bold tracking-wide text-gray-800">
-          ATTENDANCE RECORD
+          LEAVE RECORD
         </h2>
         <p className="text-sm text-gray-700 font-medium">
           {headingMonth.toUpperCase()} {headingYear}
@@ -146,6 +163,24 @@ export const AttendanceCard = () => {
             />
           </svg>
         </button>
+      </div>
+
+      {/* Applicable To Dropdown */}
+      <div className="mb-3">
+        <div className="flex items-center gap-2 flex-wrap">
+          <label className="text-sm font-semibold text-gray-600">Applicable To:</label>
+          <select
+            value={applicableTo}
+            onChange={(e) => setApplicableTo(e.target.value)}
+            className="px-3 py-1 bg-black/10 text-black border rounded text-sm min-w-32"
+          >
+            {applicableToOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Filter */}
@@ -173,13 +208,14 @@ export const AttendanceCard = () => {
           </div>
         )}
 
-        {/* Table header */}
-        <div className="grid grid-cols-2 bg-black/10 px-4 py-2 font-semibold text-sm flex-shrink-0">
-          <div>Date</div>
-          <div>Report</div>
+        {/* Table header - Responsive 3 columns */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 bg-black/10 px-4 py-2 font-semibold text-sm flex-shrink-0 gap-2">
+          <div className="sm:col-span-1">Date</div>
+          <div className="sm:col-span-1 hidden sm:block">Status</div>
+          <div className="sm:col-span-1">Reason</div>
         </div>
 
-        {/* Table rows */}
+        {/* Table rows - Responsive */}
         <div className="overflow-y-auto flex-grow min-h-0">
           {filteredDates.map((entry, idx) => (
             <div key={idx} className="relative py-2">
@@ -187,13 +223,28 @@ export const AttendanceCard = () => {
               <div
                 className={`absolute top-1 bottom-1 left-0 right-0 opacity-90 z-10 ${overlayBgColors[entry.status]}`}
               />
-              <div className="relative z-20 grid grid-cols-2 items-center px-4 text-sm">
-                <div className="text-black">{formatDisplayDate(entry.date)}</div>
-                <div>
-                 <span className={`inline-block text-xs font-medium ${textColors[entry.status]}`}>
-  {entry.report}
-</span>
-
+              <div className="relative z-20 grid grid-cols-1 sm:grid-cols-3 items-start sm:items-center px-4 text-sm gap-2">
+                {/* Date column */}
+                <div className="text-black font-medium sm:font-normal">
+                  <span className="sm:hidden font-semibold text-gray-600">Date: </span>
+                  {formatDisplayDate(entry.date)}
+                </div>
+                
+                {/* Status column - hidden on mobile, shown on small screens and up */}
+                <div className="hidden sm:block">
+                  <span className={`inline-block text-xs font-medium ${textColors[entry.status]}`}>
+                    {entry.report}
+                  </span>
+                </div>
+                
+                {/* Reason column */}
+                <div className="text-black">
+                  <span className="sm:hidden font-semibold text-gray-600">Status: </span>
+                  <span className={`sm:hidden inline-block text-xs font-medium mr-2 ${textColors[entry.status]}`}>
+                    {entry.report}
+                  </span>
+                  <span className="sm:hidden font-semibold text-gray-600">Reason: </span>
+                  <span className="text-gray-700">{entry.reason}</span>
                 </div>
               </div>
             </div>
