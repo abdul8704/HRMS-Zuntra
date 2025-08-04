@@ -38,9 +38,15 @@ const formatForInput = (date) => {
   return `${year}-${month}-${day}`;
 };
 
-const parseDate = (str) => {
+const parseDate = (str, isEnd = false) => {
   const [year, month, day] = str.split("-").map(Number);
-  return new Date(year, month - 1, day);
+  const date = new Date(year, month - 1, day);
+  if (isEnd) {
+    date.setHours(23, 59, 59, 999);
+  } else {
+    date.setHours(0, 0, 0, 0);
+  }
+  return date;
 };
 
 const convertMinutesToHours = (text) => {
@@ -59,26 +65,23 @@ export const AttendanceCard = ({ userid }) => {
   const today = new Date();
   const initialStart = new Date(today.getFullYear(), today.getMonth(), 1);
   const initialEnd = today;
-  
+
   const [fromDate, setFromDate] = useState(formatForInput(initialStart));
   const [toDate, setToDate] = useState(formatForInput(initialEnd));
   const [showFilter, setShowFilter] = useState(false);
   const [filteredDates, setFilteredDates] = useState([]);
   const [startDate, setStartDate] = useState(initialStart);
   const [endDate, setEndDate] = useState(initialEnd);
-  
-  console.log(userid);
+
   const getAttendanceData = async (start, end) => {
     try {
       const response = await api.get('/api/employee/attendance/attendance-data', {
         params: {
           startDate: start.toISOString(),
           endDate: end.toISOString(),
-          userid: "687dce50e512d4b788e009f8",
+          userid,
         }
       });
-
-      console.log("Fetched attendance:", response);
 
       const rawData = response.data.attendanceData.attendanceData;
 
@@ -105,19 +108,19 @@ export const AttendanceCard = ({ userid }) => {
   };
 
   useEffect(() => {
-    getAttendanceData(initialStart, initialEnd);
-  }, []);
+    const from = parseDate(formatForInput(initialStart));
+    const to = parseDate(formatForInput(initialEnd), true);
+    getAttendanceData(from, to);
+  }, [userid]);
 
   useEffect(() => {
     if (!fromDate || !toDate) return;
     const from = parseDate(fromDate);
-    const to = parseDate(toDate);
+    const to = parseDate(toDate, true);
     const today = new Date();
-
     if (to > today) return;
-
     getAttendanceData(from, to);
-  }, [fromDate, toDate]);
+  }, [fromDate, toDate, userid]);
 
   const headingMonth = filteredDates[0]
     ? months[filteredDates[0].date.getMonth()]
