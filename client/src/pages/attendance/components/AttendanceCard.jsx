@@ -39,22 +39,18 @@ export const AttendanceCard = () => {
   const [flag, setFlag] = useState(false);
 
  
- useEffect(() => {
-  const getAttendanceData = async () => {
-    const from = fromDate ? parseDate(fromDate) : startDate;
-const to = toDate ? parseDate(toDate, true) : endDate;
-
-
-    const response = await api.get('api/employee/attendance/attendance-data', {
-      params: {
-        userid,
-        startDate: from,
-        endDate: to
-      }
-    });
-
-    const data = response.data.attendanceData.attendanceData;
-    setAttendanceData(data);
+  useEffect(() => {
+    const getAttendanceData = async () => {
+      const response = await api.get('api/employee/attendance/attendance-data', {
+        params: {
+          userid,
+          startDate,
+          endDate
+        }
+      })
+      console.log(response.data)
+      const data = response.data.attendanceData.attendanceData;
+      setAttendanceData(data);
 
     const parsedData = data.map((entry) => {
       const statusText = entry.status?.toLowerCase() || "";

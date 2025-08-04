@@ -5,7 +5,7 @@ import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
 import { TimeCard } from '../dashboard/components/TimeCard';
 import { WorkBreakComposition } from '../dashboard/components/WorkBreakComposititon';
-
+import { Leaverecord } from "./components/Leaverecord";
 import { AttendanceCalendar } from './components/AttendanceCalendar';
 import { AttendanceCard } from './components/AttendanceCard';
 import { LeaveForm } from './components/LeaveForm';
@@ -143,16 +143,22 @@ export const Attendance = () => {
 
                 {/* ----- 'schedule' tab ----- */}
                 {navId === 'schedule' && (
-                    <div className="flex flex-col gap-4 md:flex-row w-full h-full overflow-auto">
-                        {/* Calendar Section */}
-                        <div className="w-full md:flex-1">
-                            <div className="w-full aspect-[4/3] md:aspect-auto">
+                    <div className="flex flex-col gap-4 lg:flex-row w-full h-full overflow-auto">
+                        {/* Left Half - Calendar and Leave Record Section */}
+                        <div className="flex flex-col gap-4 w-full lg:w-1/2">
+                            {/* Calendar */}
+                            <div className="w-full h-[400px] lg:h-[500px]">
                                 <AttendanceCalendar disableFutureDates={false} />
+                            </div>
+                            
+                            {/* Leave Record */}
+                            <div className="w-full overflow-auto">
+                                <Leaverecord />
                             </div>
                         </div>
 
-                        {/* Cards Section */}
-                        <div className="flex flex-col gap-4 w-full md:flex-1">
+                        {/* Right Half - Cards Section */}
+                        <div className="flex flex-col items-center justify-center gap-4 w-full lg:w-1/2">
                             <div className="w-full overflow-auto">
                                 <SampleCard />
                             </div>

@@ -4,6 +4,7 @@ const roleService = require("../services/rolesService");
 const ApiError = require("../errors/ApiError");
 const asyncHandler = require("express-async-handler");
 const { processWorkBreakData } = require("../utils/attendanceHelper");
+const AttendanceHelper = require("../utils/attendanceHelper");
 
 const fetchAllEmployees = asyncHandler(async (req, res) => {
     const employees = await employeeService.getAllEmployees();
@@ -253,6 +254,20 @@ const getAttendanceData = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, attendanceData });
 });
 
+const getTimeCards = asyncHandler(async (req, res) => {
+    const { userid, date } = req.query;
+
+    console.log(userid, date)
+
+    if (!userid || !date)
+        throw new ApiError(400, "Insufficient data to request time cards.");
+
+    const today = AttendanceHelper.normalizeToUTCDate(new Date(date));
+    const timeCards = await attendanceService.getTimeCards(userid, today);
+
+    res.status(200).json({ success: true, timeCards });
+});
+
 module.exports = {
     handleLogout,
     getAttendanceData,
@@ -269,4 +284,5 @@ module.exports = {
     getCalendarData,
     getWorkBreakComposition,
     getAttendanceData,
+    getTimeCards,
 };
