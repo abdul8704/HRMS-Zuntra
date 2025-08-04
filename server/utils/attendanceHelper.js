@@ -119,10 +119,30 @@ function processWorkBreakData(workBreakComposition, todayStr) {
     };
 }
 
+const formatTime = (inputTime) => {
+
+    const localDate = new Date(inputTime);
+
+    const hours = String(localDate.getHours()).padStart(2, '0');
+    const minutes = String(localDate.getMinutes()).padStart(2, '0');
+
+    const formattedTime = `${hours}:${minutes}`;
+
+    return (formattedTime);
+}
+
+const convertMinutes = (totalMinutes) => {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}hr, ${minutes}min`;
+};
+
 module.exports = {
     toTimeOnly,
     normalizeToUTCDate,
     toUTCTimeOnly,
     processWorkBreakData,
-    parseDateAsUTC
+    parseDateAsUTC,
+    formatTime,
+    convertMinutes
 };

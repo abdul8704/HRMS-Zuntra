@@ -257,6 +257,8 @@ const getAttendanceData = asyncHandler(async (req, res) => {
 const getTimeCards = asyncHandler(async (req, res) => {
     const { userid, date } = req.query;
 
+    console.log(userid, date)
+
     if (!userid || !date)
         throw new ApiError(400, "Insufficient data to request time cards.");
 

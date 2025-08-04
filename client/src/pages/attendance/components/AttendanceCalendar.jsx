@@ -31,7 +31,7 @@ export const AttendanceCalendar = ({
   const [holidays,setHolidays] = useState([]);
   useEffect(() => {
     (async () => {
-      try { setHolidays(await (await fetch(holidaysEndpoint)).json()); }
+      try { setHolidays([]) }
       catch (e) { console.error('Holiday fetch failed', e); }
     })();
   }, [holidaysEndpoint]);

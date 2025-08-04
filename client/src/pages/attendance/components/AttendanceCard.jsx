@@ -46,7 +46,7 @@ export const AttendanceCard = () => {
           endDate
         }
       })
-
+      console.log(response.data)
       const data = response.data.attendanceData.attendanceData;
       setAttendanceData(data);
 
