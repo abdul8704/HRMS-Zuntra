@@ -18,11 +18,11 @@ export const LeaveFormHistory = () => {
     try {
       const fetchLeaveReqs = async () => {
         setLoading(true);
-        const requests = await api.get("/api/employee/leave/requests");
+        const requests = await api.get("/api/hr/leave/all-req");
         if (requests.data.success) {
           setLoading(false);
         }
-        setLeaveHistory(requests.data.leaveRequests);
+        setLeaveHistory(requests.data.LeaveData);
       }
       fetchLeaveReqs();
     }

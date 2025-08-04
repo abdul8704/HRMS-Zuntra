@@ -1,75 +1,107 @@
-import React, { useState, useEffect } from "react";
-import { TimeCard } from '../../dashboard/components/TimeCard';
-import { AttendanceCalendar } from '../../attendance/components/AttendanceCalendar';
-import { AttendanceCard } from '../../attendance/components/AttendanceCard';
+import React, { useState, useEffect } from 'react'
+import { TimeCard } from '../../dashboard/components/TimeCard'
+import { AttendanceCalendar } from '../../attendance/components/AttendanceCalendar'
+import { AttendanceCard } from '../../attendance/components/AttendanceCard'
 import { WorkBreakComposition } from '../../dashboard/components/WorkBreakComposititon'
-import api from '../../../api/axios';
-
+import api from '../../../api/axios'
 
 export const EmployeeDetailsAssignment = ({ userid }) => {
-  const [calendarData, setCalendarData] = useState([]);
+  const [calendarData, setCalendarData] = useState([])
+  const [loginTime, setLoginTime] = useState('N/A');
+  const [logoutTime, setLogoutTime] = useState('N/A');
+  const [workTime, setWorkTime] = useState('N/A');
+  const [breakTime, setBreakTime] = useState('N/A');
+
 
   useEffect(() => {
-    fetchCalendarData(new Date().getFullYear(), new Date().getMonth() + 1);
-  }, [userid]);
+    fetchCalendarData(new Date().getFullYear(), new Date().getMonth() + 1)
+  }, [userid])
 
+  useEffect(() => {
+    const today = new Date().toISOString()
+    console.log('user is ', userid)
+    try {
+      const getTimeCards = async () => {
+        const response = await api.get('api/employee/attendace/time-cards', {
+          params: {
+            userid: String(userid),
+            date: new Date().toISOString()
+          }
+        })
 
+        if(response.data.success){
+          setLoginTime(response.data.timeCards.login)
+          setLogoutTime(response.data.timeCards.logout)
+          setWorkTime(response.data.timeCards.work)
+          setBreakTime(response.data.timeCards.break)
+        }
+      }
+      getTimeCards();
+    } catch (error) {
+      console.log(error)
+    }
+
+  }, [])
 
   const fetchCalendarData = async (year, month) => {
-    if (!userid) return;
+    if (!userid) return
 
-    const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0)).toISOString();
-    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59)).toISOString();
-
+    const startDate = new Date(
+      Date.UTC(year, month - 1, 1, 0, 0, 0)
+    ).toISOString()
+    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59)).toISOString()
 
     try {
       const response = await api.get('/api/employee/attendance/calendar', {
         params: {
           startDate,
           endDate,
-          userid,
+          userid
         }
-      });
+      })
 
-      setCalendarData(response.data.calendarData);
-      console.log(`Fetched data for ${month}/${year}:`, response.data.calendarData);
+      setCalendarData(response.data.calendarData)
+      console.log(
+        `Fetched data for ${month}/${year}:`,
+        response.data.calendarData
+      )
     } catch (err) {
-      console.error('Error fetching calendar data:', err);
+      console.error('Error fetching calendar data:', err)
     }
-  };
+  }
 
   const handleMonthYearChange = (year, month) => {
-    fetchCalendarData(year, month);
-  };
+    fetchCalendarData(year, month)
+  }
 
   return (
-    <div className="flex-1 grid grid-cols-8 grid-rows-12 gap-2 h-full w-full gap-[1rem]">
-      <div className="col-start-1 row-start-1 row-end-3">
-        <TimeCard state="in" time="09:20" showLabel={false} color={true} />
+    <div className='flex-1 grid grid-cols-8 grid-rows-12 gap-2 h-full w-full gap-[1rem]'>
+      <div className='col-start-1 row-start-1 row-end-3'>
+        <TimeCard state='in' time={loginTime} showLabel={false} color={true} />
       </div>
 
-      <div className="col-start-1 row-start-3 row-end-5">
-        <TimeCard state="out" time="09:20" showLabel={false} color={true} />
+      <div className='col-start-1 row-start-3 row-end-5'>
+        <TimeCard state='out' time={logoutTime} showLabel={false} color={true} />
       </div>
 
-      <div className="col-start-2 row-start-1 row-end-3">
-        <TimeCard state="work" time="09:20" showLabel={false} color={true} />
+      <div className='col-start-2 row-start-1 row-end-3'>
+        <TimeCard state='work' time={workTime} showLabel={false} color={true} />
       </div>
 
-      <div className="col-start-2 row-start-3 row-end-5">
-        <TimeCard state="break" time="09:20" showLabel={false} color={true} />
+      <div className='col-start-2 row-start-3 row-end-5'>
+        <TimeCard state='break' time={breakTime} showLabel={false} color={true} />
       </div>
 
-      <div className="bg-black/10 col-start-3 col-end-6 row-start-1 row-end-5 rounded-lg overflow-hidden">
+      <div className='bg-black/10 col-start-3 col-end-6 row-start-1 row-end-5 rounded-lg overflow-hidden'>
         <WorkBreakComposition />
       </div>
 
-      <div className="col-start-6 col-end-10 row-start-1 row-end-7 rounded-lg ">
+      <div className='col-start-6 col-end-10 row-start-1 row-end-7 rounded-lg '>
         {/* Attendance Calendar */}
         <AttendanceCard />
       </div>
 
-      <div className="bg-black/20 col-start-6 col-end-10 row-start-7 row-end-12 min-h-0 rounded-lg p-4">
+      <div className='bg-black/20 col-start-6 col-end-10 row-start-7 row-end-12 min-h-0 rounded-lg p-4'>
         Leave
       </div>
 
@@ -79,12 +111,15 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
         </div>
       </div> */}
 
-      <div className="col-start-1 col-end-6 row-start-5 row-end-12 rounded-lg">
+      <div className='col-start-1 col-end-6 row-start-5 row-end-12 rounded-lg'>
         {/* Attendance Report */}
         {/* <div className="h-full overflow-auto"> */}
-        <AttendanceCalendar calendarData={calendarData} onMonthYearChange={handleMonthYearChange} />
+        <AttendanceCalendar
+          calendarData={calendarData}
+          onMonthYearChange={handleMonthYearChange}
+        />
         {/* </div> */}
       </div>
     </div>
-  );
-};
+  )
+}
