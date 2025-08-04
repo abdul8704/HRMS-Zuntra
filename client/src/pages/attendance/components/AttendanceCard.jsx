@@ -36,51 +36,64 @@ export const AttendanceCard = () => {
   const [startDate, setStartDate] = useState(new Date("21 July 2025"))
   const [endDate, setEndDate] = useState(new Date("15 aug 2025"))
   const [userid, setUserid] = useState("687dceb3fc671e86d4c1959a")
+  const [flag, setFlag] = useState(false);
+
  
-  useEffect(() => {
-    const getAttendanceData = async () => {
-      const response = await api.get('api/employee/attendance/attendance-data', {
-        params: {
-          userid,
-          startDate,
-          endDate
-        }
-      })
+ useEffect(() => {
+  const getAttendanceData = async () => {
+    const from = fromDate ? parseDate(fromDate) : startDate;
+const to = toDate ? parseDate(toDate, true) : endDate;
 
-      const data = response.data.attendanceData.attendanceData;
-      setAttendanceData(data);
 
-     const parsedData = data.map((entry) => {
-  const statusText = entry.status?.toLowerCase() || "";
+    const response = await api.get('api/employee/attendance/attendance-data', {
+      params: {
+        userid,
+        startDate: from,
+        endDate: to
+      }
+    });
 
-  let status = "present";
-  if (statusText.startsWith("remote")) {
-    status = "remote";
-  } else if (statusText.includes("absent")) {
-    status = "absent";
-  } else if (statusText.includes("late")) {
-    status = "late";
-  } else if (statusText.includes("early")) {
-    status = "ontime";
+    const data = response.data.attendanceData.attendanceData;
+    setAttendanceData(data);
+
+    const parsedData = data.map((entry) => {
+      const statusText = entry.status?.toLowerCase() || "";
+
+      let status = "present";
+      if (statusText.startsWith("remote")) {
+        status = "remote";
+      } else if (statusText.includes("absent")) {
+        status = "absent";
+      } else if (statusText.includes("late")) {
+        status = "late";
+      } else if (statusText.includes("early")) {
+        status = "ontime";
+      }
+
+      return {
+        date: new Date(entry.date),
+        status,
+        report: entry.status,
+      };
+    });
+
+    setFilteredDates(parsedData);
+  };
+
+  getAttendanceData();
+}, [flag]);
+
+
+  const parseDate = (str, isEnd = false) => {
+  const [year, month, day] = str.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  if (isEnd) {
+   date.setHours(23, 59, 59, 999);// end of day
+  } else {
+    date.setHours(23, 59, 59, 999); // start of day
   }
-
-  return {
-    date: new Date(entry.date),
-    status,
-    report: entry.status, // keep the original for display
-  };
-});
-
-      setFilteredDates(parsedData);
-    }
-
-    getAttendanceData();
-  }, [])
-
-  const parseDate = (str) => {
-    const [year, month, day] = str.split("-").map(Number);
-    return new Date(year, month - 1, day);
-  };
+  return date;
+};
 
   const formatDisplayDate = (date) => {
     const d = new Date(date);
@@ -150,28 +163,42 @@ export const AttendanceCard = () => {
 
       {/* Filter */}
       <div className="flex flex-col flex-grow min-h-0 overflow-hidden rounded-md">
-        {showFilter && (
-          <div className="flex gap-4 px-4 py-1 border-b border-purple-200 flex-wrap bg-transparent">
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-semibold text-gray-600">From</label>
-              <input
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="px-3 py-1 bg-black/10 text-black border rounded text-sm"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-semibold text-gray-600">To</label>
-              <input
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="px-3 py-1 bg-black/10 text-black border rounded text-sm"
-              />
-            </div>
-          </div>
-        )}
+{showFilter && (
+  <div className="w-full flex justify-center py-2">
+    <div className="bg-purple-100 rounded-xl p-4 w-[450px] flex flex-col items-center shadow-md">
+      <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
+        {/* From Date */}
+        <div className="flex flex-col gap-0.5 w-full sm:w-auto">
+          <label className="text-sm font-semibold text-gray-600">From</label>
+          <input
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            className="px-3 py-1 bg-white text-black border rounded text-sm w-full sm:w-[160px]"
+          />
+        </div>
+
+        {/* To Date */}
+        <div className="flex flex-col gap-0.5 w-full sm:w-auto">
+          <label className="text-sm font-semibold text-gray-600">To</label>
+          <input
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            className="px-3 py-1 bg-white text-black border rounded text-sm w-full sm:w-[160px]"
+          />
+        </div>
+      </div>
+
+      <button
+        onClick={() => setFlag((prev) => !prev)}
+        className="mt-3 px-5 py-1 text-sm bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded"
+      >
+        Apply
+      </button>
+    </div>
+  </div>
+)}
 
         {/* Table header */}
         <div className="grid grid-cols-2 bg-black/10 px-4 py-2 font-semibold text-sm flex-shrink-0">
