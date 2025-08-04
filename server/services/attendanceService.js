@@ -452,7 +452,8 @@ const getAttendanceDataOnly = async (userid, startDate, endDate) => {
             else if (baseStatus === "remote") remoteCount++;
 
             if (isHoliday) {
-                status = `holiday - worked for ${workingMins} minutes`;
+                if(workingMins>0) status = `holiday - worked for ${workingMins} minutes`;
+                else status = "holiday"
             }
         } else if (!isHoliday) {
             status = "absent";
