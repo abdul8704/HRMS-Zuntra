@@ -36,7 +36,7 @@ export const AttendanceCard = () => {
   const [startDate, setStartDate] = useState(new Date("21 July 2025"))
   const [endDate, setEndDate] = useState(new Date("15 aug 2025"))
   const [userid, setUserid] = useState("687dceb3fc671e86d4c1959a")
-
+ 
   useEffect(() => {
     const getAttendanceData = async () => {
       const response = await api.get('api/employee/attendance/attendance-data', {
@@ -50,10 +50,27 @@ export const AttendanceCard = () => {
       const data = response.data.attendanceData.attendanceData;
       setAttendanceData(data);
 
-      const parsedData = data.map((entry) => ({
-        date: new Date(entry.date),
-        status: entry.status,
-      }));
+     const parsedData = data.map((entry) => {
+  const statusText = entry.status?.toLowerCase() || "";
+
+  let status = "present";
+  if (statusText.startsWith("remote")) {
+    status = "remote";
+  } else if (statusText.includes("absent")) {
+    status = "absent";
+  } else if (statusText.includes("late")) {
+    status = "late";
+  } else if (statusText.includes("early")) {
+    status = "ontime";
+  }
+
+  return {
+    date: new Date(entry.date),
+    status,
+    report: entry.status, // keep the original for display
+  };
+});
+
       setFilteredDates(parsedData);
     }
 
@@ -173,9 +190,10 @@ export const AttendanceCard = () => {
               <div className="relative z-20 grid grid-cols-2 items-center px-4 text-sm">
                 <div className="text-black">{formatDisplayDate(entry.date)}</div>
                 <div>
-                  <span className={`inline-block text-xs font-medium ${textColors[entry.status]}`}>
-                    {entry.status}
-                  </span>
+                 <span className={`inline-block text-xs font-medium ${textColors[entry.status]}`}>
+  {entry.report}
+</span>
+
                 </div>
               </div>
             </div>
