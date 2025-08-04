@@ -14,6 +14,7 @@ router.get("/:empId", requireAdminOrMe("employeeManagement"), employeeController
 router.get("/attendance/calendar", requireAdminOrMe("employeeManagement"), employeeController.getCalendarData);
 router.get("/attendance/work-break", requireAdminOrMe("employeeManagement"), employeeController.getWorkBreakComposition);
 router.get("/attendance/attendance-data", requireAdminOrMe("employeeManagement"), employeeController.getAttendanceData);
+router.get("/attendace/time-cards", requireAdminOrMe("employeeManagement"), employeeController.getTimeCards);
 
 // private routes
 router.get("/", requirePermission("employeeManagement"), employeeController.fetchAllEmployees);

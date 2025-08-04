@@ -474,6 +474,25 @@ const getAttendanceDataOnly = async (userid, startDate, endDate) => {
     };
 };
 
+const getTimeCards = async (userid, date) => {
+    const attendance = await Attendance.findOne({ userid, date });
+
+    if (!attendance) {
+        throw new ApiError(404, "No attendance record found for the given date");
+    }
+
+    const N = attendance.sessions.length;
+
+    const timeCards = {
+        login: (attendance.sessions[0].loginTime)? new Date(attendance.sessions[0].loginTime).toLocaleTimeString() : 'N/A',
+        logout: (attendance.sessions[N - 1].logoutTime)? new Date(attendance.sessions[N - 1].logoutTime).toLocaleTimeString() : 'N/A',
+        work: attendance.workingMinutes || 'N/A',
+        break: attendance.breakMinutes || 'N/A',
+    };
+
+    return timeCards;
+};
+
 module.exports = {
     markAttendanceOnLogin,
     markEndOfSession,
@@ -485,4 +504,5 @@ module.exports = {
     getCalendarDataOnly,
     getWorkBreakCompositionOnly,
     getAttendanceDataOnly,
+    getTimeCards,
 };
