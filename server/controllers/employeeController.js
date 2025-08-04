@@ -217,7 +217,7 @@ const getCalendarData = asyncHandler(async (req, res) => {
 
 const getWorkBreakComposition = asyncHandler(async (req, res) => {
     const { userid, startDate, endDate } = req.query;
-
+    console.log(req.query);
     if (!userid || !startDate || !endDate)
         throw new ApiError(400, "Start date and end date not provided");
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
 
 import { Sidebar } from '../../components/Sidebar';
@@ -12,9 +12,49 @@ import { LeaveForm } from './components/LeaveForm';
 import { ScheduleForm } from './components/ScheduleForm';
 import { SampleCard } from './components/SampleCard';
 import { LeaveFormHistory } from './components/LeaveFormHistory';
+import { useAuth } from "../../context/AuthContext";
+import api from "../../api/axios";
 
 export const Attendance = () => {
     const { navId } = useParams();
+    const { user, authDataLoading } = useAuth();
+    const userid = user?.userid;
+    const [calendarData, setCalendarData] = useState([]);
+
+    useEffect(() => {
+        if (navId === 'me' && userid) {
+            fetchCalendarData(new Date().getFullYear(), new Date().getMonth() + 1);
+        }
+    }, [userid, navId]);
+
+
+
+    const fetchCalendarData = async (year, month) => {
+        if (!userid) return;
+
+        const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0)).toISOString();
+        const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59)).toISOString();
+
+
+        try {
+            const response = await api.get('/api/employee/attendance/calendar', {
+                params: {
+                    startDate,
+                    endDate,
+                    userid,
+                }
+            });
+
+            setCalendarData(response.data.calendarData);
+            console.log(`Fetched data for ${month}/${year}:`, response.data.calendarData);
+        } catch (err) {
+            console.error('Error fetching calendar data:', err);
+        }
+    };
+
+    const handleMonthYearChange = (year, month) => {
+        fetchCalendarData(year, month);
+    };
 
     return (
         <div className="flex flex-col lg:flex-row w-full h-screen overflow-hidden">
@@ -43,7 +83,7 @@ export const Attendance = () => {
                                 <WorkBreakComposition />
                             </div>
                             <div className="row-start-3 col-start-1 col-span-4 row-span-6 rounded-lg overflow-auto">
-                                <AttendanceCalendar />
+                                <AttendanceCalendar calendarData={calendarData} onMonthYearChange={handleMonthYearChange} />
                             </div>
                             <div className="row-start-4 col-start-5 col-span-4 row-span-5 rounded-lg overflow-auto">
                                 <AttendanceCard />
@@ -75,7 +115,7 @@ export const Attendance = () => {
                             {/* 📱 Calendar Responsive Fix */}
                             <div className="w-full">
                                 <div className="w-full aspect-[4/3] md:min-w-[700px]">
-                                    <AttendanceCalendar />
+                                    <AttendanceCalendar calendarData={calendarData} onMonthYearChange={handleMonthYearChange} />
                                 </div>
                             </div>
 
@@ -107,7 +147,7 @@ export const Attendance = () => {
                         {/* Calendar Section */}
                         <div className="w-full md:flex-1">
                             <div className="w-full aspect-[4/3] md:aspect-auto">
-                                <AttendanceCalendar />
+                                <AttendanceCalendar disableFutureDates={false} />
                             </div>
                         </div>
 
