@@ -15,21 +15,38 @@ export const LeaveFormHistory = () => {
   const [hrReason, setHrReason] = useState('');
 
   useEffect(() => {
+  const fetchLeaveReqs = async () => {
     try {
-      const fetchLeaveReqs = async () => {
-        setLoading(true);
-        const requests = await api.get("/api/hr/leave/all-req");
-        if (requests.data.success) {
-          setLoading(false);
-        }
-        setLeaveHistory(requests.data.LeaveData);
+      setLoading(true);
+      const requests = await api.get("/api/hr/leave/all-req");
+
+      if (requests.data.success && requests.data.LeaveData?.length > 0) {
+        const dummyProfiles = [
+          { name: 'Aarav Sharma', pic: 'https://randomuser.me/api/portraits/men/32.jpg' },
+          { name: 'Meera Nair', pic: 'https://randomuser.me/api/portraits/women/44.jpg' },
+          { name: 'Ravi Verma', pic: 'https://randomuser.me/api/portraits/men/45.jpg' },
+          { name: 'Sneha Reddy', pic: 'https://randomuser.me/api/portraits/women/68.jpg' },
+        ];
+
+        const updatedData = requests.data.LeaveData.map((item, index) => ({
+          ...item,
+          employeeName: dummyProfiles[index % dummyProfiles.length].name,
+          employeeProfile: dummyProfiles[index % dummyProfiles.length].pic
+        }));
+
+        setLeaveHistory(updatedData);
       }
-      fetchLeaveReqs();
+    } catch (err) {
+      console.error("Error fetching leave requests:", err);
+    } finally {
+      setLoading(false);
     }
-    catch (err) {
-      console.error(err)
-    }
-  }, [])
+  };
+
+  fetchLeaveReqs();
+}, []);
+
+  
 
   const formatDate = (rawDate) => {
     const date = new Date(rawDate);
@@ -135,6 +152,7 @@ export const LeaveFormHistory = () => {
             <thead>
               <tr className="bg-gray-100 border-b">
                 <th className="p-2 text-left">Date</th>
+                <th className="p-2 text-left">Employee</th>
                 <th className="p-2 text-center">TL</th>
                 <th className="p-2 text-center">HR</th>
                 <th className="p-2 text-left">Status</th>
@@ -145,6 +163,11 @@ export const LeaveFormHistory = () => {
               {leaveHistory.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
                   <td className="p-2">{formatDate(item.dates[0])}</td>
+                  <td className="p-2 flex items-center gap-2">
+  <img src={item.employeeProfile} alt="Profile" className="w-8 h-8 rounded-full" />
+  <span>{item.employeeName}</span>
+</td>
+
                   <td className="p-2 text-center">{getSymbol(item.adminAction)}</td>
                   <td className="p-2 text-center">{getSymbol(item.superAdminAction)}</td>
                   <td className={`p-2 font-medium ${getStatusColor(item.status)}`}>
