@@ -203,8 +203,9 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
           <table className="w-full text-sm border-collapse shadow-sm table-fixed">
             <thead>
               <tr className="bg-gray-100 border-b">
-                <th className="p-2 text-left">Date</th>
                 <th className="p-2 text-left">Employee</th>
+                <th className="p-2 text-left">Date</th>
+                
                 <th className="p-2 text-center">TL</th>
                 <th className="p-2 text-center">HR</th>
                 <th className="p-2 text-left">Status</th>
@@ -214,11 +215,12 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
             <tbody>
               {leaveHistory.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
-                  <td className="p-2">{formatDate(item.dates[0])}</td>
-                  <td className="p-2 flex items-center gap-2">
+                   <td className="p-2 flex items-center gap-2">
   <img src={item.employeeProfile} alt="Profile" className="w-8 h-8 rounded-full" />
   <span>{item.employeeName}</span>
 </td>
+                  <td className="p-2">{formatDate(item.dates[0])}</td>
+                 
 
                   <td className="p-2 text-center">{getSymbol(item.adminAction)}</td>
                   <td className="p-2 text-center">{getSymbol(item.superAdminAction)}</td>
