@@ -12,6 +12,10 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
   const [logoutTime, setLogoutTime] = useState('N/A');
   const [workTime, setWorkTime] = useState('N/A');
   const [breakTime, setBreakTime] = useState('N/A');
+  const [workBreakData, setWorkBreakData] = useState({
+      "last7Days": [],
+      "last30Days": [],
+    }); 
 
 
   useEffect(() => {
@@ -19,7 +23,7 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
   }, [userid])
 
   useEffect(() => {
-    const today = new Date().toISOString()
+    const today = new Date().toISOString();
     console.log('user is ', userid)
     try {
       const getTimeCards = async () => {
@@ -37,6 +41,19 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
           setBreakTime(response.data.timeCards.break)
         }
       }
+
+      const getWorkBreakData = async() => {
+        const res = await api.get("/api/employee/attendance/work-break", {
+          params: {
+            todayDate: today,
+            userid: userid
+          }
+        })
+
+        setWorkBreakData(res.data.workBreakData)
+      }
+
+      getWorkBreakData();
       getTimeCards();
     } catch (error) {
       console.log(error)
@@ -61,6 +78,7 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
         }
       })
 
+
       setCalendarData(response.data.calendarData)
       console.log(
         `Fetched data for ${month}/${year}:`,
@@ -76,7 +94,7 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
   }
 
   return (
-    <div className='flex-1 grid grid-cols-8 grid-rows-12 gap-2 h-full w-full gap-[1rem]'>
+    <div className='flex-1 grid grid-cols-8 grid-rows-12 gap-2 h-full w-full'>
       <div className='col-start-1 row-start-1 row-end-3'>
         <TimeCard state='in' time={loginTime} showLabel={true} color={true} />
       </div>
@@ -94,7 +112,7 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
       </div>
 
       <div className='bg-black/10 col-start-3 col-end-6 row-start-1 row-end-5 rounded-lg overflow-hidden'>
-        <WorkBreakComposition />
+        <WorkBreakComposition data={workBreakData} />
       </div>
 
       <div className='col-start-6 col-end-10 row-start-1 row-end-7 rounded-lg '>
