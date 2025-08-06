@@ -78,7 +78,6 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
         }
       })
 
-
       setCalendarData(response.data.calendarData)
       console.log(
         `Fetched data for ${month}/${year}:`,
@@ -124,20 +123,11 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
         <LeaveTable />
       </div>
 
-      {/* <div className="col-start-1 col-end-5 row-start-6 row-end-9 min-h-0 overflow-hidden">
-        <div className="h-full overflow-auto">
-          <ProgressCard />
-        </div>
-      </div> */}
-
       <div className='col-start-1 col-end-6 row-start-5 row-end-12 rounded-lg'>
-        {/* Attendance Report */}
-        {/* <div className="h-full overflow-auto"> */}
         <AttendanceCalendar
           calendarData={calendarData}
           onMonthYearChange={handleMonthYearChange}
         />
-        {/* </div> */}
       </div>
     </div>
   )
