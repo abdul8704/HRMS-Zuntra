@@ -13,6 +13,7 @@ import { ProjectDeadline } from "../project/components/ProjectDeadline";
 import { PlusButton } from '../../components/PlusButton';
 import { useAuth } from "../../context/AuthContext";
 import api, { BASE_URL } from '../../api/axios';
+import { getDateNDaysAgo } from '../../utils/dateUtils';
 import { NewUser } from './NewUser';
 
 export const DashBoard = () => {
@@ -57,13 +58,12 @@ export const DashBoard = () => {
       try {
         const res = await api.get("/api/employee/attendance/work-break", {
           params: {
-            startDate: `${startDate.getFullYear()}-${pad(startDate.getMonth() + 1)}-01`,
-            endDate: `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`,
+            todayDate: today.toISOString(),
             userid: user?.userid,
           }
         });
-        setWorkBreakData(res.data.workBreakComposition);
-        console.log(res);
+        console.log("Work Break Data:", res.data);
+        setWorkBreakData(res.data.workBreakData);
       } catch (err) {
         console.error(err);
       } finally {

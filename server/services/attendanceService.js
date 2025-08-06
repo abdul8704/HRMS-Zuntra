@@ -350,45 +350,68 @@ const getCalendarDataOnly = async (
     return calendar
 };
 
-const getWorkBreakCompositionOnly = async (
-    userid,
-    startDate,
-    endDate,
-) => {
+const getWorkBreakCompositionOnly = async (userid, todayStr) => {
+    const today = new Date(todayStr);
+    today.setHours(0, 0, 0, 0);
+
+    // Utility to calculate past N days
+    const getPastDate = (date, daysAgo) => {
+        const d = new Date(date);
+        d.setDate(d.getDate() - daysAgo);
+        return d;
+    };
+
+    // Calculate start dates
+    const startDate7 = getPastDate(today, 6); // include today (7 total days)
+    const startDate30 = getPastDate(today, 29);
+
+    // Fetch records once, covering 30 days
     const {
         start,
         totalDays,
         attendanceMap,
         holidays: hol,
-    } = await fetchAttendanceRecords(userid, startDate, endDate);
-    const workBreakComposition = [];
+    } = await fetchAttendanceRecords(userid, startDate30, todayStr);
+
+    const workBreakComposition7 = [];
+    const workBreakComposition30 = [];
+
     for (let i = 0; i < totalDays; i++) {
         const current = new Date(start.getTime() + i * 24 * 60 * 60 * 1000);
         const currentDateStr = current.toISOString().split("T")[0];
         const name = `${current.getDate()}/${current.getMonth() + 1}`;
-        const day = current.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
-        if (hol.includes(currentDateStr)) {
-            workBreakComposition.push({
-                date: currentDateStr,
-                name,
-                day,
-                work: 0,
-                break: 0,
-            });
-            continue;
-        }
+        const day = current
+            .toLocaleDateString("en-US", { weekday: "short" })
+            .toUpperCase();
 
-        const record = attendanceMap.get(currentDateStr);
-        workBreakComposition.push({
+        const dataPoint = {
             date: currentDateStr,
             name,
             day,
-            work: record?.workingMinutes || 0,
-            break: record?.breakMinutes || 0,
-        });
+            work: 0,
+            break: 0,
+        };
+
+        if (!hol.includes(currentDateStr)) {
+            const record = attendanceMap.get(currentDateStr);
+            dataPoint.work = record?.workingMinutes || 0;
+            dataPoint.break = record?.breakMinutes || 0;
+        }
+
+        // Push to both 30-day and 7-day arrays as needed
+        if (current >= startDate7) {
+            workBreakComposition7.push(dataPoint);
+        }
+
+        workBreakComposition30.push(dataPoint);
     }
-    return workBreakComposition;
+
+    return {
+        last7Days: workBreakComposition7,
+        last30Days: workBreakComposition30,
+    };
 };
+
 
 const getAttendanceDataOnly = async (userid, startDate, endDate) => {
     const {
