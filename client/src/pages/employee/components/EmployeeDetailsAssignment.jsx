@@ -77,19 +77,19 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
   return (
     <div className='flex-1 grid grid-cols-8 grid-rows-12 gap-2 h-full w-full gap-[1rem]'>
       <div className='col-start-1 row-start-1 row-end-3'>
-        <TimeCard state='in' time={loginTime} showLabel={false} color={true} />
+        <TimeCard state='in' time={loginTime} showLabel={true} color={true} />
       </div>
 
       <div className='col-start-1 row-start-3 row-end-5'>
-        <TimeCard state='out' time={logoutTime} showLabel={false} color={true} />
+        <TimeCard state='out' time={logoutTime} showLabel={true} color={true} />
       </div>
 
       <div className='col-start-2 row-start-1 row-end-3'>
-        <TimeCard state='work' time={workTime} showLabel={false} color={true} />
+        <TimeCard state='work' time={workTime} showLabel={true} color={true} />
       </div>
 
       <div className='col-start-2 row-start-3 row-end-5'>
-        <TimeCard state='break' time={breakTime} showLabel={false} color={true} />
+        <TimeCard state='break' time={breakTime} showLabel={true} color={true} />
       </div>
 
       <div className='bg-black/10 col-start-3 col-end-6 row-start-1 row-end-5 rounded-lg overflow-hidden'>
