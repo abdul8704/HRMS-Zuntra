@@ -4,6 +4,7 @@ import { AttendanceCalendar } from '../../attendance/components/AttendanceCalend
 import { AttendanceCard } from '../../attendance/components/AttendanceCard'
 import { WorkBreakComposition } from '../../dashboard/components/WorkBreakComposititon'
 import api from '../../../api/axios'
+import LeaveTable from '../../attendance/components/LeaveTable'
 
 export const EmployeeDetailsAssignment = ({ userid }) => {
   const [calendarData, setCalendarData] = useState([])
@@ -118,8 +119,8 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
         <AttendanceCard />
       </div>
 
-      <div className='bg-black/20 col-start-6 col-end-10 row-start-7 row-end-12 min-h-0 rounded-lg p-4'>
-        Leave
+      <div className='bg-black/20 col-start-6 col-end-10 row-start-7 row-end-12 min-h-0 rounded-lg'>
+        <LeaveTable />
       </div>
 
       <div className='col-start-1 col-end-6 row-start-5 row-end-12 rounded-lg'>
