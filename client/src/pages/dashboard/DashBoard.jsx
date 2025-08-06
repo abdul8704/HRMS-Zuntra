@@ -27,6 +27,12 @@ export const DashBoard = () => {
     "this-month": [],
   });
 
+  const [calendarData, setCalendarData] = useState([])
+  const [loginTime, setLoginTime] = useState('N/A');
+  const [logoutTime, setLogoutTime] = useState('N/A');
+  const [workTime, setWorkTime] = useState('N/A');
+  const [breakTime, setBreakTime] = useState('N/A');
+
   const isNewUser = !user?.allowedAccess;
 
   const motivationalQuotes = [
@@ -52,13 +58,36 @@ export const DashBoard = () => {
   useEffect(() => {
     if (!user?.userid) return;
 
+    const today = new Date().toISOString()
+    console.log('user is ', user)
+    try {
+      const getTimeCards = async () => {
+        const response = await api.get('api/employee/attendace/time-cards', {
+          params: {
+            userid: String(user.userid),
+            date: new Date().toISOString()
+          }
+        })
+
+        if(response.data.success){
+          setLoginTime(response.data.timeCards.login)
+          setLogoutTime(response.data.timeCards.logout)
+          setWorkTime(response.data.timeCards.work)
+          setBreakTime(response.data.timeCards.break)
+        }
+      }
+      getTimeCards();
+    } catch (error) {
+      console.log(error)
+    }
+
     const fetchWorkBreakData = async () => {
       setIsLoading(true);
       setApiMessage(null);
       try {
         const res = await api.get("/api/employee/attendance/work-break", {
           params: {
-            todayDate: today.toISOString(),
+            todayDate: today,
             userid: user?.userid,
           }
         });
@@ -108,19 +137,19 @@ export const DashBoard = () => {
             </div>
 
             <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:row-span-1 rounded-2xl bg-[#c0e8bc] flex items-center justify-center animate-slide-in-left">
-              <TimeCard state="in" time="09:20" showLabel={true} color={true} />
+              <TimeCard state="in" time={loginTime} showLabel={true} color={true} />
             </div>
 
             <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:col-start-1 md:row-start-3 rounded-2xl bg-[#c3e4ee] flex items-center justify-center animate-slide-in-left">
-              <TimeCard state="out" time="09:20" showLabel={true} color={true} />
+              <TimeCard state="out" time={logoutTime} showLabel={true} color={true} />
             </div>
 
             <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:col-start-3 md:row-span-1 rounded-2xl bg-[#e1bec5] flex items-center justify-center animate-slide-in-left">
-              <TimeCard state="work" time="09:20" showLabel={true} color={true} />
+              <TimeCard state="work" time={workTime} showLabel={true} color={true} />
             </div>
 
             <div className="h-[10vh] md:h-full col-span-1 md:col-span-2 md:col-start-3 md:row-start-3 rounded-2xl bg-[#deceb9] flex items-center justify-center animate-slide-in-left">
-              <TimeCard state="break" time="09:20" showLabel={true} color={true} />
+              <TimeCard state="break" time={breakTime} showLabel={true} color={true} />
             </div>
 
             <div className="h-[30vh] md:h-full col-span-2 md:col-span-5 md:col-start-5 md:row-start-1 md:row-span-3 rounded-2xl bg-[#f2c3b9] flex items-center justify-center animate-slide-in-right">
