@@ -502,7 +502,12 @@ const getTimeCards = async (userid, date) => {
     const attendance = await Attendance.findOne({ userid, date });
 
     if (!attendance) {
-        throw new ApiError(404, "No attendance record found for the given date");
+        return (timeCards = {
+            login: "N/A",
+            logout: "N/A",
+            work: "N/A",
+            break: "N/A",
+        });     
     }
 
     const N = attendance.sessions.length;
