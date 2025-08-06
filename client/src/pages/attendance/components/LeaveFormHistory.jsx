@@ -3,7 +3,7 @@ import { Eye } from 'lucide-react';
 import api from '../../../api/axios'
 import { Loading } from '../../utils/Loading';
 
-export const LeaveFormHistory = () => {
+export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as prop, default to 'hr'
   const [leaveHistory, setLeaveHistory] = useState([]);
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
@@ -13,6 +13,10 @@ export const LeaveFormHistory = () => {
   // Form state for HR updates
   const [hrStatus, setHrStatus] = useState('');
   const [hrReason, setHrReason] = useState('');
+  
+  // Form state for Team Lead updates
+  const [tlStatus, setTlStatus] = useState('');
+  const [tlReason, setTlReason] = useState('');
 
   useEffect(() => {
   const fetchLeaveReqs = async () => {
@@ -22,16 +26,38 @@ export const LeaveFormHistory = () => {
 
       if (requests.data.success && requests.data.LeaveData?.length > 0) {
         const dummyProfiles = [
-          { name: 'Aarav Sharma', pic: 'https://randomuser.me/api/portraits/men/32.jpg' },
-          { name: 'Meera Nair', pic: 'https://randomuser.me/api/portraits/women/44.jpg' },
-          { name: 'Ravi Verma', pic: 'https://randomuser.me/api/portraits/men/45.jpg' },
-          { name: 'Sneha Reddy', pic: 'https://randomuser.me/api/portraits/women/68.jpg' },
+          { 
+            name: 'Aarav Sharma', 
+            pic: 'https://randomuser.me/api/portraits/men/32.jpg',
+            teamName: 'Development Team',
+            teamLeadName: 'Priya Patel'
+          },
+          { 
+            name: 'Meera Nair', 
+            pic: 'https://randomuser.me/api/portraits/women/44.jpg',
+            teamName: 'Design Team',
+            teamLeadName: 'Rajesh Kumar'
+          },
+          { 
+            name: 'Ravi Verma', 
+            pic: 'https://randomuser.me/api/portraits/men/45.jpg',
+            teamName: 'Marketing Team',
+            teamLeadName: 'Anita Singh'
+          },
+          { 
+            name: 'Sneha Reddy', 
+            pic: 'https://randomuser.me/api/portraits/women/68.jpg',
+            teamName: 'Sales Team',
+            teamLeadName: 'Vikram Joshi'
+          },
         ];
 
         const updatedData = requests.data.LeaveData.map((item, index) => ({
           ...item,
           employeeName: dummyProfiles[index % dummyProfiles.length].name,
-          employeeProfile: dummyProfiles[index % dummyProfiles.length].pic
+          employeeProfile: dummyProfiles[index % dummyProfiles.length].pic,
+          teamName: dummyProfiles[index % dummyProfiles.length].teamName,
+          teamLeadName: dummyProfiles[index % dummyProfiles.length].teamLeadName
         }));
 
         setLeaveHistory(updatedData);
@@ -91,42 +117,66 @@ export const LeaveFormHistory = () => {
       setSelectedLeave(item);
       setHrStatus(item.superAdminAction || '');
       setHrReason(item.superAdminReason || '');
+      setTlStatus(item.adminAction || '');
+      setTlReason(item.adminReason || '');
       setShowPopup(true);
     }, 0);
   };
 
   const handleSave = async () => {
-    if (!hrStatus) {
-      alert('Please select HR status');
-      return;
-    }
-    
-    if (!hrReason.trim()) {
-      alert('Please provide HR reason');
-      return;
+    if (userRole === 'hr') {
+      if (!hrStatus) {
+        alert('Please select HR status');
+        return;
+      }
+      
+      if (!hrReason.trim()) {
+        alert('Please provide HR reason');
+        return;
+      }
+    } else if (userRole === 'teamlead') {
+      if (!tlStatus) {
+        alert('Please select Team Lead status');
+        return;
+      }
+      
+      if (!tlReason.trim()) {
+        alert('Please provide Team Lead reason');
+        return;
+      }
     }
 
     try {
       setIsSaving(true);
       
-      // API call to update HR status and reason
-      const response = await api.put(`/api/employee/leave/requests/${selectedLeave._id}`, {
-        superAdminAction: hrStatus,
-        superAdminReason: hrReason
-      });
+      let updateData = {};
+      if (userRole === 'hr') {
+        updateData = {
+          superAdminAction: hrStatus,
+          superAdminReason: hrReason
+        };
+      } else if (userRole === 'teamlead') {
+        updateData = {
+          adminAction: tlStatus,
+          adminReason: tlReason
+        };
+      }
+      
+      // API call to update status and reason
+      const response = await api.put(`/api/employee/leave/requests/${selectedLeave._id}`, updateData);
 
       if (response.data.success) {
         // Update the local state
         setLeaveHistory(prevHistory => 
           prevHistory.map(item => 
             item._id === selectedLeave._id 
-              ? { ...item, superAdminAction: hrStatus, superAdminReason: hrReason }
+              ? { ...item, ...updateData }
               : item
           )
         );
         
         setShowPopup(false);
-        alert('Leave status updated successfully');
+        alert(`Leave status updated successfully by ${userRole === 'hr' ? 'HR' : 'Team Lead'}`);
       } else {
         alert('Failed to update leave status');
       }
@@ -141,6 +191,8 @@ export const LeaveFormHistory = () => {
   const handleCancel = () => {
     setHrStatus(selectedLeave?.superAdminAction || '');
     setHrReason(selectedLeave?.superAdminReason || '');
+    setTlStatus(selectedLeave?.adminAction || '');
+    setTlReason(selectedLeave?.adminReason || '');
     setShowPopup(false);
   };
 
@@ -201,6 +253,26 @@ export const LeaveFormHistory = () => {
                   Leave Details
                 </h2>
 
+                {/* Employee Profile Section */}
+                <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                  <div className="flex items-center gap-4">
+                    <img 
+                      src={selectedLeave.employeeProfile} 
+                      alt="Employee Profile" 
+                      className="w-16 h-16 rounded-full border-2 border-gray-300"
+                    />
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-1">
+                        {selectedLeave.employeeName}
+                      </h3>
+                      <div className="text-sm text-gray-600 space-y-1">
+                        <div><span className="font-medium">Team:</span> {selectedLeave.teamName}</div>
+                        <div><span className="font-medium">Team Lead:</span> {selectedLeave.teamLeadName}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="space-y-3 text-sm">
                   {/* Dates & Category */}
                   <div className="flex gap-4 flex-wrap">
@@ -235,22 +307,40 @@ export const LeaveFormHistory = () => {
                   <div className="flex gap-4 flex-wrap">
                     <div className="flex-1 min-w-[150px]">
                       <div className="font-semibold text-gray-700 mb-1">Team Lead Status:</div>
-                      <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 break-words whitespace-pre-wrap max-w-full">
-                        {selectedLeave.adminAction || '-'}
-                      </div>
+                      {userRole === 'teamlead' ? (
+                        <select
+                          value={tlStatus}
+                          onChange={(e) => setTlStatus(e.target.value)}
+                          className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">PENDING</option>
+                          <option value="approved">Approve</option>
+                          <option value="rejected">Reject</option>
+                        </select>
+                      ) : (
+                        <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 break-words whitespace-pre-wrap max-w-full">
+                          {selectedLeave.adminAction || '-'}
+                        </div>
+                      )}
                     </div>
                     
                     <div className="flex-1 min-w-[150px]">
                       <div className="font-semibold text-gray-700 mb-1">HR Status:</div>
-                      <select
-                        value={hrStatus}
-                        onChange={(e) => setHrStatus(e.target.value)}
-                        className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">PENDING</option>
-                        <option value="accepted">Accept</option>
-                        <option value="rejected">Reject</option>
-                      </select>
+                      {userRole === 'hr' ? (
+                        <select
+                          value={hrStatus}
+                          onChange={(e) => setHrStatus(e.target.value)}
+                          className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                          <option value="">PENDING</option>
+                          <option value="accepted">Accept</option>
+                          <option value="rejected">Reject</option>
+                        </select>
+                      ) : (
+                        <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 break-words whitespace-pre-wrap max-w-full">
+                          {selectedLeave.superAdminAction || '-'}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -258,19 +348,34 @@ export const LeaveFormHistory = () => {
                   <div className="flex gap-4 flex-wrap">
                     <div className="flex-1 min-w-[150px]">
                       <div className="font-semibold text-gray-700 mb-1">Team Lead Reason:</div>
-                      <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 h-16 overflow-y-auto break-words whitespace-pre-wrap">
-                        {selectedLeave.adminReason || '-'}
-                      </div>
+                      {userRole === 'teamlead' ? (
+                        <textarea
+                          value={tlReason}
+                          onChange={(e) => setTlReason(e.target.value)}
+                          placeholder="Enter Team Lead reason..."
+                          className="w-full h-16 bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-800 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      ) : (
+                        <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 h-16 overflow-y-auto break-words whitespace-pre-wrap">
+                          {selectedLeave.adminReason || '-'}
+                        </div>
+                      )}
                     </div>
                     
                     <div className="flex-1 min-w-[150px]">
                       <div className="font-semibold text-gray-700 mb-1">HR Reason:</div>
-                      <textarea
-                        value={hrReason}
-                        onChange={(e) => setHrReason(e.target.value)}
-                        placeholder="Enter HR reason..."
-                        className="w-full h-16 bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-800 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
+                      {userRole === 'hr' ? (
+                        <textarea
+                          value={hrReason}
+                          onChange={(e) => setHrReason(e.target.value)}
+                          placeholder="Enter HR reason..."
+                          className="w-full h-16 bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-800 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      ) : (
+                        <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 h-16 overflow-y-auto break-words whitespace-pre-wrap">
+                          {selectedLeave.superAdminReason || '-'}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -286,9 +391,14 @@ export const LeaveFormHistory = () => {
                   </button>
                   <button
                     onClick={handleSave}
-                    disabled={isSaving || !hrStatus || !hrReason.trim()}
+                    disabled={
+                      isSaving || 
+                      (userRole === 'hr' && (!hrStatus || !hrReason.trim())) ||
+                      (userRole === 'teamlead' && (!tlStatus || !tlReason.trim()))
+                    }
                     className={`py-3 min-w-[120px] rounded-full font-medium transition-colors duration-300
-                      ${(hrStatus && hrReason.trim() && !isSaving)
+                      ${((userRole === 'hr' && hrStatus && hrReason.trim()) || 
+                         (userRole === 'teamlead' && tlStatus && tlReason.trim())) && !isSaving
                         ? 'bg-[#BBD3CC] text-gray-700 hover:bg-[#A6C4BA]'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
