@@ -13,7 +13,6 @@ import { GeoFencing } from './components/GeoFencing';
 import { EmpAssignmentPopUp } from './components/EmployeeAssignmentPopup';
 import { AddLocationForm } from './components/AddLocationForm';
 import { useAuth } from "../../context/AuthContext";
-
 import api from '../../api/axios';
 import { BASE_URL } from '../../api/axios';
 
