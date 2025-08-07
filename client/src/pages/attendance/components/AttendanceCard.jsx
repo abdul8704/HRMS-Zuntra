@@ -72,6 +72,14 @@ export const AttendanceCard = ({ userid }) => {
   const [filteredDates, setFilteredDates] = useState([]);
   const [startDate, setStartDate] = useState(initialStart);
   const [endDate, setEndDate] = useState(initialEnd);
+  const [summary, setSummary] = useState({
+  present: 0,
+  absent: 0,
+  remote: 0,
+  holiday: 0,
+  workingDays: 0,
+});
+
 
   const getAttendanceData = async (start, end) => {
     try {
@@ -102,6 +110,23 @@ export const AttendanceCard = ({ userid }) => {
       setStartDate(start);
       setEndDate(end);
       setFilteredDates(transformed);
+      let present = 0, absent = 0, remote = 0, holiday = 0;
+
+transformed.forEach(({ status }) => {
+  if (status === "Present") present++;
+  else if (status === "Absent") absent++;
+  else if (status === "Remote") remote++;
+  else if (status === "Holiday") holiday++;
+});
+
+setSummary({
+  present,
+  absent,
+  remote,
+  holiday,
+  workingDays: present + remote,
+});
+
     } catch (err) {
       console.error("Error fetching attendance:", err);
     }
@@ -214,6 +239,19 @@ export const AttendanceCard = ({ userid }) => {
           ))}
         </div>
       </div>
+     {filteredDates.length > 0 && (
+  <div className="mt-4 grid grid-cols-5 sm:grid-cols-3 md:grid-cols-5 gap-2 text-sm font-medium text-gray-800">
+  <div className="bg-green-100 px-3 py-2 rounded text-center">Present: {summary.present}</div>
+<div className="bg-red-100 px-3 py-2 rounded text-center">Absent: {summary.absent}</div>
+<div className="bg-blue-100 px-3 py-2 rounded text-center">Remote: {summary.remote}</div>
+<div className="bg-yellow-100 px-3 py-2 rounded text-center">Holiday: {summary.holiday}</div>
+<div className="bg-purple-100 px-3 py-2 rounded text-center whitespace-nowrap">
+  Working Days: {summary.workingDays}
+</div>
+
+  </div>
+)}
+
     </div>
   );
 };
