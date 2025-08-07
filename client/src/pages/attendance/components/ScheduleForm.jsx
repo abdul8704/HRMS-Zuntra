@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 export const ScheduleForm = ({ handleClose }) => {
   const [selectedDate, setSelectedDate] = useState('');
-  const [actionType, setActionType] = useState('holiday'); // holiday, event, leave
+  const [actionType, setActionType] = useState('event'); // default to 'event'
   const [description, setDescription] = useState('');
   const [selectedReligion, setSelectedReligion] = useState('');
   const [selectedRoles, setSelectedRoles] = useState([]);
@@ -23,15 +23,14 @@ export const ScheduleForm = ({ handleClose }) => {
       type: actionType,
       description,
       religion: actionType === 'leave' ? selectedReligion : null,
-      roles: actionType === 'event' ? selectedRoles : null,
+      roles: selectedRoles,
     };
-    // console.log('Scheduled:', data);
     if (handleClose) handleClose();
   };
 
   const handleCancel = () => {
     setSelectedDate('');
-    setActionType('holiday');
+    setActionType('event');
     setDescription('');
     setSelectedReligion('');
     setSelectedRoles([]);
@@ -55,9 +54,9 @@ export const ScheduleForm = ({ handleClose }) => {
         />
       </div>
 
-      {/* Type of Schedule Action */}
+      {/* Type of Schedule Action (event / holiday) */}
       <div className="flex gap-6">
-        {['holiday', 'event', 'leave'].map((type) => (
+        {['event', 'leave'].map((type) => (
           <label key={type} className="flex items-center gap-2 cursor-pointer text-sm">
             <input
               type="radio"
@@ -67,11 +66,7 @@ export const ScheduleForm = ({ handleClose }) => {
               onChange={() => setActionType(type)}
               className="accent-[#bcd4cd] h-4 w-4"
             />
-            {type === 'holiday'
-              ? 'Mark as Holiday'
-              : type === 'event'
-              ? 'Add Event'
-              : 'Functional Leave'}
+            {type === 'event' ? 'Add Event' : 'Add Holiday'}
           </label>
         ))}
       </div>
@@ -89,7 +84,7 @@ export const ScheduleForm = ({ handleClose }) => {
         />
       </div>
 
-      {/* Conditional Fields */}
+      {/* Religion dropdown - keep this only if needed */}
       {actionType === 'leave' && (
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Select Religion</label>
@@ -109,7 +104,28 @@ export const ScheduleForm = ({ handleClose }) => {
         </div>
       )}
 
+      {/* Applicable Roles for Add Event */}
       {actionType === 'event' && (
+        <div className="flex flex-col">
+          <label className="text-sm font-medium mb-1">Applicable Roles</label>
+          <div className="flex flex-wrap gap-3">
+            {roles.map((role) => (
+              <label key={role} className="flex items-center gap-1 text-sm">
+                <input
+                  type="checkbox"
+                  checked={selectedRoles.includes(role)}
+                  onChange={() => handleRoleToggle(role)}
+                  className="accent-[#bcd4cd]"
+                />
+                {role}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Applicable Roles for Add Holiday */}
+      {actionType === 'leave' && (
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Applicable Roles</label>
           <div className="flex flex-wrap gap-3">
