@@ -217,26 +217,25 @@ const getCalendarData = asyncHandler(async (req, res) => {
 });
 
 const getWorkBreakComposition = asyncHandler(async (req, res) => {
-    const { userid, startDate, endDate } = req.query;
-    console.log(req.query);
-    if (!userid || !startDate || !endDate)
-        throw new ApiError(400, "Start date and end date not provided");
+    const { userid, todayDate } = req.query;
+
+    if (!userid || !todayDate)
+        throw new ApiError(400, "User ID and today's date not provided");
 
     const workBreakComposition = await attendanceService.getWorkBreakCompositionOnly(
         userid,
-        startDate,
-        endDate
+        AttendanceHelper.normalizeToUTCDate(new Date(todayDate))
     );
 
     if (!workBreakComposition || workBreakComposition.length === 0) {
         return res.status(200).json({ success: true, workBreakComposition: [] });
     }
 
-    const work_breakData = processWorkBreakData(workBreakComposition, endDate );
+    const work_breakData = processWorkBreakData(workBreakComposition.last30Days);
 
     res.status(200).json({
         success: true,
-        workBreakComposition: work_breakData,
+        workBreakData: work_breakData,
     });
 });
 
@@ -256,6 +255,8 @@ const getAttendanceData = asyncHandler(async (req, res) => {
 
 const getTimeCards = asyncHandler(async (req, res) => {
     const { userid, date } = req.query;
+
+    console.log(userid, date)
 
     if (!userid || !date)
         throw new ApiError(400, "Insufficient data to request time cards.");

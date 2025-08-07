@@ -26,103 +26,53 @@ function toUTCTimeOnly(date) {
     );
 }
 
-function processWorkBreakData(workBreakComposition, todayStr) {
-    const today = new Date(todayStr); // already normalized
-
-    const getWeekRange = (date) => {
-        const dayOfWeek = date.getDay(); // Sunday = 0
-        const sunday = new Date(date);
-        sunday.setDate(date.getDate() - dayOfWeek);
-        return [sunday];
-    };
-
-    const formatDate = (dateStr) => {
-        const d = new Date(dateStr);
-        return `${d.getDate()}/${d.getMonth() + 1}`;
-    };
-
-    const getWeekNumberInMonth = (date) => {
-        const firstOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
-        const dayOfMonth = date.getDate();
-        const offset = (firstOfMonth.getDay() + 6) % 7; // Monday = 0
-        return Math.ceil((dayOfMonth + offset) / 7);
-    };
-
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    const workBreakMap = new Map(
-        workBreakComposition.map((entry) => [entry.date, entry])
+function processWorkBreakData(workBreakComposition) {
+    const sorted = [...workBreakComposition].sort(
+        (a, b) => new Date(a.date) - new Date(b.date)
     );
 
-    // === This Week ===
-    const [weekStart] = getWeekRange(today);
-    const thisWeek = [];
-
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(weekStart);
-        d.setDate(weekStart.getDate() + i);
-        const dateStr = d.toISOString().split("T")[0];
-
-        if (d > today || d.getMonth() !== currentMonth) {
-            // Future date or different month - show nulls
-            thisWeek.push({
-                name: formatDate(d),
-                work: null,
-                break: null,
-            });
-        } else {
-            // Valid date - show data or 0
-            const data = workBreakMap.get(dateStr);
-            thisWeek.push({
-                name: formatDate(d),
-                work: data ? Math.round(data.work) : 0,
-                break: data ? Math.round(data.break) : 0,
-            });
-        }
-    }
-
-    // === This Month Shortened ===
-    const monthData = {
-        "Week 1": null,
-        "Week 2": null,
-        "Week 3": null,
-        "Week 4": null,
-    };
-
-    for (const entry of workBreakComposition) {
-        const date = new Date(entry.date);
-        if (date.getFullYear() === currentYear && date.getMonth() === currentMonth) {
-            const weekNum = getWeekNumberInMonth(date);
-            const key = `Week ${weekNum}`;
-            if (!monthData[key]) {
-                monthData[key] = { work: 0, break: 0 };
-            }
-            monthData[key].work += entry.work;
-            monthData[key].break += entry.break;
-        }
-    }
-
-    const thisMonthShortened = Object.entries(monthData).map(([week, val]) => {
-        if (!val) {
-            return { name: week, work: null, break: null };
-        }
-        return {
-            name: week,
-            work: Math.round(val.work),
-            break: Math.round(val.break),
-        };
-    });
+    const format = (entries) =>
+        entries.map(({ date, name, day, work, break: brk }) => ({
+            date,
+            name,
+            day,
+            work: Math.round(work || 0),
+            break: Math.round(brk || 0),
+        }));
 
     return {
-        "this-week": thisWeek,
-        "this-month": thisMonthShortened,
+        last7Days: format(sorted.slice(-7)),
+        last30Days: format(sorted.slice(-30)),
     };
 }
+
+
+
+
+const formatTime = (inputTime) => {
+
+    const localDate = new Date(inputTime);
+
+    const hours = String(localDate.getHours()).padStart(2, '0');
+    const minutes = String(localDate.getMinutes()).padStart(2, '0');
+
+    const formattedTime = `${hours}:${minutes}`;
+
+    return (formattedTime);
+}
+
+const convertMinutes = (totalMinutes) => {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}H ${minutes}M`;
+};
 
 module.exports = {
     toTimeOnly,
     normalizeToUTCDate,
     toUTCTimeOnly,
     processWorkBreakData,
-    parseDateAsUTC
+    parseDateAsUTC,
+    formatTime,
+    convertMinutes
 };

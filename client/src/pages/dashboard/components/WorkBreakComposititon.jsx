@@ -11,14 +11,14 @@ import {
 const dayLabels = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 export const WorkBreakComposition = ({ data }) => {
-  const [selectedOption, setSelectedOption] = useState("this-week");
+  const [selectedOption, setSelectedOption] = useState("last7Days");
   const [showFilters, setShowFilters] = useState(false);
 
   const currentData = (data?.[selectedOption] || []).map((item, index) => ({
     ...item,
     work: item.work ?? 0,
     break: item.break ?? 0,
-    label: selectedOption === "this-week" ? dayLabels[index] : item.name,
+    label: (selectedOption === "last7Days") ? item.day: item.name,
     tooltipLabel: item.name, // keep original date for tooltip
   }));
 
@@ -84,8 +84,8 @@ export const WorkBreakComposition = ({ data }) => {
         </div>
         <div className="p-4 space-y-2">
           {[
-            { value: "this-week", label: "This Week" },
-            { value: "this-month", label: "This Month" },
+            { value: "last7Days", label: "Last 7 Days" },
+            { value: "last30Days", label: "Last 30 Days" },
           ].map((opt) => (
             <button
               key={opt.value}

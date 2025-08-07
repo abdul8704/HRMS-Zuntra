@@ -94,9 +94,9 @@ const markAttendanceOnLogin = async (userid, mode) => {
                 mode: isWithinShift ? mode : "extra",
             });
 
-            if(!attendance.lateBy && (shiftStartTime - now >= 60 * 60 * 1000 || now - shiftStartTime > 0))
+            if (!attendance.lateBy && (shiftStartTime - now >= 60 * 60 * 1000 || now - shiftStartTime > 0))
                 attendance.lateBy = (now - shiftStartTime) / 60_000;
-            
+
             if (isWithinShift && breakDurationMinutes > 1) {
                 // TODO: update this to whatever client wants
                 attendance.breakMinutes += breakDurationMinutes;
@@ -248,11 +248,11 @@ const editLeaveRequest = async (leaveId, userid, leaveCategory, dates, reason) =
     const leaveApplication = await LeaveApplication.findById(leaveId);
     const now = Date.now()
 
-    if(String(leaveApplication.userid) !== userid){
+    if (String(leaveApplication.userid) !== userid) {
         throw new ApiError(403, "YOU CANNOT CHANGE OTHER PEOPLE's LEAVE APPLICATION");
     }
 
-    if(leaveApplication.status !== "PENDING"){
+    if (leaveApplication.status !== "PENDING") {
         throw new ApiError(403, "FORBIDDEN. ADMINS have already taken action. Cannot edit now.")
     }
 
@@ -264,7 +264,7 @@ const editLeaveRequest = async (leaveId, userid, leaveCategory, dates, reason) =
     await leaveApplication.save();
 }
 
-const deleteLeaveRequest = async(leaveId, userid) => {
+const deleteLeaveRequest = async (leaveId, userid) => {
     const leaveApplication = await LeaveApplication.findById(leaveId);
 
     if (String(leaveApplication.userid) !== userid) {
@@ -304,7 +304,7 @@ const fetchAttendanceRecords = async (
     const attendanceRecords = await Attendance.find({
         userid,
         date: { $gte: start, $lte: end },
-    }, {sessions: 0}).sort({ date: 1 });
+    }, { sessions: 0 }).sort({ date: 1 });
 
     const attendanceMap = new Map();
     for (const record of attendanceRecords) {
@@ -330,7 +330,7 @@ const getCalendarDataOnly = async (
         attendanceMap,
         holidays: hol,
     } = await fetchAttendanceRecords(userid, startDate, endDate);
-    
+
     const calendar = [];
 
     for (let i = 0; i < totalDays; i++) {
@@ -350,45 +350,68 @@ const getCalendarDataOnly = async (
     return calendar
 };
 
-const getWorkBreakCompositionOnly = async (
-    userid,
-    startDate,
-    endDate,
-) => {
+const getWorkBreakCompositionOnly = async (userid, todayStr) => {
+    const today = new Date(todayStr);
+    today.setHours(0, 0, 0, 0);
+
+    // Utility to calculate past N days
+    const getPastDate = (date, daysAgo) => {
+        const d = new Date(date);
+        d.setDate(d.getDate() - daysAgo);
+        return d;
+    };
+
+    // Calculate start dates
+    const startDate7 = getPastDate(today, 6); // include today (7 total days)
+    const startDate30 = getPastDate(today, 29);
+
+    // Fetch records once, covering 30 days
     const {
         start,
         totalDays,
         attendanceMap,
         holidays: hol,
-    } = await fetchAttendanceRecords(userid, startDate, endDate);
-    const workBreakComposition = [];
+    } = await fetchAttendanceRecords(userid, startDate30, todayStr);
+
+    const workBreakComposition7 = [];
+    const workBreakComposition30 = [];
+
     for (let i = 0; i < totalDays; i++) {
         const current = new Date(start.getTime() + i * 24 * 60 * 60 * 1000);
         const currentDateStr = current.toISOString().split("T")[0];
         const name = `${current.getDate()}/${current.getMonth() + 1}`;
-        const day = current.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
-        if (hol.includes(currentDateStr)) {
-            workBreakComposition.push({
-                date: currentDateStr,
-                name,
-                day,
-                work: 0,
-                break: 0,
-            });
-            continue;
-        }
+        const day = current
+            .toLocaleDateString("en-US", { weekday: "short" })
+            .toUpperCase();
 
-        const record = attendanceMap.get(currentDateStr);
-        workBreakComposition.push({
+        const dataPoint = {
             date: currentDateStr,
             name,
             day,
-            work: record?.workingMinutes || 0,
-            break: record?.breakMinutes || 0,
-        });
+            work: 0,
+            break: 0,
+        };
+
+        if (!hol.includes(currentDateStr)) {
+            const record = attendanceMap.get(currentDateStr);
+            dataPoint.work = record?.workingMinutes || 0;
+            dataPoint.break = record?.breakMinutes || 0;
+        }
+
+        // Push to both 30-day and 7-day arrays as needed
+        if (current >= startDate7) {
+            workBreakComposition7.push(dataPoint);
+        }
+
+        workBreakComposition30.push(dataPoint);
     }
-    return workBreakComposition;
+
+    return {
+        last7Days: workBreakComposition7,
+        last30Days: workBreakComposition30,
+    };
 };
+
 
 const getAttendanceDataOnly = async (userid, startDate, endDate) => {
     const {
@@ -452,7 +475,8 @@ const getAttendanceDataOnly = async (userid, startDate, endDate) => {
             else if (baseStatus === "remote") remoteCount++;
 
             if (isHoliday) {
-                status = `holiday - worked for ${workingMins} minutes`;
+                if(workingMins>0) status = `holiday - worked for ${workingMins} minutes`;
+                else status = "holiday"
             }
         } else if (!isHoliday) {
             status = "absent";
@@ -478,16 +502,38 @@ const getTimeCards = async (userid, date) => {
     const attendance = await Attendance.findOne({ userid, date });
 
     if (!attendance) {
-        throw new ApiError(404, "No attendance record found for the given date");
+        return (timeCards = {
+            login: "N/A",
+            logout: "N/A",
+            work: "N/A",
+            break: "N/A",
+        });     
     }
 
     const N = attendance.sessions.length;
 
+    let loginTime = 'N/A';
+    let logoutTime = 'N/A';
+    let breakTime = 'N/A';
+    let workTime = 'N/A';
+
+    if (attendance.sessions[0].loginTime)
+        loginTime = attendanceHelper.formatTime(attendance.sessions[0].loginTime)
+    
+    if(attendance.sessions[N-1].logoutTime)
+        logoutTime = attendanceHelper.formatTime(attendance.sessions[N-1].logoutTime)
+
+    if(attendance.workingMinutes)
+        workTime = attendanceHelper.convertMinutes(attendance.workingMinutes);
+
+    if(attendance.breakMinutes)
+        breakTime = attendanceHelper.convertMinutes(attendance.breakMinutes)
+    
     const timeCards = {
-        login: (attendance.sessions[0].loginTime)? new Date(attendance.sessions[0].loginTime).toLocaleTimeString() : 'N/A',
-        logout: (attendance.sessions[N - 1].logoutTime)? new Date(attendance.sessions[N - 1].logoutTime).toLocaleTimeString() : 'N/A',
-        work: attendance.workingMinutes || 'N/A',
-        break: attendance.breakMinutes || 'N/A',
+        login: loginTime,
+        logout: logoutTime,
+        work: workTime,
+        break: breakTime,
     };
 
     return timeCards;

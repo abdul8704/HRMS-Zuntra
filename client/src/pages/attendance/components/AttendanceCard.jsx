@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from '../../../api/axios'
-
-const getStatus = () => {
-  const statuses = ["ontime", "late", "absent", "remote"];
-  return statuses[Math.floor(Math.random() * statuses.length)];
-};
+import api from '../../../api/axios';
 
 const overlayBgColors = {
   ontime: "bg-green-100",
@@ -12,6 +7,7 @@ const overlayBgColors = {
   absent: "bg-red-100",
   remote: "bg-blue-100",
   present: "bg-green-200",
+  holiday: "bg-yellow-100",
 };
 
 const textColors = {
@@ -20,6 +16,7 @@ const textColors = {
   absent: "text-red-700",
   remote: "text-blue-700",
   present: "text-green-800",
+  holiday: "text-yellow-700",
 };
 
 const months = [
@@ -27,88 +24,104 @@ const months = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-export const AttendanceCard = () => {
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+const formatDisplayDate = (date) => {
+  const d = new Date(date);
+  const day = d.getDate();
+  const monthName = months[d.getMonth()];
+  return `${monthName} ${day}`;
+};
+
+const formatForInput = (date) => {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${year}-${month}-${day}`;
+};
+
+const parseDate = (str, isEnd = false) => {
+  const [year, month, day] = str.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  if (isEnd) {
+    date.setHours(23, 59, 59, 999);
+  } else {
+    date.setHours(0, 0, 0, 0);
+  }
+  return date;
+};
+
+const convertMinutesToHours = (text) => {
+  const match = text.match(/(\d+)\s*minutes?/);
+  if (!match) return text;
+  const minutes = parseInt(match[1]);
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return text.replace(
+    /\d+\s*minutes?/,
+    `${hours} hr${hours !== 1 ? "s" : ""} ${mins} min${mins !== 1 ? "s" : ""}`
+  );
+};
+
+export const AttendanceCard = ({ userid }) => {
+  const today = new Date();
+  const initialStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  const initialEnd = today;
+
+  const [fromDate, setFromDate] = useState(formatForInput(initialStart));
+  const [toDate, setToDate] = useState(formatForInput(initialEnd));
   const [showFilter, setShowFilter] = useState(false);
   const [filteredDates, setFilteredDates] = useState([]);
-  const [attendanceData, setAttendanceData] = useState([]);
-  const [startDate, setStartDate] = useState(new Date("21 July 2025"))
-  const [endDate, setEndDate] = useState(new Date("15 aug 2025"))
-  const [userid, setUserid] = useState("687dceb3fc671e86d4c1959a")
+  const [startDate, setStartDate] = useState(initialStart);
+  const [endDate, setEndDate] = useState(initialEnd);
+
+  const getAttendanceData = async (start, end) => {
+    try {
+      const response = await api.get('/api/employee/attendance/attendance-data', {
+        params: {
+          startDate: start.toISOString(),
+          endDate: end.toISOString(),
+          userid,
+        }
+      });
+
+      const rawData = response.data.attendanceData.attendanceData;
+
+      const transformed = rawData.map(entry => {
+        const [main, info] = entry.status.split(" - ");
+        let readableStatus = "Absent";
+        if (main === "present") readableStatus = "Present";
+        else if (main === "remote") readableStatus = "Remote";
+        else if (main === "holiday") readableStatus = "Holiday";
+
+        return {
+          date: new Date(entry.date),
+          status: readableStatus,
+          info: info ? convertMinutesToHours(info.charAt(0).toUpperCase() + info.slice(1)) : "—"
+        };
+      });
+
+      setStartDate(start);
+      setEndDate(end);
+      setFilteredDates(transformed);
+    } catch (err) {
+      console.error("Error fetching attendance:", err);
+    }
+  };
+
  
   useEffect(() => {
-    const getAttendanceData = async () => {
-      const response = await api.get('api/employee/attendance/attendance-data', {
-        params: {
-          userid,
-          startDate,
-          endDate
-        }
-      })
+    const from = parseDate(formatForInput(initialStart));
+    const to = parseDate(formatForInput(initialEnd), true);
+    getAttendanceData(from, to);
+  }, [userid]);
 
-      const data = response.data.attendanceData.attendanceData;
-      setAttendanceData(data);
-
-     const parsedData = data.map((entry) => {
-  const statusText = entry.status?.toLowerCase() || "";
-
-  let status = "present";
-  if (statusText.startsWith("remote")) {
-    status = "remote";
-  } else if (statusText.includes("absent")) {
-    status = "absent";
-  } else if (statusText.includes("late")) {
-    status = "late";
-  } else if (statusText.includes("early")) {
-    status = "ontime";
-  }
-
-  return {
-    date: new Date(entry.date),
-    status,
-    report: entry.status, // keep the original for display
-  };
-});
-
-      setFilteredDates(parsedData);
-    }
-
-    getAttendanceData();
-  }, [])
-
-  const parseDate = (str) => {
-    const [year, month, day] = str.split("-").map(Number);
-    return new Date(year, month - 1, day);
-  };
-
-  const formatDisplayDate = (date) => {
-    const d = new Date(date);
-    const day = d.getDate();
-    const monthName = months[d.getMonth()];
-    return `${monthName} ${day}`;
-  };
-  const formatForInput = (date) => {
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${year}-${month}-${day}`;
-  };
-
-  const generateDateRange = () => {
-    const parsedData = attendanceData.map((entry) => ({
-      date: new Date(entry.date),
-      status: entry.status,
-    }));
-    setFilteredDates(parsedData);
-  };
-
-  const applyDefaultDates = () => {
-    const now = new Date();
-    const first = new Date(now.getFullYear(), now.getMonth(), 1);
-    setFromDate(formatForInput(first));
-    setToDate(formatForInput(now));
-  };
+  useEffect(() => {
+    if (!fromDate || !toDate) return;
+    const from = parseDate(fromDate);
+    const to = parseDate(toDate, true);
+    const today = new Date();
+    if (to > today) return;
+    getAttendanceData(from, to);
+  }, [fromDate, toDate, userid]);
 
   const headingMonth = filteredDates[0]
     ? months[filteredDates[0].date.getMonth()]
@@ -116,8 +129,6 @@ export const AttendanceCard = () => {
   const headingYear = filteredDates[0]
     ? filteredDates[0].date.getFullYear()
     : new Date().getFullYear();
-
-    console.log("filtered", filteredDates)
 
   return (
     <div className="w-full h-full flex flex-col bg-purple-200 p-4 rounded-xl overflow-hidden">
@@ -148,7 +159,6 @@ export const AttendanceCard = () => {
         </button>
       </div>
 
-      {/* Filter */}
       <div className="flex flex-col flex-grow min-h-0 overflow-hidden rounded-md">
         {showFilter && (
           <div className="flex gap-4 px-4 py-1 border-b border-purple-200 flex-wrap bg-transparent">
@@ -165,6 +175,7 @@ export const AttendanceCard = () => {
               <label className="text-sm font-semibold text-gray-600">To</label>
               <input
                 type="date"
+                max={formatForInput(new Date())}
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
                 className="px-3 py-1 bg-black/10 text-black border rounded text-sm"
@@ -173,27 +184,30 @@ export const AttendanceCard = () => {
           </div>
         )}
 
-        {/* Table header */}
-        <div className="grid grid-cols-2 bg-black/10 px-4 py-2 font-semibold text-sm flex-shrink-0">
+        <div className="grid grid-cols-3 bg-black/10 px-4 py-2 font-semibold text-sm flex-shrink-0">
           <div>Date</div>
-          <div>Report</div>
+          <div>Status</div>
+          <div>Info</div>
         </div>
 
-        {/* Table rows */}
         <div className="overflow-y-auto flex-grow min-h-0">
           {filteredDates.map((entry, idx) => (
             <div key={idx} className="relative py-2">
               <div className="absolute inset-0 bg-transparent z-0" />
               <div
-                className={`absolute top-1 bottom-1 left-0 right-0 opacity-90 z-10 ${overlayBgColors[entry.status]}`}
+                className={`absolute top-1 bottom-1 left-0 right-0 opacity-90 z-10 ${overlayBgColors[entry.status.toLowerCase()] || "bg-gray-100"
+                  }`}
               />
-              <div className="relative z-20 grid grid-cols-2 items-center px-4 text-sm">
+              <div className="relative z-20 grid grid-cols-3 items-center px-4 text-sm">
                 <div className="text-black">{formatDisplayDate(entry.date)}</div>
                 <div>
-                 <span className={`inline-block text-xs font-medium ${textColors[entry.status]}`}>
-  {entry.report}
-</span>
-
+                  <span className={`inline-block text-xs font-medium ${textColors[entry.status.toLowerCase()] || "text-gray-700"
+                    }`}>
+                    {entry.status}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-800 font-medium">
+                  {entry.info}
                 </div>
               </div>
             </div>

@@ -35,7 +35,6 @@ export const Attendance = () => {
         const startDate = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0)).toISOString();
         const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59)).toISOString();
 
-
         try {
             const response = await api.get('/api/employee/attendance/calendar', {
                 params: {
@@ -86,7 +85,7 @@ export const Attendance = () => {
                                 <AttendanceCalendar calendarData={calendarData} onMonthYearChange={handleMonthYearChange} />
                             </div>
                             <div className="row-start-4 col-start-5 col-span-4 row-span-5 rounded-lg overflow-auto">
-                                <AttendanceCard />
+                                <AttendanceCard userid = {userid}/>
                             </div>
                         </div>
 
@@ -120,7 +119,7 @@ export const Attendance = () => {
                             </div>
 
                             <div className="w-full overflow-auto">
-                                <AttendanceCard />
+                                <AttendanceCard userid = {userid}/>
                             </div>
                         </div>
                     </>
