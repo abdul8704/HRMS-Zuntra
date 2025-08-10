@@ -15,12 +15,14 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
   const [selectedYear, setSelectedYear] = useState(initialYear);
   const [selectedMonth, setSelectedMonth] = useState(initialMonth);
   const [calendarData, setCalendarData] = useState([]);
+  const [holidayData, setHolidayData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const sidebarRef = useRef();
 
   const today = new Date();
 
+  // Fetch Attendance Data
   const fetchCalendarData = async (year, month) => {
     if (!userid) return;
 
@@ -44,14 +46,38 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     }
   };
 
+  // Fetch Holidays
+  const fetchHolidayData = async (year, month) => {
+    if (!userid) return;
+
+    const startStr = `01-${months[month - 1].slice(0, 3).toLowerCase()}-${year}`;
+    const endStr = `${getDaysInMonth(year, month)}-${months[month - 1].slice(0, 3).toLowerCase()}-${year}`;
+
+    try {
+      const response = await api.get('/api/holidays/range', {
+        params: {
+          startDate: startStr,
+          endDate: endStr,
+          userid,
+        },
+      });
+
+      setHolidayData(response.data.data || []);
+      console.log(`Fetched holidays for ${month}/${year}:`, response.data.data);
+
+    } catch (err) {
+      console.error('Error fetching holiday data:', err);
+    }
+  };
+
   useEffect(() => {
     fetchCalendarData(selectedYear, selectedMonth);
+    fetchHolidayData(selectedYear, selectedMonth);
 
     if (onMonthYearChange) {
       onMonthYearChange(selectedYear, selectedMonth);
     }
   }, [selectedYear, selectedMonth, userid]);
-
 
   const months = [
     'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
@@ -91,6 +117,12 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     const record = calendarData?.find((item) => item.date === dateStr);
     return record?.status || null;
+  };
+
+  const isHoliday = (day) => {
+    if (!day) return null;
+    const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return holidayData.find((h) => h.date.startsWith(dateStr));
   };
 
   const handleMonthClick = (index) => {
@@ -169,15 +201,21 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
                   const todayFlag = isToday(dayNumber);
                   const isSunday = dayIndex === 0;
                   const status = getAttendanceStatus(dayNumber);
+                  const holiday = isHoliday(dayNumber);
 
                   let dayClasses = '';
                   let textClasses = 'text-gray-700';
+                  let tooltipText = '';
 
                   if (future) {
                     textClasses = 'text-gray-400 opacity-50 pointer-events-none';
                   } else if (selected) {
                     dayClasses = 'bg-blue-500';
                     textClasses = 'text-white';
+                  } else if (holiday || isSunday) {
+                    dayClasses = 'bg-[#FEF9C3]';
+                    textClasses = 'text-yellow-900 font-semibold';
+                    if (holiday) tooltipText = holiday.name;
                   } else if (status === 'present') {
                     dayClasses = 'bg-green-100';
                     textClasses = 'text-green-700 font-semibold';
@@ -187,12 +225,6 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
                   } else if (status === 'remote') {
                     dayClasses = 'bg-blue-100';
                     textClasses = 'text-blue-700 font-semibold';
-                  } else if (status === 'holiday') {
-                    dayClasses = 'bg-orange-100';
-                    textClasses = 'text-orange-700 font-semibold';
-                  } else if (isSunday) {
-                    dayClasses = 'bg-orange-100';
-                    textClasses = 'text-orange-700 font-semibold';
                   } else if (todayFlag) {
                     dayClasses = 'border border-blue-500';
                     textClasses = 'text-blue-600';
@@ -204,16 +236,25 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
                   return (
                     <div key={dayIndex} className="flex items-center justify-center h-8 w-8 mx-auto">
                       {dayNumber && (
-                        <div
-                          onClick={() => {
-                            if (!future) {
-                              const selected = { year: selectedYear, month: selectedMonth, day: dayNumber };
-                              setSelectedDate(selected);
-                            }
-                          }}
-                          className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 ${dayClasses} ${textClasses}`}
-                        >
-                          {dayNumber}
+                        <div className="relative group">
+                          <div
+                            onClick={() => {
+                              if (!future) {
+                                setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber });
+                              }
+                            }}
+                            className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 ${dayClasses} ${textClasses}`}
+                          >
+                            {dayNumber}
+                          </div>
+
+                          {/* Tooltip */}
+                          {tooltipText && (
+                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-10">
+                              {tooltipText}
+                              <div className="absolute left-1/2 -translate-x-1/2 top-full w-2 h-2 bg-gray-800 rotate-45"></div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -222,30 +263,6 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
               </div>
             ))}
           </div>
-
-          {/* Legend */}
-          {disableFutureDates && (
-            <div className="flex items-center justify-center py-2">
-              <div className="flex gap-4 text-xs">
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-green-100"></div>
-                  <span className="text-green-700">Present</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-red-100"></div>
-                  <span className="text-red-700">Absent</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-blue-100"></div>
-                  <span className="text-blue-700">Remote</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-orange-100"></div>
-                  <span className="text-orange-700">Sunday</span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
