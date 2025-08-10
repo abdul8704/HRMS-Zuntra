@@ -5,16 +5,15 @@ import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
 import { TimeCard } from '../dashboard/components/TimeCard';
 import { WorkBreakComposition } from '../dashboard/components/WorkBreakComposititon';
-import { Leaverecord } from "./components/Leaverecord";
 import { AttendanceCalendar } from './components/AttendanceCalendar';
 import { AttendanceCard } from './components/AttendanceCard';
 import { LeaveForm } from './components/LeaveForm';
 import { ScheduleForm } from './components/ScheduleForm';
-import { SampleCard } from './components/SampleCard';
 import { LeaveFormHistory } from './components/LeaveFormHistory';
+import { DayInfoCard } from './components/DayInfoCard';
 import { useAuth } from "../../context/AuthContext";
 
-export const Attendance = () => {
+export const Attendance = ({ showScheduleForm = false }) => {
     const { navId } = useParams();
     const { user } = useAuth();
     const userid = user?.userid;
@@ -22,6 +21,9 @@ export const Attendance = () => {
     // Calendar date range
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    
+    // Selected date state for DayInfoCard
+    const [selectedDate, setSelectedDate] = useState(null);
 
     // Receive updated month/year from AttendanceCalendar
     const handleMonthYearChange = (year, month) => {
@@ -30,6 +32,25 @@ export const Attendance = () => {
         setStartDate(start);
         setEndDate(end);
     };
+
+    // Handle date selection from calendar
+    const handleDateSelect = (date) => {
+        setSelectedDate(date);
+        console.log("Date clicked:", date);
+    };
+
+    // Dummy function to simulate clicking on different dates for demo
+    const simulateDateClick = () => {
+        const today = new Date();
+        handleDateSelect(today);
+    };
+
+    // Auto-select today's date on component mount for demo
+    useEffect(() => {
+        if (navId === 'schedule') {
+            simulateDateClick();
+        }
+    }, [navId]);
 
     return (
         <div className="flex flex-col lg:flex-row w-full h-screen overflow-hidden">
@@ -116,24 +137,31 @@ export const Attendance = () => {
                     </div>
                 )}
 
-                {/* 'schedule' tab */}
+                {/* 'schedule' tab - DayInfoCard centered when ScheduleForm is hidden */}
                 {navId === 'schedule' && (
-                    <div className="flex flex-col gap-4 lg:flex-row w-full h-full overflow-auto">
-                        <div className="flex flex-col gap-4 w-full lg:w-1/2">
-                            <div className="w-full h-[400px] lg:h-[500px]">
-                                <AttendanceCalendar disableFutureDates={false} />
-                            </div>
-                            <div className="w-full overflow-auto">
-                                <Leaverecord />
+                    <div className="flex flex-col gap-4 lg:flex-row w-full h-full overflow-hidden">
+                        <div className="flex flex-col gap-4 w-full lg:w-1/2 h-full">
+                            {/* Calendar - stays in its original position */}
+                            <div className="w-full flex-1 min-h-0">
+                                <AttendanceCalendar 
+                                    disableFutureDates={false}
+                                    onDateSelect={handleDateSelect}
+                                />
                             </div>
                         </div>
-                        <div className="flex flex-col items-center justify-center gap-4 w-full lg:w-1/2">
-                            <div className="w-full overflow-auto">
-                                <SampleCard />
+                        
+                        <div className={`flex flex-col gap-4 w-full lg:w-1/2 h-full ${!showScheduleForm ? 'justify-center' : ''}`}>
+                            {/* Day Info Card - keeps original size, centered when ScheduleForm is hidden */}
+                            <div className={`w-full ${showScheduleForm ? 'flex-1 min-h-0' : 'h-auto'}`}>
+                                <DayInfoCard selectedDate={selectedDate} />
                             </div>
-                            <div className="w-full overflow-auto">
-                                <ScheduleForm />
-                            </div>
+                            
+                            {/* Schedule Form - only shows when showScheduleForm is true */}
+                            {showScheduleForm && (
+                                <div className="w-full flex-1 min-h-0">
+                                    <ScheduleForm />
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
