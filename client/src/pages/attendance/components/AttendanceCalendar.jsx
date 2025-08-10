@@ -39,19 +39,19 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
       setCalendarData(response.data.calendarData || []);
       console.log(`Fetched data for ${month}/${year}:`, response.data.calendarData);
 
-      // Pass the new range to parent
-      if (onMonthYearChange) {
-        onMonthYearChange(startDateISO, endDateISO);
-      }
     } catch (err) {
       console.error('Error fetching calendar data:', err);
     }
   };
 
-  // Fetch data on first render & whenever month/year changes
   useEffect(() => {
     fetchCalendarData(selectedYear, selectedMonth);
+
+    if (onMonthYearChange) {
+      onMonthYearChange(selectedYear, selectedMonth);
+    }
   }, [selectedYear, selectedMonth, userid]);
+
 
   const months = [
     'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
