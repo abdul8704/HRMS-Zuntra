@@ -33,18 +33,6 @@ export const Attendance = ({ showScheduleForm = false }) => {
         setEndDate(end);
     };
 
-    // Handle date selection from calendar
-    const handleDateSelect = (date) => {
-        setSelectedDate(date);
-        console.log("Date clicked:", date);
-    };
-
-    // Dummy function to simulate clicking on different dates for demo
-    const simulateDateClick = () => {
-        const today = new Date();
-        handleDateSelect(today);
-    };
-
     // Auto-select today's date on component mount for demo
     useEffect(() => {
         if (navId === 'schedule') {
