@@ -22,7 +22,8 @@ import { Completed } from './pages/project/Completed';
 import { AuthProvider } from './context/AuthContext';
 import './App.css'
 import './index.css'
-import { ShiftDetails } from './pages/employee/components/ShiftDetails';
+// Remove this import since ShiftDetails will be part of EmployeeManagement
+// import { ShiftDetails } from './pages/employee/components/ShiftDetails';
 import { Unauthorized } from './pages/Unauthorized';
 import { RemoveEmployeePopup } from './pages/employee/components/RemoveEmployeePopup';
 import { NewUser } from './pages/dashboard/NewUser';
@@ -57,6 +58,8 @@ function App() {
             <Route path="/ceo" element={<CeoDashboard />} />
             <Route path="/remove-emp-request" element={<RemoveEmployeePopup />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
+            {/* Remove the separate ShiftDetails route - it will be part of EmployeeManagement */}
+            {/* <Route path="/employee/shifts" element={<ShiftDetails />} /> */}
             <Route path="*" element={<NotFound />} />
             <Route path="/newdashboard" element={<NewUser />} />
           </Routes>
