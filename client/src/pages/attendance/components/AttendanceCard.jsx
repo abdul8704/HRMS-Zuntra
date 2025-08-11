@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from '../../../api/axios';
+import { Loader } from "lucide-react";
 
 const overlayBgColors = {
   ontime: "bg-green-100",
@@ -31,7 +32,8 @@ const formatDisplayDate = (date) => {
   return `${monthName} ${day}`;
 };
 
-const formatForInput = (date) => {
+const formatForInput = (d) => {
+  const date = new Date(d);
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
@@ -61,37 +63,40 @@ const convertMinutesToHours = (text) => {
   );
 };
 
-export const AttendanceCard = ({ userid }) => {
-  const today = new Date();
-  const initialStart = new Date(today.getFullYear(), today.getMonth(), 1);
-  const initialEnd = today;
+export const AttendanceCard = ({ data }) => {
+  if(!data)
+    return <Loader/>
+  console.log(data, data.userid, data.startDate, data.endDate);
+  const { userid, startDate, endDate } = data;
 
-  const [fromDate, setFromDate] = useState(formatForInput(initialStart));
-  const [toDate, setToDate] = useState(formatForInput(initialEnd));
+  const [fromDate, setFromDate] = useState(formatForInput(startDate));
+  const [toDate, setToDate] = useState(formatForInput(endDate));
   const [showFilter, setShowFilter] = useState(false);
   const [filteredDates, setFilteredDates] = useState([]);
-  const [startDate, setStartDate] = useState(initialStart);
-  const [endDate, setEndDate] = useState(initialEnd);
   const [summary, setSummary] = useState({
-  present: 0,
-  absent: 0,
-  remote: 0,
-  holiday: 0,
-  workingDays: 0,
-});
+    presentCount: 0,
+    absentCount: 0,
+    remoteCount: 0,
+    holidayCount: 0,
+    totalDaysCount: 0,
+  });
 
+  const headingDate = new Date(fromDate);
+  const headingMonth = months[headingDate.getMonth()];
+  const headingYear = headingDate.getFullYear();
 
-  const getAttendanceData = async (start, end) => {
+  const getAttendanceData = async (from, to) => {
     try {
       const response = await api.get('/api/employee/attendance/attendance-data', {
         params: {
-          startDate: start.toISOString(),
-          endDate: end.toISOString(),
+          startDate: from.toISOString(),
+          endDate: to.toISOString(),
           userid,
-        }
+        },
       });
 
       const rawData = response.data.attendanceData.attendanceData;
+      const stats = response.data.attendanceData.stats;
 
       const transformed = rawData.map(entry => {
         const [main, info] = entry.status.split(" - ");
@@ -103,57 +108,36 @@ export const AttendanceCard = ({ userid }) => {
         return {
           date: new Date(entry.date),
           status: readableStatus,
-          info: info ? convertMinutesToHours(info.charAt(0).toUpperCase() + info.slice(1)) : "—"
+          info: info
+            ? convertMinutesToHours(info.charAt(0).toUpperCase() + info.slice(1))
+            : "—",
         };
       });
 
-      setStartDate(start);
-      setEndDate(end);
       setFilteredDates(transformed);
-      let present = 0, absent = 0, remote = 0, holiday = 0;
-
-transformed.forEach(({ status }) => {
-  if (status === "Present") present++;
-  else if (status === "Absent") absent++;
-  else if (status === "Remote") remote++;
-  else if (status === "Holiday") holiday++;
-});
-
-setSummary({
-  present,
-  absent,
-  remote,
-  holiday,
-  workingDays: present + remote,
-});
-
+      setSummary({
+        presentCount: stats.presentCount,
+        absentCount: stats.absentCount,
+        remoteCount: stats.remoteCount,
+        holidayCount: stats.holidayCount,
+        totalDaysCount: stats.totalDaysCount,
+      });
     } catch (err) {
       console.error("Error fetching attendance:", err);
     }
   };
 
- 
   useEffect(() => {
-    const from = parseDate(formatForInput(initialStart));
-    const to = parseDate(formatForInput(initialEnd), true);
-    getAttendanceData(from, to);
-  }, [userid]);
+    if (!fromDate || !toDate || !userid) return;
 
-  useEffect(() => {
-    if (!fromDate || !toDate) return;
     const from = parseDate(fromDate);
     const to = parseDate(toDate, true);
     const today = new Date();
+
     if (to > today) return;
+
     getAttendanceData(from, to);
   }, [fromDate, toDate, userid]);
-
-  const headingMonth = filteredDates[0]
-    ? months[filteredDates[0].date.getMonth()]
-    : months[new Date().getMonth()];
-  const headingYear = filteredDates[0]
-    ? filteredDates[0].date.getFullYear()
-    : new Date().getFullYear();
 
   return (
     <div className="w-full h-full flex flex-col bg-purple-200 p-4 rounded-xl overflow-hidden">
@@ -239,27 +223,26 @@ setSummary({
           ))}
         </div>
       </div>
-     {filteredDates.length > 0 && (
-<div className="flex flex-wrap gap-2 justify-center mt-4">
-  <div className="bg-green-100 px-3 py-2 rounded text-center min-w-[100px]">
-    Present: {summary.present}
-  </div>
-  <div className="bg-red-100 px-3 py-2 rounded text-center min-w-[100px]">
-    Absent: {summary.absent}
-  </div>
-  <div className="bg-blue-100 px-3 py-2 rounded text-center min-w-[100px]">
-    Remote: {summary.remote}
-  </div>
-  <div className="bg-yellow-100 px-3 py-2 rounded text-center min-w-[100px]">
-    Holiday: {summary.holiday}
-  </div>
-  <div className="bg-purple-100 px-3 py-2 rounded text-center min-w-[120px] whitespace-nowrap">
-    Working Day: {summary.workingDays}
-  </div>
-</div>
 
-)}
-
+      {filteredDates.length > 0 && (
+        <div className="flex flex-wrap gap-2 justify-center mt-4">
+          <div className="bg-purple-100 px-3 py-2 rounded text-center min-w-[120px] whitespace-nowrap">
+            Working Day: {summary.totalDaysCount}
+          </div>
+          <div className="bg-yellow-100 px-3 py-2 rounded text-center min-w-[100px]">
+            Holiday: {summary.holidayCount}
+          </div>
+          <div className="bg-green-100 px-3 py-2 rounded text-center min-w-[100px]">
+            Present: {summary.presentCount}
+          </div>
+          <div className="bg-blue-100 px-3 py-2 rounded text-center min-w-[100px]">
+            Remote: {summary.remoteCount}
+          </div>
+          <div className="bg-red-100 px-3 py-2 rounded text-center min-w-[100px]">
+            Absent: {summary.absentCount}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

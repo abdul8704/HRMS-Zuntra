@@ -3,19 +3,28 @@ import { TimeCard } from '../../dashboard/components/TimeCard'
 import { AttendanceCalendar } from '../../attendance/components/AttendanceCalendar'
 import { AttendanceCard } from '../../attendance/components/AttendanceCard'
 import { WorkBreakComposition } from '../../dashboard/components/WorkBreakComposititon'
+import { getFirstOfMonth, getEndOfDay, getToday } from "../../../utils/dateUtils";
 import api from '../../../api/axios'
 import LeaveTable from '../../attendance/components/LeaveTable'
 
 export const EmployeeDetailsAssignment = ({ userid }) => {
+  const [today, setToday] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+
   const [calendarData, setCalendarData] = useState([])
   const [loginTime, setLoginTime] = useState('N/A');
   const [logoutTime, setLogoutTime] = useState('N/A');
   const [workTime, setWorkTime] = useState('N/A');
   const [breakTime, setBreakTime] = useState('N/A');
+  const [attendanceData, setAttendanceData] = useState({
+    "attendanceData": [],
+    "stats": {}
+  });
   const [workBreakData, setWorkBreakData] = useState({
-      "last7Days": [],
-      "last30Days": [],
-    }); 
+    "last7Days": [],
+    "last30Days": [],
+  });
 
 
   useEffect(() => {
@@ -23,18 +32,20 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
   }, [userid])
 
   useEffect(() => {
-    const today = new Date().toISOString();
-    console.log('user is ', userid)
+    setToday(getToday());
+    setStartDate(getFirstOfMonth(today));
+    setEndDate(getEndOfDay(today));
+    
     try {
       const getTimeCards = async () => {
         const response = await api.get('api/employee/attendace/time-cards', {
           params: {
             userid: String(userid),
-            date: new Date().toISOString()
+            date: today
           }
         })
 
-        if(response.data.success){
+        if (response.data.success) {
           setLoginTime(response.data.timeCards.login)
           setLogoutTime(response.data.timeCards.logout)
           setWorkTime(response.data.timeCards.work)
@@ -42,7 +53,7 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
         }
       }
 
-      const getWorkBreakData = async() => {
+      const getWorkBreakData = async () => {
         const res = await api.get("/api/employee/attendance/work-break", {
           params: {
             todayDate: today,
@@ -53,8 +64,22 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
         setWorkBreakData(res.data.workBreakData)
       }
 
+      const getAttendanceData = async () => {
+        const res = await api.get("/api/employee/attendance/attendance-data", {
+          params: {
+            startDate,
+            endDate,
+            userid
+          }
+        }
+        )
+
+        setAttendanceData(res.data.attendanceData);
+      }
+
       getWorkBreakData();
       getTimeCards();
+      getAttendanceData();
     } catch (error) {
       console.log(error)
     }
@@ -115,8 +140,7 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
       </div>
 
       <div className='col-start-6 col-end-10 row-start-1 row-end-7 rounded-lg '>
-        {/* Attendance Calendar */}
-        <AttendanceCard />
+        <AttendanceCard data={{userid, startDate, endDate}} />
       </div>
 
       <div className='bg-black/20 col-start-6 col-end-10 row-start-7 row-end-12 min-h-0 rounded-lg'>

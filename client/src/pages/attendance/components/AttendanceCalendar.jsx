@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/axios';
 
-export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChange, disableFutureDates = true }) => {
+export const  AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChange, disableFutureDates = true }) => {
   const getInitialYearMonth = () => {
     const today = new Date();
     return {
@@ -44,6 +44,7 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
         onMonthYearChange(startDateISO, endDateISO);
       }
     } catch (err) {
+      console.log("eerr", startDateISO, endDateISO, userid)
       console.error('Error fetching calendar data:', err);
     }
   };

@@ -11,16 +11,18 @@ import { LeaveForm } from './components/LeaveForm';
 import { ScheduleForm } from './components/ScheduleForm';
 import { LeaveFormHistory } from './components/LeaveFormHistory';
 import { DayInfoCard } from './components/DayInfoCard';
+import { getFirstOfMonth, getEndOfDay } from "../../utils/dateUtils";
 import { useAuth } from "../../context/AuthContext";
+import { Loading } from "../utils/Loading";
 
 export const Attendance = ({ showScheduleForm = false }) => {
     const { navId } = useParams();
-    const { user } = useAuth();
+    const { user, authDataLoading } = useAuth();
     const userid = user?.userid;
 
     // Calendar date range
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
+    const [startDate, setStartDate] = useState(getFirstOfMonth(new Date()));
+    const [endDate, setEndDate] = useState(getEndOfDay(new Date()));
     
     // Selected date state for DayInfoCard
     const [selectedDate, setSelectedDate] = useState(null);
@@ -53,6 +55,9 @@ export const Attendance = ({ showScheduleForm = false }) => {
     }, [navId]);
 
     return (
+        (authDataLoading) ? 
+            <Loading/>
+        :
         <div className="flex flex-col lg:flex-row w-full h-screen overflow-hidden">
             <Sidebar />
             <div className="flex flex-col gap-4 flex-1 p-4 overflow-y-auto">
@@ -87,7 +92,7 @@ export const Attendance = ({ showScheduleForm = false }) => {
                                 />
                             </div>
                             <div className="row-start-4 col-start-5 col-span-4 row-span-5 rounded-lg overflow-auto">
-                                <AttendanceCard userid={userid} />
+                                <AttendanceCard data={{userid, startDate, endDate}} />
                             </div>
                         </div>
 
