@@ -13,7 +13,7 @@ import { DayInfoCard } from './components/DayInfoCard';
 import { useAuth } from "../../context/AuthContext";
 import api from "../../api/axios";
 
-export const Attendance = ({ showScheduleForm = false }) => {
+export const Attendance = ({ showScheduleForm = true }) => {
     const { navId } = useParams();
     const { user } = useAuth();
     const userid = user?.userid;
