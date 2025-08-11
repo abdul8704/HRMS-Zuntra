@@ -17,21 +17,34 @@ export const ReminderCard = ({ onPlusClick }) => {
   const [nextId, setNextId] = useState(7);
 
   const toggleComplete = (id) => {
-    setReminders(prevReminders => 
-      prevReminders.map(reminder => 
-        reminder.id === id 
+    setReminders(prevReminders =>
+      prevReminders.map(reminder =>
+        reminder.id === id
           ? { ...reminder, completed: !reminder.completed }
           : reminder
       )
     );
+
+    setTimeout(() => {
+      setReminders(prevReminders => {
+        const idx = prevReminders.findIndex(r => r.id === id);
+        if (idx === -1) return prevReminders;
+
+        const updated = [...prevReminders];
+        const [item] = updated.splice(idx, 1);
+
+        if (item.completed) {
+          updated.push(item); // move to bottom if completed
+        } else {
+          updated.unshift(item); // move back to top if uncompleted
+        }
+
+        return updated;
+      });
+    }, 1000);
   };
 
-  const sortedReminders = [...reminders].sort((a, b) => {
-    if (a.completed !== b.completed) return a.completed - b.completed;
-    return a.daysLeft - b.daysLeft;
-  });
-
-  const handleAddClick = () => setShowForm((prev) => !prev);
+  const handleAddClick = () => setShowForm(prev => !prev);
 
   const handleDateSelect = (e) => {
     setSelectedDate(e.target.value);
@@ -59,6 +72,24 @@ export const ReminderCard = ({ onPlusClick }) => {
     setSelectedTime("");
     setShowForm(false);
   };
+
+  // Inline animation styles
+  const strikeBase = {
+    position: "relative",
+    display: "inline-block",
+  };
+
+  const strikeLine = (completed) => ({
+    content: "''",
+    position: "absolute",
+    left: 0,
+    top: "50%",
+    height: "2px",
+    background: "currentColor",
+    transformOrigin: "left center",
+    width: completed ? "100%" : "0%",
+    transition: "width 0.3s ease",
+  });
 
   return (
     <div className="w-full h-full rounded-2xl flex flex-col text-[clamp(0.7rem,1.2vw,1rem)] p-[clamp(0.5rem,1vw,1rem)]">
@@ -125,7 +156,7 @@ export const ReminderCard = ({ onPlusClick }) => {
       {/* Reminders List */}
       <div className="flex-1 overflow-y-auto pl-1 pr-2">
         <ul className="m-0">
-          {sortedReminders.map((reminder) => (
+          {reminders.map((reminder) => (
             <li key={reminder.id} className="mb-3 flex items-start gap-2 text-gray-700 text-[clamp(0.7rem,1.1vw,0.9rem)]">
               <button
                 onClick={() => toggleComplete(reminder.id)}
@@ -149,9 +180,10 @@ export const ReminderCard = ({ onPlusClick }) => {
                 )}
               </button>
               <div className="flex-1 flex justify-between items-start gap-2">
-                <p className={`break-words ${reminder.completed ? "line-through text-gray-600" : "text-gray-800"}`}>
+                <span style={strikeBase}>
                   {reminder.text}
-                </p>
+                  <span style={strikeLine(reminder.completed)} />
+                </span>
                 <span className="text-xs text-gray-500 whitespace-nowrap">
                   {reminder.daysLeft} {reminder.daysLeft === 1 ? "day" : "days"} left
                 </span>
