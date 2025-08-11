@@ -1,199 +1,270 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import api from '../../../api/axios';
 
-/* ── easily change colours here ───────────────────────────── */
-const TOOLTIP_BG   = 'bg-white';
-const TOOLTIP_TEXT = 'text-sky-500';
-const HOLIDAY_BG   = 'bg-orange-300';
-const HOLIDAY_TEXT = 'text-orange-900';
-/* ─────────────────────────────────────────────────────────── */
+export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChange, disableFutureDates = true }) => {
+  const getInitialYearMonth = () => {
+    const today = new Date();
+    return {
+      year: today.getFullYear(),
+      month: today.getMonth() + 1,
+    };
+  };
 
-export const AttendanceCalendar = ({
-  calendarData       = [],
-  onMonthYearChange,
-  disableFutureDates = true,
-  holidaysEndpoint   = '/api/holidays'
-}) => {
-  /* ── basic date helpers ─────────────────────────────────── */
+  const { year: initialYear, month: initialMonth } = getInitialYearMonth();
+
+  const [selectedYear, setSelectedYear] = useState(initialYear);
+  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+  const [calendarData, setCalendarData] = useState([]);
+  const [holidayData, setHolidayData] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const sidebarRef = useRef();
+
   const today = new Date();
-  const [selectedYear,  setSelectedYear ] = useState(today.getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1);
-  const [selectedDate,  setSelectedDate ] = useState(null);
-  const [showSidebar,   setShowSidebar ]  = useState(false);
 
-  const daysInMonth   = (y,m) => new Date(y, m, 0).getDate();
-  const firstWeekDay  = (y,m) => new Date(y, m - 1, 1).getDay();
-  const dayCount      = daysInMonth(selectedYear, selectedMonth);
-  const firstDay      = firstWeekDay(selectedYear, selectedMonth);
-  const calendarDays  = Array(firstDay).fill(null)
-                        .concat([...Array(dayCount).keys()].map(i => i + 1));
+  // Fetch Attendance Data
+  const fetchCalendarData = async (year, month) => {
+    if (!userid) return;
 
-  /* ── pull holidays from backend ─────────────────────────── */
-  const [holidays,setHolidays] = useState([]);
+    const startDateISO = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0)).toISOString();
+    const endDateISO = new Date(Date.UTC(year, month, 0, 23, 59, 59)).toISOString();
+
+    try {
+      const response = await api.get('/api/employee/attendance/calendar', {
+        params: {
+          startDate: startDateISO,
+          endDate: endDateISO,
+          userid,
+        },
+      });
+
+      setCalendarData(response.data.calendarData || []);
+      console.log(`Fetched data for ${month}/${year}:`, response.data.calendarData);
+
+    } catch (err) {
+      console.error('Error fetching calendar data:', err);
+    }
+  };
+
+  // Fetch Holidays
+  const fetchHolidayData = async (year, month) => {
+    if (!userid) return;
+
+    const startStr = `01-${months[month - 1].slice(0, 3).toLowerCase()}-${year}`;
+    const endStr = `${getDaysInMonth(year, month)}-${months[month - 1].slice(0, 3).toLowerCase()}-${year}`;
+
+    try {
+      const response = await api.get('/api/holidays/range', {
+        params: {
+          startDate: startStr,
+          endDate: endStr,
+          userid,
+        },
+      });
+
+      setHolidayData(response.data.data || []);
+      console.log(`Fetched holidays for ${month}/${year}:`, response.data.data);
+
+    } catch (err) {
+      console.error('Error fetching holiday data:', err);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try { setHolidays(await (await fetch(holidaysEndpoint)).json()); }
-      catch (e) { console.error('Holiday fetch failed', e); }
-    })();
-  }, [holidaysEndpoint]);
+    fetchCalendarData(selectedYear, selectedMonth);
+    fetchHolidayData(selectedYear, selectedMonth);
 
-  const toISO = d => {
-    const [dd, mm, yy] = d.split('-');
-    const yyyy = +yy < 50 ? `20${yy}` : `19${yy}`;
-    return `${yyyy}-${mm.padStart(2,'0')}-${dd.padStart(2,'0')}`;
+    if (onMonthYearChange) {
+      onMonthYearChange(selectedYear, selectedMonth);
+    }
+  }, [selectedYear, selectedMonth, userid]);
+
+  const months = [
+    'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+    'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
+  ];
+
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  const getDaysInMonth = (year, month) => new Date(year, month, 0).getDate();
+  const getFirstDayOfMonth = (year, month) => new Date(year, month - 1, 1).getDay();
+
+  const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
+  const firstDay = getFirstDayOfMonth(selectedYear, selectedMonth);
+
+  const calendarDays = Array(firstDay).fill(null).concat(Array.from({ length: daysInMonth }, (_, i) => i + 1));
+
+  const isFutureDate = (day) => {
+    if (!disableFutureDates || !day) return false;
+    const current = new Date(selectedYear, selectedMonth - 1, day);
+    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    return current > todayDate;
   };
 
-  const holidayMap = useMemo(() => {
-    const m=new Map();
-    holidays.forEach(h=>m.set(toISO(h.date),h));
-    return m;
-  }, [holidays]);
+  const isSelected = (day) =>
+    selectedDate &&
+    selectedDate.year === selectedYear &&
+    selectedDate.month === selectedMonth &&
+    selectedDate.day === day;
 
-  /* ── tooltip state ──────────────────────────────────────── */
-  const [tip,setTip]=useState({show:false,msg:'',x:0,y:0});
-  const showTip=(e,msg)=>{
-    const r=e.target.getBoundingClientRect();
-    setTip({show:true,msg,x:r.left+r.width/2,y:r.top});
+  const isToday = (day) =>
+    day === today.getDate() &&
+    selectedMonth === today.getMonth() + 1 &&
+    selectedYear === today.getFullYear();
+
+  const getAttendanceStatus = (day) => {
+    if (!day) return null;
+    const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const record = calendarData?.find((item) => item.date === dateStr);
+    return record?.status || null;
   };
-  const hideTip=()=>setTip(s=>({...s,show:false}));
 
-  /* ── outside-click for sidebar ──────────────────────────── */
-  const sbRef=useRef();
-  useEffect(()=>{
-    const h=e=>{ if(sbRef.current&&!sbRef.current.contains(e.target)) setShowSidebar(false); };
-    if(showSidebar) document.addEventListener('mousedown',h);
-    return ()=>document.removeEventListener('mousedown',h);
-  },[showSidebar]);
-
-  /* ── helpers ────────────────────────────────────────────── */
-  const isFuture=d=>{
-    if(!disableFutureDates||!d) return false;
-    return new Date(selectedYear,selectedMonth-1,d) >
-           new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  const isHoliday = (day) => {
+    if (!day) return null;
+    const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return holidayData.find((h) => h.date.startsWith(dateStr));
   };
-  const isToday=d=> d===today.getDate() &&
-                     selectedMonth===today.getMonth()+1 &&
-                     selectedYear===today.getFullYear();
-  const isSelected=d=> selectedDate &&
-                      selectedDate.year===selectedYear &&
-                      selectedDate.month===selectedMonth &&
-                      selectedDate.day===d;
 
-  const months=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE',
-                'JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+  const handleMonthClick = (index) => {
+    setSelectedMonth(index + 1);
+    setSelectedDate(null);
+    setShowSidebar(false);
+  };
 
-  const fmtTip = (reason, group) =>
-    `${reason[0].toUpperCase()+reason.slice(1)} : applicable to ${group}`;
+  const handleYearChange = (delta) => {
+    setSelectedYear((prev) => prev + delta);
+  };
 
-  /* ── render ─────────────────────────────────────────────── */
   return (
-    <div className="relative w-full h-full flex flex-col border-2 rounded-lg bg-white">
-
-      {/* tooltip */}
-      {tip.show && (
-        <div className={`fixed z-50 px-2 py-1 rounded shadow ${TOOLTIP_BG} ${TOOLTIP_TEXT} text-xs`}
-             style={{left:tip.x,top:tip.y-10,transform:'translate(-50%,-100%)'}}>
-          {tip.msg}
+    <div className="relative w-full h-full flex flex-col bg-white border-2 rounded-lg overflow-hidden">
+      {/* Sidebar */}
+      <div
+        ref={sidebarRef}
+        className={`absolute inset-y-0 left-0 bg-white z-30 shadow-lg w-64 max-w-full transition-transform duration-300
+        flex flex-col p-4 ${showSidebar ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={() => handleYearChange(-1)} className="text-xl font-bold px-2">&lt;</button>
+          <div className="text-lg font-semibold">{selectedYear}</div>
+          <button onClick={() => handleYearChange(1)} className="text-xl font-bold px-2">&gt;</button>
         </div>
-      )}
 
-      {/* sidebar */}
-      <div ref={sbRef}
-           className={`absolute inset-y-0 left-0 w-60 bg-white shadow-lg p-4 z-30 transform duration-300
-                      ${showSidebar?'translate-x-0':'-translate-x-full'}`}>
-        <div className="flex justify-between mb-4">
-          <button onClick={()=>setSelectedYear(y=>y-1)}>&lt;</button>
-          <span>{selectedYear}</span>
-          <button onClick={()=>setSelectedYear(y=>y+1)}>&gt;</button>
-        </div>
-        <div className="grid gap-2 overflow-y-auto">
-          {months.map((m,i)=>(
-            <button key={m}
-                    onClick={()=>{
-                      setSelectedMonth(i+1);
-                      onMonthYearChange?.(selectedYear,i+1);
-                      setShowSidebar(false);
-                    }}
-                    className={`px-3 py-1 rounded text-left text-sm
-                               ${i+1===selectedMonth?'bg-blue-500 text-white':'hover:bg-gray-100'}`}>
-              {m}
-            </button>
-          ))}
+        <div className="flex-1 overflow-y-auto">
+          <div className="grid grid-cols-1 gap-2">
+            {months.map((month, index) => (
+              <button
+                key={index}
+                onClick={() => handleMonthClick(index)}
+                className={`text-left text-sm px-3 py-1 rounded transition 
+                  ${index + 1 === selectedMonth ? 'bg-blue-500 text-white' : 'hover:bg-gray-100 text-gray-800'}`}
+              >
+                {month}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* header */}
-      <div className="relative p-3 flex items-center">
-        <button onClick={()=>setShowSidebar(!showSidebar)}
-                className="flex flex-col gap-0.5">
-          <span className="w-4 h-0.5 bg-gray-700"></span>
-          <span className="w-4 h-0.5 bg-gray-700"></span>
-          <span className="w-4 h-0.5 bg-gray-700"></span>
+      {/* Header */}
+      <div className="relative flex items-center p-4 flex-shrink-0">
+        <button
+          onClick={() => setShowSidebar(!showSidebar)}
+          className="flex items-center gap-1 text-sm font-medium text-gray-700"
+        >
+          <div className="flex flex-col gap-0.5">
+            <div className="w-3 h-0.5 bg-gray-600"></div>
+            <div className="w-3 h-0.5 bg-gray-600"></div>
+            <div className="w-3 h-0.5 bg-gray-600"></div>
+          </div>
         </button>
-        <div className="absolute left-1/2 -translate-x-1/2 font-bold">
-          {months[selectedMonth-1]} {selectedYear}
+        <div className="absolute left-1/2 transform -translate-x-1/2 text-base font-bold tracking-wide text-gray-800">
+          {months[selectedMonth - 1]} {selectedYear}
         </div>
       </div>
 
-      {/* calendar */}
-      <div className="flex-1 px-2 pb-2 flex flex-col gap-1">
-        <div className="grid grid-cols-7 text-center text-xs font-medium text-gray-600">
-          {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>(
-            <div key={d} className="h-6 flex items-center justify-center">{d}</div>
-          ))}
-        </div>
+      {/* Calendar */}
+      <div className="flex-1 px-2 py-1 min-h-0">
+        <div className="h-full flex flex-col gap-1">
+          <div className="grid grid-cols-7 gap-1">
+            {days.map((d) => (
+              <div key={d} className="flex items-center justify-center text-xs font-medium text-gray-600 h-8">{d}</div>
+            ))}
+          </div>
 
-        <div className="flex-1 grid grid-rows-6 gap-1">
-          {Array.from({length:6},(_,w)=>(
-            <div key={w} className="grid grid-cols-7 gap-1">
-              {Array.from({length:7},(_,c)=>{
-                const d=calendarDays[w*7+c];
-                const dateKey=d?`${selectedYear}-${String(selectedMonth).padStart(2,'0')}-${String(d).padStart(2,'0')}`:'';
-                const att=calendarData.find(r=>r.date===dateKey);
-                const status=att?.status;
-                const holObj=d?
-                  holidayMap.get(dateKey) || (c===0 ? {reason:'sunday',applicableTo:'all'} : null)
-                  : null;
+          <div className="flex-1 grid grid-rows-6 gap-1">
+            {Array.from({ length: 6 }, (_, weekIndex) => (
+              <div key={weekIndex} className="grid grid-cols-7 gap-1">
+                {Array.from({ length: 7 }, (_, dayIndex) => {
+                  const dayNumber = calendarDays[weekIndex * 7 + dayIndex];
+                  const future = isFutureDate(dayNumber);
+                  const selected = isSelected(dayNumber);
+                  const todayFlag = isToday(dayNumber);
+                  const isSunday = dayIndex === 0;
+                  const status = getAttendanceStatus(dayNumber);
+                  const holiday = isHoliday(dayNumber);
 
-                let txt='text-gray-700', bg='hover:bg-gray-100';
-                if(!d||isFuture(d)){ txt='text-gray-400 pointer-events-none'; bg=''; }
-                else if(isSelected(d)){ txt='text-white'; bg='bg-blue-500'; }
-                else if(status==='present'){ txt='text-green-700'; bg='bg-green-100'; }
-                else if(status==='absent'){ txt='text-red-700';   bg='bg-red-100'; }
-                else if(status==='remote'){ txt='text-blue-700';  bg='bg-blue-100'; }
-                else if(holObj){ txt=`${HOLIDAY_TEXT} font-semibold`; bg=HOLIDAY_BG; }
-                else if(isToday(d)){ txt='text-blue-600'; bg='border border-blue-500'; }
+                  let dayClasses = '';
+                  let textClasses = 'text-gray-700';
+                  let tooltipText = '';
 
-                return (
-                  <div key={c} className="flex items-center justify-center h-8 w-8 mx-auto">
-                    {d&&(
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs cursor-pointer ${bg} ${txt}`}
-                           onClick={()=>!isFuture(d)&&setSelectedDate({year:selectedYear,month:selectedMonth,day:d})}
-                           onMouseEnter={holObj ? (e)=>showTip(e, fmtTip(holObj.reason, holObj.applicableTo)) : undefined}
-                           onMouseLeave={hideTip}>
-                        {d}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
-        </div>
+                  if (future) {
+                    textClasses = 'text-gray-400 opacity-50 pointer-events-none';
+                  } else if (selected) {
+                    dayClasses = 'bg-blue-500';
+                    textClasses = 'text-white';
+                  } else if (holiday || isSunday) {
+                    dayClasses = 'bg-[#FEF9C3]';
+                    textClasses = 'text-yellow-900 font-semibold';
+                    if (holiday) tooltipText = holiday.name;
+                  } else if (status === 'present') {
+                    dayClasses = 'bg-green-100';
+                    textClasses = 'text-green-700 font-semibold';
+                  } else if (status === 'absent') {
+                    dayClasses = 'bg-red-100';
+                    textClasses = 'text-red-700 font-semibold';
+                  } else if (status === 'remote') {
+                    dayClasses = 'bg-blue-100';
+                    textClasses = 'text-blue-700 font-semibold';
+                  } else if (todayFlag) {
+                    dayClasses = 'border border-blue-500';
+                    textClasses = 'text-blue-600';
+                  } else {
+                    dayClasses = 'hover:bg-gray-100';
+                    textClasses = 'text-gray-700';
+                  }
 
-        <div className="flex justify-center gap-4 text-xs mt-2">
-          <LegendDot color="bg-green-100" text="Present"/>
-          <LegendDot color="bg-red-100"   text="Absent"/>
-          <LegendDot color="bg-blue-100"  text="Remote"/>
-          <LegendDot color={HOLIDAY_BG}   text="Holiday"/>
+                  return (
+                    <div key={dayIndex} className="flex items-center justify-center h-8 w-8 mx-auto">
+                      {dayNumber && (
+                        <div className="relative group">
+                          <div
+                            onClick={() => {
+                              if (!future) {
+                                setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber });
+                              }
+                            }}
+                            className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 ${dayClasses} ${textClasses}`}
+                          >
+                            {dayNumber}
+                          </div>
+
+                          {/* Tooltip */}
+                          {tooltipText && (
+                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-10">
+                              {tooltipText}
+                              <div className="absolute left-1/2 -translate-x-1/2 top-full w-2 h-2 bg-gray-800 rotate-45"></div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
-const LegendDot = ({color,text})=>(
-  <div className="flex items-center gap-1">
-    <div className={`w-3 h-3 rounded-full ${color}`}></div>
-    <span>{text}</span>
-  </div>
-);

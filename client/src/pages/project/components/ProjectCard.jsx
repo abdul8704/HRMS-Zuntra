@@ -53,74 +53,99 @@ export const ProjectCard = ({ projectData }) => {
     card: {
       backgroundColor: projectData.color || "#f4b6b6",
       borderRadius: "1rem",
-      padding: "1.25rem",
-      width: "20rem",
+      padding: "1.5rem",
       fontFamily: "'Segoe UI', sans-serif",
       position: "relative",
-      boxShadow: "0 0.125rem 0.625rem rgba(0,0,0,0.1)",
-      marginTop: "1.25rem",
+      boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
+      marginBottom: "1.5rem",
       cursor: "pointer",
       transition: "transform 0.2s",
       display: "flex",
       flexDirection: "column",
-      justifyContent: "space-between",
-      minHeight: "17.5rem",
+      height: "240px",
+      width: "100%",
+      maxWidth: "380px",
+      minWidth: "350px",
+      border: "1px solid #e2e8f0",
+      overflow: "hidden",
     },
     icons: {
       position: "absolute",
-      top: "0.75rem",
-      right: "0.75rem",
+      top: "1.5rem",
+      right: "1.5rem",
       display: "flex",
-      gap: "0.625rem",
+      gap: "0.5rem",
       cursor: "pointer",
       zIndex: 2,
     },
-    title: {
-      fontSize: "1.375rem",
-      fontWeight: 700,
-      margin: "0.3125rem 0 0.5rem 0",
-      display: "-webkit-box",
-      WebkitLineClamp: 2,
-      WebkitBoxOrient: "vertical",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
+    contentArea: {
+      flex: 1,
+      display: "flex",
+      flexDirection: "column",
+      minHeight: 0, // Allow content to shrink
+      paddingBottom: "1rem", // Add some space before footer
     },
-    subtitle: {
-      fontSize: "1.125rem",
+    title: {
+      fontSize: "1rem",
       fontWeight: 600,
-      margin: "0 0 0.5rem 0",
+      margin: "0 2.5rem 0.25rem 0",
+      color: "#1E1E1E",
       display: "-webkit-box",
       WebkitLineClamp: 1,
       WebkitBoxOrient: "vertical",
       overflow: "hidden",
       textOverflow: "ellipsis",
+      wordWrap: "break-word",
     },
-    description: {
-      color: "#f0f0f0",
+    subtitle: {
       fontSize: "0.875rem",
-      marginBottom: "3rem",
+      fontWeight: 500,
+      margin: "0 0 1rem 0",
+      color: "#1E1E1E",
       display: "-webkit-box",
-      WebkitLineClamp: 2,
+      WebkitLineClamp: 1,
       WebkitBoxOrient: "vertical",
       overflow: "hidden",
       textOverflow: "ellipsis",
-      flexGrow: 1,
+      wordWrap: "break-word",
+    },
+    description: {
+      color: "#3F3F3F",
+      fontSize: "0.875rem",
+      display: "-webkit-box",
+      WebkitLineClamp: 4,
+      WebkitBoxOrient: "vertical",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      lineHeight: "1.4",
+      wordWrap: "break-word",
+      hyphens: "auto",
+      flex: 1, // Take available space but don't push footer
     },
     footer: {
-      position: "absolute",
-      bottom: "1rem",
-      left: "1.25rem",
-      right: "1.25rem",
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
+      gap: "0.5rem",
+      marginTop: "auto", // Push to bottom
+      paddingTop: "1rem", // Fixed space above footer
+      minHeight: "40px", // Minimum height to maintain consistency
+      position: "relative", // For absolute positioning of profile if needed
+    },
+    profileWrapper: {
+      display: "flex",
+      alignItems: "center",
+      maxWidth: "60%", // Prevent profile from taking too much space
     },
     badge: {
       backgroundColor: "rgba(255, 255, 255, 0.3)",
-      padding: "0.375rem 1rem",
+      padding: "0.375rem 0.75rem",
       borderRadius: "62.5rem",
-      fontWeight: 600,
+      fontWeight: 500,
       fontSize: "0.875rem",
+      color: "#1E1E1E",
+      whiteSpace: "nowrap",
+      flexShrink: 0,
     },
     modalOverlay: {
       position: "fixed",
@@ -210,17 +235,21 @@ export const ProjectCard = ({ projectData }) => {
           <FaTrash onClick={(e) => e.stopPropagation()} />
         </div>
 
-        <h2 style={styles.title}>{projectData.title}</h2>
-        <h3 style={styles.subtitle}>{projectData.subtitle}</h3>
-        <p style={styles.description}>{projectData.description}</p>
+        <div style={styles.contentArea}>
+          <h2 style={styles.title}>{projectData.title}</h2>
+          <h3 style={styles.subtitle}>{projectData.subtitle}</h3>
+          <p style={styles.description}>{projectData.description}</p>
+        </div>
 
         <div style={styles.footer}>
-          <EmpProfile
-            name={projectData.user?.name}
-            role={projectData.user?.role}
-            avatar={projectData.user?.avatar}
-            tl={true}
-          />
+          <div style={styles.profileWrapper}>
+            <EmpProfile
+              name={projectData.user?.name}
+              role={projectData.user?.role}
+              avatar={projectData.user?.avatar}
+              tl={true}
+            />
+          </div>
           <div style={styles.badge}>2 weeks left</div>
         </div>
       </div>
