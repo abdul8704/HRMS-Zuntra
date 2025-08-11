@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-export const RemoveEmployeePopup = () => {
-  const [message, setMessage] = useState('Rejection Mail');
+export const RemoveEmployeePopup = ({ 
+  employee, 
+  onClose, 
+  onConfirm 
+}) => {
+  const [message, setMessage] = useState('No Message');
   const [customText, setCustomText] = useState('');
   const backdropRef = useRef();
-  const navigate = useNavigate();
-
-  const employee = { id: 1, username: 'johndoe' };
 
   useEffect(() => {
     const handleEsc = (e) => {
@@ -27,15 +27,21 @@ export const RemoveEmployeePopup = () => {
   }, []);
 
   const handleCancel = () => {
-    setMessage('Rejection Mail');
+    setMessage('No Message');
     setCustomText('');
-    navigate(-1); // Close popup
+    onClose();
   };
 
   const handleConfirm = () => {
     const finalMessage = message === 'Custom' ? customText : message;
-    console.log(`Removed Employee: ${employee.id}, Message: ${finalMessage}`);
-    navigate(-1);
+    console.log(`Removed Employee: ${employee?.id || employee?._id}, Message: ${finalMessage}`);
+    
+    if (onConfirm) {
+      onConfirm({
+        employeeId: employee?.id || employee?._id,
+        message: finalMessage
+      });
+    }
   };
 
   return (
@@ -47,9 +53,7 @@ export const RemoveEmployeePopup = () => {
         <h3 className="text-center text-lg font-semibold text-gray-800 mb-3">
           REMOVE SIGN UP REQUEST
         </h3>
-        <p className="text-center font-medium text-gray-600 mb-6">
-          FROM &lt;{employee.username}&gt;
-        </p>
+      
 
         <div className="mb-4">
           <label className="block mb-2 font-bold text-gray-800">MESSAGE:</label>
@@ -57,15 +61,24 @@ export const RemoveEmployeePopup = () => {
             <select
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full p-3 rounded-md border border-gray-300 text-base font-medium bg-gray-100 text-gray-800 appearance-none"
+              className="w-full p-3 rounded-md border border-gray-300 text-base font-medium bg-gray-100 text-gray-800 appearance-none pr-10"
             >
-              <option value="Rejection Mail">Rejection Mail</option>
               <option value="No Message">No Message</option>
               <option value="Custom">Custom</option>
             </select>
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-black text-lg font-bold">
-              ▼
-            </div>
+            <svg 
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M19 9l-7 7-7-7" 
+              />
+            </svg>
           </div>
         </div>
 
@@ -86,17 +99,17 @@ export const RemoveEmployeePopup = () => {
 
         <div className="flex justify-center items-center gap-3">
           <button
-                onClick={handleCancel}
-                className="py-3 min-w-[120px] border border-gray-300 text-gray-700 rounded-full font-medium transition-colors duration-300 hover:bg-[#E1BEC5] hover:text-white hover:border-[#E1BEC5]"
-              >
-                Cancel
-              </button>
+            onClick={handleCancel}
+            className="py-3 min-w-[120px] border border-gray-300 text-gray-700 rounded-full font-medium transition-colors duration-300 hover:bg-[#E1BEC5] hover:text-white hover:border-[#E1BEC5]"
+          >
+            Cancel
+          </button>
           <button
-                // onClick={handleSubmit}
-                className={`py-3 min-w-[120px] rounded-full font-medium transition-colors duration-300 bg-[#BBD3CC] text-gray-700 hover:bg-[#A6C4BA] `}
-              >
-                REMOVE
-              </button>
+            onClick={handleConfirm}
+            className={`py-3 min-w-[120px] rounded-full font-medium transition-colors duration-300 bg-[#BBD3CC] text-gray-700 hover:bg-[#A6C4BA]`}
+          >
+            REMOVE
+          </button>
         </div>
       </div>
     </div>
