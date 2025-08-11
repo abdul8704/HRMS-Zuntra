@@ -12,9 +12,10 @@ export const EmpProfile = ({
 
   return (
     <div
-      className="flex items-center rounded-full px-3 py-1 w-full h-12 relative"
-      style={{ backgroundColor: color }}
-    >
+  className="flex items-center rounded-full pl-1 pr-3 py-1 w-full h-12 relative"
+  style={{ backgroundColor: color }}
+>
+
       {tl && (
         <svg
           className="absolute top-[0.2rem] right-[0.6rem] w-[0.75rem] h-[0.75rem] text-[#d4af37]"
@@ -28,10 +29,12 @@ export const EmpProfile = ({
         </svg>
       )}
       <img
-        src={avatar}
-        alt={firstName}
-        className="w-8 h-8 rounded-full mr-3 object-cover shrink-0"
-      />
+  src={avatar}
+  alt={firstName}
+  className="w-12 h-12 rounded-full mr-3 object-cover shrink-0"
+  style={{ objectPosition: "center" }}
+/>
+
       <div className="flex flex-col justify-center overflow-hidden">
         <div className="font-bold text-sm truncate leading-tight text-black">
           {firstName}
