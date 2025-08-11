@@ -20,13 +20,13 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
   const [tlReason, setTlReason] = useState('');
 
   useEffect(() => {
-  const fetchPendingLeaveReqs = async () => {
+  const fetchleaveData = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/api/hr/leave/pending-req"); // your API endpoint
+      const response = await api.get("/api/hr/leave/all-req"); // your API endpoint
 
-      if (response.data.success && response.data.pendingLeaveReqs?.length > 0) {
-        const updatedData = response.data.pendingLeaveReqs.map(emp => ({
+      if (response.data.success && response.data.leaveData?.length > 0) {
+        const updatedData = response.data.leaveData.map(emp => ({
           ...emp,
           employeeName: emp.requestedBy || 'Unknown',
           employeeProfile: `${BASE_URL}/uploads/profilePictures/${emp.requestedId}.png`,
@@ -44,7 +44,7 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
     }
   };
 
-  fetchPendingLeaveReqs();
+  fetchleaveData();
 }, []);
 
 
