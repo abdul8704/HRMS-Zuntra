@@ -181,7 +181,7 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
               <div key={weekIndex} className="grid grid-cols-7 gap-1">
                 {Array.from({ length: 7 }, (_, dayIndex) => {
                   const dayNumber = calendarDays[weekIndex * 7 + dayIndex];
-                  const selected = isSelected(dayNumber);
+                  const selected = isSelected(dayNumber) && !isAttendance;  // Disable selection highlight if isAttendance is true
                   const todayFlag = isToday(dayNumber);
                   const future = isFutureDate(dayNumber);
                   const isSunday = dayIndex === 0;
@@ -221,10 +221,12 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
                         <div className="relative group">
                           <div
                             onClick={() => {
-                              setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber });
+                              if (!isAttendance) {
+                                setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber });
+                              }
                             }}
                             className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 
-                              ${dayClasses} ${textClasses} 
+                              ${selected ? 'bg-blue-500 text-white' : dayClasses + ' ' + textClasses} 
                               ${todayFlag ? `ring-2 ring-offset-0 ${ringColorClass}` : ''}`}
                           >
                             {dayNumber}
