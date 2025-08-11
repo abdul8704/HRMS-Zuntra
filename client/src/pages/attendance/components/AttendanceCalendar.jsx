@@ -16,6 +16,7 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
   const [selectedMonth, setSelectedMonth] = useState(initialMonth);
   const [calendarData, setCalendarData] = useState([]);
   const [holidayData, setHolidayData] = useState([]);
+  const [allHolidays, setAllHolidays] = useState([]); // new state for all holidays
   const [selectedDate, setSelectedDate] = useState(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const sidebarRef = useRef();
@@ -47,7 +48,7 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     }
   };
 
-  // Fetch Holidays
+  // Fetch User-Specific Holidays
   const fetchHolidayData = async (year, month) => {
     if (!userid) return;
     const startStr = `01-${months[month - 1].slice(0, 3).toLowerCase()}-${year}`;
@@ -63,9 +64,29 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     }
   };
 
+  // Fetch All Holidays when isAttendance is false
+  const fetchAllHolidays = async (year, month) => {
+    const startDateISO = new Date(year, month - 1, 1).toISOString();
+    const endDateISO = new Date(year, month - 1, getDaysInMonth(year, month)).toISOString();
+
+    try {
+      const response = await api.get('/api/holidays/all', {
+        params: { startDate: startDateISO, endDate: endDateISO },
+      });
+      setAllHolidays(response.data.data || []);
+    } catch (err) {
+      console.error('Error fetching all holidays:', err);
+    }
+  };
+
   useEffect(() => {
     if (isAttendance) fetchCalendarData(selectedYear, selectedMonth);
     fetchHolidayData(selectedYear, selectedMonth);
+
+    if (!isAttendance) {
+      fetchAllHolidays(selectedYear, selectedMonth);
+    }
+
     if (onMonthYearChange) onMonthYearChange(selectedYear, selectedMonth);
   }, [selectedYear, selectedMonth, userid, isAttendance]);
 
@@ -98,10 +119,18 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     return record?.status || null;
   };
 
+  // Returns user-specific holiday object or undefined
   const isHoliday = (day) => {
     if (!day) return null;
     const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     return holidayData.find((h) => h.date.startsWith(dateStr));
+  };
+
+  // Returns all holiday object (user or not) or undefined
+  const isAllHoliday = (day) => {
+    if (!day) return null;
+    const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return allHolidays.find((h) => h.date.startsWith(dateStr));
   };
 
   const getRingColorClass = (status, holiday, isSunday) => {
@@ -186,34 +215,50 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
                   const future = isFutureDate(dayNumber);
                   const isSunday = dayIndex === 0;
                   const status = isAttendance && !future ? getAttendanceStatus(dayNumber) : null;
-                  const holiday = isHoliday(dayNumber);
+                  const userHoliday = isHoliday(dayNumber);
+                  const allHoliday = !isAttendance ? isAllHoliday(dayNumber) : null;
 
                   let dayClasses = '';
                   let textClasses = 'text-gray-700';
                   let tooltipText = '';
 
-                  if (selected && !isAttendance) {
+                  if (!dayNumber) {
+                    dayClasses = '';
+                    textClasses = '';
+                  }
+                  else if (!isAttendance && allHoliday && !userHoliday) {
+                    // grey holidays (allHolidays except user holidays)
+                    dayClasses = 'bg-gray-200';
+                    textClasses = 'text-gray-700';
+                    tooltipText = allHoliday.name;
+                  }
+                  else if (selected && !isAttendance) {
                     dayClasses = 'bg-blue-500';
                     textClasses = 'text-white';
-                  } else if (holiday || isSunday) {
+                  } 
+                  else if (userHoliday || isSunday) {
                     dayClasses = 'bg-[#FEF9C3]';
                     textClasses = 'text-yellow-900 font-semibold';
-                    if (holiday) tooltipText = holiday.name;
-                  } else if (isAttendance && status === 'present') {
+                    if (userHoliday) tooltipText = userHoliday.name;
+                  } 
+                  else if (isAttendance && status === 'present') {
                     dayClasses = 'bg-green-100';
                     textClasses = 'text-green-700 font-semibold';
-                  } else if (isAttendance && status === 'absent') {
+                  } 
+                  else if (isAttendance && status === 'absent') {
                     dayClasses = 'bg-red-100';
                     textClasses = 'text-red-700 font-semibold';
-                  } else if (isAttendance && status === 'remote') {
+                  } 
+                  else if (isAttendance && status === 'remote') {
                     dayClasses = 'bg-blue-100';
                     textClasses = 'text-blue-700 font-semibold';
-                  } else {
+                  } 
+                  else {
                     dayClasses = 'hover:bg-gray-100';
                     textClasses = 'text-gray-700';
                   }
 
-                  const ringColorClass = todayFlag ? getRingColorClass(status, holiday, isSunday) : '';
+                  const ringColorClass = todayFlag ? getRingColorClass(status, userHoliday, isSunday) : '';
 
                   return (
                     <div key={dayIndex} className="flex items-center justify-center h-8 w-8 mx-auto">
