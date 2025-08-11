@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { EmpCourseCard } from "./EmpCourseCard";
+import { CourseCard } from "../../course/components/CourseCard";
 
 const colors = [
   "#F2F2F2", "#E8EAED", "#E6E6E6", "#D9D9D9", "#CCCCCC", "#BFBFBF",
@@ -12,104 +12,130 @@ const colors = [
 ];
 
 const predefinedCourses = [
-  { id: 1, courseName: "React Fundamentals", authorName: "John Doe", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 2, courseName: "Advanced Node.js", authorName: "Jane Smith", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 3, courseName: "MongoDB Mastery", authorName: "Kevin Li", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 4, courseName: "Python for Data Science", authorName: "Emily Stone", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 5, courseName: "Machine Learning Basics", authorName: "Michael Ray", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 6, courseName: "Fullstack with MERN", authorName: "Rachel Green", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 7, courseName: "Cloud Computing 101", authorName: "Thomas Blake", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 8, courseName: "Cybersecurity Essentials", authorName: "Sophia Reed", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 9, courseName: "Kubernetes Crash Course", authorName: "James Hunt", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-  { id: 10, courseName: "Next.js Deep Dive", authorName: "Lily Carter", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
+  { id: 1, courseName: "React Fundamentals", authorName: "John Doe", courseInstructor: "John Doe", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", completionCount: 5, deadline: 8, deadlineUnits: "weeks", rating: 5, courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 2, courseName: "Advanced Node.js", authorName: "Jane Smith", courseInstructor: "Jane Smith", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", completionCount: 3, deadline: 12, deadlineUnits: "weeks", rating: 5, courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 3, courseName: "MongoDB Mastery", authorName: "Kevin Li", courseInstructor: "Kevin Li", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", completionCount: 7, deadline: 6, deadlineUnits: "weeks", rating: 5, courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 4, courseName: "Python for Data Science", authorName: "Emily Stone", courseInstructor: "Emily Stone", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", completionCount: 2, deadline: 0, deadlineUnits: "weeks", rating: 5, courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 5, courseName: "Machine Learning Basics", authorName: "Michael Ray", courseInstructor: "Michael Ray", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", completionCount: 4, deadline: 10, deadlineUnits: "weeks", rating: 5, courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 6, courseName: "Fullstack with MERN", authorName: "Rachel Green", courseInstructor: "Rachel Green", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", completionCount: 6, deadline: 16, deadlineUnits: "weeks", rating: 5, courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 7, courseName: "Cloud Computing 101", authorName: "Thomas Blake", courseInstructor: "Thomas Blake", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", completionCount: 1, deadline: 0, deadlineUnits: "weeks", rating: 5, courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 8, courseName: "Cybersecurity Essentials", authorName: "Sophia Reed", courseInstructor: "Sophia Reed", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", completionCount: 8, deadline: 14, deadlineUnits: "weeks", rating: 5, courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 9, courseName: "Kubernetes Crash Course", authorName: "James Hunt", courseInstructor: "James Hunt", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", completionCount: 3, deadline: 4, deadlineUnits: "weeks", rating: 5, courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
+  { id: 10, courseName: "Next.js Deep Dive", authorName: "Lily Carter", courseInstructor: "Lily Carter", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", completionCount: 5, deadline: 0, deadlineUnits: "weeks", rating: 5, courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
 ];
 
-// PREDEFINED DEFAULT VALUES
-const PREDEFINED_VALUES = {
-  role: "Marketing Head",
-  color: "#7C3AED", // Purple color from your screenshot
-  salary: "85000",
-  permissions: {
-    projectManagement: true,
-    employeeManagement: true,
-    courseManagement: false,
-    attendance: true
-  },
-  courses: [
-    { id: 1, courseName: "React Fundamentals", authorName: "John Doe", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" },
-    { id: 3, courseName: "MongoDB Mastery", authorName: "Kevin Li", imageUrl: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png" }
-  ],
-  members: []
+const defaultPermissions = { 
+  projectManagement: true,
+  employeeManagement: true,
+  courseManagement: true,
+  attendance: true
 };
 
-const defaultPermissions = { 
-  projectManagement: false, 
-  employeeManagement: false, 
-  courseManagement: false, 
-  attendance: false 
-};
+const defaultContainerCourses = [
+  { id: 1, courseName: "React Fundamentals", courseInstructor: "John Doe", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 8, deadlineUnits: "weeks", rating: 5 },
+  { id: 3, courseName: "MongoDB Mastery", courseInstructor: "Kevin Li", courseImage: "https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png", deadline: 6, deadlineUnits: "weeks", rating: 5 }
+];
 
 export const EditRolePopup = ({ 
-  role = PREDEFINED_VALUES.role, 
-  members = PREDEFINED_VALUES.members, 
-  color = PREDEFINED_VALUES.color,
-  salary = PREDEFINED_VALUES.salary,
-  permissions = PREDEFINED_VALUES.permissions,
-  courses = PREDEFINED_VALUES.courses,
-  onClose = () => console.log("Close modal"), 
-  onSave = (data) => console.log("Save data:", data) 
+  type = "edit",
+  rolename = "", 
+  rolecolor = "#f5f5f5",
+  rolesalary = "",
+  rolecourses = [],
+  rolepermissions = defaultPermissions,
+  onClose = () => console.log("Close modal"),
+  onSave = (data) => console.log("Save data:", data)
 }) => {
-  // Initialize state with predefined values immediately
-  const [roleName, setRoleName] = useState(role || PREDEFINED_VALUES.role);
-  const [roleColor, setRoleColor] = useState(color || PREDEFINED_VALUES.color);
-  const [roleSalary, setRoleSalary] = useState(salary ? String(salary) : PREDEFINED_VALUES.salary);
-  const [selectedCourses, setSelectedCourses] = useState(courses || PREDEFINED_VALUES.courses);
-  const [rolePermissions, setRolePermissions] = useState(permissions || PREDEFINED_VALUES.permissions);
+  const isEditMode = type === "edit";
+  
+  const [roleName, setRoleName] = useState(isEditMode ? rolename : "");
+  const [roleColor, setRoleColor] = useState(isEditMode ? rolecolor : "#f5f5f5");
+  const [salary, setSalary] = useState(isEditMode ? rolesalary : "");
+  
+  // FIXED: Use a more stable initial state
+  const [courseCards, setCourseCards] = useState([]);
+  
+  const [permissions, setPermissions] = useState(() => ({
+    ...defaultPermissions,
+    ...rolepermissions
+  }));
+  
   const [showColors, setShowColors] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const containerRef = useRef(null);
   const colorPickerRef = useRef(null);
   const dropdownRef = useRef(null);
   const searchInputRef = useRef(null);
 
-  // Force update with predefined values on mount
+  // FIXED: Separate initialization effect
   useEffect(() => {
-    console.log("Setting predefined values:", PREDEFINED_VALUES);
-    
-    setRoleName(role || PREDEFINED_VALUES.role);
-    setRoleColor(color || PREDEFINED_VALUES.color);
-    setRoleSalary(salary ? String(salary) : PREDEFINED_VALUES.salary);
-    setRolePermissions(permissions || PREDEFINED_VALUES.permissions);
-    setSelectedCourses(courses || PREDEFINED_VALUES.courses);
-    
-    console.log("Values set:", {
-      roleName: role || PREDEFINED_VALUES.role,
-      roleColor: color || PREDEFINED_VALUES.color,
-      roleSalary: salary || PREDEFINED_VALUES.salary,
-      rolePermissions: permissions || PREDEFINED_VALUES.permissions,
-      selectedCourses: courses || PREDEFINED_VALUES.courses
-    });
-  }, []); // Empty dependency array to run only once on mount
+    if (!isInitialized) {
+      let initialCourses;
+      if (isEditMode) {
+        initialCourses = rolecourses.length > 0 ? [...rolecourses] : [...defaultContainerCourses];
+      } else {
+        initialCourses = [...defaultContainerCourses];
+      }
+      
+      console.log("Initializing with courses:", initialCourses);
+      setCourseCards(initialCourses);
+      setIsInitialized(true);
+    }
+  }, [isEditMode, rolecourses, isInitialized]);
 
-  const availableCourses = predefinedCourses.filter(
-    (course) => !selectedCourses.find((c) => c.id === course.id) && 
-    course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // FIXED: Separate effect for other props
+  useEffect(() => {
+    if (type?.toLowerCase() === "edit") {
+      setRoleName(rolename || "Test Role");
+      setRoleColor(rolecolor || "#FF0000");
+      setSalary(rolesalary || 800000);
+      
+      setPermissions({
+        projectManagement: rolepermissions?.projectManagement ?? true,
+        employeeManagement: rolepermissions?.employeeManagement ?? true,
+        courseManagement: rolepermissions?.courseManagement ?? true,
+        attendance: rolepermissions?.attendance ?? true,
+      });
+    } else if (type === "add") {
+      setRoleName("");
+      setRoleColor("#f5f5f5");
+      setSalary("");
+      setPermissions(defaultPermissions);
+    }
+  }, [type, rolename, rolecolor, rolesalary, rolepermissions]);
 
-  // Combined click outside handler
+  // FIXED: Calculate available courses with dependency on courseCards
+  const [availableCourses, setAvailableCourses] = useState([]);
+  
+  useEffect(() => {
+    const filtered = predefinedCourses.filter(
+      (course) => !courseCards.some((c) => c.id === course.id) && 
+      course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    console.log("Available courses updated:", filtered.length);
+    setAvailableCourses(filtered);
+  }, [courseCards, searchTerm]);
+
+  // Event handlers
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // FIXED: More specific click outside handling
+      if (showDropdown && dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+        setSearchTerm("");
+        return;
+      }
       if (containerRef.current && !containerRef.current.contains(event.target)) onClose();
       if (showColors && colorPickerRef.current && !colorPickerRef.current.contains(event.target)) setShowColors(false);
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose, showColors]);
+  }, [onClose, showColors, showDropdown]);
 
-  // Handle escape key and focus management
   useEffect(() => {
     const handleEscape = (event) => {
       if (event.key === "Escape") {
@@ -122,7 +148,9 @@ export const EditRolePopup = ({
     document.addEventListener("keydown", handleEscape);
     document.body.style.overflow = "hidden";
     
-    if (showDropdown && searchInputRef.current) searchInputRef.current.focus();
+    if (showDropdown && searchInputRef.current) {
+      setTimeout(() => searchInputRef.current?.focus(), 100);
+    }
 
     return () => {
       document.removeEventListener("keydown", handleEscape);
@@ -131,38 +159,69 @@ export const EditRolePopup = ({
   }, [showDropdown, showColors, onClose]);
 
   const handleSubmit = () => {
-    if (!roleName.trim()) { 
-      alert("Please enter a role name"); 
-      return; 
-    }
-    
-    const roleData = { 
-      role: roleName.trim(), 
-      members, 
-      color: roleColor, 
-      salary: roleSalary ? Number(roleSalary) : 0,
-      permissions: rolePermissions,
-      courses: selectedCourses 
-    };
-    
-    console.log('Saving Role Data:', roleData);
+    if (!roleName.trim()) { alert("Please enter a role name"); return; }
+    const roleData = { roleName, roleColor, salary, courseCards, permissions };
+    console.log(`${isEditMode ? 'Editing' : 'Adding'} Role:`, roleData);
     if (onSave) onSave(roleData);
     onClose();
   };
 
-  const handleAddCourse = (course) => setSelectedCourses([...selectedCourses, course]);
-  const handleRemoveCourse = (id) => setSelectedCourses(selectedCourses.filter((c) => c.id !== id));
-  const handleColorSelect = (color) => { setRoleColor(color); setShowColors(false); };
-  const handleDropdownToggle = () => { setShowDropdown(!showDropdown); if (showDropdown) setSearchTerm(""); };
-  const handleCloseDropdown = () => { setShowDropdown(false); setSearchTerm(""); };
-  const handlePermissionChange = (permission) => {
-    console.log(`Toggling permission: ${permission}`);
-    setRolePermissions(prev => {
-      const updated = { ...prev, [permission]: !prev[permission] };
-      console.log("Updated permissions:", updated);
-      return updated;
+  // FIXED: Direct course handlers with immediate state update
+  const handleAddCourse = (courseToAdd) => {
+    console.log("=== ADDING COURSE ===");
+    console.log("Course to add:", courseToAdd);
+    console.log("Current courseCards before:", courseCards.map(c => c.courseName));
+    
+    setCourseCards(prevCourses => {
+      const exists = prevCourses.find(c => c.id === courseToAdd.id);
+      if (exists) {
+        console.log("Course already exists, not adding");
+        return prevCourses;
+      }
+      
+      const newCourses = [...prevCourses, courseToAdd];
+      console.log("New courseCards after:", newCourses.map(c => c.courseName));
+      return newCourses;
+    });
+    
+    // Optional: Close dropdown after adding
+    // setShowDropdown(false);
+    // setSearchTerm("");
+  };
+
+  const handleRemoveCourse = (courseId) => {
+    console.log("=== REMOVING COURSE ===");
+    console.log("Course ID to remove:", courseId);
+    console.log("Current courseCards before:", courseCards.map(c => `${c.id}: ${c.courseName}`));
+    
+    setCourseCards(prevCourses => {
+      const newCourses = prevCourses.filter((c) => c.id !== courseId);
+      console.log("New courseCards after:", newCourses.map(c => `${c.id}: ${c.courseName}`));
+      return newCourses;
     });
   };
+
+  const handleColorSelect = (color) => { setRoleColor(color); setShowColors(false); };
+  
+  const handleDropdownToggle = () => {
+    console.log("=== DROPDOWN TOGGLE ===");
+    console.log("Current showDropdown:", showDropdown);
+    const newState = !showDropdown;
+    setShowDropdown(newState);
+    console.log("New showDropdown:", newState);
+    
+    if (newState === false) {
+      setSearchTerm("");
+    }
+  };
+  
+  const handleCloseDropdown = () => { 
+    console.log("=== CLOSING DROPDOWN ===");
+    setShowDropdown(false); 
+    setSearchTerm(""); 
+  };
+  
+  const handlePermissionChange = (permission) => setPermissions(prev => ({ ...prev, [permission]: !prev[permission] }));
   const handleKeyDown = (event) => { if (event.key === "Enter") { event.preventDefault(); handleSubmit(); } };
 
   const permissionLabels = [
@@ -171,6 +230,14 @@ export const EditRolePopup = ({
     { key: 'courseManagement', label: 'Course Management' },
     { key: 'attendance', label: 'Attendance' }
   ];
+
+  // Debug logging
+  console.log("=== RENDER STATE ===");
+  console.log("courseCards count:", courseCards.length);
+  console.log("courseCards names:", courseCards.map(c => c.courseName));
+  console.log("availableCourses count:", availableCourses.length);
+  console.log("showDropdown:", showDropdown);
+  console.log("isInitialized:", isInitialized);
 
   return (
     <>
@@ -181,7 +248,7 @@ export const EditRolePopup = ({
             {/* Header */}
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-                Edit Role
+                {isEditMode ? "Edit Role" : "Add New Role"}
               </h2>
             </div>
 
@@ -189,12 +256,14 @@ export const EditRolePopup = ({
             <div className="flex items-center gap-2 sm:gap-3 relative w-full">
               <input
                 type="text"
-                className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none bg-gray-50 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Edit role name"
+                className={`w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none ${
+                  isEditMode ? "bg-gray-50 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent" : "focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                }`}
+                placeholder={isEditMode ? "Edit role name" : "Enter role name"}
                 value={roleName}
                 onChange={(e) => setRoleName(e.target.value)}
                 onKeyDown={handleKeyDown}
-                autoFocus
+                autoFocus={!isEditMode}
               />
               <div
                 className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-600 cursor-pointer hover:scale-110 transition-transform flex-shrink-0"
@@ -218,7 +287,7 @@ export const EditRolePopup = ({
             {/* Permissions */}
             <div className="bg-gray-100 rounded-xl p-3 sm:p-4 w-full">
               <h3 className="text-sm font-medium text-gray-700 mb-2 sm:mb-3">
-                Update Permissions
+                {isEditMode ? "Update Permissions" : "Set Permissions"}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                 {permissionLabels.map(({ key, label }) => (
@@ -226,16 +295,16 @@ export const EditRolePopup = ({
                     <div className="relative">
                       <input
                         type="checkbox"
-                        checked={rolePermissions[key] || false}
+                        checked={permissions[key]}
                         onChange={() => handlePermissionChange(key)}
                         className="sr-only"
                       />
                       <div className={`w-4 h-4 border-2 rounded flex items-center justify-center transition-all duration-200 ${
-                        rolePermissions[key] 
+                        permissions[key] 
                           ? 'bg-blue-600 border-blue-600' 
                           : 'bg-white border-gray-300 hover:border-gray-400'
                       }`}>
-                        {rolePermissions[key] && (
+                        {permissions[key] && (
                           <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                           </svg>
@@ -251,42 +320,39 @@ export const EditRolePopup = ({
             {/* Salary */}
             <div className="w-full">
               <label className="text-sm font-medium text-gray-700 block mb-2 sm:mb-3" htmlFor="salary">
-                Update Salary
+                {isEditMode ? "Update Salary" : "Set Salary"}
               </label>
               <input
                 type="number"
                 id="salary"
                 className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-sm sm:text-base outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Update salary in ₹"
-                value={roleSalary}
-                onChange={(e) => setRoleSalary(e.target.value)}
-                min="0"
-                step="1000"
+                placeholder={isEditMode ? "Update salary in ₹" : "Enter salary in ₹"}
+                value={salary}
+                onChange={(e) => setSalary(e.target.value)}
               />
             </div>
 
-            {/* Courses */}
+            {/* Courses Container - FIXED */}
             <div className="bg-gray-300 rounded-xl h-48 sm:h-56 lg:h-64 w-full relative px-2 pt-3 sm:pt-4 pb-3 sm:pb-4">
-              {selectedCourses.length === 0 && (
+              {courseCards.length === 0 && (
                 <span className="absolute top-2 sm:top-3 left-3 sm:left-4 text-xs sm:text-sm text-gray-600">
-                  Current courses...
+                  {isEditMode ? "Current courses..." : "Assign courses..."}
                 </span>
               )}
 
               <div className="h-full overflow-y-auto pr-1 sm:pr-2 min-h-[8rem]">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-0">
-                  {selectedCourses.map((course) => (
-                    <div key={course.id} className="relative">
+                  {courseCards.map((course, index) => (
+                    <div key={`selected-course-${course.id}-${index}`} className="relative">
                       <div className="h-60">
-                        <EmpCourseCard 
-                          courseName={course.courseName}
-                          authorName={course.authorName}
-                          imageUrl={course.imageUrl}
-                          onRemove={null}
-                        />
+                        <CourseCard {...course} />
                       </div>
                       <button
-                        onClick={() => handleRemoveCourse(course.id)}
+                        type="button"
+                        onClick={() => {
+                          console.log("Remove button clicked for:", course.courseName);
+                          handleRemoveCourse(course.id);
+                        }}
                         className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center z-10 hover:bg-red-600 transition-colors"
                       >
                         <span className="text-sm font-bold">×</span>
@@ -296,38 +362,53 @@ export const EditRolePopup = ({
                 </div>
               </div>
 
-              <span
+              <button
+                type="button"
                 className="absolute bottom-2 sm:bottom-3 right-2 sm:right-4 bg-teal-800/20 hover:bg-teal-800/40 rounded-full px-2 sm:px-3 py-1 text-lg sm:text-xl font-bold text-gray-800 cursor-pointer shadow-md z-[200] transition-colors select-none"
-                onClick={handleDropdownToggle}
+                onClick={() => {
+                  console.log("Plus button clicked");
+                  handleDropdownToggle();
+                }}
               >
                 {showDropdown ? "×" : "+"}
-              </span>
+              </button>
             </div>
 
             {/* Action Buttons */}
             <div className="flex justify-center gap-3 sm:gap-4 pt-2">
               <button
+                type="button"
                 className="px-3 sm:px-4 py-2 rounded-md bg-gray-200 text-black hover:bg-red-600 hover:text-white hover:opacity-60 text-xs sm:text-sm transition-colors flex-1 sm:flex-none"
                 onClick={onClose}
               >
                 Cancel
               </button>
               <button
-                className="px-3 sm:px-4 py-2 rounded-md bg-blue-200 hover:bg-blue-600 text-black hover:text-white text-xs sm:text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none"
+                type="button"
+                className={`px-3 sm:px-4 py-2 rounded-md ${isEditMode ? "bg-blue-200 hover:bg-blue-600" : "bg-green-200 hover:bg-green-600"} text-black hover:text-white text-xs sm:text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none`}
                 onClick={handleSubmit}
                 disabled={!roleName.trim()}
               >
-                Update
+                {isEditMode ? "Update" : "Add"}
               </button>
             </div>
           </div>
 
-          {/* Course Selection Dropdown */}
+          {/* Course Selection Dropdown - COMPLETELY FIXED */}
           {showDropdown && (
-            <div ref={dropdownRef} className="w-[350px] sm:w-[450px] lg:w-[550px] bg-white rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col gap-3 sm:gap-5 z-[1000] animate-fade-in-no-scale max-h-[90vh] overflow-y-auto flex-shrink-0">
+            <div 
+              ref={dropdownRef} 
+              className="w-[350px] sm:w-[450px] lg:w-[550px] bg-white rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col gap-3 sm:gap-5 z-[1000] animate-fade-in-no-scale max-h-[90vh] overflow-y-auto flex-shrink-0"
+            >
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-800">Add Courses</h3>
-                <button onClick={handleCloseDropdown} className="text-gray-500 hover:text-gray-700 text-xl font-bold">×</button>
+                <button 
+                  type="button"
+                  onClick={handleCloseDropdown} 
+                  className="text-gray-500 hover:text-gray-700 text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100"
+                >
+                  ×
+                </button>
               </div>
 
               <input
@@ -342,17 +423,24 @@ export const EditRolePopup = ({
               <div className="flex-1 overflow-y-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {availableCourses.length === 0 ? (
-                    <div className="col-span-full text-center text-gray-500 py-8">No courses found</div>
+                    <div className="col-span-full text-center text-gray-500 py-8">
+                      {searchTerm ? "No courses found matching your search" : "All courses are already selected"}
+                    </div>
                   ) : (
                     availableCourses.map((course) => (
-                      <div key={course.id} className="cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors" onClick={() => handleAddCourse(course)}>
-                        <div className="h-65">
-                          <EmpCourseCard 
-                            courseName={course.courseName}
-                            authorName={course.authorName}
-                            imageUrl={course.imageUrl}
-                            onRemove={null}
-                          />
+                      <div 
+                        key={`available-course-${course.id}`} 
+                        className="cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors border border-transparent hover:border-blue-200 hover:shadow-md" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log("=== COURSE CLICK EVENT ===");
+                          console.log("Clicked course:", course.courseName);
+                          handleAddCourse(course);
+                        }}
+                      >
+                        <div className="h-65 pointer-events-none">
+                          <CourseCard {...course} />
                         </div>
                       </div>
                     ))
@@ -372,13 +460,6 @@ export const EditRolePopup = ({
         .animate-fade-in-no-scale {
           animation: fadeInNoScale 0.15s ease-out;
         }
-        @keyframes slideInRight {
-          from { opacity: 0; transform: translateX(20px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        .animate-slide-in-right {
-          animation: slideInRight 0.3s ease-out;
-        }
         .line-clamp-1 {
           display: -webkit-box;
           -webkit-line-clamp: 1;
@@ -396,4 +477,4 @@ export const EditRolePopup = ({
   );
 };
 
-
+export default EditRolePopup;
