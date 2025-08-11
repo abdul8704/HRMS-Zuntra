@@ -9,7 +9,7 @@ const leaveApplicationSchema = new mongoose.Schema(
         },
         leaveType: {
             type: String,
-            enum: ["CASUAL", "SICK", "EARNED", "UNPAID"],
+            enum: ["CASUAL", "SICK", "EMERGENCY", "INFORMED","MEDICAL"],
             required: true,
         },
         dates: {
