@@ -17,6 +17,280 @@ import { useAuth } from '../../context/AuthContext'
 import api from '../../api/axios'
 import { BASE_URL } from '../../api/axios'
 
+// Shift Details Component
+const ShiftDetails = () => {
+  const [shifts, setShifts] = useState([
+    {
+      id: 1,
+      shiftName: "Morning Shift",
+      startTime: "09:00",
+      endTime: "17:00",
+      noOfUsers: "12"
+    },
+    {
+      id: 2,
+      shiftName: "Night Shift",
+      startTime: "22:00",
+      endTime: "06:00",
+      noOfUsers: "8"
+    }
+  ]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingShift, setEditingShift] = useState(null);
+  const [formData, setFormData] = useState({
+    shiftName: '',
+    startTime: '',
+    endTime: '',
+    noOfUsers: ''
+  });
+
+  const openModal = (shift = null) => {
+    if (shift) {
+      setEditingShift(shift);
+      setFormData(shift);
+    } else {
+      setEditingShift(null);
+      setFormData({
+        shiftName: '',
+        startTime: '',
+        endTime: '',
+        noOfUsers: ''
+      });
+    }
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingShift(null);
+    setFormData({
+      shiftName: '',
+      startTime: '',
+      endTime: '',
+      noOfUsers: ''
+    });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = () => {
+    if (!formData.shiftName || !formData.startTime || !formData.endTime || !formData.noOfUsers) {
+      alert('Please fill in all fields');
+      return;
+    }
+    
+    if (editingShift) {
+      // Update existing shift
+      setShifts(prev => prev.map(shift => 
+        shift.id === editingShift.id ? { ...formData, id: editingShift.id } : shift
+      ));
+    } else {
+      // Add new shift
+      const newShift = {
+        ...formData,
+        id: Date.now() // Simple ID generation
+      };
+      setShifts(prev => [...prev, newShift]);
+    }
+    
+    closeModal();
+  };
+
+  const handleDeleteShift = (shiftId) => {
+    if (window.confirm('Are you sure you want to delete this shift?')) {
+      setShifts(prev => prev.filter(shift => shift.id !== shiftId));
+    }
+  };
+
+  const PlusButton = () => {
+    return (
+      <button
+        type="button"
+        onClick={() => openModal()}
+        aria-label="Add new shift"
+        className="fixed bottom-8 right-20 w-16 h-16 bg-[#c2d9d7] rounded-full flex items-center justify-center cursor-pointer group hover:bg-[#b2ccc9] transition-colors duration-300 z-[1000]"
+      >
+        <svg
+          className="w-8 h-8 text-black transform transition-transform duration-300 ease-in-out group-hover:rotate-[180deg]"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={3}
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14" />
+        </svg>
+      </button>
+    );
+  };
+
+  return (
+    <div className="w-full bg-white relative px-4">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[600px]">
+          <thead>
+            <tr className="bg-gray-100 border-b border-gray-200">
+              <th className="text-left py-4 px-4 font-bold text-gray-900 text-sm">
+                Shift Name
+              </th>
+              <th className="text-left py-4 px-4 font-bold text-gray-900 text-sm">
+                Start Time
+              </th>
+              <th className="text-left py-4 px-4 font-bold text-gray-900 text-sm">
+                End Time
+              </th>
+              <th className="text-left py-4 px-4 font-bold text-gray-900 text-sm">
+                No. of Users
+              </th>
+              <th className="text-left py-4 px-4 font-bold text-gray-900 text-sm">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {shifts.map((shift) => (
+              <tr key={shift.id} className="border-b border-gray-200 hover:bg-gray-50">
+                <td className="py-4 px-4 text-sm text-black">
+                  {shift.shiftName}
+                </td>
+                <td className="py-4 px-4 text-sm text-black">
+                  {shift.startTime}
+                </td>
+                <td className="py-4 px-4 text-sm text-black">
+                  {shift.endTime}
+                </td>
+                <td className="py-4 px-4 text-sm text-black">
+                  {shift.noOfUsers}
+                </td>
+                <td className="py-4 px-4 text-sm">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openModal(shift)}
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteShift(shift.id)}
+                      className="text-red-600 hover:text-red-800 font-medium"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {shifts.length === 0 && (
+        <div className="text-center py-8 text-gray-500">
+          No shifts available. Click the + button to add a new shift.
+        </div>
+      )}
+
+      {/* Plus Button */}
+      <PlusButton />
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1001]">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h2 className="text-xl font-bold mb-4 text-gray-900">
+              {editingShift ? 'Edit Shift' : 'Add New Shift'}
+            </h2>
+            
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="shiftName" className="block text-sm font-medium text-gray-700 mb-1">
+                  Shift Name
+                </label>
+                <input
+                  type="text"
+                  id="shiftName"
+                  name="shiftName"
+                  value={formData.shiftName}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter shift name"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Time
+                </label>
+                <input
+                  type="time"
+                  id="startTime"
+                  name="startTime"
+                  value={formData.startTime}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 mb-1">
+                  End Time
+                </label>
+                <input
+                  type="time"
+                  id="endTime"
+                  name="endTime"
+                  value={formData.endTime}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="noOfUsers" className="block text-sm font-medium text-gray-700 mb-1">
+                  Number of Users
+                </label>
+                <input
+                  type="number"
+                  id="noOfUsers"
+                  name="noOfUsers"
+                  value={formData.noOfUsers}
+                  onChange={handleInputChange}
+                  min="1"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter number of users"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  {editingShift ? 'Update' : 'Add'} Shift
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const EmployeeManagement = () => {
   const { navId } = useParams()
   const navigate = useNavigate()
@@ -62,7 +336,7 @@ export const EmployeeManagement = () => {
     branches: false
   })
 
-  const validTabs = ['all', 'roles', 'newusers', 'locations']
+  const validTabs = ['all', 'roles', 'newusers', 'shifts', 'locations']
 
   // Validate navId
   useEffect(() => {
@@ -124,8 +398,11 @@ export const EmployeeManagement = () => {
       }
     }
 
-    fetchData()
-  }, [])
+    // Only fetch data for tabs that need it (not shifts)
+    if (navId !== 'shifts') {
+      fetchData()
+    }
+  }, [navId])
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -367,6 +644,8 @@ export const EmployeeManagement = () => {
           error: errors.branches,
           total: branches.length
         }
+      case 'shifts':
+        return { data: [], loading: false, error: false, total: 0 }
       default:
         return { data: [], loading: false, error: false, total: 0 }
     }
@@ -384,14 +663,14 @@ export const EmployeeManagement = () => {
       <div className='flex gap-[1rem] flex-col flex-1 p-[1rem] h-screen'>
         <Navbar
           type='employeeManagement'
-          showFilter={true}
+          showFilter={navId !== 'shifts'}
           isFilterActive={isFilterActive}
           setIsFilterActive={setIsFilterActive}
           handleClearFilters={handleClearFilters}
         />
 
-        {/* Filter Section */}
-        {isFilterActive && (
+        {/* Filter Section - Hidden for shifts */}
+        {isFilterActive && navId !== 'shifts' && (
           <div className='w-full bg-[#BBD3CC] rounded-xl flex gap-[0.5rem] p-[0.5rem]'>
             {/* Search Input */}
             {(navId === 'all' ||
@@ -563,8 +842,8 @@ export const EmployeeManagement = () => {
           </div>
         )}
 
-        {/* Filter Summary */}
-        {isFilterActive && (
+        {/* Filter Summary - Hidden for shifts */}
+        {isFilterActive && navId !== 'shifts' && (
           <div className='px-[1rem] flex items-center justify-between text-sm text-gray-600'>
             <div>
               Showing {currentData.data.length} of {currentData.total}{' '}
@@ -707,6 +986,13 @@ export const EmployeeManagement = () => {
                 <path d='M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z' />
               </svg>
             </div>
+          </div>
+        )}
+
+        {/* Shifts */}
+        {navId === 'shifts' && (
+          <div className='flex-1 overflow-y-auto'>
+            <ShiftDetails />
           </div>
         )}
 
