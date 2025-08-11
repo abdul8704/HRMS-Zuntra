@@ -15,7 +15,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Loading } from "../utils/Loading";
 import api from "../../api/axios";
 
-export const Attendance = ({ showScheduleForm = false }) => {
+export const Attendance = ({ showScheduleForm = true }) => {
     const { navId } = useParams();
     const { user, authDataLoading } = useAuth();
     const userid = user?.userid;
