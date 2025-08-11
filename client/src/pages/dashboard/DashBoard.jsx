@@ -122,7 +122,6 @@ export const DashBoard = () => {
       <NewUser />
     ) : (
       <div className="flex h-screen">
-        <PlusButton />
         <Sidebar role="HR" />
         <div className="flex-1 overflow-y-auto">
           <div className="grid grid-cols-2 md:grid-cols-9 md:grid-rows-9 gap-[1rem] h-screen p-[1rem]">

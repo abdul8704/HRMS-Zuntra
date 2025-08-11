@@ -11,7 +11,7 @@ export const EmployeeCard = ({
   image,
   userid,
   bgColor = '#cfd9ea',
-  option = 2, // default to option 1 (details only)
+  option = 2, // default to option 2 (details only)
   onApprove,
   onRemove // Added onRemove prop
 }) => {
@@ -186,18 +186,18 @@ export const EmployeeCard = ({
             </div>
           </div>
 
-          {/* Right Section based on option */}
+          {/* Right Section - Small buttons positioned at the end for option 3 */}
           {option === 3 && (
-            <div className='flex flex-col flex-wrap justify-center gap-3 flex-[1] p-2.5'>
+            <div className='flex flex-col items-center justify-center gap-2 ml-auto p-2'>
               <button
                 onClick={() => onApprove?.()}
-                className='h-[3rem] bg-[#C1E8BD] text-black rounded-xl shadow hover:bg-[#C1FFBD] text-lg font-semibold'
+                className='w-14 h-12 bg-green-200 text-black hover:bg-green-300 text-sm font-semibold flex items-center justify-center rounded-md'
               >
                 ✓
               </button>
               <button 
-                onClick={() => onRemove?.()} // ADDED: onClick handler for remove
-                className='h-[3rem] bg-[#E1BEC5] text-black rounded-xl shadow hover:bg-[#FFBEC5] text-lg font-semibold'
+                onClick={() => onRemove?.()} 
+                className='w-14 h-12 bg-red-200 text-black hover:bg-red-300 text-sm font-semibold flex items-center justify-center rounded-md'
               >
                 ✕
               </button>
