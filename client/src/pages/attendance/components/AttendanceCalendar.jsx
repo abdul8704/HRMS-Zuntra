@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/axios';
 
-export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChange, disableFutureDates = true }) => {
+export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChange, isAttendance = true }) => {
   const getInitialYearMonth = () => {
     const today = new Date();
     return {
@@ -24,7 +24,7 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
 
   // Fetch Attendance Data
   const fetchCalendarData = async (year, month) => {
-    if (!userid) return;
+    if (!userid || !isAttendance) return;
 
     const startDateISO = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0)).toISOString();
     const endDateISO = new Date(Date.UTC(year, month, 0, 23, 59, 59)).toISOString();
@@ -39,8 +39,7 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
       });
 
       setCalendarData(response.data.calendarData || []);
-      console.log(`Fetched data for ${month}/${year}:`, response.data.calendarData);
-
+      console.log(`Fetched attendance data for ${month}/${year}:`, response.data.calendarData);
     } catch (err) {
       console.error('Error fetching calendar data:', err);
     }
@@ -64,20 +63,21 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
 
       setHolidayData(response.data.data || []);
       console.log(`Fetched holidays for ${month}/${year}:`, response.data.data);
-
     } catch (err) {
       console.error('Error fetching holiday data:', err);
     }
   };
 
   useEffect(() => {
-    fetchCalendarData(selectedYear, selectedMonth);
+    if (isAttendance) {
+      fetchCalendarData(selectedYear, selectedMonth);
+    }
     fetchHolidayData(selectedYear, selectedMonth);
 
     if (onMonthYearChange) {
       onMonthYearChange(selectedYear, selectedMonth);
     }
-  }, [selectedYear, selectedMonth, userid]);
+  }, [selectedYear, selectedMonth, userid, isAttendance]);
 
   const months = [
     'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
@@ -94,13 +94,6 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
 
   const calendarDays = Array(firstDay).fill(null).concat(Array.from({ length: daysInMonth }, (_, i) => i + 1));
 
-  const isFutureDate = (day) => {
-    if (!disableFutureDates || !day) return false;
-    const current = new Date(selectedYear, selectedMonth - 1, day);
-    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    return current > todayDate;
-  };
-
   const isSelected = (day) =>
     selectedDate &&
     selectedDate.year === selectedYear &&
@@ -111,6 +104,13 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     day === today.getDate() &&
     selectedMonth === today.getMonth() + 1 &&
     selectedYear === today.getFullYear();
+
+  const isFutureDate = (day) => {
+    if (!day) return false;
+    const current = new Date(selectedYear, selectedMonth - 1, day);
+    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    return current > todayDate;
+  };
 
   const getAttendanceStatus = (day) => {
     if (!day) return null;
@@ -196,42 +196,40 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
               <div key={weekIndex} className="grid grid-cols-7 gap-1">
                 {Array.from({ length: 7 }, (_, dayIndex) => {
                   const dayNumber = calendarDays[weekIndex * 7 + dayIndex];
-                  const future = isFutureDate(dayNumber);
                   const selected = isSelected(dayNumber);
                   const todayFlag = isToday(dayNumber);
+                  const future = isFutureDate(dayNumber);
                   const isSunday = dayIndex === 0;
-                  const status = getAttendanceStatus(dayNumber);
+                  const status = isAttendance && !future ? getAttendanceStatus(dayNumber) : null;
                   const holiday = isHoliday(dayNumber);
 
                   let dayClasses = '';
                   let textClasses = 'text-gray-700';
                   let tooltipText = '';
 
-                  if (future) {
-                    textClasses = 'text-gray-400 opacity-50 pointer-events-none';
-                  } else if (selected) {
+                  if (selected) {
                     dayClasses = 'bg-blue-500';
                     textClasses = 'text-white';
                   } else if (holiday || isSunday) {
                     dayClasses = 'bg-[#FEF9C3]';
                     textClasses = 'text-yellow-900 font-semibold';
                     if (holiday) tooltipText = holiday.name;
-                  } else if (status === 'present') {
+                  } else if (isAttendance && status === 'present') {
                     dayClasses = 'bg-green-100';
                     textClasses = 'text-green-700 font-semibold';
-                  } else if (status === 'absent') {
+                  } else if (isAttendance && status === 'absent') {
                     dayClasses = 'bg-red-100';
                     textClasses = 'text-red-700 font-semibold';
-                  } else if (status === 'remote') {
+                  } else if (isAttendance && status === 'remote') {
                     dayClasses = 'bg-blue-100';
                     textClasses = 'text-blue-700 font-semibold';
-                  } else if (todayFlag) {
-                    dayClasses = 'border border-blue-500';
-                    textClasses = 'text-blue-600';
                   } else {
                     dayClasses = 'hover:bg-gray-100';
                     textClasses = 'text-gray-700';
                   }
+
+                  // Always put today's border on top of other styles
+                  const todayRing = todayFlag ? 'ring-2 ring-black ring-offset-0' : ''; 
 
                   return (
                     <div key={dayIndex} className="flex items-center justify-center h-8 w-8 mx-auto">
@@ -239,11 +237,9 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
                         <div className="relative group">
                           <div
                             onClick={() => {
-                              if (!future) {
-                                setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber });
-                              }
+                              setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber });
                             }}
-                            className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 ${dayClasses} ${textClasses}`}
+                            className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 ${dayClasses} ${textClasses} ${todayRing}`}
                           >
                             {dayNumber}
                           </div>
