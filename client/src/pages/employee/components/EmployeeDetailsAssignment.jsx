@@ -26,10 +26,15 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
     "last30Days": [],
   });
 
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-  useEffect(() => {
-    fetchCalendarData(new Date().getFullYear(), new Date().getMonth() + 1)
-  }, [userid])
+  const handleMonthYearChange = (year, month) => {
+    const start = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0)).toISOString();
+    const end = new Date(Date.UTC(year, month, 0, 23, 59, 59)).toISOString();
+    setStartDate(start);
+    setEndDate(end);
+  };
 
   useEffect(() => {
     setToday(getToday());
@@ -86,37 +91,6 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
 
   }, [])
 
-  const fetchCalendarData = async (year, month) => {
-    if (!userid) return
-
-    const startDate = new Date(
-      Date.UTC(year, month - 1, 1, 0, 0, 0)
-    ).toISOString()
-    const endDate = new Date(Date.UTC(year, month, 0, 23, 59, 59)).toISOString()
-
-    try {
-      const response = await api.get('/api/employee/attendance/calendar', {
-        params: {
-          startDate,
-          endDate,
-          userid
-        }
-      })
-
-      setCalendarData(response.data.calendarData)
-      console.log(
-        `Fetched data for ${month}/${year}:`,
-        response.data.calendarData
-      )
-    } catch (err) {
-      console.error('Error fetching calendar data:', err)
-    }
-  }
-
-  const handleMonthYearChange = (year, month) => {
-    fetchCalendarData(year, month)
-  }
-
   return (
     <div className='flex-1 grid grid-cols-8 grid-rows-12 gap-2 h-full w-full'>
       <div className='col-start-1 row-start-1 row-end-3'>
@@ -149,7 +123,9 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
 
       <div className='col-start-1 col-end-6 row-start-5 row-end-12 rounded-lg'>
         <AttendanceCalendar
-          calendarData={calendarData}
+          userid={userid}
+          startDate={startDate}
+          endDate={endDate}
           onMonthYearChange={handleMonthYearChange}
         />
       </div>
