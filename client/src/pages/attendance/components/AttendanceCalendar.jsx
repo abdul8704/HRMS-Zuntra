@@ -11,17 +11,23 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
   };
 
   const { year: initialYear, month: initialMonth } = getInitialYearMonth();
+  const today = new Date();
 
   const [selectedYear, setSelectedYear] = useState(initialYear);
   const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+
+  // CHANGE: Default selection = today's date only when isAttendance is false
+  const [selectedDate, setSelectedDate] = useState(
+    !isAttendance
+      ? { year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate() }
+      : null
+  );
+
   const [calendarData, setCalendarData] = useState([]);
   const [holidayData, setHolidayData] = useState([]);
-  const [allHolidays, setAllHolidays] = useState([]); // new state for all holidays
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [allHolidays, setAllHolidays] = useState([]);
   const [showSidebar, setShowSidebar] = useState(false);
   const sidebarRef = useRef();
-
-  const today = new Date();
 
   const months = [
     'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
@@ -119,14 +125,12 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     return record?.status || null;
   };
 
-  // Returns user-specific holiday object or undefined
   const isHoliday = (day) => {
     if (!day) return null;
     const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     return holidayData.find((h) => h.date.startsWith(dateStr));
   };
 
-  // Returns all holiday object (user or not) or undefined
   const isAllHoliday = (day) => {
     if (!day) return null;
     const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -138,17 +142,20 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     if (status === 'present') return 'ring-green-700';
     if (status === 'absent') return 'ring-red-700';
     if (status === 'remote') return 'ring-blue-700';
-    return 'ring-gray-800';
+    return 'ring-blue-500';
   };
 
   const handleMonthClick = (index) => {
     setSelectedMonth(index + 1);
-    setSelectedDate(null);
+    setSelectedDate(!isAttendance ? { year: selectedYear, month: index + 1, day: today.getDate() } : null); // CHANGE: reset selection to today for non-attendance
     setShowSidebar(false);
   };
 
   const handleYearChange = (delta) => {
     setSelectedYear((prev) => prev + delta);
+    if (!isAttendance) {
+      setSelectedDate({ year: selectedYear + delta, month: selectedMonth, day: today.getDate() });
+    }
   };
 
   return (
@@ -227,7 +234,6 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
                     textClasses = '';
                   }
                   else if (!isAttendance && allHoliday && !userHoliday) {
-                    // grey holidays (allHolidays except user holidays)
                     dayClasses = 'bg-gray-200';
                     textClasses = 'text-gray-700';
                     tooltipText = allHoliday.name;
@@ -258,7 +264,7 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
                     textClasses = 'text-gray-700';
                   }
 
-                  const ringColorClass = todayFlag ? getRingColorClass(status, userHoliday, isSunday) : '';
+                  const ringColorClass = todayFlag ? 'ring-2 ring-offset-0 ring-blue-500' : '';
 
                   return (
                     <div key={dayIndex} className="flex items-center justify-center h-8 w-8 mx-auto">
@@ -273,16 +279,18 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
                                   selectedDate.month === selectedMonth &&
                                   selectedDate.day === dayNumber
                                 ) {
-                                  // Deselect if clicked again
-                                  setSelectedDate(null);
+                                  // CHANGE: reset to today's date
+                                  setSelectedDate({ year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate() });
+                                  console.log({ year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate() });
                                 } else {
                                   setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber });
+                                  console.log({ year: selectedYear, month: selectedMonth, day: dayNumber });
                                 }
                               }
                             }}
                             className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 
                               ${selected && !isAttendance ? 'bg-blue-500 text-white' : dayClasses + ' ' + textClasses} 
-                              ${todayFlag ? `ring-2 ring-offset-0 ${ringColorClass}` : ''}`}
+                              ${todayFlag ? ringColorClass : ''}`}
                           >
                             {dayNumber}
                           </div>
@@ -300,6 +308,28 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
               </div>
             ))}
           </div>
+          {isAttendance && (
+            <div className="flex items-center justify-center py-2">
+              <div className="flex gap-4 text-xs">
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-green-100"></div>
+                  <span className="text-green-700">Present</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-red-100"></div>
+                  <span className="text-red-700">Absent</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-blue-100"></div>
+                  <span className="text-blue-700">Remote</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-full bg-[#FEF9C3]"></div>
+                  <span className="text-yellow-900">Holiday</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
