@@ -67,14 +67,12 @@ export const AddCourseMod = () => {
     setCourseData(prev => ({ ...prev, introVideo: null }));
   };
 
-  const isFormComplete = () => {
-    return (
-      courseData.courseName.trim() &&
-      courseData.instructorName.trim() &&
-      courseData.courseDescription.trim() &&
-      courseData.introVideo
-    );
-  };
+  const isFormComplete = () => (
+    courseData.courseName.trim() &&
+    courseData.instructorName.trim() &&
+    courseData.courseDescription.trim() &&
+    courseData.introVideo
+  );
 
   const validateForm = () => {
     const newErrors = {};
@@ -91,18 +89,14 @@ export const AddCourseMod = () => {
       if (completedSteps.includes('Course Intro')) {
         if (moduleCount === 0) {
           setModuleCount(1);
-          setCurrentStep('Module 1');
-        } else {
-          setCurrentStep('Module 1');
         }
+        setCurrentStep('Module 1');
       } else if (validateForm()) {
         setCompletedSteps(prev => [...prev, 'Course Intro']);
         if (moduleCount === 0) {
           setModuleCount(1);
-          setCurrentStep('Module 1');
-        } else {
-          setCurrentStep('Module 1');
         }
+        setCurrentStep('Module 1');
       }
     }
   };
@@ -163,8 +157,22 @@ export const AddCourseMod = () => {
     const assignments = assignmentData[currentModule] || [];
 
     const moduleValid = module?.moduleName?.trim();
-    const submodulesValid = submodules.length > 0 && submodules.every(s => s.submoduleName?.trim());
-    const assignmentsValid = assignments.length > 0 && assignments.every(a => a.assignmentTitle?.trim());
+
+    const submodulesValid =
+      submodules.length > 0 &&
+      submodules.every(s =>
+        s.title?.trim() && s.description?.trim() && s.duration?.trim() && s.video
+      );
+
+    const assignmentsValid =
+      assignments.length > 0 &&
+      assignments.every(a =>
+        a.question?.trim() &&
+        Array.isArray(a.options) &&
+        a.options.length === 4 &&
+        a.options.every(opt => opt.trim()) &&
+        a.selectedAnswer !== null
+      );
 
     if (moduleValid && submodulesValid && assignmentsValid) {
       const newModuleNumber = moduleCount + 1;
@@ -229,10 +237,10 @@ export const AddCourseMod = () => {
                 />
                 <h3 className="text-lg font-medium mt-6 mb-2">Assignments for {currentStep}</h3>
                 <AssignmentModule
+                  moduleId={currentStep} // e.g., "Module 1"
                   initialData={assignmentData[currentStep] || []}
                   onChange={(updatedData) => handleAssignmentChange(currentStep, updatedData)}
                 />
-
                 <div className="mt-6 pt-4 border-t border-gray-300">
                   <button
                     onClick={addNewModule}

@@ -15,7 +15,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Loading } from "../utils/Loading";
 import api from "../../api/axios";
 
-export const Attendance = ({ showScheduleForm = true }) => {
+export const Attendance = ({ showScheduleForm = false }) => {
     const { navId } = useParams();
     const { user, authDataLoading } = useAuth();
     const userid = user?.userid;
@@ -182,24 +182,29 @@ export const Attendance = ({ showScheduleForm = true }) => {
                 )}
 
                 {navId === 'schedule' && (
-                    <div className="flex flex-col gap-4 lg:flex-row w-full h-full overflow-hidden">
-                        <div className="flex flex-col gap-4 w-full lg:w-1/2 h-full">
-                            <div className="w-full flex-1 min-h-0">
-                                <AttendanceCalendar disableFutureDates={false} onDateSelect={handleDateSelect} />
-                            </div>
-                        </div>
-                        <div className={`flex flex-col gap-4 w-full lg:w-1/2 h-full ${!showScheduleForm ? 'justify-center' : ''}`}>
-                            <div className={`w-full ${showScheduleForm ? 'flex-1 min-h-0' : 'h-auto'}`}>
-                                <DayInfoCard selectedDate={selectedDate} />
-                            </div>
-                            {showScheduleForm && (
-                                <div className="w-full flex-1 min-h-0">
-                                    <ScheduleForm />
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
+    <div className="flex flex-col gap-4 lg:flex-row w-full h-full overflow-hidden">
+        <div className="flex flex-col gap-4 w-full lg:w-1/2 h-full">
+            <div className="w-full flex-1 min-h-0">
+                <AttendanceCalendar disableFutureDates={false} onDateSelect={handleDateSelect} />
+            </div>
+        </div>
+        <div
+            className={`flex flex-col gap-4 w-full lg:w-1/2 h-full`}
+        >
+            <div
+                className={`w-full ${showScheduleForm ? 'flex-1 min-h-0' : 'h-full'}`}
+            >
+                <DayInfoCard selectedDate={selectedDate} />
+            </div>
+            {showScheduleForm && (
+                <div className="w-full flex-1 min-h-0">
+                    <ScheduleForm />
+                </div>
+            )}
+        </div>
+    </div>
+)}
+
             </div>
         </div>
     );

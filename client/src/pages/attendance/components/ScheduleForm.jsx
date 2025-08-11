@@ -2,19 +2,12 @@ import React, { useState } from 'react';
 
 export const ScheduleForm = ({ handleClose }) => {
   const [selectedDate, setSelectedDate] = useState('');
-  const [actionType, setActionType] = useState('event'); // default to 'event'
+  const [actionType, setActionType] = useState('event'); // default to 'event' 
   const [description, setDescription] = useState('');
   const [selectedReligion, setSelectedReligion] = useState('');
   const [selectedRoles, setSelectedRoles] = useState([]);
 
-  const religions = ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Jain', 'Buddhist'];
-  const roles = ['Admin', 'Manager', 'Employee', 'Intern'];
-
-  const handleRoleToggle = (role) => {
-    setSelectedRoles((prev) =>
-      prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role]
-    );
-  };
+  const religions = ['Hindu', 'Muslim', 'Christian', 'All'];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -41,7 +34,7 @@ export const ScheduleForm = ({ handleClose }) => {
     <div className="bg-white rounded-lg shadow-sm border p-4 h-full overflow-hidden">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col gap-3 text-gray-700 w-full h-full"
+        className="flex flex-col gap-3 text-gray-700 w-full h-full overflow-y-auto max-h-[500px]"
       >
         {/* Date */}
         <div className="flex flex-col">
@@ -85,7 +78,7 @@ export const ScheduleForm = ({ handleClose }) => {
           />
         </div>
 
-        {/* Religion dropdown - keep this only if needed */}
+        {/* Religion dropdown - updated */}
         {actionType === 'leave' && (
           <div className="flex flex-col">
             <label className="text-sm font-medium mb-1">Select Religion</label>
@@ -102,46 +95,6 @@ export const ScheduleForm = ({ handleClose }) => {
                 </option>
               ))}
             </select>
-          </div>
-        )}
-
-        {/* Applicable Roles for Add Event */}
-        {actionType === 'event' && (
-          <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Applicable Roles</label>
-            <div className="flex flex-wrap gap-2">
-              {roles.map((role) => (
-                <label key={role} className="flex items-center gap-1 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={selectedRoles.includes(role)}
-                    onChange={() => handleRoleToggle(role)}
-                    className="accent-[#bcd4cd]"
-                  />
-                  {role}
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Applicable Roles for Add Holiday */}
-        {actionType === 'leave' && (
-          <div className="flex flex-col">
-            <label className="text-sm font-medium mb-1">Applicable Roles</label>
-            <div className="flex flex-wrap gap-2">
-              {roles.map((role) => (
-                <label key={role} className="flex items-center gap-1 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={selectedRoles.includes(role)}
-                    onChange={() => handleRoleToggle(role)}
-                    className="accent-[#bcd4cd]"
-                  />
-                  {role}
-                </label>
-              ))}
-            </div>
           </div>
         )}
 
