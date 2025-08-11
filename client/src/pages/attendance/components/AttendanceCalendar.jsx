@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/axios';
 
-export const  AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChange, disableFutureDates = true }) => {
+export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChange, isAttendance = true }) => {
   const getInitialYearMonth = () => {
     const today = new Date();
     return {
@@ -22,25 +22,26 @@ export const  AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearCha
 
   const today = new Date();
 
+  const months = [
+    'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+    'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
+  ];
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  const getDaysInMonth = (year, month) => new Date(year, month, 0).getDate();
+  const getFirstDayOfMonth = (year, month) => new Date(year, month - 1, 1).getDay();
+
   // Fetch Attendance Data
   const fetchCalendarData = async (year, month) => {
-    if (!userid) return;
-
+    if (!userid || !isAttendance) return;
     const startDateISO = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0)).toISOString();
     const endDateISO = new Date(Date.UTC(year, month, 0, 23, 59, 59)).toISOString();
 
     try {
       const response = await api.get('/api/employee/attendance/calendar', {
-        params: {
-          startDate: startDateISO,
-          endDate: endDateISO,
-          userid,
-        },
+        params: { startDate: startDateISO, endDate: endDateISO, userid },
       });
-
       setCalendarData(response.data.calendarData || []);
-      console.log(`Fetched data for ${month}/${year}:`, response.data.calendarData);
-
     } catch (err) {
       console.log("eerr", startDateISO, endDateISO, userid)
       console.error('Error fetching calendar data:', err);
@@ -50,57 +51,28 @@ export const  AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearCha
   // Fetch Holidays
   const fetchHolidayData = async (year, month) => {
     if (!userid) return;
-
     const startStr = `01-${months[month - 1].slice(0, 3).toLowerCase()}-${year}`;
     const endStr = `${getDaysInMonth(year, month)}-${months[month - 1].slice(0, 3).toLowerCase()}-${year}`;
 
     try {
       const response = await api.get('/api/holidays/range', {
-        params: {
-          startDate: startStr,
-          endDate: endStr,
-          userid,
-        },
+        params: { startDate: startStr, endDate: endStr, userid },
       });
-
       setHolidayData(response.data.data || []);
-      console.log(`Fetched holidays for ${month}/${year}:`, response.data.data);
-
     } catch (err) {
       console.error('Error fetching holiday data:', err);
     }
   };
 
   useEffect(() => {
-    fetchCalendarData(selectedYear, selectedMonth);
+    if (isAttendance) fetchCalendarData(selectedYear, selectedMonth);
     fetchHolidayData(selectedYear, selectedMonth);
-
-    if (onMonthYearChange) {
-      onMonthYearChange(selectedYear, selectedMonth);
-    }
-  }, [selectedYear, selectedMonth, userid]);
-
-  const months = [
-    'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
-    'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
-  ];
-
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-  const getDaysInMonth = (year, month) => new Date(year, month, 0).getDate();
-  const getFirstDayOfMonth = (year, month) => new Date(year, month - 1, 1).getDay();
+    if (onMonthYearChange) onMonthYearChange(selectedYear, selectedMonth);
+  }, [selectedYear, selectedMonth, userid, isAttendance]);
 
   const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
   const firstDay = getFirstDayOfMonth(selectedYear, selectedMonth);
-
   const calendarDays = Array(firstDay).fill(null).concat(Array.from({ length: daysInMonth }, (_, i) => i + 1));
-
-  const isFutureDate = (day) => {
-    if (!disableFutureDates || !day) return false;
-    const current = new Date(selectedYear, selectedMonth - 1, day);
-    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    return current > todayDate;
-  };
 
   const isSelected = (day) =>
     selectedDate &&
@@ -113,6 +85,13 @@ export const  AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearCha
     selectedMonth === today.getMonth() + 1 &&
     selectedYear === today.getFullYear();
 
+  const isFutureDate = (day) => {
+    if (!day) return false;
+    const current = new Date(selectedYear, selectedMonth - 1, day);
+    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    return current > todayDate;
+  };
+
   const getAttendanceStatus = (day) => {
     if (!day) return null;
     const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -124,6 +103,14 @@ export const  AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearCha
     if (!day) return null;
     const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     return holidayData.find((h) => h.date.startsWith(dateStr));
+  };
+
+  const getRingColorClass = (status, holiday, isSunday) => {
+    if (holiday || isSunday) return 'ring-yellow-900';
+    if (status === 'present') return 'ring-green-700';
+    if (status === 'absent') return 'ring-red-700';
+    if (status === 'remote') return 'ring-blue-700';
+    return 'ring-gray-800';
   };
 
   const handleMonthClick = (index) => {
@@ -149,7 +136,6 @@ export const  AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearCha
           <div className="text-lg font-semibold">{selectedYear}</div>
           <button onClick={() => handleYearChange(1)} className="text-xl font-bold px-2">&gt;</button>
         </div>
-
         <div className="flex-1 overflow-y-auto">
           <div className="grid grid-cols-1 gap-2">
             {months.map((month, index) => (
@@ -191,48 +177,44 @@ export const  AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearCha
               <div key={d} className="flex items-center justify-center text-xs font-medium text-gray-600 h-8">{d}</div>
             ))}
           </div>
-
           <div className="flex-1 grid grid-rows-6 gap-1">
             {Array.from({ length: 6 }, (_, weekIndex) => (
               <div key={weekIndex} className="grid grid-cols-7 gap-1">
                 {Array.from({ length: 7 }, (_, dayIndex) => {
                   const dayNumber = calendarDays[weekIndex * 7 + dayIndex];
-                  const future = isFutureDate(dayNumber);
                   const selected = isSelected(dayNumber);
                   const todayFlag = isToday(dayNumber);
+                  const future = isFutureDate(dayNumber);
                   const isSunday = dayIndex === 0;
-                  const status = getAttendanceStatus(dayNumber);
+                  const status = isAttendance && !future ? getAttendanceStatus(dayNumber) : null;
                   const holiday = isHoliday(dayNumber);
 
                   let dayClasses = '';
                   let textClasses = 'text-gray-700';
                   let tooltipText = '';
 
-                  if (future) {
-                    textClasses = 'text-gray-400 opacity-50 pointer-events-none';
-                  } else if (selected) {
+                  if (selected) {
                     dayClasses = 'bg-blue-500';
                     textClasses = 'text-white';
                   } else if (holiday || isSunday) {
                     dayClasses = 'bg-[#FEF9C3]';
                     textClasses = 'text-yellow-900 font-semibold';
                     if (holiday) tooltipText = holiday.name;
-                  } else if (status === 'present') {
+                  } else if (isAttendance && status === 'present') {
                     dayClasses = 'bg-green-100';
                     textClasses = 'text-green-700 font-semibold';
-                  } else if (status === 'absent') {
+                  } else if (isAttendance && status === 'absent') {
                     dayClasses = 'bg-red-100';
                     textClasses = 'text-red-700 font-semibold';
-                  } else if (status === 'remote') {
+                  } else if (isAttendance && status === 'remote') {
                     dayClasses = 'bg-blue-100';
                     textClasses = 'text-blue-700 font-semibold';
-                  } else if (todayFlag) {
-                    dayClasses = 'border border-blue-500';
-                    textClasses = 'text-blue-600';
                   } else {
                     dayClasses = 'hover:bg-gray-100';
                     textClasses = 'text-gray-700';
                   }
+
+                  const ringColorClass = todayFlag ? getRingColorClass(status, holiday, isSunday) : '';
 
                   return (
                     <div key={dayIndex} className="flex items-center justify-center h-8 w-8 mx-auto">
@@ -240,16 +222,14 @@ export const  AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearCha
                         <div className="relative group">
                           <div
                             onClick={() => {
-                              if (!future) {
-                                setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber });
-                              }
+                              setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber });
                             }}
-                            className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 ${dayClasses} ${textClasses}`}
+                            className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 
+                              ${dayClasses} ${textClasses} 
+                              ${todayFlag ? `ring-2 ring-offset-0 ${ringColorClass}` : ''}`}
                           >
                             {dayNumber}
                           </div>
-
-                          {/* Tooltip */}
                           {tooltipText && (
                             <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-10">
                               {tooltipText}
