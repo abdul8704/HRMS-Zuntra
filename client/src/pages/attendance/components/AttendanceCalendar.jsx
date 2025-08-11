@@ -1,14 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import api from '../../../api/axios';
 
-export const AttendanceCalendar = ({ calendarData, onMonthYearChange, disableFutureDates = true }) => {
+export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChange, disableFutureDates = true }) => {
   const getInitialYearMonth = () => {
-    if (calendarData && calendarData.length > 0) {
-      const firstDate = new Date(calendarData[0].date);
-      return {
-        year: firstDate.getFullYear(),
-        month: firstDate.getMonth() + 1,
-      };
-    }
     const today = new Date();
     return {
       year: today.getFullYear(),
@@ -20,30 +14,70 @@ export const AttendanceCalendar = ({ calendarData, onMonthYearChange, disableFut
 
   const [selectedYear, setSelectedYear] = useState(initialYear);
   const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+  const [calendarData, setCalendarData] = useState([]);
+  const [holidayData, setHolidayData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const sidebarRef = useRef();
 
-  const logFullDate = (year, month, day = null) => {
-    const dateStr = `${year}-${String(month).padStart(2, '0')}${day ? `-${String(day).padStart(2, '0')}` : ''}`;
-    console.log("Selected:", dateStr);
+  const today = new Date();
+
+  // Fetch Attendance Data
+  const fetchCalendarData = async (year, month) => {
+    if (!userid) return;
+
+    const startDateISO = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0)).toISOString();
+    const endDateISO = new Date(Date.UTC(year, month, 0, 23, 59, 59)).toISOString();
+
+    try {
+      const response = await api.get('/api/employee/attendance/calendar', {
+        params: {
+          startDate: startDateISO,
+          endDate: endDateISO,
+          userid,
+        },
+      });
+
+      setCalendarData(response.data.calendarData || []);
+      console.log(`Fetched data for ${month}/${year}:`, response.data.calendarData);
+
+    } catch (err) {
+      console.error('Error fetching calendar data:', err);
+    }
+  };
+
+  // Fetch Holidays
+  const fetchHolidayData = async (year, month) => {
+    if (!userid) return;
+
+    const startStr = `01-${months[month - 1].slice(0, 3).toLowerCase()}-${year}`;
+    const endStr = `${getDaysInMonth(year, month)}-${months[month - 1].slice(0, 3).toLowerCase()}-${year}`;
+
+    try {
+      const response = await api.get('/api/holidays/range', {
+        params: {
+          startDate: startStr,
+          endDate: endStr,
+          userid,
+        },
+      });
+
+      setHolidayData(response.data.data || []);
+      console.log(`Fetched holidays for ${month}/${year}:`, response.data.data);
+
+    } catch (err) {
+      console.error('Error fetching holiday data:', err);
+    }
   };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        setShowSidebar(false);
-      }
-    };
+    fetchCalendarData(selectedYear, selectedMonth);
+    fetchHolidayData(selectedYear, selectedMonth);
 
-    if (showSidebar) {
-      document.addEventListener('mousedown', handleClickOutside);
+    if (onMonthYearChange) {
+      onMonthYearChange(selectedYear, selectedMonth);
     }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showSidebar]);
+  }, [selectedYear, selectedMonth, userid]);
 
   const months = [
     'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
@@ -60,7 +94,6 @@ export const AttendanceCalendar = ({ calendarData, onMonthYearChange, disableFut
 
   const calendarDays = Array(firstDay).fill(null).concat(Array.from({ length: daysInMonth }, (_, i) => i + 1));
 
-  const today = new Date();
   const isFutureDate = (day) => {
     if (!disableFutureDates || !day) return false;
     const current = new Date(selectedYear, selectedMonth - 1, day);
@@ -86,20 +119,20 @@ export const AttendanceCalendar = ({ calendarData, onMonthYearChange, disableFut
     return record?.status || null;
   };
 
+  const isHoliday = (day) => {
+    if (!day) return null;
+    const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return holidayData.find((h) => h.date.startsWith(dateStr));
+  };
+
   const handleMonthClick = (index) => {
-    const month = index + 1;
-    setSelectedMonth(month);
+    setSelectedMonth(index + 1);
     setSelectedDate(null);
     setShowSidebar(false);
-    logFullDate(selectedYear, month);
-    if (onMonthYearChange) onMonthYearChange(selectedYear, month);
   };
 
   const handleYearChange = (delta) => {
-    const newYear = selectedYear + delta;
-    setSelectedYear(newYear);
-    logFullDate(newYear, selectedMonth);
-    if (onMonthYearChange) onMonthYearChange(newYear, selectedMonth);
+    setSelectedYear((prev) => prev + delta);
   };
 
   return (
@@ -168,15 +201,21 @@ export const AttendanceCalendar = ({ calendarData, onMonthYearChange, disableFut
                   const todayFlag = isToday(dayNumber);
                   const isSunday = dayIndex === 0;
                   const status = getAttendanceStatus(dayNumber);
+                  const holiday = isHoliday(dayNumber);
 
                   let dayClasses = '';
                   let textClasses = 'text-gray-700';
+                  let tooltipText = '';
 
                   if (future) {
                     textClasses = 'text-gray-400 opacity-50 pointer-events-none';
                   } else if (selected) {
                     dayClasses = 'bg-blue-500';
                     textClasses = 'text-white';
+                  } else if (holiday || isSunday) {
+                    dayClasses = 'bg-[#FEF9C3]';
+                    textClasses = 'text-yellow-900 font-semibold';
+                    if (holiday) tooltipText = holiday.name;
                   } else if (status === 'present') {
                     dayClasses = 'bg-green-100';
                     textClasses = 'text-green-700 font-semibold';
@@ -186,12 +225,6 @@ export const AttendanceCalendar = ({ calendarData, onMonthYearChange, disableFut
                   } else if (status === 'remote') {
                     dayClasses = 'bg-blue-100';
                     textClasses = 'text-blue-700 font-semibold';
-                  } else if (status === 'holiday') {
-                    dayClasses = 'bg-orange-100';
-                    textClasses = 'text-orange-700 font-semibold';
-                  } else if (isSunday) {
-                    dayClasses = 'bg-orange-100';
-                    textClasses = 'text-orange-700 font-semibold';
                   } else if (todayFlag) {
                     dayClasses = 'border border-blue-500';
                     textClasses = 'text-blue-600';
@@ -203,17 +236,25 @@ export const AttendanceCalendar = ({ calendarData, onMonthYearChange, disableFut
                   return (
                     <div key={dayIndex} className="flex items-center justify-center h-8 w-8 mx-auto">
                       {dayNumber && (
-                        <div
-                          onClick={() => {
-                            if (!future) {
-                              const selected = { year: selectedYear, month: selectedMonth, day: dayNumber };
-                              setSelectedDate(selected);
-                              logFullDate(selectedYear, selectedMonth, dayNumber);
-                            }
-                          }}
-                          className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 ${dayClasses} ${textClasses}`}
-                        >
-                          {dayNumber}
+                        <div className="relative group">
+                          <div
+                            onClick={() => {
+                              if (!future) {
+                                setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber });
+                              }
+                            }}
+                            className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 ${dayClasses} ${textClasses}`}
+                          >
+                            {dayNumber}
+                          </div>
+
+                          {/* Tooltip */}
+                          {tooltipText && (
+                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-10">
+                              {tooltipText}
+                              <div className="absolute left-1/2 -translate-x-1/2 top-full w-2 h-2 bg-gray-800 rotate-45"></div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -222,30 +263,6 @@ export const AttendanceCalendar = ({ calendarData, onMonthYearChange, disableFut
               </div>
             ))}
           </div>
-
-          {/* Legend */}
-          {disableFutureDates && (
-            <div className="flex items-center justify-center py-2">
-              <div className="flex gap-4 text-xs">
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-green-100"></div>
-                  <span className="text-green-700">Present</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-red-100"></div>
-                  <span className="text-red-700">Absent</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-blue-100"></div>
-                  <span className="text-blue-700">Remote</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-full bg-orange-100"></div>
-                  <span className="text-orange-700">Sunday</span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

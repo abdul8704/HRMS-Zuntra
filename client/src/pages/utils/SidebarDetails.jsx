@@ -238,15 +238,18 @@ export function SidebarDetails({ type, empId }) {
             </div>
 
             {/* Sticky Edit Button */}
-            <div className="sticky bottom-0 bg-[#BBD3CC] px-6 py-4">
-              <button
-                onClick={handleEditProfile}
-                className="w-full bg-white px-4 py-3 rounded-lg shadow-md hover:bg-gray-100 border border-gray-200 flex items-center justify-center gap-2 text-black opacity-70 hover:opacity-100 transition-opacity"
-              >
-                <Edit3 className="w-4 h-4" />
-                <span>Edit Profile</span>
-              </button>
-            </div>
+           {String(user?._id) === String(empId) && (
+  <div className="sticky bottom-0 bg-[#BBD3CC] px-6 py-4">
+    <button
+      onClick={handleEditProfile}
+      className="w-full bg-white px-4 py-3 rounded-lg shadow-md hover:bg-gray-100 border border-gray-200 flex items-center justify-center gap-2 text-black opacity-70 hover:opacity-100 transition-opacity"
+    >
+      <Edit3 className="w-4 h-4" />
+      <span>Edit Profile</span>
+    </button>
+  </div>
+)}
+
           </>
         )}
       </div>
