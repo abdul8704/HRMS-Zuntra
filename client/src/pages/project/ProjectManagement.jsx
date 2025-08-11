@@ -41,7 +41,7 @@ export const ProjectManagement = () => {
   ];
 
   useEffect(() => {
-    const validTabs = ["ongoing", "finished"];
+    const validTabs = ["ongoing", "completed", "add"];
     if (!validTabs.includes(navId)) {
       navigate("/404");
       return;
@@ -53,50 +53,37 @@ export const ProjectManagement = () => {
   }, [navId, navigate]);
 
   return (
-    <div className="relative">
-      <div className="website-container flex">
+    <>
+      <div className="flex w-screen h-screen">
         <Sidebar />
-        <div className="website-module flex-grow">
+        <div className="flex gap-[1rem] flex-col flex-1 p-[1rem] h-screen">
           <Navbar type="projectManagement" />
 
           {navId === "completed" ? (
-            <div
-              style={{
-                padding: "3rem 5rem",
-                borderRadius: "1.5rem",
-                background: "rgba(255, 255, 255, 0.1)",
-                backdropFilter: "blur(12px)",
-                WebkitBackdropFilter: "blur(12px)",
-                textAlign: "center",
-                fontFamily: "'Poppins', sans-serif",
-              }}
-            >
-              <style>{`
-                @keyframes pulse {
-                  0%, 100% {
-                    text-shadow: 0 0 10px #BBD3CC, 0 0 20px #BBD3CC;
-                  }
-                  50% {
-                    text-shadow: 0 0 20px #BBD3CC, 0 0 40px #BBD3CC;
-                  }
-                }
-              `}</style>
-
-              <h1
-                style={{
-                  fontSize: "5rem",
-                  fontWeight: "700",
-                  color: "rgb(153, 153, 153)",
-                  textShadow: "0 0 10px #BBD3CC, 0 0 20px #BBD3CC",
-                  animation: "pulse 2s infinite ease-in-out",
-                  margin: 0,
-                }}
-              >
-                🚀 Under Development, Coming Soon
-              </h1>
+            <div className="relative flex-1 overflow-y-auto">
+              {projects.map((project, index) => (
+                <ProjectCard
+                  key={index}
+                  projectData={{
+                    _id: project._id,
+                    title: project.projectTitle,
+                    subtitle: project.teamName,
+                    description: project.projectDesc,
+                    user: {
+                      name: project.teamLeader,
+                      role: project.teamLeaderRole,
+                      avatar: project.teamLeaderProfile,
+                    },
+                    color: project.color,
+                    startDate: project.startDate,
+                    deadline: project.deadline,
+                    clientName: project.clientName,
+                  }}
+                />
+              ))}
             </div>
           ) : (
-            <div className="project-cards-container">
+            <div className="relative flex-1 overflow-y-auto">
               {projects.map((project, index) => (
                 <ProjectCard
                   key={index}
@@ -137,6 +124,6 @@ export const ProjectManagement = () => {
           overflow-x: hidden;
         }
       `}</style>
-    </div>
+    </>
   );
 };
