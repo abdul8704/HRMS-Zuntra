@@ -16,20 +16,21 @@ import {
 import ZuntraLogo from "../../assets/Zuntra.svg";
 import { EditProfileCard } from "../employee/components/EditProfileCard";
 import { useNavigate } from "react-router-dom";
-import api, { BASE_URL } from '../../api/axios';
+import api, { BASE_URL } from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { Loading } from "./Loading";
 
 export function SidebarDetails({ type, empId }) {
   const navigate = useNavigate();
-  const {user, loading} = useAuth();
+  const { user, loading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showEditCard, setShowEditCard] = useState(false);
-
-  const handleEditProfile = () => setShowEditCard(prev => !prev);
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState(null);
+
+  const handleEditProfile = () => setShowEditCard((prev) => !prev);
+
   useEffect(() => {
     const fetchdatas = async () => {
       setIsLoading(true);
@@ -38,7 +39,7 @@ export function SidebarDetails({ type, empId }) {
           api.get(`/api/employee/${empId}`),
           api.get(`/api/course/enrolledCourses`),
         ]);
-        // console.log("Employee Details Response:", empRes.data.employeeDetail);
+
         if (empRes.data.success) {
           setData(empRes.data.employeeDetail);
         }
@@ -46,16 +47,20 @@ export function SidebarDetails({ type, empId }) {
           console.log(courseRes.data);
         }
       } catch (err) {
-        console.error("Error fetching employee details:", err?.response?.data?.message || err.message);
+        console.error(
+          "Error fetching employee details:",
+          err?.response?.data?.message || err.message
+        );
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (!loading) {
+    if (!loading && empId) {
       fetchdatas();
     }
-  }, [type, showEditCard]);
+  }, [type, showEditCard, empId, loading]);
+
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
@@ -67,18 +72,21 @@ export function SidebarDetails({ type, empId }) {
     <>
       {/* Overlay for mobile sidebar */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-[999] transition-opacity duration-300 ${isMobile && isOpen ? "block" : "hidden"
-          }`}
+        className={`fixed inset-0 bg-black bg-opacity-50 z-[999] transition-opacity duration-300 ${
+          isMobile && isOpen ? "block" : "hidden"
+        }`}
         onClick={() => setIsOpen(false)}
       ></div>
 
       {/* Sidebar */}
       <div
-        className={`${isMobile
-          ? `fixed top-0 left-0 z-[1000] transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"
-          }`
-          : "relative"
-          } bg-[#BBD3CC] shadow-2xl w-full md:w-[320px] min-h-screen flex flex-col`}
+        className={`${
+          isMobile
+            ? `fixed top-0 left-0 z-[1000] transform transition-transform duration-300 ${
+                isOpen ? "translate-x-0" : "-translate-x-full"
+              }`
+            : "relative"
+        } bg-[#BBD3CC] shadow-2xl w-full md:w-[320px] min-h-screen flex flex-col`}
       >
         {/* Close button for mobile */}
         {isMobile && isOpen && (
@@ -92,7 +100,7 @@ export function SidebarDetails({ type, empId }) {
           </div>
         )}
 
-        {/* Back button for both desktop and mobile */}
+        {/* Back button */}
         <div className="absolute top-4 left-4 z-10">
           <button
             className="text-xl font-bold text-black hover:scale-110 transition"
@@ -116,27 +124,28 @@ export function SidebarDetails({ type, empId }) {
             className="h-[50px] w-auto object-contain"
           />
         </div>
-        
-        {type === "user" && isLoading && (<Loading />)}
+
+        {type === "user" && isLoading && <Loading />}
+
         {/* User Details */}
-        {type === "user" && !isLoading && (
+        {type === "user" && !isLoading && data && (
           <>
             {/* Header */}
             <div className="px-6 pb-6">
               <div className="flex justify-center mb-6">
-                <div className="w-[4.5rem] h-[4.5rem] md:w-[6rem] md:h-[6rem] rounded-full">
-                  <div className="w-full h-full rounded-full overflow-hidden bg-gray-300">
-                    <img
-                      src={`${BASE_URL}/uploads/profilePictures/${data._id}.png`}
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+                <div className="w-[4.5rem] h-[4.5rem] md:w-[6rem] md:h-[6rem] rounded-full overflow-hidden bg-gray-300">
+                  <img
+                    src={`${BASE_URL}/uploads/profilePictures/${data._id}.png`}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
 
               <div className="text-center">
-                <h2 className="text-black text-xl md:text-2xl font-semibold">{data.username}</h2>
+                <h2 className="text-black text-xl md:text-2xl font-semibold">
+                  {data.username}
+                </h2>
               </div>
 
               <div className="flex justify-center m-1">
@@ -167,13 +176,7 @@ export function SidebarDetails({ type, empId }) {
                 <div>
                   <span className="font-medium">Joined Date:</span>{" "}
                   <span className="text-black/80">
-                    {(() => {
-                      const dob = new Date(data.dateJoined);
-                      const day = String(dob.getDate()).padStart(2, '0');
-                      const month = String(dob.getMonth() + 1).padStart(2, '0');
-                      const year = dob.getFullYear();
-                      return `${day}-${month}-${year}`;
-                    })()}
+                    {new Date(data.dateJoined).toLocaleDateString("en-GB")}
                   </span>
                 </div>
               </div>
@@ -182,7 +185,13 @@ export function SidebarDetails({ type, empId }) {
                 <Clock className="w-4 h-4 text-black/70 flex-shrink-0" />
                 <div>
                   <span className="font-medium">Shift:</span>{" "}
-                  <span className="text-black/80">{data.shift?.shiftName || "N/A"}</span>
+                  <span className="text-black/80">
+                    {data.shift?.shiftName
+                      ? data.shift.shiftName
+                          .replace(/([A-Z])/g, " $1")
+                          .replace(/^./, (str) => str.toUpperCase())
+                      : "N/A"}
+                  </span>
                 </div>
               </div>
 
@@ -190,7 +199,9 @@ export function SidebarDetails({ type, empId }) {
                 <Users className="w-4 h-4 text-black/70 flex-shrink-0" />
                 <div>
                   <span className="font-medium">Branch:</span>{" "}
-                  <span className="text-black/80">{data.campus?.campusName || "N/A"}</span>
+                  <span className="text-black/80">
+                    {data.campus?.campusName || "N/A"}
+                  </span>
                 </div>
               </div>
 
@@ -199,13 +210,9 @@ export function SidebarDetails({ type, empId }) {
                 <div>
                   <span className="font-medium">DOB:</span>{" "}
                   <span className="text-black/80">
-                    {(() => {
-                      const dob = new Date(data.personalDetail?.DOB);
-                      const day = String(dob.getDate()).padStart(2, '0');
-                      const month = String(dob.getMonth() + 1).padStart(2, '0');
-                      const year = dob.getFullYear();
-                      return `${day}-${month}-${year}`;
-                    })()}
+                    {new Date(
+                      data.personalDetail?.DOB
+                    ).toLocaleDateString("en-GB")}
                   </span>
                 </div>
               </div>
@@ -214,7 +221,9 @@ export function SidebarDetails({ type, empId }) {
                 <Heart className="w-4 h-4 text-black/70 flex-shrink-0" />
                 <div>
                   <span className="font-medium">Religion:</span>{" "}
-                  <span className="text-black/80">{data.personalDetail?.religion || "N/A"}</span>
+                  <span className="text-black/80">
+                    {data.personalDetail?.religion || "N/A"}
+                  </span>
                 </div>
               </div>
 
@@ -232,27 +241,29 @@ export function SidebarDetails({ type, empId }) {
                 <DollarSign className="w-4 h-4 text-black/70 flex-shrink-0" />
                 <div>
                   <span className="font-medium">Salary:</span>{" "}
-                  <span className="text-black/80">₹{data.personalDetail?.Salary || 0}/hr</span>
+                  <span className="text-black/80">
+                    ₹{data.personalDetail?.Salary || 0}/hr
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Sticky Edit Button */}
-           {String(user?._id) === String(empId) && (
-  <div className="sticky bottom-0 bg-[#BBD3CC] px-6 py-4">
-    <button
-      onClick={handleEditProfile}
-      className="w-full bg-white px-4 py-3 rounded-lg shadow-md hover:bg-gray-100 border border-gray-200 flex items-center justify-center gap-2 text-black opacity-70 hover:opacity-100 transition-opacity"
-    >
-      <Edit3 className="w-4 h-4" />
-      <span>Edit Profile</span>
-    </button>
-  </div>
-)}
-
+            {String(user?._id) === String(empId) && (
+              <div className="sticky bottom-0 bg-[#BBD3CC] px-6 py-4">
+                <button
+                  onClick={handleEditProfile}
+                  className="w-full bg-white px-4 py-3 rounded-lg shadow-md hover:bg-gray-100 border border-gray-200 flex items-center justify-center gap-2 text-black opacity-70 hover:opacity-100 transition-opacity"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  <span>Edit Profile</span>
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>
+
       {/* Sidebar toggle for mobile */}
       {!isOpen && isMobile && (
         <div className="fixed top-[4rem] -left-[10px] w-12 h-12 bg-[#bcd4cd] rounded-full flex items-center justify-center shadow-lg transition-all duration-300 z-[1000]">
@@ -272,7 +283,6 @@ export function SidebarDetails({ type, empId }) {
         </div>
       )}
 
-      {/* Animation styles */}
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: scale(0.95); }

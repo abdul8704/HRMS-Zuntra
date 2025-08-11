@@ -53,7 +53,7 @@ export const ProjectCard = ({ projectData }) => {
     card: {
       backgroundColor: projectData.color || "#f4b6b6",
       borderRadius: "1rem",
-      padding: "1.5rem",
+      padding: "0.7rem",
       fontFamily: "'Segoe UI', sans-serif",
       position: "relative",
       boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
@@ -71,8 +71,8 @@ export const ProjectCard = ({ projectData }) => {
     },
     icons: {
       position: "absolute",
-      top: "1.5rem",
-      right: "1.5rem",
+      top: "1rem",
+      right: "0.9rem",
       display: "flex",
       gap: "0.5rem",
       cursor: "pointer",
