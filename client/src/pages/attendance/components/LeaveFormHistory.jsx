@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Eye } from 'lucide-react';
 import api from '../../../api/axios'
 import { Loading } from '../../utils/Loading';
+import { BASE_URL } from '../../../api/axios';
 
 export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as prop, default to 'hr'
   const [leaveHistory, setLeaveHistory] = useState([]);
@@ -19,58 +20,35 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
   const [tlReason, setTlReason] = useState('');
 
   useEffect(() => {
-  const fetchLeaveReqs = async () => {
+  const fetchPendingLeaveReqs = async () => {
     try {
       setLoading(true);
-      const requests = await api.get("/api/hr/leave/all-req");
+      const response = await api.get("/api/hr/leave/pending-req"); // your API endpoint
 
-      if (requests.data.success && requests.data.LeaveData?.length > 0) {
-        const dummyProfiles = [
-          { 
-            name: 'Aarav Sharma', 
-            pic: 'https://randomuser.me/api/portraits/men/32.jpg',
-            teamName: 'Development Team',
-            teamLeadName: 'Priya Patel'
-          },
-          { 
-            name: 'Meera Nair', 
-            pic: 'https://randomuser.me/api/portraits/women/44.jpg',
-            teamName: 'Design Team',
-            teamLeadName: 'Rajesh Kumar'
-          },
-          { 
-            name: 'Ravi Verma', 
-            pic: 'https://randomuser.me/api/portraits/men/45.jpg',
-            teamName: 'Marketing Team',
-            teamLeadName: 'Anita Singh'
-          },
-          { 
-            name: 'Sneha Reddy', 
-            pic: 'https://randomuser.me/api/portraits/women/68.jpg',
-            teamName: 'Sales Team',
-            teamLeadName: 'Vikram Joshi'
-          },
-        ];
+      if (response.data.success && response.data.pendingLeaveReqs?.length > 0) {
+        const updatedData = response.data.pendingLeaveReqs.map(emp => ({
+          ...emp,
+          employeeName: emp.requestedBy || 'Unknown',
+          employeeProfile: `${BASE_URL}/uploads/profilePictures/${emp.requestedId}.png`,
 
-        const updatedData = requests.data.LeaveData.map((item, index) => ({
-          ...item,
-          employeeName: dummyProfiles[index % dummyProfiles.length].name,
-          employeeProfile: dummyProfiles[index % dummyProfiles.length].pic,
-          teamName: dummyProfiles[index % dummyProfiles.length].teamName,
-          teamLeadName: dummyProfiles[index % dummyProfiles.length].teamLeadName
         }));
-
         setLeaveHistory(updatedData);
+      } else {
+        setLeaveHistory([]); // blank if none
       }
     } catch (err) {
-      console.error("Error fetching leave requests:", err);
+      console.error("Error fetching pending leave requests:", err);
+      setLeaveHistory([]);
     } finally {
       setLoading(false);
     }
   };
 
-  fetchLeaveReqs();
+  fetchPendingLeaveReqs();
 }, []);
+
+
+    
 
   
 
@@ -89,10 +67,8 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
         return '✓';
       case 'rejected':
         return '✕';
-      case 'pending':
-        return '-';
       default:
-        return '?';
+        return '-';
     }
   };
 

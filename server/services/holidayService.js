@@ -3,11 +3,23 @@ const ApiError = require('../errors/ApiError');
 const AttendanceHelper = require("../utils/attendanceHelper")
 const UserPersonal = require('../models/userPersonal')
 
-const getAllHolidays = async () => {
-    const holidays = await Holiday.find();
+const getAllHolidaysInRange = async (startDate, endDate) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+        throw new ApiError(400, 'Invalid date range provided');
+    }
+
+    const holidays = await Holiday.find({
+        date: {
+            $gte: start,
+            $lte: end,
+        }
+    }).sort({ date: 1 });
+
     return holidays;
-  
-}
+};
 
 const getHolidaysInRange = async (startDate, endDate, userid) => {
     const start = new Date(startDate);
@@ -82,7 +94,7 @@ const deleteHoliday = async (id) => {
 }
 
 module.exports = {
-    getAllHolidays,
+    getAllHolidaysInRange,
     getHolidaysInRange,
     getHolidayById,
     addHolidays,
