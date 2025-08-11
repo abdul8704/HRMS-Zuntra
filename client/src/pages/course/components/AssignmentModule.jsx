@@ -1,14 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
- export const AssignmentModule = () => {
-  const [questions, setQuestions] = useState([
-    {
-      questionText: "",
-      options: [],
-      correctAnswer: "",
-      newOptionText: "",
-    },
-  ]);
+export const AssignmentModule = ({ subModuleId, initialData = [], onChange }) => {
+  const [questions, setQuestions] = useState(
+    initialData.length > 0
+      ? initialData
+      : [
+          {
+            questionText: "",
+            options: [],
+            correctAnswer: "",
+            newOptionText: "",
+          },
+        ]
+  );
+
+  // Sync questions if initialData changes (important for prop updates)
+  useEffect(() => {
+    setQuestions(initialData.length > 0 ? initialData : [
+      {
+        questionText: "",
+        options: [],
+        correctAnswer: "",
+        newOptionText: "",
+      }
+    ]);
+  }, [initialData]);
+
+  // Notify parent about changes
+  useEffect(() => {
+    if (onChange) {
+      onChange(questions);
+    }
+  }, [questions, onChange]);
 
   const updateQuestionField = (index, key, value) => {
     const updated = [...questions];
@@ -70,16 +93,16 @@ import React, { useState } from "react";
   return (
     <div className="w-full max-w-5xl mx-auto p-4 mt-6 bg-white rounded-md shadow border space-y-6">
       <div className="border-l-4 border-black-500 pl-3 mb-4">
-        <h3 className="text-xl font-semibold text-black-700">Assignment Builder</h3>
+        <h3 className="text-xl font-semibold text-black-700">Assignment</h3>
       </div>
 
       {questions.map((q, qIndex) => (
-        <div key={qIndex} className="mb-6 relative">
+        <div key={qIndex} className="mb-6 relative border p-4 rounded bg-gray-50">
           {questions.length > 1 && (
             <button
               onClick={() => deleteQuestion(qIndex)}
               title="Delete Question"
-              className="absolute top-0 right-0 text-red-500 hover:text-red-700"
+              className="absolute top-2 right-2 text-red-500 hover:text-red-700"
             >
               ✕
             </button>
@@ -99,7 +122,7 @@ import React, { useState } from "react";
             <div key={optIndex} className="flex items-center gap-2 mb-2">
               <input
                 type="radio"
-                name={`correct-${qIndex}`}
+                name={`correct-${subModuleId}-${qIndex}`} // <== Use subModuleId here to make radio groups unique per submodule
                 checked={opt === q.correctAnswer}
                 onChange={() => setCorrectAnswer(qIndex, opt)}
               />
@@ -148,4 +171,4 @@ import React, { useState } from "react";
   );
 };
 
-export default  AssignmentModule;
+export default AssignmentModule;

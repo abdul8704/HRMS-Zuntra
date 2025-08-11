@@ -178,11 +178,17 @@ export const Attendance = ({ showScheduleForm = true }) => {
                     <div className="flex flex-col gap-4 lg:flex-row w-full h-full overflow-hidden">
                         <div className="flex flex-col gap-4 w-full lg:w-1/2 h-full">
                             <div className="w-full flex-1 min-h-0">
-                                <AttendanceCalendar disableFutureDates={false} onDateSelect={handleDateSelect} />
+                                <AttendanceCalendar
+                                    userid={userid}
+                                    isAttendance={false} />
                             </div>
                         </div>
-                        <div className={`flex flex-col gap-4 w-full lg:w-1/2 h-full ${!showScheduleForm ? 'justify-center' : ''}`}>
-                            <div className={`w-full ${showScheduleForm ? 'flex-1 min-h-0' : 'h-auto'}`}>
+                        <div
+                            className={`flex flex-col gap-4 w-full lg:w-1/2 h-full`}
+                        >
+                            <div
+                                className={`w-full ${showScheduleForm ? 'flex-1 min-h-0' : 'h-full'}`}
+                            >
                                 <DayInfoCard selectedDate={selectedDate} />
                             </div>
                             {showScheduleForm && (
@@ -193,6 +199,7 @@ export const Attendance = ({ showScheduleForm = true }) => {
                         </div>
                     </div>
                 )}
+
             </div>
         </div>
     );

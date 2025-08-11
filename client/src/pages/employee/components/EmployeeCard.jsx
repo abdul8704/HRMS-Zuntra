@@ -12,7 +12,8 @@ export const EmployeeCard = ({
   userid,
   bgColor = '#cfd9ea',
   option = 2, // default to option 1 (details only)
-  onApprove
+  onApprove,
+  onRemove // Added onRemove prop
 }) => {
   const [tooltip, setTooltip] = useState({
     show: false,
@@ -194,7 +195,10 @@ export const EmployeeCard = ({
               >
                 ✓
               </button>
-              <button className='h-[3rem] bg-[#E1BEC5] text-black rounded-xl shadow hover:bg-[#FFBEC5] text-lg font-semibold'>
+              <button 
+                onClick={() => onRemove?.()} // ADDED: onClick handler for remove
+                className='h-[3rem] bg-[#E1BEC5] text-black rounded-xl shadow hover:bg-[#FFBEC5] text-lg font-semibold'
+              >
                 ✕
               </button>
             </div>

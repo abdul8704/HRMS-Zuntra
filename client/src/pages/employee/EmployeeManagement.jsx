@@ -12,6 +12,7 @@ import { EditRolePopup } from './components/EditRolePopup'
 import { GeoFencing } from './components/GeoFencing'
 import { EmpAssignmentPopUp } from './components/EmployeeAssignmentPopup'
 import { AddLocationForm } from './components/AddLocationForm'
+import { RemoveEmployeePopup } from './components/RemoveEmployeePopup' // ADDED
 import { useAuth } from '../../context/AuthContext'
 
 import api from '../../api/axios'
@@ -313,6 +314,8 @@ export const EmployeeManagement = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null)
   const [showLocationForm, setShowLocationForm] = useState(false)
   const [editRoleData, setEditRoleData] = useState(null)
+  const [showRemovePopup, setShowRemovePopup] = useState(false) // ADDED
+  const [employeeToRemove, setEmployeeToRemove] = useState(null) // ADDED
 
   // Data states
   const [employees, setEmployees] = useState([])
@@ -569,6 +572,40 @@ export const EmployeeManagement = () => {
   const handleSaveAssignment = useCallback(() => {
     handleClosePopup()
   }, [handleClosePopup])
+
+  // ADDED: Remove employee handlers
+  const handleRemoveEmployee = useCallback((employee) => {
+    setEmployeeToRemove(employee)
+    setShowRemovePopup(true)
+  }, [])
+
+  const handleCloseRemovePopup = useCallback(() => {
+    setShowRemovePopup(false)
+    setEmployeeToRemove(null)
+  }, [])
+
+  const handleConfirmRemoval = useCallback(async (data) => {
+    try {
+      console.log('Employee removal confirmed:', data);
+      
+      // Uncomment and modify API call as needed:
+      // const response = await api.delete(`/api/employee/${data.employeeId}`, {
+      //   data: { message: data.message }
+      // })
+      
+      // if (response.data.success) {
+      //   // Remove from pending employees if it's from newusers section
+      //   setPendingEmployees(prev => prev.filter(emp => emp._id !== data.employeeId))
+      //   // Or remove from regular employees if it's from all section
+      //   setEmployees(prev => prev.filter(emp => emp._id !== data.employeeId))
+      // }
+      
+      handleCloseRemovePopup();
+    } catch (error) {
+      console.error('Error removing employee:', error);
+      alert('Failed to remove employee. Please try again.');
+    }
+  }, [handleCloseRemovePopup])
 
   const handleAddNewBranch = useCallback(async formData => {
     try {
@@ -1074,6 +1111,7 @@ export const EmployeeManagement = () => {
                   image={`${BASE_URL}/uploads/profilePictures/${emp._id}.png`}
                   option={3}
                   onApprove={() => handleApprove(emp)}
+                  onRemove={() => handleRemoveEmployee(emp)} // ADDED: This connects X button to popup
                 />
               ))
             )}
@@ -1112,6 +1150,15 @@ export const EmployeeManagement = () => {
             onSave={handleSaveEditedRole}
           />
         </div>
+      )}
+
+      {/* ADDED: RemoveEmployeePopup */}
+      {showRemovePopup && employeeToRemove && (
+        <RemoveEmployeePopup
+          employee={employeeToRemove}
+          onClose={handleCloseRemovePopup}
+          onConfirm={handleConfirmRemoval}
+        />
       )}
     </div>
   )

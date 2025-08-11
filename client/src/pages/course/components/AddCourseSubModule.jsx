@@ -1,14 +1,8 @@
 import React, { useState } from 'react';
-import { Plus, Check } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import AssignmentModule from './AssignmentModule'; // Your existing assignment component
 
 export const AddCourseSubModule = () => {
-  const initialAssignment = () => ({
-    id: Date.now(),
-    question: '',
-    options: ['', '', '', ''],
-    selectedAnswer: null
-  });
-
   const initialSubModule = () => ({
     id: Date.now(),
     title: '',
@@ -16,7 +10,7 @@ export const AddCourseSubModule = () => {
     duration: '',
     video: null,
     videoURL: null,
-    assignments: [initialAssignment()]
+    assignments: [], // used by AssignmentModule
   });
 
   const [subModules, setSubModules] = useState([initialSubModule()]);
@@ -25,11 +19,6 @@ export const AddCourseSubModule = () => {
     sm.title.trim() && sm.description.trim() && sm.duration.trim() && sm.video;
 
   const canAddSubModule = () => isSubModuleComplete(subModules[subModules.length - 1]);
-
-  const canAddAssignment = (assignments) => {
-    const last = assignments[assignments.length - 1];
-    return last.question.trim() && last.selectedAnswer !== null;
-  };
 
   const addSubModule = () => {
     if (!canAddSubModule()) return;
@@ -61,45 +50,10 @@ export const AddCourseSubModule = () => {
 
   const handleDragOver = (event) => event.preventDefault();
 
-  const addAssignment = (id) => {
+  // Handle assignment changes from AssignmentModule
+  const handleAssignmentChange = (id, updatedAssignments) => {
     setSubModules(prev =>
-      prev.map(sm =>
-        sm.id === id ? {
-          ...sm,
-          assignments: [...sm.assignments, initialAssignment()]
-        } : sm
-      )
-    );
-  };
-
-  const handleAssignmentChange = (subModuleId, assignmentId, field, value, optionIndex = null) => {
-    setSubModules(prev =>
-      prev.map(sm =>
-        sm.id === subModuleId ? {
-          ...sm,
-          assignments: sm.assignments.map(a =>
-            a.id === assignmentId ? {
-              ...a,
-              [field]: field === 'options'
-                ? a.options.map((opt, idx) => idx === optionIndex ? value : opt)
-                : value
-            } : a
-          )
-        } : sm
-      )
-    );
-  };
-
-  const selectAnswer = (subModuleId, assignmentId, optionIndex) => {
-    setSubModules(prev =>
-      prev.map(sm =>
-        sm.id === subModuleId ? {
-          ...sm,
-          assignments: sm.assignments.map(a =>
-            a.id === assignmentId ? { ...a, selectedAnswer: optionIndex } : a
-          )
-        } : sm
-      )
+      prev.map(sm => sm.id === id ? { ...sm, assignments: updatedAssignments } : sm)
     );
   };
 
@@ -165,43 +119,15 @@ export const AddCourseSubModule = () => {
             )}
           </div>
 
-          {/* Assignments Section */}
+          {/* AssignmentModule Component Here */}
           <div className="mt-6">
             <h4 className="font-semibold text-lg mb-4">Assignments</h4>
-            {sm.assignments.map((a, i) => (
-              <div key={a.id} className="mb-6 border p-4 rounded bg-gray-50">
-                <textarea
-                  placeholder={`Question ${i + 1}`}
-                  value={a.question}
-                  onChange={(e) => handleAssignmentChange(sm.id, a.id, 'question', e.target.value)}
-                  className="border p-3 rounded w-full mb-4 min-h-[100px] text-base"
-                />
-                {a.options.map((opt, idx) => (
-                  <div key={idx} className="flex items-center gap-2 mb-3">
-                    <button
-                      onClick={() => selectAnswer(sm.id, a.id, idx)}
-                      className={`w-6 h-6 rounded-full border flex items-center justify-center ${a.selectedAnswer === idx ? 'bg-blue-500 text-white' : 'border-gray-300'}`}
-                    >
-                      {a.selectedAnswer === idx && <Check size={14} />}
-                    </button>
-                    <input
-                      type="text"
-                      value={opt}
-                      onChange={(e) => handleAssignmentChange(sm.id, a.id, 'options', e.target.value, idx)}
-                      className="border p-2 rounded w-full text-base"
-                      placeholder={`Option ${String.fromCharCode(65 + idx)}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            ))}
-            <button
-              onClick={() => canAddAssignment(sm.assignments) && addAssignment(sm.id)}
-              disabled={!canAddAssignment(sm.assignments)}
-              className={`flex items-center gap-2 text-sm font-semibold mt-2 ${canAddAssignment(sm.assignments) ? 'text-blue-600' : 'text-gray-400 cursor-not-allowed'}`}
-            >
-              <Plus size={16} /> Add Question
-            </button>
+            <AssignmentModule
+              initialData={sm.assignments}
+              subModuleId={sm.id} // pass unique ID
+              onChange={(updatedAssignments) => handleAssignmentChange(sm.id, updatedAssignments)}
+            />
+
           </div>
         </div>
       ))}
