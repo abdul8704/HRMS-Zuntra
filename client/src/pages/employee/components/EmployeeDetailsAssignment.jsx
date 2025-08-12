@@ -26,9 +26,6 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
     "last30Days": [],
   });
 
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-
   const handleMonthYearChange = (year, month) => {
     const start = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0)).toISOString();
     const end = new Date(Date.UTC(year, month, 0, 23, 59, 59)).toISOString();
