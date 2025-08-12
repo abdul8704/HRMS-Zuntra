@@ -175,6 +175,45 @@ const projectDetailsNavItems = [
   }
 ];
 
+const projectManagementNavItems=[
+  {
+    label: 'Ongoing Projects',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="000">
+        <path d="M240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520h200L520-800v200Z" />
+      </svg>
+
+    ),
+    filter: true,
+    access: "all",
+    path: 'ongoing',
+  },
+  {
+    label: 'Completed Projects',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="000">
+        <path d="M240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520h200L520-800v200Z" />
+      </svg>
+
+    ),
+    filter: true,
+    access: "all",
+    path: 'completed',
+  },
+  {
+    label: 'Add Projects',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="000">
+        <path d="M240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520h200L520-800v200Z" />
+      </svg>
+
+    ),
+    filter: true,
+    access: "projectManagement",
+    path: 'add',
+  },
+]
+
 const UpskillNavItems = [
   {
     label: 'Available',
@@ -303,7 +342,7 @@ const companyDocumentsNavItems = [
     path: 'upload',
   }
 ];
-
+//all, onging, completed,add ,routing app.jsx
 
 export const Navbar = ({
   type,
@@ -354,11 +393,15 @@ export const Navbar = ({
       updatedNavId = findOr404(attendanceSegment);
       if (!updatedNavId) return;
     } else if (type === 'projectDetails') {
-      const projectSegment = currentPath.split('/projects/')[1]?.split('/')[0];
+      const projectSegment = currentPath.split('/project/')[1]?.split('/')[0];
       updatedNavId = navItems.find(item => item.path === projectSegment)?.path || navItems[0]?.path;
     } else if (type === 'companyDocuments') {
       const documentsSegment = currentPath.split('/documents/')[1]?.split('/')[0];
       updatedNavId = findOr404(documentsSegment);
+      if (!updatedNavId) return;
+    } else if (type === 'projectManagement') {
+      const projectManagementSegment = currentPath.split('/projects/')[1]?.split('/')[0];
+      updatedNavId = findOr404(projectManagementSegment);
       if (!updatedNavId) return;
     }
 
@@ -405,6 +448,10 @@ export const Navbar = ({
     navItems = companyDocumentsNavItems.filter((item) => {
       return item.access === 'all' || (item.access === 'companyDocs' && user.allowedAccess.includes("companyDocs"));
     });
+  } else if (type === 'projectManagement') {
+    navItems = projectManagementNavItems.filter((item) => {
+      return item.access === 'all' || (item.access === 'projectManagement' && user.allowedAccess.includes("projectManagement"));
+    });
   }
 
 
@@ -435,6 +482,8 @@ export const Navbar = ({
     } else if (type === 'companyDocuments') {
       finalPath = `/documents/${path}`;
     } else if (type === 'projectDetails') {
+      finalPath = `/project/${path}`;
+    } else if (type === 'projectManagement') {
       finalPath = `/projects/${path}`;
     }
 

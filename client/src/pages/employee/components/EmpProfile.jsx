@@ -8,16 +8,17 @@ export const EmpProfile = ({
 
   return (
     <div
-      className="flex items-center rounded-full px-4 py-2 w-full h-14" 
+      className="flex items-center rounded-full py-1 h-11 w-40"
+
       style={{ backgroundColor: color }}
     >
       <img
         src={avatar}
         alt={firstName}
-        className="w-10 h-10 rounded-full mr-3 object-cover shrink-0" 
+        className="w-10 h-10 rounded-full object-cover shrink-0"
+        style={{ marginRight: 4 }} // small spacing if needed
       />
-      <div className="flex flex-col justify-cen
-      ter overflow-hidden">
+      <div className="flex flex-col justify-center overflow-hidden">
         <div className="font-bold text-sm truncate leading-tight text-black">
           {firstName}
         </div>

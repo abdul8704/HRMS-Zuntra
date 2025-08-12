@@ -19,6 +19,7 @@ const darkenColor = (hex, percent = 20) => {
     h = s = 0;
   } else {
     const d = max - min;
+    
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
     switch (max) {
       case r: h = (g - b) / d + (g < b ? 6 : 0); break;

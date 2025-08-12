@@ -3,7 +3,7 @@ const router = express.Router();
 const {requirePermission} = require('../middlewares/requirePermission');
 const holidayController = require('../controllers/holidayController');
 
-router.get('/all', requirePermission("companyManagement"), holidayController.getAllHolidays);
+router.get('/all', requirePermission("companyManagement"), holidayController.getAllHolidaysInRange);
 router.get('/one/:id', requirePermission("companyManagement"), holidayController.getHolidayById);
 router.get('/range', requirePermission("companyManagement"), holidayController.getHolidaysInRange);
 router.post('/add', requirePermission("companyManagement"), holidayController.addHolidays);

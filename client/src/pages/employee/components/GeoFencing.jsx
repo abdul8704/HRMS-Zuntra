@@ -1,8 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MoreVertical } from 'lucide-react';
+import LocationDeletePopup from './LocationDeletePopup';
+import LocationEditPopup from './LocationEditPopup';
 
-export const GeoFencing = ({ embedUrl, branchName }) => {
+export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius }) => {
   const [showMenu, setShowMenu] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [showEditPopup, setShowEditPopup] = useState(false);
   const menuRef = useRef();
 
   const options = ['Edit', 'Delete'];
@@ -17,6 +21,39 @@ export const GeoFencing = ({ embedUrl, branchName }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleOptionClick = (option) => {
+    setShowMenu(false);
+    
+    if (option === 'Edit') {
+      setShowEditPopup(true);
+    } else if (option === 'Delete') {
+      setShowDeletePopup(true);
+    }
+  };
+
+  const handleEditSave = (editedData) => {
+    // Handle saving all edited location data here
+    console.log('Saving edited location data:', editedData);
+    // editedData will contain: { branchName, embedUrl, geoFenceRadius }
+    // Add your save/update API call or state update here
+    setShowEditPopup(false);
+  };
+
+  const handleEditCancel = () => {
+    setShowEditPopup(false);
+  };
+
+  const handleDeleteConfirm = () => {
+    // Handle actual delete logic here
+    console.log('Deleting location:', branchName);
+    setShowDeletePopup(false);
+    // Add your delete API call or state update here
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeletePopup(false);
+  };
 
   if (!embedUrl || !embedUrl.includes("https://www.google.com/maps/embed")) return null;
 
@@ -37,9 +74,7 @@ export const GeoFencing = ({ embedUrl, branchName }) => {
               {options.map((option, idx) => (
                 <button
                   key={idx}
-                  onClick={() => {
-                    setShowMenu(false);
-                  }}
+                  onClick={() => handleOptionClick(option)}
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   {option}
@@ -60,6 +95,24 @@ export const GeoFencing = ({ embedUrl, branchName }) => {
           className="w-full h-[30rem] md:h-[30rem] border-0"
         ></iframe>
       </div>
+
+      {/* Edit Popup */}
+      <LocationEditPopup
+        isOpen={showEditPopup}
+        onClose={handleEditCancel}
+        onSave={handleEditSave}
+        currentBranchName={branchName}
+        currentEmbedUrl={embedUrl}
+        currentGeoFenceRadius={geoFenceRadius}
+      />
+
+      {/* Delete Popup */}
+      <LocationDeletePopup
+        isOpen={showDeletePopup}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        locationName={branchName}
+      />
     </div>
   );
 };

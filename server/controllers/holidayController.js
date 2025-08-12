@@ -2,8 +2,9 @@ const HolidayService = require('../services/holidayService');
 const ApiError = require('../errors/ApiError');
 const asyncHandler = require('express-async-handler');
 
-const getAllHolidays = asyncHandler(async (req, res) => {
-    const holidays = await HolidayService.getAllHolidays();
+const getAllHolidaysInRange = asyncHandler(async (req, res) => {
+    const { startDate, endDate } = req.query;
+    const holidays = await HolidayService.getAllHolidaysInRange(startDate, endDate);
     res.status(200).json({
         success: true,
         data: holidays
@@ -82,7 +83,7 @@ const deleteHoliday = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-    getAllHolidays,
+    getAllHolidaysInRange,
     getHolidayById,
     getHolidaysInRange,
     addHolidays,
