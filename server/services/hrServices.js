@@ -66,6 +66,7 @@ const getPendingLeaveRequests = async () => {
         path: "userid",
         select: "username email phoneNumber profilePicture"
     });
+    console.log(pendingReqs);
     return pendingReqs;
 }
 

@@ -51,12 +51,17 @@ const getPendingLeaveReqs = asyncHandler(async (req, res) => {
         leaveId: leaveReq._id,
         leaveType: leaveReq.leaveType,
         requestedBy: leaveReq.userid.username,
+        requestedId: leaveReq.userid._id,
         requestedUserEmail: leaveReq.userid.email,
+        requestedPhone: leaveReq.userid.phoneNumber,
         appliedOn: leaveReq.appliedOn.toISOString().split("T")[0],
-        leaveCategory: leaveReq.leaveCategory,
         dates: leaveReq.dates.map((date) => date.toISOString().split("T")[0]),
         reason: leaveReq.reason,
         status: leaveReq.status,
+        TL: leaveReq.userid.AdminAction,
+        HR: leaveReq.userid.superAdminAction,
+        TLComment: leaveReq.userid.adminReviewComment,
+        HRComment: leaveReq.userid.superAdminReviewComment,
     }));
 
     res.status(200).json({ success: true, pendingLeaveReqs: formattedRequest });
