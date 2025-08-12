@@ -79,17 +79,6 @@ export const Attendance = ({ showScheduleForm = true }) => {
         console.log("Date clicked:", date);
     };
 
-    const simulateDateClick = () => {
-        const today = new Date();
-        handleDateSelect(today);
-    };
-
-    useEffect(() => {
-        if (navId === 'schedule') {
-            simulateDateClick();
-        }
-    }, [navId]);
-
     return (
         <div className="flex flex-col lg:flex-row w-full h-screen overflow-hidden">
             <Sidebar />
@@ -122,6 +111,8 @@ export const Attendance = ({ showScheduleForm = true }) => {
                                     startDate={startDate}
                                     endDate={endDate}
                                     onMonthYearChange={handleMonthYearChange}
+                                    handleDateSelect={handleDateSelect}
+
                                 />
                             </div>
                             <div className="row-start-4 col-start-5 col-span-4 row-span-5 rounded-lg overflow-auto">
@@ -149,6 +140,7 @@ export const Attendance = ({ showScheduleForm = true }) => {
                                         startDate={startDate}
                                         endDate={endDate}
                                         onMonthYearChange={handleMonthYearChange}
+                                        handleDateSelect={handleDateSelect}
                                     />
                                 </div>
                             </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../api/axios';
 
-export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChange, isAttendance = true }) => {
+export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChange, isAttendance = true, handleDateSelect }) => {
   const getInitialYearMonth = () => {
     const today = new Date();
     return {
@@ -10,13 +10,18 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     };
   };
 
+  const formatDate = (year, month, day) => {
+    const monthsShort = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+    return `${String(day).padStart(2, '0')}-${monthsShort[month - 1]}-${year}`;
+  };
+
   const { year: initialYear, month: initialMonth } = getInitialYearMonth();
   const today = new Date();
 
   const [selectedYear, setSelectedYear] = useState(initialYear);
   const [selectedMonth, setSelectedMonth] = useState(initialMonth);
 
-  // CHANGE: Default selection = today's date only when isAttendance is false
+  // Default selection = today's date only when isAttendance is false
   const [selectedDate, setSelectedDate] = useState(
     !isAttendance
       ? { year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate() }
@@ -96,6 +101,15 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     if (onMonthYearChange) onMonthYearChange(selectedYear, selectedMonth);
   }, [selectedYear, selectedMonth, userid, isAttendance]);
 
+  // Call handleDateSelect initially if not attendance
+  useEffect(() => {
+    if (!isAttendance && selectedDate && handleDateSelect) {
+      const formatted = formatDate(selectedDate.year, selectedDate.month, selectedDate.day);
+      handleDateSelect(formatted);
+      console.log(formatted);
+    }
+  }, []); // run only on mount
+
   const daysInMonth = getDaysInMonth(selectedYear, selectedMonth);
   const firstDay = getFirstDayOfMonth(selectedYear, selectedMonth);
   const calendarDays = Array(firstDay).fill(null).concat(Array.from({ length: daysInMonth }, (_, i) => i + 1));
@@ -137,17 +151,9 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     return allHolidays.find((h) => h.date.startsWith(dateStr));
   };
 
-  const getRingColorClass = (status, holiday, isSunday) => {
-    if (holiday || isSunday) return 'ring-yellow-900';
-    if (status === 'present') return 'ring-green-700';
-    if (status === 'absent') return 'ring-red-700';
-    if (status === 'remote') return 'ring-blue-700';
-    return 'ring-blue-500';
-  };
-
   const handleMonthClick = (index) => {
     setSelectedMonth(index + 1);
-    setSelectedDate(!isAttendance ? { year: selectedYear, month: index + 1, day: today.getDate() } : null); // CHANGE: reset selection to today for non-attendance
+    setSelectedDate(!isAttendance ? { year: selectedYear, month: index + 1, day: today.getDate() } : null);
     setShowSidebar(false);
   };
 
@@ -273,19 +279,11 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
                           <div
                             onClick={() => {
                               if (!isAttendance) {
-                                if (
-                                  selectedDate &&
-                                  selectedDate.year === selectedYear &&
-                                  selectedDate.month === selectedMonth &&
-                                  selectedDate.day === dayNumber
-                                ) {
-                                  // CHANGE: reset to today's date
-                                  setSelectedDate({ year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate() });
-                                  console.log({ year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate() });
-                                } else {
-                                  setSelectedDate({ year: selectedYear, month: selectedMonth, day: dayNumber });
-                                  console.log({ year: selectedYear, month: selectedMonth, day: dayNumber });
-                                }
+                                const newDate = { year: selectedYear, month: selectedMonth, day: dayNumber };
+                                setSelectedDate(newDate);
+                                const formatted = formatDate(newDate.year, newDate.month, newDate.day);
+                                handleDateSelect && handleDateSelect(formatted);
+                                console.log(formatted);
                               }
                             }}
                             className={`w-8 h-8 flex items-center justify-center text-xs font-medium rounded-full cursor-pointer transition-colors duration-200 
