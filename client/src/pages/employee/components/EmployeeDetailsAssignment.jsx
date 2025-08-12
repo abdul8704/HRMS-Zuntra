@@ -90,7 +90,7 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
 
       <div className='col-start-6 col-end-10 row-start-1 row-end-7 rounded-lg '>
         {/* Attendance Calendar */}
-        <AttendanceCard />
+        <AttendanceCard userid={userid} />
       </div>
 
       <div className='bg-black/20 col-start-6 col-end-10 row-start-7 row-end-12 min-h-0 rounded-lg'>
