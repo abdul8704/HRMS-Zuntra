@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 export const AssignmentModule = ({ subModuleId, initialData = [], onChange }) => {
-  const [questions, setQuestions] = useState(
+  const [questions, setQuestions] = useState(() =>
     initialData.length > 0
       ? initialData
       : [
@@ -14,67 +14,86 @@ export const AssignmentModule = ({ subModuleId, initialData = [], onChange }) =>
         ]
   );
 
-  // Sync questions if initialData changes (important for prop updates)
+  const firstLoad = useRef(true);
+
+  // Load initial data only on first mount OR if it actually changes
   useEffect(() => {
-    setQuestions(initialData.length > 0 ? initialData : [
-      {
-        questionText: "",
-        options: [],
-        correctAnswer: "",
-        newOptionText: "",
-      }
-    ]);
+    if (firstLoad.current) {
+      firstLoad.current = false;
+      return;
+    }
+    const initialStr = JSON.stringify(initialData);
+    const currentStr = JSON.stringify(questions);
+    if (initialStr !== currentStr) {
+      setQuestions(
+        initialData.length > 0
+          ? initialData
+          : [
+              {
+                questionText: "",
+                options: [],
+                correctAnswer: "",
+                newOptionText: "",
+              },
+            ]
+      );
+    }
   }, [initialData]);
 
   // Notify parent about changes
   useEffect(() => {
-    if (onChange) {
-      onChange(questions);
-    }
+    onChange?.(questions);
   }, [questions, onChange]);
 
   const updateQuestionField = (index, key, value) => {
-    const updated = [...questions];
-    updated[index][key] = value;
-    setQuestions(updated);
+    setQuestions((prev) => {
+      const updated = [...prev];
+      updated[index][key] = value;
+      return updated;
+    });
   };
 
   const addOption = (qIndex) => {
-    const question = questions[qIndex];
-    if (question.newOptionText.trim() === "") return;
-
-    const updated = [...questions];
-    updated[qIndex].options.push(question.newOptionText.trim());
-    updated[qIndex].newOptionText = "";
-    setQuestions(updated);
+    setQuestions((prev) => {
+      const updated = [...prev];
+      const question = updated[qIndex];
+      if (!question.newOptionText.trim()) return prev;
+      question.options.push(question.newOptionText.trim());
+      question.newOptionText = "";
+      return updated;
+    });
   };
 
   const removeOption = (qIndex, optIndex) => {
-    const updated = [...questions];
-    const removed = updated[qIndex].options.splice(optIndex, 1)[0];
-    if (updated[qIndex].correctAnswer === removed) {
-      updated[qIndex].correctAnswer = "";
-    }
-    setQuestions(updated);
+    setQuestions((prev) => {
+      const updated = [...prev];
+      const removed = updated[qIndex].options.splice(optIndex, 1)[0];
+      if (updated[qIndex].correctAnswer === removed) {
+        updated[qIndex].correctAnswer = "";
+      }
+      return updated;
+    });
   };
 
   const setCorrectAnswer = (qIndex, option) => {
-    const updated = [...questions];
-    updated[qIndex].correctAnswer = option;
-    setQuestions(updated);
+    setQuestions((prev) => {
+      const updated = [...prev];
+      updated[qIndex].correctAnswer = option;
+      return updated;
+    });
   };
 
-  const isValidQuestion = (question) =>
-    question.questionText.trim() !== "" &&
-    question.options.length >= 2 &&
-    question.correctAnswer.trim() !== "";
+  const isValidQuestion = (q) =>
+    q.questionText.trim() !== "" &&
+    q.options.length >= 2 &&
+    q.correctAnswer.trim() !== "";
 
   const canAddQuestion = () => isValidQuestion(questions[questions.length - 1]);
 
   const addNewQuestion = () => {
     if (!canAddQuestion()) return;
-    setQuestions([
-      ...questions,
+    setQuestions((prev) => [
+      ...prev,
       {
         questionText: "",
         options: [],
@@ -85,9 +104,10 @@ export const AssignmentModule = ({ subModuleId, initialData = [], onChange }) =>
   };
 
   const deleteQuestion = (qIndex) => {
-    if (questions.length === 1) return;
-    const updated = questions.filter((_, i) => i !== qIndex);
-    setQuestions(updated);
+    setQuestions((prev) => {
+      if (prev.length === 1) return prev;
+      return prev.filter((_, i) => i !== qIndex);
+    });
   };
 
   return (
@@ -111,9 +131,7 @@ export const AssignmentModule = ({ subModuleId, initialData = [], onChange }) =>
           <input
             type="text"
             value={q.questionText}
-            onChange={(e) =>
-              updateQuestionField(qIndex, "questionText", e.target.value)
-            }
+            onChange={(e) => updateQuestionField(qIndex, "questionText", e.target.value)}
             placeholder={`Enter question ${qIndex + 1}`}
             className="bg-gray-100 p-3 rounded w-full mb-3 border"
           />
@@ -122,7 +140,7 @@ export const AssignmentModule = ({ subModuleId, initialData = [], onChange }) =>
             <div key={optIndex} className="flex items-center gap-2 mb-2">
               <input
                 type="radio"
-                name={`correct-${subModuleId}-${qIndex}`} // <== Use subModuleId here to make radio groups unique per submodule
+                name={`correct-${subModuleId}-${qIndex}`}
                 checked={opt === q.correctAnswer}
                 onChange={() => setCorrectAnswer(qIndex, opt)}
               />
@@ -141,9 +159,7 @@ export const AssignmentModule = ({ subModuleId, initialData = [], onChange }) =>
             <input
               type="text"
               value={q.newOptionText}
-              onChange={(e) =>
-                updateQuestionField(qIndex, "newOptionText", e.target.value)
-              }
+              onChange={(e) => updateQuestionField(qIndex, "newOptionText", e.target.value)}
               placeholder="Enter an option"
               className="bg-gray-100 p-2 rounded flex-grow border"
             />
