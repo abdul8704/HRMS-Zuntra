@@ -171,7 +171,7 @@ const projectDetailsNavItems = [
       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z" /></svg>
     ),
     filter: true,
-    path: 'schedule',
+    path: 'completed',
   }
 ];
 
@@ -393,7 +393,7 @@ export const Navbar = ({
       updatedNavId = findOr404(attendanceSegment);
       if (!updatedNavId) return;
     } else if (type === 'projectDetails') {
-      const projectSegment = currentPath.split('/project/')[1]?.split('/')[0];
+      const projectSegment = currentPath.split('/project/1/')[1]?.split('/')[0];
       updatedNavId = navItems.find(item => item.path === projectSegment)?.path || navItems[0]?.path;
     } else if (type === 'companyDocuments') {
       const documentsSegment = currentPath.split('/documents/')[1]?.split('/')[0];
@@ -482,7 +482,7 @@ export const Navbar = ({
     } else if (type === 'companyDocuments') {
       finalPath = `/documents/${path}`;
     } else if (type === 'projectDetails') {
-      finalPath = `/project/${path}`;
+      finalPath = `/project/1/${path}`;
     } else if (type === 'projectManagement') {
       finalPath = `/projects/${path}`;
     }

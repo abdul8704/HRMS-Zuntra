@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Sidebar } from '../../components/Sidebar';
 import { Navbar } from '../../components/Navbar';
 
 const employees = [
@@ -71,10 +70,7 @@ export const Progress = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden relative">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Navbar />
+      <>
         <div className="p-4 flex-1 overflow-y-scroll bg-gray-50 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
             {tasks.map((task, index) => (
@@ -151,7 +147,6 @@ export const Progress = () => {
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </>
   );
 };

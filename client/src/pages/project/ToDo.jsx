@@ -5,7 +5,6 @@ import {
   Trash2,
   Plus
 } from 'lucide-react';
-import { Sidebar } from '../../components/Sidebar'; // ✅ Adjust path if needed
 
 export const ToDo = () => {
   const [activeTab, setActiveTab] = useState('To-do');
@@ -47,9 +46,7 @@ export const ToDo = () => {
   );
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-[#F8FAFC]">
-      <Sidebar />
-
+    <>
       <div className="flex-1 overflow-auto">
         <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
@@ -129,6 +126,6 @@ export const ToDo = () => {
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
