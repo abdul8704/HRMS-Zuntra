@@ -15,6 +15,15 @@ import { useAuth } from "../../context/AuthContext";
 import { Loading } from "../utils/Loading";
 import api from "../../api/axios";
 
+// Utility to format date as "01-Jul-2025"
+const formatDate = (date) => {
+    return new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    }).format(date).replace(/ /g, "-");
+};
+
 export const Attendance = ({ showScheduleForm = true }) => {
     const { navId } = useParams();
     const { user, authDataLoading } = useAuth();
@@ -79,20 +88,11 @@ export const Attendance = ({ showScheduleForm = true }) => {
     }, [userid]);
 
     const handleDateSelect = (date) => {
-        setSelectedDate(date);
-        console.log("Date clicked:", date);
+        // Ensure we store it in the same formatted way
+        const formatted = date instanceof Date ? formatDate(date) : formatDate(new Date(date));
+        setSelectedDate(formatted);
+        console.log("Date clicked:", formatted);
     };
-
-    const simulateDateClick = () => {
-        const today = new Date();
-        handleDateSelect(today);
-    };
-
-    useEffect(() => {
-        if (navId === 'schedule') {
-            simulateDateClick();
-        }
-    }, [navId]);
 
     return (
         (authDataLoading) ? 
@@ -129,6 +129,7 @@ export const Attendance = ({ showScheduleForm = true }) => {
                                     startDate={startDate}
                                     endDate={endDate}
                                     onMonthYearChange={handleMonthYearChange}
+                                    handleDateSelect={handleDateSelect}
                                 />
                             </div>
                             <div className="row-start-4 col-start-5 col-span-4 row-span-5 rounded-lg overflow-auto">
@@ -156,6 +157,7 @@ export const Attendance = ({ showScheduleForm = true }) => {
                                         startDate={startDate}
                                         endDate={endDate}
                                         onMonthYearChange={handleMonthYearChange}
+                                        handleDateSelect={handleDateSelect}
                                     />
                                 </div>
                             </div>
@@ -187,16 +189,14 @@ export const Attendance = ({ showScheduleForm = true }) => {
                             <div className="w-full flex-1 min-h-0">
                                 <AttendanceCalendar
                                     userid={userid}
-                                    isAttendance={false} />
+                                    isAttendance={false}
+                                    handleDateSelect={handleDateSelect}
+                                />
                             </div>
                         </div>
-                        <div
-                            className={`flex flex-col gap-4 w-full lg:w-1/2 h-full`}
-                        >
-                            <div
-                                className={`w-full ${showScheduleForm ? 'flex-1 min-h-0' : 'h-full'}`}
-                            >
-                                <DayInfoCard selectedDate={selectedDate} />
+                        <div className={`flex flex-col gap-4 w-full lg:w-1/2 h-full`}>
+                            <div className={`w-full ${showScheduleForm ? 'flex-1 min-h-0' : 'h-full'}`}>
+                                <DayInfoCard/>
                             </div>
                             {showScheduleForm && (
                                 <div className="w-full flex-1 min-h-0">

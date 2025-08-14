@@ -22,6 +22,7 @@ export const AddCourseMod = () => {
   const [moduleData, setModuleData] = useState({});
   const [subModuleData, setSubModuleData] = useState({});
   const [assignmentData, setAssignmentData] = useState({});
+  const [validationErrors, setValidationErrors] = useState({}); // ✅ For Add Module errors
 
   const generateAllSteps = () => {
     const steps = ['Course Intro'];
@@ -150,37 +151,36 @@ export const AddCourseMod = () => {
     }
   };
 
+  // ✅ Validation for adding new module
+  const isModuleDataValid = (moduleStep) => {
+    const subs = subModuleData[moduleStep] || [];
+    const assigns = assignmentData[moduleStep] || [];
+
+    if (subs.length === 0 || assigns.length === 0) return false;
+
+    const allSubsFilled = subs.every(
+      s => s.subModuleName?.trim() && s.subModuleDescription?.trim()
+    );
+    const allAssignsFilled = assigns.every(
+      a => a.title?.trim() && a.description?.trim()
+    );
+
+    return allSubsFilled && allAssignsFilled;
+  };
+
   const addNewModule = () => {
-    const currentModule = currentStep;
-    const module = moduleData[currentModule];
-    const submodules = subModuleData[currentModule] || [];
-    const assignments = assignmentData[currentModule] || [];
-
-    const moduleValid = module?.moduleName?.trim();
-
-    const submodulesValid =
-      submodules.length > 0 &&
-      submodules.every(s =>
-        s.title?.trim() && s.description?.trim() && s.duration?.trim() && s.video
-      );
-
-    const assignmentsValid =
-      assignments.length > 0 &&
-      assignments.every(a =>
-        a.question?.trim() &&
-        Array.isArray(a.options) &&
-        a.options.length === 4 &&
-        a.options.every(opt => opt.trim()) &&
-        a.selectedAnswer !== null
-      );
-
-    if (moduleValid && submodulesValid && assignmentsValid) {
-      const newModuleNumber = moduleCount + 1;
-      setModuleCount(newModuleNumber);
-      setCurrentStep(`Module ${newModuleNumber}`);
-    } else {
-      alert('Please complete the current module, submodules, and assignments before adding a new module.');
+    if (!isModuleDataValid(currentStep)) {
+      setValidationErrors(prev => ({
+        ...prev,
+        [currentStep]: 'Please add at least one complete submodule and one complete assignment before adding a new module.'
+      }));
+      return;
     }
+
+    setValidationErrors(prev => ({ ...prev, [currentStep]: null }));
+    const newModuleNumber = moduleCount + 1;
+    setModuleCount(newModuleNumber);
+    setCurrentStep(`Module ${newModuleNumber}`);
   };
 
   const isCourseIntroDisabled = () => completedSteps.includes('Course Intro');
@@ -237,7 +237,7 @@ export const AddCourseMod = () => {
                 />
                 <h3 className="text-lg font-medium mt-6 mb-2">Assignments for {currentStep}</h3>
                 <AssignmentModule
-                  moduleId={currentStep} // e.g., "Module 1"
+                  moduleId={currentStep}
                   initialData={assignmentData[currentStep] || []}
                   onChange={(updatedData) => handleAssignmentChange(currentStep, updatedData)}
                 />
@@ -251,6 +251,9 @@ export const AddCourseMod = () => {
                     </svg>
                     Add Module
                   </button>
+                  {validationErrors[currentStep] && (
+                    <p className="text-red-500 text-sm mt-2">{validationErrors[currentStep]}</p>
+                  )}
                 </div>
               </div>
             )}
