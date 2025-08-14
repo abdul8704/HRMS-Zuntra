@@ -31,10 +31,10 @@ const LeaveTable = () => {
   return (
     <div className="bg-gray-200 text-gray-800 rounded-lg shadow-lg pb-2">
       {/* Top Bar */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-400">
-        <h2 className="text-lg font-semibold">Leave Record</h2>
+      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-400">
+        <h2 className="font-semibold">Leave Record</h2>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">August 2025</span>
+          <span className="text-[0.75rem] text-gray-600">August 2025</span>
           <Filter size={18} className="text-gray-700 cursor-pointer" />
         </div>
       </div>
@@ -44,17 +44,17 @@ const LeaveTable = () => {
         <table className="w-full text-sm text-left border-collapse">
           <thead className="sticky top-0 bg-gray-300 text-gray-800 z-10">
             <tr>
-              <th className="py-3 px-4 font-medium">Date</th>
-              <th className="py-3 px-4 font-medium">Status</th>
-              <th className="py-3 px-4 text-center font-medium">View</th>
+              <th className="py-2 px-4 font-medium">Date</th>
+              <th className="py-2 px-4 font-medium">Status</th>
+              <th className="py-2 px-4 text-center font-medium">View</th>
             </tr>
           </thead>
           <tbody>
             {leaves.map((leave, index) => (
               <tr key={index} className="border-b border-gray-400 hover:bg-gray-300 transition">
-                <td className="py-3 px-4">{leave.date}</td>
-                <td className={`py-3 px-4 ${getStatusColor(leave.status)}`}>{leave.status}</td>
-                <td className="py-3 px-4 text-center">
+                <td className="py-2 text-[0.75rem] px-4">{leave.date}</td>
+                <td className={`py-2 px-4 text-[0.75rem] ${getStatusColor(leave.status)}`}>{leave.status}</td>
+                <td className="py-2 px-4 text-center text-[0.75rem]">
                   <Eye size={16} className="text-gray-700 ml-6" />
                 </td>
               </tr>
