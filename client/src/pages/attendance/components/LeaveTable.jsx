@@ -1,27 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { Eye, Filter } from "lucide-react";
+import { isoToDateStr } from "../../../utils/dateUtils"
+import api from "../../../api/axios"
 
-const LeaveTable = () => {
+const LeaveTable = ({ data }) => {
   const [leaves, setLeaves] = useState([]);
+  const { userid } = data;
 
   useEffect(() => {
-    const leaveData = [
-      { date: "2025-08-15", status: "Rejected" },
-      { date: "2025-08-20", status: "Approved" },
-      { date: "2025-08-25", status: "Pending" },
-      { date: "2025-08-28", status: "Approved" },
-      { date: "2025-08-30", status: "Rejected" },
-    ];
-    setLeaves(leaveData);
+    const getLeaveTableData = async () => {
+      const leaveData = await api.get(`/api/employee/leave/requests/${userid}`)
+      console.log("data ", leaveData.data.leaveRequests)
+      setLeaves(leaveData.data.leaveRequests);
+    }
+    getLeaveTableData();
   }, []);
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case "Approved":
+    let state = status.toLowerCase();
+    switch (state) {
+      case "approved":
         return "text-green-400 font-medium";
-      case "Pending":
+      case "pending":
         return "text-yellow-400 font-medium";
-      case "Rejected":
+      case "rejected":
         return "text-red-400 font-medium";
       default:
         return "text-gray-400";
@@ -50,22 +52,22 @@ const LeaveTable = () => {
             </tr>
           </thead>
           <tbody>
-            {leaves.map((leave, index) => (
-              <tr key={index} className="border-b border-gray-400 hover:bg-gray-300 transition">
-                <td className="py-2 text-[0.75rem] px-4">{leave.date}</td>
-                <td className={`py-2 px-4 text-[0.75rem] ${getStatusColor(leave.status)}`}>{leave.status}</td>
-                <td className="py-2 px-4 text-center text-[0.75rem]">
-                  <Eye size={16} className="text-gray-700 ml-6" />
-                </td>
-              </tr>
-            ))}
-            {leaves.length === 0 && (
+            {leaves.length === 0 ? (
               <tr>
                 <td colSpan="3" className="text-center py-4 text-gray-500">
                   No leave records available.
                 </td>
               </tr>
-            )}
+            ) : (leaves.map((leave, index) => (
+              <tr key={index} className="border-b border-gray-400 hover:bg-gray-300 transition">
+                <td className="py-2 text-[0.75rem] px-4">{isoToDateStr(leave.dates[0])}</td>
+                <td className={`py-2 px-4 text-[0.75rem] ${getStatusColor(leave.status)}`}>{leave.status}</td>
+                <td className="py-2 px-4 text-center text-[0.75rem]">
+                  <Eye size={16} className="text-gray-700 ml-6" />
+                </td>
+              </tr>
+            )))
+            }
           </tbody>
         </table>
       </div>

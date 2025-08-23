@@ -40,3 +40,31 @@ export const getDate7DaysAgo = () => {
 export const getDate30DaysAgo = () => {
     return getDateNDaysAgo(30);
 };
+
+export const isoToDateStr = (isoString) => {
+    const date = new Date(isoString);
+
+    const day = String(date.getDate()).padStart(2, "0");
+
+    // Short month names
+    const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ];
+    const month = months[date.getMonth()];
+
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`;
+}
+

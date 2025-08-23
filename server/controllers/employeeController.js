@@ -65,7 +65,10 @@ const getDetailsOfaEmployee = asyncHandler(async (req, res) => {
 });
 
 const getEmployeeRequests = asyncHandler(async (req, res) => {
-    const { userid } = req.user;
+    const { userid } = req.params;
+
+    if(!userid)
+        throw new ApiError(400, "userid not found in query");
 
     const applicationData = await attendanceService.getLeaveRequests(userid);
     return res
@@ -241,8 +244,8 @@ const getWorkBreakComposition = asyncHandler(async (req, res) => {
 
 const getAttendanceData = asyncHandler(async (req, res) => {
     const { userid, startDate, endDate } = req.query;
-
-    if (!userid || !startDate || !endDate)
+    
+    if (!userid || !startDate || !endDate)  
         throw new ApiError(400, "Start date and end date not provided");
 
     const attendanceData = await attendanceService.getAttendanceDataOnly(
@@ -255,8 +258,6 @@ const getAttendanceData = asyncHandler(async (req, res) => {
 
 const getTimeCards = asyncHandler(async (req, res) => {
     const { userid, date } = req.query;
-
-    console.log(userid, date)
 
     if (!userid || !date)
         throw new ApiError(400, "Insufficient data to request time cards.");

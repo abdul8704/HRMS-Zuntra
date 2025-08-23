@@ -98,7 +98,7 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
       </div>
 
       <div className='bg-black/20 col-start-6 col-end-10 row-start-7 row-end-12 min-h-0 rounded-lg'>
-        <LeaveTable />
+        <LeaveTable data={{userid}} />
       </div>
 
       <div className='col-start-1 col-end-6 row-start-5 row-end-12 rounded-lg'>
