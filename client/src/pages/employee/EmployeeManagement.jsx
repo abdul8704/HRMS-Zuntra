@@ -149,14 +149,12 @@ const ShiftDetails = () => {
               <th className="text-left py-4 px-4 font-bold text-gray-900 text-sm">
                 No. of Users
               </th>
-              <th className="text-left py-4 px-4 font-bold text-gray-900 text-sm">
-                Actions
-              </th>
+              
             </tr>
           </thead>
           <tbody>
             {shifts.map((shift) => (
-              <tr key={shift.id} className="border-b border-gray-200 hover:bg-gray-50">
+              <tr key={shift.id} className="border-b border-gray-200 hover:bg-blue-50 group relative">
                 <td className="py-4 px-4 text-sm text-black">
                   {shift.shiftName}
                 </td>
@@ -166,25 +164,30 @@ const ShiftDetails = () => {
                 <td className="py-4 px-4 text-sm text-black">
                   {shift.endTime}
                 </td>
-                <td className="py-4 px-4 text-sm text-black">
-                  {shift.noOfUsers}
-                </td>
-                <td className="py-4 px-4 text-sm">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => openModal(shift)}
-                      className="text-blue-600 hover:text-blue-800 font-medium"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteShift(shift.id)}
-                      className="text-red-600 hover:text-red-800 font-medium"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
+                
+                <td className="py-4 px-4 text-sm text-black relative pr-20">
+  {shift.noOfUsers}
+  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2">
+    <button
+      onClick={() => openModal(shift)}
+      className="text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200"
+      title="Edit shift"
+    >
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    </button>
+    <button
+      onClick={() => handleDeleteShift(shift.id)}
+      className="text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200"
+      title="Delete shift"
+    >
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+      </svg>
+    </button>
+  </div>
+</td>
               </tr>
             ))}
           </tbody>
