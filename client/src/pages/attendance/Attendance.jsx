@@ -163,7 +163,7 @@ export const Attendance = ({ showScheduleForm = true }) => {
                             </div>
 
                             <div className="w-full overflow-auto">
-                                <AttendanceCard userid={userid} />
+                                <AttendanceCard data={{ userid, startDate, endDate }} />
                             </div>
                         </div>
                     </>

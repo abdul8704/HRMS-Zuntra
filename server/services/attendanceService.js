@@ -1,8 +1,8 @@
-const Attendance = require("../models/attendance.js");
+const Attendance = require("../models/attendanceManagement/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
 const attendanceHelper = require("../utils/attendanceHelper.js");
-const LeaveApplication = require("../models/leaveApplication.js");
+const LeaveApplication = require("../models/attendanceManagement/leaveApplication.js");
 const Holiday = require('./holidayService.js')
 
 const markAttendanceOnLogin = async (userid, mode) => {
@@ -502,7 +502,7 @@ const getTimeCards = async (userid, date) => {
     const attendance = await Attendance.findOne({ userid, date });
 
     if (!attendance) {
-        return (timeCards = {
+        return ({
             login: "N/A",
             logout: "N/A",
             work: "N/A",

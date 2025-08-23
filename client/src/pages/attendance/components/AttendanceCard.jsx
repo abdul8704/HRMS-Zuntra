@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from "react";
 import api from '../../../api/axios';
 import { Loader } from "lucide-react";
@@ -32,16 +34,26 @@ const formatDisplayDate = (date) => {
   return `${monthName} ${day}`;
 };
 
+// Always return ISO (YYYY-MM-DD)
 const formatForInput = (d) => {
+  if (!d) return "";
+  // if already in YYYY-MM-DD format, just return
+  if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+
+  // if it's an ISO string, strip the time part
+  if (typeof d === "string" && d.includes("T")) {
+    return d.split("T")[0];
+  }
+
+  // fallback for raw Date objects
   const date = new Date(d);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-  return `${year}-${month}-${day}`;
+  return date.toISOString().split("T")[0];
 };
 
-const parseDate = (str, isEnd = false) => {
-  const [year, month, day] = str.split("-").map(Number);
+
+// Parse ISO -> JS Date (safe for API calls)
+const parseDate = (isoStr, isEnd = false) => {
+  const [year, month, day] = isoStr.split("-").map(Number);
   const date = new Date(year, month - 1, day);
   if (isEnd) {
     date.setHours(23, 59, 59, 999);
@@ -50,6 +62,7 @@ const parseDate = (str, isEnd = false) => {
   }
   return date;
 };
+
 
 const convertMinutesToHours = (text) => {
   const match = text.match(/(\d+)\s*minutes?/);
@@ -64,13 +77,13 @@ const convertMinutesToHours = (text) => {
 };
 
 export const AttendanceCard = ({ data }) => {
-  if(!data)
-    return <Loader/>
-  console.log(data, data.userid, data.startDate, data.endDate);
+  // if (!data)
+  //   return <Loader />
   const { userid, startDate, endDate } = data;
 
-  const [fromDate, setFromDate] = useState(formatForInput(startDate));
-  const [toDate, setToDate] = useState(formatForInput(endDate));
+  const [fromDate, setFromDate] = useState(formatForInput(startDate)); // ISO
+  const [toDate, setToDate] = useState(formatForInput(endDate));       // ISO
+
   const [showFilter, setShowFilter] = useState(false);
   const [filteredDates, setFilteredDates] = useState([]);
   const [summary, setSummary] = useState({
@@ -87,16 +100,19 @@ export const AttendanceCard = ({ data }) => {
 
   const getAttendanceData = async (from, to) => {
     try {
+      console.log("fromDate is ", from)
       const response = await api.get('/api/employee/attendance/attendance-data', {
         params: {
-          startDate: from.toISOString(),
-          endDate: to.toISOString(),
+          startDate: from,
+          endDate: to,
           userid,
         },
       });
 
       const rawData = response.data.attendanceData.attendanceData;
       const stats = response.data.attendanceData.stats;
+
+      console.log(stats)
 
       const transformed = rawData.map(entry => {
         const [main, info] = entry.status.split(" - ");
@@ -130,13 +146,9 @@ export const AttendanceCard = ({ data }) => {
   useEffect(() => {
     if (!fromDate || !toDate || !userid) return;
 
-    const from = parseDate(fromDate);
-    const to = parseDate(toDate, true);
-    const today = new Date();
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 
-    if (to > today) return;
-
-    getAttendanceData(from, to);
+    getAttendanceData(fromDate, toDate > today ? today : toDate);
   }, [fromDate, toDate, userid]);
 
   return (
@@ -175,7 +187,7 @@ export const AttendanceCard = ({ data }) => {
               <label className="text-sm font-semibold text-gray-600">From</label>
               <input
                 type="date"
-                value={fromDate}
+                value={fromDate}              // ISO string
                 onChange={(e) => setFromDate(e.target.value)}
                 className="px-3 py-1 bg-black/10 text-black border rounded text-sm"
               />
@@ -184,8 +196,8 @@ export const AttendanceCard = ({ data }) => {
               <label className="text-sm font-semibold text-gray-600">To</label>
               <input
                 type="date"
+                value={toDate}                // ISO string
                 max={formatForInput(new Date())}
-                value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
                 className="px-3 py-1 bg-black/10 text-black border rounded text-sm"
               />
@@ -227,7 +239,7 @@ export const AttendanceCard = ({ data }) => {
       {filteredDates.length > 0 && (
         <div className="flex flex-wrap gap-2 justify-center mt-4">
           <div className="bg-purple-100 px-3 py-2 rounded text-center min-w-[120px] whitespace-nowrap">
-            Working Day: {summary.totalDaysCount}
+            Total Days: {summary.totalDaysCount}
           </div>
           <div className="bg-yellow-100 px-3 py-2 rounded text-center min-w-[100px]">
             Holiday: {summary.holidayCount}

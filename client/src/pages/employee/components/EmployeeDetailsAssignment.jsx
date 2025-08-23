@@ -9,7 +9,7 @@ import LeaveTable from '../../attendance/components/LeaveTable'
 
 export const EmployeeDetailsAssignment = ({ userid }) => {
   const [today, setToday] = useState(new Date());
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(getFirstOfMonth());
   const [endDate, setEndDate] = useState(new Date());
 
   const [calendarData, setCalendarData] = useState([])
@@ -17,10 +17,7 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
   const [logoutTime, setLogoutTime] = useState('N/A');
   const [workTime, setWorkTime] = useState('N/A');
   const [breakTime, setBreakTime] = useState('N/A');
-  const [attendanceData, setAttendanceData] = useState({
-    "attendanceData": [],
-    "stats": {}
-  });
+
   const [workBreakData, setWorkBreakData] = useState({
     "last7Days": [],
     "last30Days": [],
@@ -34,9 +31,10 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
   };
 
   useEffect(() => {
-    setToday(getToday());
-    setStartDate(getFirstOfMonth(today));
-    setEndDate(getEndOfDay(today));
+    const t = getToday();
+    setToday(t);
+    setStartDate(getFirstOfMonth(t));
+    setEndDate(getEndOfDay(t));
     
     try {
       const getTimeCards = async () => {
@@ -66,28 +64,13 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
         setWorkBreakData(res.data.workBreakData)
       }
 
-      const getAttendanceData = async () => {
-        const res = await api.get("/api/employee/attendance/attendance-data", {
-          params: {
-            startDate,
-            endDate,
-            userid
-          }
-        }
-        )
-
-        setAttendanceData(res.data.attendanceData);
-      }
-
       getWorkBreakData();
       getTimeCards();
-      getAttendanceData();
     } catch (error) {
       console.log(error)
     }
 
   }, [])
-
   return (
     <div className='flex-1 grid grid-cols-8 grid-rows-12 gap-2 h-full w-full'>
       <div className='col-start-1 row-start-1 row-end-3'>
