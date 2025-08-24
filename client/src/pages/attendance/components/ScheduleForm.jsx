@@ -1,57 +1,62 @@
 import React, { useState } from 'react';
 
 export const ScheduleForm = ({ handleClose }) => {
-  const [actionType, setActionType] = useState('event'); 
-  const [dateOption, setDateOption] = useState('single'); // single | range (for events)
+  const [actionType, setActionType] = useState('event');
+  const [dateOption, setDateOption] = useState('single');
   const [singleDate, setSingleDate] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [holidayDate, setHolidayDate] = useState('');
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [selectedReligion, setSelectedReligion] = useState('');
   const [selectedRoles, setSelectedRoles] = useState([]);
 
   const religions = ['Hindu', 'Muslim', 'Christian', 'All'];
-  const today = new Date().toISOString().split('T')[0]; // today's date for min attr
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date();
+  tomorrow.setDate(new Date().getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
   const generateDateArray = (start, end) => {
     const arr = [];
     let current = new Date(start);
     const last = new Date(end);
     while (current <= last) {
-      arr.push(current.toISOString().split('T')[0]); // yyyy-mm-dd
+      arr.push(current.toISOString().split('T')[0]);
       current.setDate(current.getDate() + 1);
     }
     return arr;
+  };
+
+  const getDatesArray = () => {
+    if (dateOption === 'single' && singleDate) {
+      return [singleDate];
+    } else if (dateOption === 'range' && fromDate && toDate) {
+      return generateDateArray(fromDate, toDate);
+    }
+    return [];
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (actionType === 'event') {
-      let dates = [];
-      if (dateOption === 'single' && singleDate) {
-        dates = [singleDate];
-      } else if (dateOption === 'range' && fromDate && toDate) {
-        dates = generateDateArray(fromDate, toDate);
-      }
-
       const eventData = {
         name,
-        dates,
+        description,
+        dates: getDatesArray(),
         roles: selectedRoles,
       };
       console.log("Submitting Event:", eventData);
       // 👉 POST /api/schedule/event
-
     } else if (actionType === 'leave') {
       const leaveData = {
         name,
-        dates: holidayDate ? [holidayDate] : [],
+        dates: getDatesArray(),
         religion: selectedReligion,
         roles: selectedRoles,
       };
-      console.log("Submitting Leave:", leaveData);
+      console.log("Submitting Holiday:", leaveData);
       // 👉 POST /api/schedule/leave
     }
 
@@ -64,8 +69,8 @@ export const ScheduleForm = ({ handleClose }) => {
     setSingleDate('');
     setFromDate('');
     setToDate('');
-    setHolidayDate('');
     setName('');
+    setDescription('');
     setSelectedReligion('');
     setSelectedRoles([]);
     if (handleClose) handleClose();
@@ -77,7 +82,7 @@ export const ScheduleForm = ({ handleClose }) => {
         onSubmit={handleSubmit}
         className="flex flex-col gap-3 text-gray-700 w-full h-full overflow-y-auto max-h-[500px]"
       >
-        {/* Type of Schedule Action (event / holiday) */}
+        {/* Action Type */}
         <div className="flex gap-6">
           {['event', 'leave'].map((type) => (
             <label key={type} className="flex items-center gap-2 cursor-pointer text-sm">
@@ -94,121 +99,126 @@ export const ScheduleForm = ({ handleClose }) => {
           ))}
         </div>
 
-        {/* Common Name field */}
+        {/* Common Name */}
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Name</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder={actionType=='event'?`Enter event name`:`Enter holiday name`}
+            placeholder={actionType === 'event' ? `Enter event name` : `Enter holiday name`}
             className="border rounded px-3 py-2 bg-slate-100 text-sm"
             required
           />
         </div>
 
-        {/* Date Fields */}
+        {/* Description only for Event */}
         {actionType === 'event' && (
-          <>
-            {/* Single vs Range option */}
-            <div className="flex gap-6">
-              {['single', 'range'].map((opt) => (
-                <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm">
-                  <input
-                    type="radio"
-                    name="dateOption"
-                    value={opt}
-                    checked={dateOption === opt}
-                    onChange={() => setDateOption(opt)}
-                    className="accent-[#bcd4cd] h-4 w-4"
-                  />
-                  {opt === 'single' ? 'Single Day' : 'Date Range'}
-                </label>
-              ))}
-            </div>
-
-            {/* Single Day Picker */}
-            {dateOption === 'single' && (
-              <div className="flex flex-col">
-                <label className="text-sm font-medium mb-1">Select Date</label>
-                <input
-                  type="date"
-                  value={singleDate}
-                  min={today}
-                  onChange={(e) => setSingleDate(e.target.value)}
-                  className="border rounded px-3 py-2 bg-slate-100 text-sm"
-                  required
-                />
-              </div>
-            )}
-
-            {/* Range Pickers */}
-            {dateOption === 'range' && (
-              <div className="flex gap-4">
-                <div className="flex flex-col flex-1">
-                  <label className="text-sm font-medium mb-1">From</label>
-                  <input
-                    type="date"
-                    value={fromDate}
-                    min={today}
-                    onChange={(e) => {
-                      const newFrom = e.target.value;
-                      setFromDate(newFrom);
-                      // auto-clear toDate if invalid
-                      if (toDate && new Date(newFrom) > new Date(toDate)) {
-                        setToDate('');
-                      }
-                    }}
-                    className="border rounded px-3 py-2 bg-slate-100 text-sm"
-                    required
-                  />
-                </div>
-                <div className="flex flex-col flex-1">
-                  <label className="text-sm font-medium mb-1">To</label>
-                  <input
-                    type="date"
-                    value={toDate}
-                    min={fromDate || today}   // ✅ ensures To >= From
-                    onChange={(e) => setToDate(e.target.value)}
-                    className="border rounded px-3 py-2 bg-slate-100 text-sm"
-                    required
-                  />
-                </div>
-              </div>
-            )}
-          </>
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter event description"
+              className="border rounded px-3 py-2 bg-slate-100 text-sm"
+              rows={3}
+              required
+            />
+          </div>
         )}
 
-        {actionType === 'leave' && (
-          <>
-            <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Select Date</label>
+        {/* Single / Range Option */}
+        <div className="flex gap-6">
+          {['single', 'range'].map((opt) => (
+            <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm">
+              <input
+                type="radio"
+                name="dateOption"
+                value={opt}
+                checked={dateOption === opt}
+                onChange={() => {
+                  setDateOption(opt);
+                  setSingleDate('');
+                  setFromDate('');
+                  setToDate('');
+                }}
+                className="accent-[#bcd4cd] h-4 w-4"
+              />
+              {opt === 'single' ? 'Single Day' : 'Date Range'}
+            </label>
+          ))}
+        </div>
+
+        {/* Date Inputs */}
+        {dateOption === 'single' ? (
+          <input
+            type="date"
+            value={singleDate}
+            min={today}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val < today) return;  // ⛔ block past dates
+              setSingleDate(val);
+            }}
+            className="border rounded px-3 py-2 bg-slate-100 text-sm"
+            required
+          />
+        ) : (
+          <div className="flex gap-4">
+            <div className="flex flex-col flex-1">
+              <label className="text-sm font-medium mb-1">From</label>
               <input
                 type="date"
-                value={holidayDate}
+                value={fromDate}
                 min={today}
-                onChange={(e) => setHolidayDate(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val < today) return;  // ⛔ block past dates
+                  setFromDate(val);
+                  if (toDate && new Date(val) > new Date(toDate)) {
+                    setToDate('');
+                  }
+                }}
                 className="border rounded px-3 py-2 bg-slate-100 text-sm"
                 required
               />
             </div>
-            <div className="flex flex-col">
-              <label className="text-sm font-medium mb-1">Select Religion</label>
-              <select
-                value={selectedReligion}
-                onChange={(e) => setSelectedReligion(e.target.value)}
+            <div className="flex flex-col flex-1">
+              <label className="text-sm font-medium mb-1">To</label>
+              <input
+                type="date"
+                value={toDate}
+                min={fromDate || tomorrowStr}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val < (tomorrowStr)) return;  // ⛔ block past
+                  setToDate(val);
+                }}
                 className="border rounded px-3 py-2 bg-slate-100 text-sm"
                 required
-              >
-                <option value="">-- Select Religion --</option>
-                {religions.map((rel) => (
-                  <option key={rel} value={rel}>
-                    {rel}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
-          </>
+          </div>
+        )}
+
+        {/* Religion only for Holiday */}
+        {actionType === 'leave' && (
+          <div className="flex flex-col">
+            <label className="text-sm font-medium mb-1">Select Religion</label>
+            <select
+              value={selectedReligion}
+              onChange={(e) => setSelectedReligion(e.target.value)}
+              className="border rounded px-3 py-2 bg-slate-100 text-sm"
+              required
+            >
+              <option value="">-- Select Religion --</option>
+              {religions.map((rel) => (
+                <option key={rel} value={rel}>
+                  {rel}
+                </option>
+              ))}
+            </select>
+          </div>
         )}
 
         {/* Buttons */}
