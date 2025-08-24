@@ -9,7 +9,7 @@ import { EmployeeCourseProgress } from "./components/EmployeeCourseProgress";
 import { useAuth } from "../../context/AuthContext";
 import { Loading } from "../utils/Loading";
 import api from "../../api/axios";
-import { BASE_URL } from '../../api/axios'
+import { BASE_URL } from "../../api/axios";
 
 // Import EmployeeCard
 import { EmployeeCard } from "../employee/components/EmployeeCard"; // adjust the path if needed
@@ -125,21 +125,20 @@ export const EmployeeDetails = ({ type }) => {
             )}
 
             {type === "role" && (
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto">
-  {roleProfiles.map((profile) => (
-    <EmployeeCard
-      key={profile._id}
-      name={profile.username}
-      email={profile.email || "---"}
-      phone={profile.phoneNumber || "---"}
-      role={profile.role.role}
-      image={`${BASE_URL}/uploads/profilePictures/${profile._id}.png`}
-      option={1}
-      bgColor={profile.role.color}
-    />
-  ))}
-</div>
-
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto">
+                {roleProfiles.map((profile) => (
+                  <EmployeeCard
+                    key={profile._id}
+                    name={profile.username}
+                    email={profile.email || "---"}
+                    phone={profile.phoneNumber || "---"}
+                    role={profile.role.role}
+                    image={`${BASE_URL}/uploads/profilePictures/${profile._id}.png`}
+                    option={1}
+                    bgColor={profile.role.color}
+                  />
+                ))}
+              </div>
             )}
           </div>
         </>
