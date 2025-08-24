@@ -10,7 +10,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Loading } from "../utils/Loading";
 import api from "../../api/axios";
 import { BASE_URL } from "../../api/axios";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 // Import EmployeeCard
 import { EmployeeCard } from "../employee/components/EmployeeCard"; // adjust the path if needed
 
@@ -125,27 +125,39 @@ export const EmployeeDetails = ({ type }) => {
             )}
 
             {type === "role" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto">
-                {roleProfiles.map((profile) => (
-                  <div
-                    key={profile._id}
-                    onClick={() =>
-                      navigate(`/employee/${profile._id}/details/attendance`)
-                    }
-                    className="cursor-pointer"
-                  >
-                    <EmployeeCard
-                      name={profile.username}
-                      email={profile.email || "---"}
-                      phone={profile.phoneNumber || "---"}
-                      role={profile.role.role}
-                      image={`${BASE_URL}/uploads/profilePictures/${profile._id}.png`}
-                      option={1}
-                      bgColor={profile.role.color}
-                    />
+              <>
+                {roleProfiles.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto">
+                    {roleProfiles.map((profile) => (
+                      <div
+                        key={profile._id}
+                        onClick={() =>
+                          navigate(
+                            `/employee/${profile._id}/details/attendance`
+                          )
+                        }
+                        className="cursor-pointer"
+                      >
+                        <EmployeeCard
+                          name={profile.username}
+                          email={profile.email || "---"}
+                          phone={profile.phoneNumber || "---"}
+                          role={profile.role.role}
+                          image={`${BASE_URL}/uploads/profilePictures/${profile._id}.png`}
+                          option={1}
+                          bgColor={profile.role.color}
+                        />
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+                    <p className="text-sm md:text-base">
+                      No employees found for this role.
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </>
