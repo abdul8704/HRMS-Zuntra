@@ -1,4 +1,4 @@
-const Holiday = require("../models/attendanceManagement/holiday");
+const Holiday = require('../models/holiday');
 const ApiError = require('../errors/ApiError');
 const AttendanceHelper = require("../utils/attendanceHelper")
 const UserPersonal = require('../models/userPersonal')
@@ -11,12 +11,12 @@ const getAllHolidaysInRange = async (startDate, endDate) => {
         throw new ApiError(400, 'Invalid date range provided');
     }
 
+    // Check if ANY date inside the "dates" array falls inside the range
     const holidays = await Holiday.find({
-        date: {
-            $gte: start,
-            $lte: end,
+        dates: {
+            $elemMatch: { $gte: start, $lte: end }
         }
-    }).sort({ date: 1 });
+    }).sort({ "dates.0": 1 }); // sorting by first date in the array
 
     return holidays;
 };
@@ -36,14 +36,14 @@ const getHolidaysInRange = async (startDate, endDate, userid) => {
         applicableValues.push(religion.toLowerCase());
 
     const holidays = await Holiday.find({
-        date: {
-            $gte: start,
-            $lte: end,
+        dates: {
+            $elemMatch: { $gte: start, $lte: end }
         },
         applicableTo: {
             $in: applicableValues
         },
-    }).sort({ date: 1 });
+    }).sort({ "dates.0": 1 });
+
     return holidays;
 }
 
@@ -59,20 +59,22 @@ const addHolidays = async (holidayData) => {
     const upsertedHolidays = [];
 
     for (const holiday of holidayData) {
-        if (!holiday.date || !holiday.name) {
-            throw new ApiError("Holiday date and name are required", 400);
+        if (!holiday.dates || !holiday.name) {
+            throw new ApiError("Holiday dates and name are required", 400);
         }
 
-        const parsedDate = AttendanceHelper.parseDateAsUTC(holiday.date);
+        // Parse all dates into UTC format
+        const parsedDates = holiday.dates.map(d => AttendanceHelper.parseDateAsUTC(d));
+        if (parsedDates.some(d => isNaN(d))) {
+            throw new ApiError(`Invalid date format in: ${holiday.dates}`, 400);
+        }
+
         const eligible = holiday.applicableTo || 'all';
 
-        if (isNaN(parsedDate)) {
-            throw new ApiError(`Invalid date format: ${holiday.date}`, 400);
-        }
-
+        // Upsert by matching the *exact same set of dates*
         const updatedOrInserted = await Holiday.findOneAndUpdate(
-            { date: parsedDate },
-            { $set: { name: holiday.name, applicableTo: eligible.toLowerCase() } },
+            { dates: parsedDates },
+            { $set: { name: holiday.name, applicableTo: eligible.toLowerCase(), dates: parsedDates } },
             { new: true, upsert: true }
         );
 
@@ -82,8 +84,10 @@ const addHolidays = async (holidayData) => {
     return upsertedHolidays;
 };
 
-
 const updateHoliday = async (id, holidayData) => {
+    if (holidayData.dates) {
+        holidayData.dates = holidayData.dates.map(d => AttendanceHelper.parseDateAsUTC(d));
+    }
     const holiday = await Holiday.findByIdAndUpdate(id, holidayData, { new: true });
     return holiday;
 }
