@@ -296,7 +296,7 @@ export function SidebarDetails({ type }) {
           className="w-[4.5rem] h-[4.5rem] md:w-[6rem] md:h-[6rem] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-md"
           style={{ backgroundColor: data.color || "#ccc" }}
         >
-          <User className="w-8 h-8" />
+          <User className="w-12 h-12 text-[#000]" />
         </div>
       </div>
 
@@ -330,7 +330,7 @@ export function SidebarDetails({ type }) {
 
       {/* Allowed Access Section */}
       <div>
-        <h3 className="font-medium text-black mb-2">Allowed Access</h3>
+        <h3 className="font-medium text-black mb-2">Access Granted</h3>
         <div className="flex flex-wrap gap-2">
           {data.allowedAccess?.length > 0 ? (
             data.allowedAccess.map((access, idx) => (
