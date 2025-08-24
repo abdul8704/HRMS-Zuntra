@@ -27,10 +27,10 @@ const getHolidaysInRange = asyncHandler(async (req, res) => {
     if (!startDate || !endDate) {
         throw new ApiError(400, 'Start date and end date are required');
     }
-    if(new Date(startDate) > new Date(endDate)) {
+    if (new Date(startDate) > new Date(endDate)) {
         throw new ApiError(400, 'Start date cannot be after end date');
     }
-    
+
     const holidays = await HolidayService.getHolidaysInRange(startDate, endDate, userid);
 
     res.status(200).json({
@@ -42,9 +42,10 @@ const getHolidaysInRange = asyncHandler(async (req, res) => {
 const addHolidays = asyncHandler(async (req, res) => {
     const holidayData = req.body;
 
-    if (!holidayData) {
-        throw new ApiError('Holiday data is required', 400);
+    if (!holidayData || !Array.isArray(holidayData.dates) || holidayData.dates.length === 0) {
+        throw new ApiError('Holiday dates (array) are required', 400);
     }
+
     const holiday = await HolidayService.addHolidays(holidayData);
 
     res.status(201).json({
@@ -57,9 +58,10 @@ const updateHoliday = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const holidayData = req.body;
 
-    if (!holidayData) {
-        throw new ApiError('Holiday data is required', 400);
+    if (!holidayData || !Array.isArray(holidayData.dates) || holidayData.dates.length === 0) {
+        throw new ApiError('Holiday dates (array) are required', 400);
     }
+
     const holiday = await HolidayService.updateHoliday(id, holidayData);
 
     res.status(200).json({
