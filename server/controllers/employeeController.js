@@ -39,11 +39,11 @@ const fetchAllEmployees = asyncHandler(async (req, res) => {
 });
 
 const getEmployeeByRole = asyncHandler(async (req, res) => {
-    const { role } = req.params;
+    const { roleId } = req.params;
 
-    if (!role) throw new ApiError(400, "Role not provided");
+    if (!roleId) throw new ApiError(400, "Role not provided");
 
-    const employees = await employeeService.getEmployeeByRole(role);
+    const employees = await employeeService.getEmployeeByRole(roleId);
 
     res.status(200).json({ success: true, employees });
 });

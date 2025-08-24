@@ -9,37 +9,39 @@ import { EmployeeCourseProgress } from "./components/EmployeeCourseProgress";
 import { useAuth } from "../../context/AuthContext";
 import { Loading } from "../utils/Loading";
 import api from "../../api/axios";
+import { BASE_URL } from '../../api/axios'
 
 // Import EmployeeCard
 import { EmployeeCard } from "../employee/components/EmployeeCard"; // adjust the path if needed
 
 export const EmployeeDetails = ({ type }) => {
   const { user, loading } = useAuth();
-  const { empId, navId } = useParams();
+  const { empId, navId, roleId } = useParams(); // ✅ roleId added here
   const [roleProfiles, setRolesProfiles] = useState([]);
   const [showAssignCourse, setShowAssignCourse] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (type === "role") {
-      // Dummy data for roles
-      const dummyProfiles = [
-        {
-          username: "Alice Johnson",
-          email: "alice.johnson@example.com",
-          phone: "9876543210",
-          role: { role: "Team Leader", color: "#E57373" },
-          profilePicture: "https://via.placeholder.com/150",
-        },
-        {
-          username: "Bob Smith",
-          email: "bob.smith@example.com",
-          phone: "9876501234",
-          role: { role: "Developer", color: "#64B5F6" },
-          profilePicture: "https://via.placeholder.com/150",
-        },
-      ];
-      setRolesProfiles(dummyProfiles);
+      const fetchRoleEmployees = async () => {
+        setIsLoading(true);
+        try {
+          const res = await api.get(`/api/employee/role/${roleId}`);
+          if (res.data.success) {
+            setRolesProfiles(res.data.employees || []);
+          }
+        } catch (err) {
+          console.error(
+            "Error fetching employees by role:",
+            err?.response?.data?.message || err.message
+          );
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      if (!loading) {
+        fetchRoleEmployees();
+      }
     } else {
       const fetchEmployeeDetails = async () => {
         setIsLoading(true);
@@ -65,7 +67,7 @@ export const EmployeeDetails = ({ type }) => {
         fetchEmployeeDetails();
       }
     }
-  }, [type, loading, empId]);
+  }, [type, loading, empId, roleId]);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -80,7 +82,9 @@ export const EmployeeDetails = ({ type }) => {
               <>
                 <Navbar type="employeeDetails" showFilter={false} />
 
-                {navId === "attendance" && <EmployeeDetailsAssignment userid={empId}/>}
+                {navId === "attendance" && (
+                  <EmployeeDetailsAssignment userid={empId} />
+                )}
 
                 {navId === "project" && <p>PROJECT</p>}
 
@@ -121,25 +125,22 @@ export const EmployeeDetails = ({ type }) => {
             )}
 
             {type === "role" && (
-  <div className="flex flex-col gap-4">
-    {roleProfiles.map((profile, idx) => (
-      <EmployeeCard
-        key={idx}
-        name={profile.username}
-        email={profile.email || "user@example.com"}
-        phone={profile.phone || "123-456-7890"}
-        role={profile.role.role}
-        image={profile.profilePicture}
-        option={1} // or 2 or 3 based on what you want to show for this profile
-        bgColor={profile.role.color}
-        onApprove={() => console.log("Approved:", profile.username)}
-        // Optionally pass inTime, outTime, workTime, breakTime if you have these per profile
-                          
-      />
-    ))}
-  </div>
-)}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {roleProfiles.map((profile) => (
+    <EmployeeCard
+      key={profile._id}
+      name={profile.username}
+      email={profile.email || "---"}
+      phone={profile.phoneNumber || "---"}
+      role={profile.role.role}
+      image={`${BASE_URL}/uploads/profilePictures/${profile._id}.png`}
+      option={1}
+      bgColor={profile.role.color}
+    />
+  ))}
+</div>
 
+            )}
           </div>
         </>
       )}

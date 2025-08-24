@@ -38,11 +38,6 @@ export function SidebarDetails({ type }) {
     const fetchUserData = async () => {
       setIsLoading(true);
       try {
-        const [empRes, courseRes] = await Promise.all([
-          api.get(`/api/employee/${empId}`),
-          api.get(`/api/course/enrolledCourses`),
-        ]);
-
         if (empRes.data.success) {
           setData(empRes.data.employeeDetail);
         }
