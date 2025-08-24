@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const Project = require("../models/project");
+const Project = require("../models/projectManagement/project");
 const ApiError = require("../errors/ApiError");
 
 // @desc Get all ongoing projects

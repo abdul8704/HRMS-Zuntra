@@ -1,4 +1,4 @@
-const Event = require('../models/event');
+const Event = require("../models/attendanceManagement/event");
 const ApiError = require('../errors/ApiError');
 
 const getAllEvents = async () => {

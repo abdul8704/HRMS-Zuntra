@@ -1,4 +1,4 @@
-const Holiday = require('../models/holiday');
+const Holiday = require("../models/attendanceManagement/holiday");
 const ApiError = require('../errors/ApiError');
 const AttendanceHelper = require("../utils/attendanceHelper")
 const UserPersonal = require('../models/userPersonal')

@@ -1,6 +1,6 @@
-const courseDetails = require("../models/courseDetails");
-const courseContent = require("../models/courseContent");
-const courseProgress = require("../models/courseProgress");
+const courseDetails = require("../models/courseManagement/courseDetails");
+const courseContent = require("../models/courseManagement/courseContent");
+const courseProgress = require("../models/courseManagement/courseProgress");
 const userCourse = require("../models/userCourse");
 const ApiError = require("../errors/ApiError");
 

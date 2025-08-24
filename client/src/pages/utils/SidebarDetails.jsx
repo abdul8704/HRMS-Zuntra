@@ -15,13 +15,16 @@ import {
 } from "lucide-react";
 import ZuntraLogo from "../../assets/Zuntra.svg";
 import { EditProfileCard } from "../employee/components/EditProfileCard";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api, { BASE_URL } from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { Loading } from "./Loading";
 
-export function SidebarDetails({ type, empId }) {
+export function SidebarDetails({ type }) {
   const navigate = useNavigate();
+  const params = useParams();
+  const empId = type === "user" ? params.empId : null;
+  const roleId = type === "role" ? params.roleId : null;
   const { user, loading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -32,7 +35,7 @@ export function SidebarDetails({ type, empId }) {
   const handleEditProfile = () => setShowEditCard((prev) => !prev);
 
   useEffect(() => {
-    const fetchdatas = async () => {
+    const fetchUserData = async () => {
       setIsLoading(true);
       try {
         const [empRes, courseRes] = await Promise.all([
@@ -44,11 +47,11 @@ export function SidebarDetails({ type, empId }) {
           setData(empRes.data.employeeDetail);
         }
         if (courseRes.data.success) {
-          console.log(courseRes.data);
+          console.log("User Enrolled Courses:", courseRes.data);
         }
       } catch (err) {
         console.error(
-          "Error fetching employee details:",
+          "Error fetching user details:",
           err?.response?.data?.message || err.message
         );
       } finally {
@@ -56,10 +59,31 @@ export function SidebarDetails({ type, empId }) {
       }
     };
 
-    if (!loading && empId) {
-      fetchdatas();
+    const fetchRoleData = async () => {
+      setIsLoading(true);
+      try {
+        // 🔹 placeholder API call
+        const roleRes = await api.get(`/api/roles/${roleId}`);
+        console.log(roleRes);
+        if (roleRes.data.success) {
+          setData(roleRes.data.data);
+        }
+      } catch (err) {
+        console.error(
+          "Error fetching role details:",
+          err?.response?.data?.message || err.message
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (type === "user") {
+      fetchUserData();
+    } else if (type === "role" && roleId) {
+      fetchRoleData();
     }
-  }, [type, showEditCard, empId, loading]);
+  }, [type, empId, roleId]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -125,7 +149,7 @@ export function SidebarDetails({ type, empId }) {
           />
         </div>
 
-        {type === "user" && isLoading && <Loading />}
+        {isLoading && <Loading />}
 
         {/* User Details */}
         {type === "user" && !isLoading && data && (
@@ -210,9 +234,9 @@ export function SidebarDetails({ type, empId }) {
                 <div>
                   <span className="font-medium">DOB:</span>{" "}
                   <span className="text-black/80">
-                    {new Date(
-                      data.personalDetail?.DOB
-                    ).toLocaleDateString("en-GB")}
+                    {new Date(data.personalDetail?.DOB).toLocaleDateString(
+                      "en-GB"
+                    )}
                   </span>
                 </div>
               </div>
@@ -262,6 +286,70 @@ export function SidebarDetails({ type, empId }) {
             )}
           </>
         )}
+
+        {type === "role" && !isLoading && data && (
+  <>
+    {/* Header - Circle Icon with role color */}
+    <div className="px-6 pb-6">
+      <div className="flex justify-center mb-6">
+        <div
+          className="w-[4.5rem] h-[4.5rem] md:w-[6rem] md:h-[6rem] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-md"
+          style={{ backgroundColor: data.color || "#ccc" }}
+        >
+          <User className="w-12 h-12 text-[#000]" />
+        </div>
+      </div>
+
+      {/* Role Name */}
+      <div className="text-center">
+        <h2 className="text-black text-xl md:text-2xl font-semibold">
+          {data.role}
+        </h2>
+      </div>
+    </div>
+
+    {/* Scrollable Content */}
+    <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-5 text-sm text-black opacity-70">
+      <div className="flex items-center gap-3">
+        <Users className="w-4 h-4 text-black/70 flex-shrink-0" />
+        <div>
+          <span className="font-medium">Number of Users:</span>{" "}
+          <span className="text-black/80">{data.userCount || 0}</span>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <DollarSign className="w-4 h-4 text-black/70 flex-shrink-0" />
+        <div>
+          <span className="font-medium">Base Salary:</span>{" "}
+          <span className="text-black/80">
+            ₹{data.baseSalary || 0}/hr
+          </span>
+        </div>
+      </div>
+
+      {/* Allowed Access Section */}
+      <div>
+        <h3 className="font-medium text-black mb-2">Access Granted</h3>
+        <div className="flex flex-wrap gap-2">
+          {data.allowedAccess?.length > 0 ? (
+            data.allowedAccess.map((access, idx) => (
+              <span
+                key={idx}
+                className="bg-white/30 px-2 py-1 rounded-full text-[0.7rem] font-medium text-black shadow-sm border border-gray-200"
+              >
+                {access}
+              </span>
+            ))
+          ) : (
+            <span className="text-black/60 text-sm">No access defined</span>
+          )}
+        </div>
+      </div>
+    </div>
+  </>
+)}
+
       </div>
 
       {/* Sidebar toggle for mobile */}
