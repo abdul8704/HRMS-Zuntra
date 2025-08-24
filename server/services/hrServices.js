@@ -4,7 +4,7 @@ const UserCourse = require("../models/userCourse");
 const Role = require("../models/roles");
 const attendanceHelper = require("../utils/attendanceHelper");
 const ApiError = require("../errors/ApiError");
-const LeaveApplication = require('../models/leaveApplication')
+const LeaveApplication = require("../models/attendanceManagement/leaveApplication");
 
 const updateUserData = async (email, shiftId, campusId, roleId) => {
     try {

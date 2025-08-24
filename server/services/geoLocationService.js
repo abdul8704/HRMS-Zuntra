@@ -1,5 +1,5 @@
 const GeoUtils = require("../utils/geoFencing");
-const GeoLocation = require("../models/geoLocations");
+const GeoLocation = require("../models/attendanceManagement/geoLocations");
 const ApiError = require("../errors/ApiError");
 const UserCreds = require("../models/userCredentials");
 
