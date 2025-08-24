@@ -1,8 +1,8 @@
-const Attendance = require("../models/attendanceManagement/attendance.js");
+const Attendance = require("../models/attendance.js");
 const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
 const attendanceHelper = require("../utils/attendanceHelper.js");
-const LeaveApplication = require("../models/attendanceManagement/leaveApplication.js");
+const LeaveApplication = require("../models/leaveApplication.js");
 const Holiday = require('./holidayService.js')
 
 const markAttendanceOnLogin = async (userid, mode) => {
