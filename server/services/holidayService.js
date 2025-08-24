@@ -24,7 +24,7 @@ const getAllHolidaysInRange = async (startDate, endDate) => {
 const getHolidaysInRange = async (startDate, endDate, userid) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    
+
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
         throw new ApiError(400, 'Invalid date range provided');
     }
@@ -32,7 +32,7 @@ const getHolidaysInRange = async (startDate, endDate, userid) => {
     const applicableValues = ["all"];
     const { religion } = await UserPersonal.findById(userid);
 
-    if (religion) 
+    if (religion)
         applicableValues.push(religion.toLowerCase());
 
     const holidays = await Holiday.find({
@@ -46,6 +46,27 @@ const getHolidaysInRange = async (startDate, endDate, userid) => {
 
     return holidays;
 }
+
+const getHolidaysOfDate = async (date) => {
+    const targetDate = new Date(date);
+
+    const startOfDay = new Date(targetDate);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(targetDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const holidays = await Holiday.find({
+        dates: {
+            $elemMatch: {
+                $gte: startOfDay,
+                $lte: endOfDay,
+            },
+        },
+    });
+
+    return holidays;
+};
 
 const getHolidayById = async (id) => {
     const holiday = await Holiday.findById(id);
@@ -95,6 +116,7 @@ const deleteHoliday = async (id) => {
 module.exports = {
     getAllHolidaysInRange,
     getHolidaysInRange,
+    getHolidaysOfDate,
     getHolidayById,
     addHolidays,
     updateHoliday,

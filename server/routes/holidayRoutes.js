@@ -5,6 +5,7 @@ const holidayController = require('../controllers/holidayController');
 
 router.get('/all', requirePermission("companyManagement"), holidayController.getAllHolidaysInRange);
 router.get('/one/:id', requirePermission("companyManagement"), holidayController.getHolidayById);
+router.get("/today", requirePermission("companyManagement"),holidayController.getHolidayOfDate);
 router.get('/range', requirePermission("companyManagement"), holidayController.getHolidaysInRange);
 router.post('/add', requirePermission("companyManagement"), holidayController.addHolidays);
 router.patch('/update/:id', requirePermission("companyManagement"), holidayController.updateHoliday);

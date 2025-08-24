@@ -39,6 +39,19 @@ const getHolidaysInRange = asyncHandler(async (req, res) => {
     });
 })
 
+const getHolidayOfDate = asyncHandler(async (req, res) => {
+    let { today } = req.query;
+    if (!today) {
+        const date = new Date();
+        today = date.toISOString().split('T')[0];
+    }
+    const holidays = await HolidayService.getHolidaysOfDate(today);
+    res.status(200).json({
+        success: true,
+        data: holidays
+    });
+});
+
 const addHolidays = asyncHandler(async (req, res) => {
     const holidayData = req.body;
 
@@ -88,6 +101,7 @@ const deleteHoliday = asyncHandler(async (req, res) => {
 module.exports = {
     getAllHolidaysInRange,
     getHolidayById,
+    getHolidayOfDate,
     getHolidaysInRange,
     addHolidays,
     updateHoliday,

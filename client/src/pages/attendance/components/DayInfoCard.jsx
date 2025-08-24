@@ -56,7 +56,6 @@ export const DayInfoCard = ({ selectedDate }) => {
       isHoliday: false,
       isReligiousDay: false,
       status: 'Present',
-      workingHours: '09:00 AM - 06:00 PM'
     };
 
     if (dayOfWeek === 'Saturday' || dayOfWeek === 'Sunday') {
@@ -117,26 +116,6 @@ export const DayInfoCard = ({ selectedDate }) => {
     );
   }
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Present': return 'text-green-600 bg-green-100';
-      case 'Leave': return 'text-yellow-600 bg-yellow-100';
-      case 'AB': return 'text-red-600 bg-red-100';
-      case 'Holiday': return 'text-purple-600 bg-purple-100';
-      default: return 'text-gray-600 bg-gray-100';
-    }
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'Present': return '✓';
-      case 'Leave': return '📝';
-      case 'AB': return '✗';
-      case 'Holiday': return '🎉';
-      default: return '●';
-    }
-  };
-
   return (
     <div className="bg-white rounded-lg shadow-sm border p-4 h-full overflow-auto">
       <div className="mb-4">
@@ -150,10 +129,7 @@ export const DayInfoCard = ({ selectedDate }) => {
           <div className="flex items-center gap-2 mb-2">
             <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
             <span className="text-sm font-medium text-gray-700">Working Day</span>
-          </div>
-          <div className="bg-blue-50 rounded-md p-2">
-            <p className="text-xs text-blue-700">{dayInfo.workingHours}</p>
-          </div>
+          </div>  
         </div>
       )}
 
