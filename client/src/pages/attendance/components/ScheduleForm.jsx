@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from '../../../api/axios';
 
 export const ScheduleForm = ({ handleClose }) => {
   const [actionType, setActionType] = useState('event');
@@ -9,7 +10,6 @@ export const ScheduleForm = ({ handleClose }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedReligion, setSelectedReligion] = useState('');
-  const [selectedRoles, setSelectedRoles] = useState([]);
 
   const religions = ['Hindu', 'Muslim', 'Christian', 'All'];
   const today = new Date().toISOString().split('T')[0];
@@ -37,7 +37,7 @@ export const ScheduleForm = ({ handleClose }) => {
     return [];
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
 
     if (actionType === 'event') {
@@ -45,22 +45,27 @@ export const ScheduleForm = ({ handleClose }) => {
         name,
         description,
         dates: getDatesArray(),
-        roles: selectedRoles,
       };
       console.log("Submitting Event:", eventData);
       // 👉 POST /api/schedule/event
+
     } else if (actionType === 'leave') {
       const leaveData = {
         name,
         dates: getDatesArray(),
         religion: selectedReligion,
-        roles: selectedRoles,
       };
       console.log("Submitting Holiday:", leaveData);
-      // 👉 POST /api/schedule/leave
+      try {
+      const leaveResponse = await axios.post("api/holidays/add", leaveData);
+      if (leaveResponse.status === 201) {
+        alert("Holiday scheduled successfully");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Trouble while scheduling");
     }
-
-    if (handleClose) handleClose();
+    }
   };
 
   const handleCancel = () => {
@@ -72,7 +77,6 @@ export const ScheduleForm = ({ handleClose }) => {
     setName('');
     setDescription('');
     setSelectedReligion('');
-    setSelectedRoles([]);
     if (handleClose) handleClose();
   };
 

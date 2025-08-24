@@ -140,16 +140,17 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     return record?.status || null;
   };
 
+  // ✅ Updated: handle holiday objects with "dates" array
   const isHoliday = (day) => {
     if (!day) return null;
     const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return holidayData.find((h) => h.date.startsWith(dateStr));
+    return holidayData.find((h) => h.dates?.includes(dateStr));
   };
 
   const isAllHoliday = (day) => {
     if (!day) return null;
     const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return allHolidays.find((h) => h.date.startsWith(dateStr));
+    return allHolidays.find((h) => h.dates?.includes(dateStr));
   };
 
   const handleMonthClick = (index) => {
