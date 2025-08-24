@@ -70,6 +70,7 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
       const response = await api.get('/api/holidays/range', {
         params: { startDate: startStr, endDate: endStr, userid },
       });
+      console.log(response.data.data);
       setHolidayData(response.data.data || []);
     } catch (err) {
       console.error('Error fetching holiday data:', err);
@@ -140,17 +141,24 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
     return record?.status || null;
   };
 
-  // ✅ Updated: handle holiday objects with "dates" array
+  // User-specific holidays
   const isHoliday = (day) => {
     if (!day) return null;
     const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return holidayData.find((h) => h.dates?.includes(dateStr));
+
+    return holidayData.find((h) =>
+      h.dates?.some((d) => new Date(d).toISOString().split("T")[0] === dateStr)
+    );
   };
 
+  // All holidays
   const isAllHoliday = (day) => {
     if (!day) return null;
     const dateStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    return allHolidays.find((h) => h.dates?.includes(dateStr));
+
+    return allHolidays.find((h) =>
+      h.dates?.some((d) => new Date(d).toISOString().split("T")[0] === dateStr)
+    );
   };
 
   const handleMonthClick = (index) => {
@@ -249,24 +257,24 @@ export const AttendanceCalendar = ({ userid, startDate, endDate, onMonthYearChan
                   else if (selected && !isAttendance) {
                     dayClasses = 'bg-blue-500';
                     textClasses = 'text-white';
-                  } 
+                  }
                   else if (userHoliday || isSunday) {
                     dayClasses = 'bg-[#FEF9C3]';
                     textClasses = 'text-yellow-900 font-semibold';
                     if (userHoliday) tooltipText = userHoliday.name;
-                  } 
+                  }
                   else if (isAttendance && status === 'present') {
                     dayClasses = 'bg-green-100';
                     textClasses = 'text-green-700 font-semibold';
-                  } 
+                  }
                   else if (isAttendance && status === 'absent') {
                     dayClasses = 'bg-red-100';
                     textClasses = 'text-red-700 font-semibold';
-                  } 
+                  }
                   else if (isAttendance && status === 'remote') {
                     dayClasses = 'bg-blue-100';
                     textClasses = 'text-blue-700 font-semibold';
-                  } 
+                  }
                   else {
                     dayClasses = 'hover:bg-gray-100';
                     textClasses = 'text-gray-700';
