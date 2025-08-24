@@ -89,7 +89,6 @@ export const Attendance = ({ showScheduleForm = true }) => {
 
     const handleDateSelect = (date) => {
         setSelectedDate(date instanceof Date ? date : new Date(date));
-        console.log("Date clicked:", date);
     };
 
 
@@ -171,14 +170,14 @@ export const Attendance = ({ showScheduleForm = true }) => {
                     {/* other tabs unchanged */}
                     {navId === 'apply' && (
                         <div className="flex flex-col md:flex-row w-full h-full overflow-hidden gap-[1rem]">
-                            <LeaveFormHistory />
+                            <LeaveFormHistory userRole={'default'} />
                             <LeaveForm />
                         </div>
                     )}
 
                     {navId === 'inbox' && (
                         <div className="flex-1 overflow-auto">
-                            <LeaveFormHistory />
+                            <LeaveFormHistory userRole={'hr'} />
                         </div>
                     )}
 

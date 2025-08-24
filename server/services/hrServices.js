@@ -71,7 +71,8 @@ const getPendingLeaveRequests = async () => {
 }
 
 const superAdminProcessLeaveRequest = async (userid, leaveId, decision, comments = 'NIL') => {
-    const finalDecision = decision.toUpperCase();
+    const finalDecision =
+        decision.toUpperCase() === "APPROVED" ? "APPROVED" : "REJECTED";
     const leaveApplication = await LeaveApplication.findById(leaveId);
     const now = new Date();
 
@@ -79,7 +80,7 @@ const superAdminProcessLeaveRequest = async (userid, leaveId, decision, comments
         throw new ApiError(400, 'Requested Leave application not found');
     }
 
-   leaveApplication.status = finalDecision === "APPROVED" ? "APPROVED" : "REJECTED";
+   leaveApplication.status = finalDecision ;
    leaveApplication.superAdminAction = finalDecision;
    leaveApplication.superAdminReviewer = userid;
    leaveApplication.superAdminReviewComment = comments;

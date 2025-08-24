@@ -44,7 +44,11 @@ api.interceptors.response.use(
             return Promise.reject(error);
         }
 
-        if (error.response && error.response.status === 403) {
+        if (
+            error.response &&
+            error.response.status === 403 &&
+            error.response.data.message == "Invalid or expired refresh token"
+        ) {
             console.error("Unauthorized", error.response.data.message);
             window.location.href = "/unauthorized";
         } else if (

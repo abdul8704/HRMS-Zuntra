@@ -107,7 +107,6 @@ const getAllLeaveReqs = asyncHandler(async (req, res) => {
 
     res.status(200).json({ success: true, leaveData: formattedRequest });
 
-    return res.status(200).json({ success: true, LeaveData: leaveData });
 });
 
 module.exports = {
