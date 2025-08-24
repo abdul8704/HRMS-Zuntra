@@ -1,4 +1,5 @@
 const Role = require("../models/roles");
+const UserCredentials = require("../models/userCredentials");
 // Get all roles
 const getAllRolesData = async () => {
     try {
@@ -17,8 +18,12 @@ const getAllRolesData = async () => {
 //@desc Get role details by role id
 const getRoleDetailsById = async (roleid) => {
     try {
+        if(!roleid){
+            return null;
+        }
         const roleDetail = await Role.findOne({ _id: roleid });
-        return roleDetail;
+        const userCount = await UserCredentials.countDocuments({ role : roleid });
+        return { ...roleDetail.toObject(), userCount};
     } catch (error) {
         throw new ApiError(500, "failed to fetch role details: ", error.message);
     }
