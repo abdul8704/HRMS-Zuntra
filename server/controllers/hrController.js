@@ -45,6 +45,7 @@ const getPendingEmployees = asyncHandler(async (req, res) => {
 });
 
 const getPendingLeaveReqs = asyncHandler(async (req, res) => {
+    
     const pendingLeaveReqs = await HrService.getPendingLeaveRequests();
 
     const formattedRequest = pendingLeaveReqs.map((leaveReq) => ({
@@ -58,10 +59,10 @@ const getPendingLeaveReqs = asyncHandler(async (req, res) => {
         dates: leaveReq.dates.map((date) => date.toISOString().split("T")[0]),
         reason: leaveReq.reason,
         status: leaveReq.status,
-        TL: leaveReq.userid.AdminAction,
-        HR: leaveReq.userid.superAdminAction,
-        TLComment: leaveReq.userid.adminReviewComment,
-        HRComment: leaveReq.userid.superAdminReviewComment,
+        TL: leaveReq.adminAction,
+        HR: leaveReq.superAdminAction,
+        TLComment: leaveReq.adminReviewComment,
+        HRComment: leaveReq.superAdminReviewComment,
     }));
 
     res.status(200).json({ success: true, pendingLeaveReqs: formattedRequest });
@@ -98,10 +99,10 @@ const getAllLeaveReqs = asyncHandler(async (req, res) => {
         dates: leaveReq.dates.map((date) => date.toISOString().split("T")[0]),
         reason: leaveReq.reason,
         status: leaveReq.status,
-        TL: leaveReq.userid.AdminAction,
-        HR: leaveReq.userid.superAdminAction,
-        TLComment: leaveReq.userid.adminReviewComment,
-        HRComment: leaveReq.userid.superAdminReviewComment,
+        TL: leaveReq.adminAction,
+        HR: leaveReq.superAdminAction,
+        TLComment: leaveReq.adminReviewComment,
+        HRComment: leaveReq.superAdminReviewComment,
     }));
 
     res.status(200).json({ success: true, leaveData: formattedRequest });

@@ -103,10 +103,7 @@ const fetchAllLeaveRequests = async () => {
             select: "username email phoneNumber profilePicture",
         })
         .lean();
-    leaveData = leaveData.filter(item => {
-        const lastDate = new Date(item.dates[item.dates.length - 1]);
-        return lastDate >= today;
-    });
+    
 
     leaveData.sort((a, b) => new Date(a.dates[0]) - new Date(b.dates[0]));
 
