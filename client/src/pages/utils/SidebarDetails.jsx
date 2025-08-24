@@ -38,12 +38,14 @@ export function SidebarDetails({ type }) {
     const fetchUserData = async () => {
       setIsLoading(true);
       try {
+        const [empRes] = await Promise.all([
+          api.get(`/api/employee/${empId}`),
+        ]);
+
         if (empRes.data.success) {
           setData(empRes.data.employeeDetail);
         }
-        if (courseRes.data.success) {
-          console.log("User Enrolled Courses:", courseRes.data);
-        }
+
       } catch (err) {
         console.error(
           "Error fetching user details:",
