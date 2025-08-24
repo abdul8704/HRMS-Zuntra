@@ -18,7 +18,7 @@ router.get("/attendace/time-cards", requireAdminOrMe("employeeManagement"), empl
 
 // private routes
 router.get("/", requirePermission("employeeManagement"), employeeController.fetchAllEmployees);
-router.get("/role/:role", requirePermission("employeeManagement"), employeeController.getEmployeeByRole);
+router.get("/role/:roleId", requirePermission("employeeManagement"), employeeController.getEmployeeByRole);
 router.get("/leave/requests/:userid", requireAdminOrMe("leaveManagement"), employeeController.getEmployeeRequests)
 router.post('/leave/process-req', requirePermission("leaveManagement"), employeeController.processLeaveRequest);
 router.patch('/leave/edit-req-action', requirePermission("leaveManagement"), employeeController.processLeaveRequest);
