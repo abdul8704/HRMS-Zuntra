@@ -71,7 +71,7 @@ export const DayInfoCard = ({ selectedDate }) => {
     );
   }
 
-  const isHoliday = holiday || selectedDate.getDay() === 0 || selectedDate.getDay() === 6; // Sunday or Saturday
+  const isHoliday = holiday || selectedDate.getDay() === 0; 
 
   return (
     <div className="bg-white rounded-lg shadow-sm border p-4 h-full overflow-auto">
