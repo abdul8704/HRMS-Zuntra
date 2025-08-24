@@ -10,47 +10,49 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
   const [showPopup, setShowPopup] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // Form state for HR updates
   const [hrStatus, setHrStatus] = useState('');
   const [hrReason, setHrReason] = useState('');
-  
+
   // Form state for Team Lead updates
   const [tlStatus, setTlStatus] = useState('');
   const [tlReason, setTlReason] = useState('');
 
   useEffect(() => {
-  const fetchPendingLeaveReqs = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get("/api/hr/leave/pending-req"); // your API endpoint
+    const fetchleaveData = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/api/hr/leave/all-req"); // your API endpoint
 
-      if (response.data.success && response.data.pendingLeaveReqs?.length > 0) {
-        const updatedData = response.data.pendingLeaveReqs.map(emp => ({
-          ...emp,
-          employeeName: emp.requestedBy || 'Unknown',
-          employeeProfile: `${BASE_URL}/uploads/profilePictures/${emp.requestedId}.png`,
+        if (response.data.success && response.data.leaveData?.length > 0) {
+          const updatedData = response.data.leaveData.map(emp => ({
+            ...emp,
+            employeeName: emp.requestedBy || 'Unknown',
+            employeeProfile: `${BASE_URL}/uploads/profilePictures/${emp.requestedId}.png`,
+            adminAction: emp.TL,
+            superAdminAction: emp.HR,
+          }));
 
-        }));
-        setLeaveHistory(updatedData);
-      } else {
-        setLeaveHistory([]); // blank if none
+          setLeaveHistory(updatedData);
+        } else {
+          setLeaveHistory([]); // blank if none
+        }
+      } catch (err) {
+        console.error("Error fetching pending leave requests:", err);
+        setLeaveHistory([]);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Error fetching pending leave requests:", err);
-      setLeaveHistory([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchPendingLeaveReqs();
-}, []);
+    fetchleaveData();
+  }, []);
 
 
-    
 
-  
+
+
 
   const formatDate = (rawDate) => {
     const date = new Date(rawDate);
@@ -67,8 +69,10 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
         return '✓';
       case 'rejected':
         return '✕';
-      default:
+      case 'pending':
         return '-';
+      default:
+        return 'data-varalai';
     }
   };
 
@@ -105,7 +109,7 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
         alert('Please select HR status');
         return;
       }
-      
+
       if (!hrReason.trim()) {
         alert('Please provide HR reason');
         return;
@@ -115,7 +119,7 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
         alert('Please select Team Lead status');
         return;
       }
-      
+
       if (!tlReason.trim()) {
         alert('Please provide Team Lead reason');
         return;
@@ -124,7 +128,7 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
 
     try {
       setIsSaving(true);
-      
+
       let updateData = {};
       if (userRole === 'hr') {
         updateData = {
@@ -137,20 +141,20 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
           adminReason: tlReason
         };
       }
-      
+
       // API call to update status and reason
       const response = await api.put(`/api/employee/leave/requests/${selectedLeave._id}`, updateData);
 
       if (response.data.success) {
         // Update the local state
-        setLeaveHistory(prevHistory => 
-          prevHistory.map(item => 
-            item._id === selectedLeave._id 
+        setLeaveHistory(prevHistory =>
+          prevHistory.map(item =>
+            item._id === selectedLeave._id
               ? { ...item, ...updateData }
               : item
           )
         );
-        
+
         setShowPopup(false);
         alert(`Leave status updated successfully by ${userRole === 'hr' ? 'HR' : 'Team Lead'}`);
       } else {
@@ -181,7 +185,7 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
               <tr className="bg-gray-100 border-b">
                 <th className="p-2 text-left">Employee</th>
                 <th className="p-2 text-left">Date</th>
-                
+
                 <th className="p-2 text-center">TL</th>
                 <th className="p-2 text-center">HR</th>
                 <th className="p-2 text-left">Status</th>
@@ -191,12 +195,19 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
             <tbody>
               {leaveHistory.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
-                   <td className="p-2 flex items-center gap-2">
-  <img src={item.employeeProfile} alt="Profile" className="w-8 h-8 rounded-full" />
-  <span>{item.employeeName}</span>
-</td>
-                  <td className="p-2">{formatDate(item.dates[0])}</td>
-                 
+                  <td className="p-2 flex items-center gap-2">
+                    <img src={item.employeeProfile} alt="Profile" className="w-8 h-8 rounded-full" />
+                    <span>{item.employeeName}</span>
+                  </td>
+                  <td className="p-2">
+                    {item.dates[0] !== item.dates[item.dates.length - 1] ? (
+                      <>
+                        {formatDate(item.dates[0])} <span className="mx-1">To</span> {formatDate(item.dates[item.dates.length - 1])}
+                      </>
+                    ) : (
+                      formatDate(item.dates[0])
+                    )}
+                  </td>
 
                   <td className="p-2 text-center">{getSymbol(item.adminAction)}</td>
                   <td className="p-2 text-center">{getSymbol(item.superAdminAction)}</td>
@@ -234,9 +245,9 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
                 {/* Employee Profile Section */}
                 <div className="bg-gray-50 rounded-lg p-4 mb-6">
                   <div className="flex items-center gap-4">
-                    <img 
-                      src={selectedLeave.employeeProfile} 
-                      alt="Employee Profile" 
+                    <img
+                      src={selectedLeave.employeeProfile}
+                      alt="Employee Profile"
                       className="w-16 h-16 rounded-full border-2 border-gray-300"
                     />
                     <div className="flex-1">
@@ -301,7 +312,7 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1 min-w-[150px]">
                       <div className="font-semibold text-gray-700 mb-1">HR Status:</div>
                       {userRole === 'hr' ? (
@@ -339,7 +350,7 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1 min-w-[150px]">
                       <div className="font-semibold text-gray-700 mb-1">HR Reason:</div>
                       {userRole === 'hr' ? (
@@ -370,13 +381,13 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
                   <button
                     onClick={handleSave}
                     disabled={
-                      isSaving || 
+                      isSaving ||
                       (userRole === 'hr' && (!hrStatus || !hrReason.trim())) ||
                       (userRole === 'teamlead' && (!tlStatus || !tlReason.trim()))
                     }
                     className={`py-3 min-w-[120px] rounded-full font-medium transition-colors duration-300
-                      ${((userRole === 'hr' && hrStatus && hrReason.trim()) || 
-                         (userRole === 'teamlead' && tlStatus && tlReason.trim())) && !isSaving
+                      ${((userRole === 'hr' && hrStatus && hrReason.trim()) ||
+                        (userRole === 'teamlead' && tlStatus && tlReason.trim())) && !isSaving
                         ? 'bg-[#BBD3CC] text-gray-700 hover:bg-[#A6C4BA]'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}

@@ -90,7 +90,10 @@ const superAdminProcessLeaveRequest = async (userid, leaveId, decision, comments
 
 
 const fetchAllLeaveRequests = async () => {
-    const leaveData = await LeaveApplication.find({})
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); 
+
+    let leaveData = await LeaveApplication.find({})
         .populate({
             path: "userid",
             select: "username email phoneNumber profilePicture",
@@ -98,9 +101,31 @@ const fetchAllLeaveRequests = async () => {
         .populate({
             path: "adminReviewer superAdminReviewer",
             select: "username email phoneNumber profilePicture",
-        });
-        return leaveData;
-}
+        })
+        .lean();
+    
+
+    leaveData.sort((a, b) => new Date(a.dates[0]) - new Date(b.dates[0]));
+
+    const array1 = []; 
+    const array2 = []; 
+    const array3 = []; 
+    leaveData.forEach(item => {
+        const tlApproved = item.adminAction?.toLowerCase() === "approved";
+        const hrEmpty = !item.superAdminAction || item.superAdminAction?.toLowerCase() === "pending";
+        const tlEmpty = !item.adminAction || item.adminAction?.toLowerCase() === "pending";
+
+        if (tlApproved && hrEmpty) {
+            array1.push(item);
+        } else if (tlEmpty && hrEmpty) {
+            array2.push(item);
+        } else {
+            array3.push(item);
+        }
+    });
+
+    return [...array1, ...array2, ...array3];
+};
 
 //@desc onboarding courses by role id
 const setOnboardingCourses = async (userId, roleid) => {
