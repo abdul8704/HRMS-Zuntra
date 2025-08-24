@@ -43,7 +43,7 @@ const addHolidays = asyncHandler(async (req, res) => {
     const holidayData = req.body;
 
     if (!holidayData || !Array.isArray(holidayData.dates) || holidayData.dates.length === 0) {
-        throw new ApiError('Holiday dates (array) are required', 400);
+        throw new ApiError(400, 'Holiday dates (array) are required');
     }
 
     const holiday = await HolidayService.addHolidays(holidayData);
@@ -52,7 +52,8 @@ const addHolidays = asyncHandler(async (req, res) => {
         success: true,
         data: holiday
     });
-})
+});
+
 
 const updateHoliday = asyncHandler(async (req, res) => {
     const { id } = req.params;
