@@ -112,19 +112,19 @@ const getEmployeesOnLeaveToday = asyncHandler(async (req, res) => {
   const employees = await HrService.getEmployeesOnLeaveToday();
 
   const formatted = employees.map(emp => ({
-  userId: emp._id,
-  name: emp.username,
-  role: emp.role,
-  requestedId: emp._id, // 🔑 so frontend can build image path consistently
-  email: emp.email,
-}));
-
+    userId: emp._id,
+    name: emp.fullName || emp.username,   // 🔑 prefer fullName if available
+    role: emp.role?.roleName,    // 🔑 populated role name
+    requestedId: emp._id,
+    email: emp.email,
+  }));
 
   res.status(200).json({
     success: true,
     employeesOnLeave: formatted,
   });
 });
+
 
 module.exports = {
     acceptUser,
