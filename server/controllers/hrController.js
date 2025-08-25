@@ -41,7 +41,7 @@ const getPendingEmployees = asyncHandler(async (req, res) => {
     res.status(200).json({
         success: true,
         pendingEmployees: formattedEmployees,
-    });
+    }); 
 });
 
 const getPendingLeaveReqs = asyncHandler(async (req, res) => {
@@ -108,6 +108,23 @@ const getAllLeaveReqs = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, leaveData: formattedRequest });
 
 });
+const getEmployeesOnLeaveToday = asyncHandler(async (req, res) => {
+  const employees = await HrService.getEmployeesOnLeaveToday();
+
+  const formatted = employees.map(emp => ({
+  userId: emp._id,
+  name: emp.username,
+  role: emp.role,
+  requestedId: emp._id, // 🔑 so frontend can build image path consistently
+  email: emp.email,
+}));
+
+
+  res.status(200).json({
+    success: true,
+    employeesOnLeave: formatted,
+  });
+});
 
 module.exports = {
     acceptUser,
@@ -115,4 +132,6 @@ module.exports = {
     getPendingLeaveReqs,
     processLeaveReq,
     getAllLeaveReqs,
+    getEmployeesOnLeaveToday,
+
 };

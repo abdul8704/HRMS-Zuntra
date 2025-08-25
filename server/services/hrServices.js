@@ -5,6 +5,7 @@ const Role = require("../models/roles");
 const attendanceHelper = require("../utils/attendanceHelper");
 const ApiError = require("../errors/ApiError");
 const LeaveApplication = require("../models/attendanceManagement/leaveApplication");
+const Attendance = require("../models/attendanceManagement/attendance");
 
 const updateUserData = async (email, shiftId, campusId, roleId) => {
     try {
@@ -148,6 +149,32 @@ const setOnboardingCourses = async (userId, roleid) => {
     }
 };
 
+const getEmployeesOnLeaveToday = async () => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    // 1️⃣ Find attendance records for today
+    const todaysAttendance = await Attendance.find({
+      date: { $gte: today, $lt: tomorrow }
+    }).select("userid");
+
+    const attendedUserIds = todaysAttendance.map(a => a.userid.toString());
+
+    // 2️⃣ Find users not in attendance
+    const employeesOnLeave = await UserCredentials.find(
+      { _id: { $nin: attendedUserIds } },
+      "username role profilePicture email"
+    ).lean();
+
+    return employeesOnLeave;
+  } catch (error) {
+    throw new ApiError(500, "Failed to fetch employees on leave: " + error.message);
+  }
+};
 
 module.exports = {
     updateUserData,
@@ -158,4 +185,5 @@ module.exports = {
     superAdminProcessLeaveRequest,
     fetchAllLeaveRequests,
     setOnboardingCourses,
+    getEmployeesOnLeaveToday,
 };
