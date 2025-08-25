@@ -164,11 +164,16 @@ const getEmployeesOnLeaveToday = async () => {
 
     const attendedUserIds = todaysAttendance.map(a => a.userid.toString());
 
-    // 2️⃣ Find users not in attendance
+    // 2️⃣ Find users not in attendance, only with a role assigned
     const employeesOnLeave = await UserCredentials.find(
-      { _id: { $nin: attendedUserIds } },
-      "username role profilePicture email"
-    ).lean();
+      { 
+        _id: { $nin: attendedUserIds },
+        role: { $exists: true, $ne: null }
+      },
+      "username fullName role profilePicture email"
+    )
+    .populate("role", "roleName")   // 🔑 populate role name
+    .lean();
 
     return employeesOnLeave;
   } catch (error) {
