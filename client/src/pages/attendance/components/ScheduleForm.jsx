@@ -103,6 +103,7 @@ export const ScheduleForm = ({ handleClose }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-sm border p-4 h-full overflow-hidden">
+      <h1 className='text-center text-lg font-semibold text-gray-800 mb-2'>Mark Event/Holiday</h1>
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-3 text-gray-700 w-full h-full overflow-y-auto max-h-[500px]"
@@ -247,7 +248,7 @@ export const ScheduleForm = ({ handleClose }) => {
         )}
 
         {/* Buttons */}
-        <div className="flex flex-col sm:flex-row justify-center gap-3 mt-auto pt-3">
+        <div className="flex flex-col sm:flex-row justify-center gap-3 pt-1 mb-6">
           <button
             type="button"
             onClick={handleCancel}
