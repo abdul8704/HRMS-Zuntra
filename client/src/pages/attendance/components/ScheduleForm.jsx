@@ -62,7 +62,7 @@ export const ScheduleForm = ({ handleClose }) => {
       setToDate('');
       setName('');
       setDescription('');
-      
+
       //Holiday post
     } else if (actionType === 'leave') {
       const leaveData = {

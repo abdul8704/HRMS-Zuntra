@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const rolesDetail = new mongoose.Schema({
     role: {
@@ -21,7 +21,7 @@ const rolesDetail = new mongoose.Schema({
     allowedAccess: {
         type: [String],
         default: [],
-    }
+    },
 });
 
-module.exports = mongoose.model('rolesDetails', rolesDetail)
+module.exports = mongoose.model("rolesDetails", rolesDetail);
