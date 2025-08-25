@@ -82,7 +82,7 @@ export const DayInfoCard = ({ selectedDate }) => {
         <p className="text-gray-600">{selectedDate.toLocaleDateString('en-US', { weekday: 'long' })}</p>
       </div>
 
-      {/* Holiday Info */}
+      {/* Holiday Info - Now styled like Event Card */}
       {isHoliday && (
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
@@ -90,9 +90,10 @@ export const DayInfoCard = ({ selectedDate }) => {
             <span className="text-sm font-medium text-gray-700">Holiday</span>
           </div>
           {holiday && (
-            <div className="ml-5 text-xs text-gray-600">
-              <div>Name: {holiday.name}</div>
-              <div>Applicable To: {holiday.applicableTo}</div>
+            <div className="ml-5">
+              <div className="text-xs text-gray-600 bg-gray-50 rounded px-2 py-1">
+                <span className="font-medium">{holiday.name}</span>
+              </div>
             </div>
           )}
         </div>
@@ -108,7 +109,7 @@ export const DayInfoCard = ({ selectedDate }) => {
         </div>
       )}
 
-      {/* Events */}
+      {/* Events - With light green background */}
       <div className="mb-4">
         <h4 className="text-sm font-medium text-gray-700 mb-2">Events:</h4>
         {loadingEvents ? (
@@ -116,7 +117,7 @@ export const DayInfoCard = ({ selectedDate }) => {
         ) : events.length > 0 ? (
           <div className="space-y-1">
             {events.map((event, index) => (
-              <div key={index} className="text-xs text-gray-600 bg-gray-50 rounded px-2 py-1">
+              <div key={index} className="text-xs text-gray-600 bg-green-50 rounded px-2 py-1 border border-green-100">
                 <span className="font-medium">{event.title}</span>: {event.description}
               </div>
             ))}
