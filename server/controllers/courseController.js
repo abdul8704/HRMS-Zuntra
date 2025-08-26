@@ -299,7 +299,21 @@ const setCourseProgress = asyncHandler(async (req, res) => {
   });
 });
 
+const getCourseProgressByUser = asyncHandler(async (req, res) => {
+  const { userid } = req.params;
 
+  if (!userid) {
+    throw new ApiError(400, "User ID is required");
+  }
+
+  const progress = await courseService.getProgressByUser(userid);
+
+  res.status(200).json({
+    success: true,
+    message: "Course progress fetched successfully",
+    data: progress,
+  });
+});
 
 
 module.exports = {
@@ -316,4 +330,5 @@ module.exports = {
   getProgressMatrixByCourseIdController,
   getCoursesByTypeForUserId,
   setCourseProgress,
+  getCourseProgressByUser,
 };
