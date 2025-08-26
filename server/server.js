@@ -1,24 +1,25 @@
-const connectDB = require('./configs/db')
-const express = require('express');
+const connectDB = require("./configs/db");
+const express = require("express");
 const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-require('dotenv').config();
+require("dotenv").config();
 
-const hrRoutes = require('./routes/hr');
-const courseRouter = require('./routes/courseRoutes')
-const authRouter = require('./routes/authRoutes')
-const meetingRouter = require('./routes/meetingRoutes')
-const taskRouter = require('./routes/taskRoutes')
-const projectRouter = require('./routes/projectRoutes')
-const employeeRouter = require('./routes/employeeRoutes')
-const rolesRouter = require('./routes/rolesRoutes')
-const shiftRouter = require('./routes/shiftRoutes')
-const geoLocationRouter = require('./routes/geoLocationRouter')
-const reminderRouter = require('./routes/reminderRoutes')
-const eventRoutes = require('./routes/eventRoutes');
-const holidayRoutes = require('./routes/holidayRoutes');
-const companyDocumentsRouter = require('./routes/companyDocumentsRoutes');
+const hrRoutes = require("./routes/hr");
+const courseRouter = require("./routes/courseRoutes");
+const authRouter = require("./routes/authRoutes");
+const meetingRouter = require("./routes/meetingRoutes");
+const taskRouter = require("./routes/taskRoutes");
+const projectRouter = require("./routes/projectRoutes/projectRoutes");
+const employeeRouter = require("./routes/employeeRoutes");
+const rolesRouter = require("./routes/rolesRoutes");
+const shiftRouter = require("./routes/shiftRoutes");
+const geoLocationRouter = require("./routes/geoLocationRouter");
+const reminderRouter = require("./routes/reminderRoutes");
+const eventRoutes = require("./routes/eventRoutes");
+const holidayRoutes = require("./routes/holidayRoutes");
+const companyDocumentsRouter = require("./routes/companyDocumentsRoutes");
+const teamRoutes = require("./routes/projectRoutes/teamRoutes");
 const path = require("path");
 
 const errorHandler=require('./middlewares/errorHandler')
@@ -26,10 +27,7 @@ const JWTauth = require('./middlewares/authenticateJWT')
 const apiLogger = require('./middlewares/apiLogger')
 
 const corsOptions = {
-    origin: [
-        "http://localhost:5173",
-        "http://localhost:5174"
-    ],
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true, // Include cookies and auth headers if needed
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -54,8 +52,9 @@ app.use("/api/shifts", shiftRouter);
 app.use("/api/branch", geoLocationRouter);
 app.use("/api/reminder", reminderRouter);
 app.use("/api/events", eventRoutes);
-app.use('/api/docs', companyDocumentsRouter);
+app.use("/api/docs", companyDocumentsRouter);
 app.use("/api/holidays", holidayRoutes);
+app.use("/api/project/team", teamRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(errorHandler);
 
@@ -69,9 +68,8 @@ const start = async () => {
         });
     } catch (error) {
         console.error("Failed to start server:", error.message);
-        process.exit(1); 
+        process.exit(1);
     }
 };
-
 
 start();

@@ -3,7 +3,6 @@ const { Schema } = mongoose;
 
 const projectSchema = new Schema({
     name: { type: String, required: true, index: true },
-    code: { type: String, index: true }, // optional short code
     client: {
         name: String,
         contactName: String,
@@ -16,17 +15,11 @@ const projectSchema = new Schema({
     endDate: Date,
     estimatedBudget: Number,
     status: {
-    type: String,
-    enum: [
-        "not_started",
-        "ongoing",
-        "on_hold",
-        "completed",
-        "cancelled",
-    ],
+        type: String,
+        enum: ["not_started", "ongoing", "on_hold", "completed", "cancelled"],
         default: "not_started",
     },
-    teams: [{ type: Schema.Types.ObjectId, ref: "Team" }], 
+    teams: [{ type: Schema.Types.ObjectId, ref: "Team" }],
     createdBy: { type: Schema.Types.ObjectId, ref: "UserCredentials" },
 });
 

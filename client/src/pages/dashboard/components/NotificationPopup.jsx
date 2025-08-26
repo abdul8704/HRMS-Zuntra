@@ -7,6 +7,8 @@ export const NotificationPopup = ({ setShowPopup }) => {
   const [recipientType, setRecipientType] = useState('');
   const [selectedRecipients, setSelectedRecipients] = useState([]);
   const [showMeetDropdown, setShowMeetDropdown] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
 
   const teams = [
     { id: 1, name: 'Development Team' },
@@ -23,6 +25,20 @@ export const NotificationPopup = ({ setShowPopup }) => {
     { id: 5, name: 'Alex Brown', team: 'Development' },
     { id: 6, name: 'Emma Davis', team: 'Marketing' }
   ];
+
+  const showCustomAlert = (message) => {
+    setAlertMessage(message);
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+      setAlertMessage('');
+    }, 5000);
+  };
+
+  const closeAlert = () => {
+    setShowAlert(false);
+    setAlertMessage('');
+  };
 
   const getRecipientOptions = () => {
     if (userRole === 'HR') {
@@ -76,20 +92,22 @@ export const NotificationPopup = ({ setShowPopup }) => {
 
   const handleSend = () => {
     if (!notification.trim()) {
-      alert('Please enter a notification message');
+      showCustomAlert('Please enter a notification message');
       return;
     }
     if (!recipientType) {
-      alert('Please select recipient type');
+      showCustomAlert('Please select recipient type');
       return;
     }
     if (recipientType !== 'all' && selectedRecipients.length === 0) {
-      alert('Please select recipients');
+      showCustomAlert('Please select recipients');
       return;
     }
 
-    alert('Notification sent successfully!');
-    setShowPopup(false);
+    showCustomAlert('Notification sent successfully!');
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 1500);
   };
 
   const handleClose = () => {
@@ -114,13 +132,13 @@ export const NotificationPopup = ({ setShowPopup }) => {
     // Open Google Meet with the new meeting
     window.open('https://meet.google.com/new', '_blank');
     
-    alert('Creating new meeting...\nOpening Google Meet to create a new meeting room.');
+    showCustomAlert('Creating new meeting...\nOpening Google Meet to create a new meeting room.');
   };
 
   // Join meeting function from dashboard code
   const joinMeeting = (meetingCode) => {
     if (!meetingCode) {
-      alert('Please enter a meeting code or URL');
+      showCustomAlert('Please enter a meeting code or URL');
       return;
     }
 
@@ -138,7 +156,7 @@ export const NotificationPopup = ({ setShowPopup }) => {
     window.open(meetingUrl, '_blank');
     
     // Show confirmation
-    alert(`Joining meeting: ${meetingCode}\nOpening Google Meet...`);
+    showCustomAlert(`Joining meeting: ${meetingCode}\nOpening Google Meet...`);
   };
 
   const handleScheduleMeeting = () => {
@@ -161,6 +179,23 @@ export const NotificationPopup = ({ setShowPopup }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      {/* Custom Alert Popup */}
+      {showAlert && (
+        <div className="fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg z-[60] max-w-sm">
+          <div className="flex items-start justify-between">
+            <div className="flex-1 pr-2">
+              <p className="text-sm whitespace-pre-line">{alertMessage}</p>
+            </div>
+            <button
+              onClick={closeAlert}
+              className="text-white hover:text-red-200 transition-colors ml-2"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-lg shadow-xl w-96 max-w-full mx-4">
         {/* Header */}
         <div className="p-4 border-b">

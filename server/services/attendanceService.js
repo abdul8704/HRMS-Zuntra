@@ -212,7 +212,9 @@ const adminProcessLeaveRequest = async (
     decision,
     comments = "NIL"
 ) => {
-    const finalDecision = decision.toUpperCase();
+
+    const finalDecision =
+        decision.toUpperCase() === "APPROVED" ? "APPROVED" : "REJECTED";
     const leaveApplication = await LeaveApplication.findById(leaveId);
     const now = new Date();
 
@@ -230,16 +232,17 @@ const adminProcessLeaveRequest = async (
             leaveApplication.adminReviewer = userid;
             leaveApplication.adminReviewedAt = now;
             leaveApplication.adminReviewComment = comments;
-            return;
         }
     }
+    else{
+        leaveApplication.status = finalDecision;
+        leaveApplication.adminAction = finalDecision;
+        leaveApplication.adminReviewer = userid;
+        leaveApplication.adminReviewedAt = now;
+        leaveApplication.adminReviewComment = comments;
+    }
 
-    leaveApplication.status =
-        finalDecision === "APPROVED" ? "APPROVED" : "REJECTED";
-    leaveApplication.adminAction = finalDecision;
-    leaveApplication.adminReviewer = userid;
-    leaveApplication.adminReviewedAt = now;
-    leaveApplication.adminReviewComment = comments;
+    
 
     await leaveApplication.save();
 };
