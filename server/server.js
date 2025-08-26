@@ -23,6 +23,7 @@ const path = require("path");
 
 const errorHandler=require('./middlewares/errorHandler')
 const JWTauth = require('./middlewares/authenticateJWT')
+const apiLogger = require('./middlewares/apiLogger')
 
 const corsOptions = {
     origin: [
@@ -35,8 +36,10 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
 app.use(express.json());
-app.use(cookieParser()); 
+app.use(cookieParser());
+app.use(apiLogger);
 app.use("/auth", authRouter)
 app.use("/api", JWTauth);
 
