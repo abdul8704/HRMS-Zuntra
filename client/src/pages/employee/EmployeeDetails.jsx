@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import { SidebarDetails } from "../utils/SidebarDetails";
 import { Navbar } from "../../components/Navbar";
@@ -8,19 +8,18 @@ import { AssignCoursePopup } from "./components/AssignCoursePopup";
 import { EmployeeCourseProgress } from "./components/EmployeeCourseProgress";
 import { useAuth } from "../../context/AuthContext";
 import { Loading } from "../utils/Loading";
-import api from "../../api/axios";
-import { BASE_URL } from "../../api/axios";
-import { useNavigate } from "react-router-dom";
-// Import EmployeeCard
-import { EmployeeCard } from "../employee/components/EmployeeCard"; // adjust the path if needed
+import api, { BASE_URL } from "../../api/axios";
+import { EmployeeCard } from "../employee/components/EmployeeCard";
 
 export const EmployeeDetails = ({ type }) => {
   const { user, loading } = useAuth();
-  const { empId, navId, roleId } = useParams(); // ✅ roleId added here
+  const { empId, navId, roleId } = useParams();
   const [roleProfiles, setRolesProfiles] = useState([]);
+  const [courseProgress, setCourseProgress] = useState([]); // ✅ state for courses
   const [showAssignCourse, setShowAssignCourse] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
   useEffect(() => {
     if (type === "role") {
       const fetchRoleEmployees = async () => {
@@ -39,17 +38,12 @@ export const EmployeeDetails = ({ type }) => {
           setIsLoading(false);
         }
       };
-      if (!loading) {
-        fetchRoleEmployees();
-      }
+      if (!loading) fetchRoleEmployees();
     } else {
       const fetchEmployeeDetails = async () => {
         setIsLoading(true);
         try {
-          const [empRes, courseRes] = await Promise.all([
-            api.get(`/api/employee/${empId}`),
-            api.get(`/api/course/enrolledCourses`),
-          ]);
+          const empRes = await api.get(`/api/employee/${empId}`);
           if (empRes.data.success) {
             setRolesProfiles(empRes.data.employeeDetail || empRes.data.data);
           }
@@ -63,11 +57,32 @@ export const EmployeeDetails = ({ type }) => {
         }
       };
 
-      if (!loading) {
-        fetchEmployeeDetails();
-      }
+      if (!loading) fetchEmployeeDetails();
     }
   }, [type, loading, empId, roleId]);
+
+  // ✅ Fetch course progress when navId = courses
+  useEffect(() => {
+    const fetchCourseProgress = async () => {
+      if (navId !== "courses" || !empId) return;
+      setIsLoading(true);
+      try {
+        const res = await api.get(`/api/course/progress/${empId}`);
+        if (res.data.success) {
+          setCourseProgress(res.data.data || []);
+        }
+      } catch (err) {
+        console.error(
+          "Error fetching course progress:",
+          err?.response?.data?.message || err.message
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (!loading) fetchCourseProgress();
+  }, [navId, empId, loading]);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -90,9 +105,19 @@ export const EmployeeDetails = ({ type }) => {
 
                 {navId === "courses" && (
                   <>
-                    <p>Courses</p>
-                    <div className="h-[9rem] w-full sm:w-[24rem]">
-                      <EmployeeCourseProgress type={"course"} />
+                    <p className="text-lg font-semibold mb-2">Courses</p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {courseProgress.length > 0 ? (
+                        courseProgress.map((course) => (
+                          <EmployeeCourseProgress
+                            key={course.courseId}
+                            data={course} // ✅ pass the full course data as prop
+                          />
+                        ))
+                      ) : (
+                        <p className="text-gray-500">No courses found.</p>
+                      )}
                     </div>
 
                     <button
@@ -132,9 +157,7 @@ export const EmployeeDetails = ({ type }) => {
                       <div
                         key={profile._id}
                         onClick={() =>
-                          navigate(
-                            `/employee/${profile._id}/details/attendance`
-                          )
+                          navigate(`/employee/${profile._id}/details/attendance`)
                         }
                         className="cursor-pointer"
                       >
