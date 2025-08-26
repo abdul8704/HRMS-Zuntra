@@ -421,19 +421,25 @@ const getAttendanceDataOnly = async (userid, startDate, endDate) => {
         start,
         totalDays,
         attendanceMap,
-        holidays: hol,
+        holidays: hol, // now each holiday has `dates: []`
     } = await fetchAttendanceRecords(userid, startDate, endDate);
 
     const attendanceData = [];
-
-    let holIndex = 0;
-    const holidayCountRaw = hol.length;
 
     let presentCount = 0;
     let remoteCount = 0;
     let absentCount = 0;
     let holidayCount = 0;
     let totalDaysCount = totalDays;
+
+    // Flatten holidays into a Set of YYYY-MM-DD strings for quick lookup
+    const holidayDatesSet = new Set();
+    hol.forEach((h) => {
+        (h.dates || []).forEach((d) => {
+            const dateStr = new Date(d).toISOString().split("T")[0];
+            holidayDatesSet.add(dateStr);
+        });
+    });
 
     for (let i = 0; i < totalDays; i++) {
         const current = new Date(start.getTime() + i * 24 * 60 * 60 * 1000);
@@ -442,18 +448,10 @@ const getAttendanceDataOnly = async (userid, startDate, endDate) => {
         let status = "";
         const record = attendanceMap.get(currentDateStr);
 
-        let isHoliday = false;
-
-        if (holIndex < holidayCountRaw) {
-            const holDateStr = new Date(hol[holIndex].date)
-                .toISOString()
-                .split("T")[0];
-            if (holDateStr === currentDateStr) {
-                isHoliday = true;
-                status = "holiday";
-                holIndex++;
-                holidayCount++;
-            }
+        let isHoliday = holidayDatesSet.has(currentDateStr);
+        if (isHoliday) {
+            status = "holiday";
+            holidayCount++;
         }
 
         if (record) {
@@ -478,8 +476,9 @@ const getAttendanceDataOnly = async (userid, startDate, endDate) => {
             else if (baseStatus === "remote") remoteCount++;
 
             if (isHoliday) {
-                if(workingMins>0) status = `holiday - worked for ${workingMins} minutes`;
-                else status = "holiday"
+                if (workingMins > 0)
+                    status = `holiday - worked for ${workingMins} minutes`;
+                else status = "holiday";
             }
         } else if (!isHoliday) {
             status = "absent";
@@ -500,6 +499,7 @@ const getAttendanceDataOnly = async (userid, startDate, endDate) => {
         },
     };
 };
+
 
 const getTimeCards = async (userid, date) => {
     const attendance = await Attendance.findOne({ userid, date });

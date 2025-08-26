@@ -1,5 +1,5 @@
 const ApiError = require("../../errors/ApiError");
-const Team = require("../../models/projectManagement/team");
+const Team = require("../../models/team");
 const TeamMember = require("../../models/projectManagement/teamMember");
 const UserCredentials = require("../../models/userCredentials");
 
