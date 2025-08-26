@@ -172,7 +172,7 @@ const getEmployeesOnLeaveToday = async () => {
       },
       "username fullName role profilePicture email"
     )
-    .populate("role", "roleName")   // 🔑 populate role name
+    .populate("role", "role")   // 🔑 populate role name
     .lean();
 
     return employeesOnLeave;
