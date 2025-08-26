@@ -76,7 +76,7 @@ const formatTime = (inputTime) => {
 const convertMinutes = (totalMinutes) => {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-  return `${hours}H ${minutes}M`;
+  return (hours > 0) ? `${hours}H ${minutes}M`: `${minutes}M`;
 };
 
 module.exports = {
