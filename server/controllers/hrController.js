@@ -113,8 +113,8 @@ const getEmployeesOnLeaveToday = asyncHandler(async (req, res) => {
 
   const formatted = employees.map(emp => ({
     userId: emp._id,
-    name: emp.fullName || emp.username,   // 🔑 prefer fullName if available
-    role: emp.role?.roleName,    // 🔑 populated role name
+    name: emp.username,   
+    role: emp.role?.role,    
     requestedId: emp._id,
     email: emp.email,
   }));
