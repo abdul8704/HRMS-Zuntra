@@ -228,6 +228,46 @@ const setCourseProgress = async (userId, courseId, moduleId, subModuleId) => {
     }
 };
 
+const getProgressByUser = async (userId) => {
+    try {
+        // Find all progress records for the user
+        const progressData = await courseProgress.find({ userId });
+
+        if (!progressData || progressData.length === 0) {
+            return [];
+        }
+
+        // Map progress with course details
+        const results = await Promise.all(
+            progressData.map(async (progress) => {
+                const course = await courseDetails.findById(progress.courseId);
+
+                return {
+                    courseId: progress.courseId,
+                    percentComplete: progress.percentComplete,
+                    // moduleStatus: progress.moduleStatus,
+                    courseDetails: course
+                        ? {
+                              courseName: course.courseName,
+                            //   {courseDescription: course.courseDescription}
+                              courseInstructor: course.courseInstructor,
+                              courseImage: course.courseImage,
+                              courseRating: course.courseRating,
+                              deadline: course.deadline,
+                              deadlineUnits: course.deadlineUnits,
+                          }
+                        : null,
+                };
+            })
+        );
+
+        return results;
+    } catch (err) {
+        if (err instanceof ApiError) throw err;
+        throw new ApiError(500, "Unable to get progress by user", err.message);
+    }
+};
+
 module.exports = {
     addNewCourse,
     getAllCourseDetails,
@@ -242,4 +282,5 @@ module.exports = {
     fetchProgressMatrix,
     getCoursesByTypeForUserId,
     setCourseProgress,
+    getProgressByUser,
 };

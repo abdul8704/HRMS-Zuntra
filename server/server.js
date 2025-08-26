@@ -22,8 +22,9 @@ const companyDocumentsRouter = require("./routes/companyDocumentsRoutes");
 const teamRoutes = require("./routes/projectRoutes/teamRoutes");
 const path = require("path");
 
-const errorHandler = require("./middlewares/errorHandler");
-const JWTauth = require("./middlewares/authenticateJWT");
+const errorHandler=require('./middlewares/errorHandler')
+const JWTauth = require('./middlewares/authenticateJWT')
+const apiLogger = require('./middlewares/apiLogger')
 
 const corsOptions = {
     origin: ["http://localhost:5173", "http://localhost:5174"],
@@ -33,9 +34,11 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(cookieParser());
-app.use("/auth", authRouter);
+app.use(apiLogger);
+app.use("/auth", authRouter)
 app.use("/api", JWTauth);
 
 app.use("/api/hr", hrRoutes);

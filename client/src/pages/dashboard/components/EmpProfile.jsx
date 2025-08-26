@@ -7,7 +7,6 @@ export const EmpProfile = ({
   tl = false,
   color = "rgba(255,255,255,0.2)",
 }) => {
-  const firstName = name.split(" ")[0];
 
   return (
     <div
@@ -29,14 +28,14 @@ export const EmpProfile = ({
 
       <img
         src={avatar}
-        alt={firstName}
+        alt={name}
         className="w-12 h-12 rounded-full mr-3 object-cover shrink-0"
         style={{ objectPosition: "center" }}
       />
 
       <div className="flex flex-col justify-center overflow-hidden">
         <div className="font-bold text-sm truncate leading-tight text-black">
-          {firstName}
+          {name}
         </div>
         <div className="text-xs text-gray-600 truncate leading-tight">
           {role}
