@@ -6,8 +6,9 @@ const ApiError = require("../errors/ApiError");
 // @route   POST /api/reminder/create
 const createReminder = asyncHandler(async (req, res) => {
   const { userid } = req.user;
-  const { reminder, dueDate } = req.body;
+  const { reminder } = req.body;
 
+  const dueDate = req.body.dueDate ? req.body.dueDate : new Date();
   if (!reminder || !dueDate) {
     throw new ApiError(400, "Fields 'reminder' and 'dueDate' are required");
   }
