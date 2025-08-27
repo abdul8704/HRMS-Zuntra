@@ -437,7 +437,7 @@ export const CourseManagement = () => {
                 {filteredCourses.map((course, index) => (
                   <div
                     key={index}
-                    onClick={() => navigate(`/course/${index}/intro`)}
+                    onClick={() => navigate(`/course/${course._id}/details`)}
                     className="cursor-pointer h-full"
                   >
                     <CourseCard key={index} {...course} />

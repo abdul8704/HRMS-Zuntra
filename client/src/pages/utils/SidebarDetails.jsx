@@ -20,7 +20,7 @@ import api, { BASE_URL } from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { Loading } from "./Loading";
 
-export function SidebarDetails({ type }) {
+export function SidebarDetails({ type}) {
   const navigate = useNavigate();
   const params = useParams();
   const empId = type === "user" ? params.empId : null;
@@ -268,9 +268,9 @@ export function SidebarDetails({ type }) {
                 </div>
               </div>
             </div>
-
+                    
             {/* Sticky Edit Button */}
-            {String(user?._id) === String(empId) && (
+            {String(user?.userid) === String(empId) && (
               <div className="sticky bottom-0 bg-[#BBD3CC] px-6 py-4">
                 <button
                   onClick={handleEditProfile}
