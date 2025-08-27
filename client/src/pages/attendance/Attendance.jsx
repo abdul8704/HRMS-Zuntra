@@ -182,7 +182,7 @@ export const Attendance = ({ showScheduleForm = true }) => {
                     )}
 
                     {navId === 'schedule' && (
-                        <div className="flex flex-col gap-4 lg:flex-row w-full h-full overflow-hidden">
+                        <div className="flex flex-col gap-4 lg:flex-row w-full h-full">
                             <div className="flex flex-col gap-4 w-full lg:w-1/2 h-full">
                                 <div className="w-full flex-1 min-h-0">
                                     <AttendanceCalendar
