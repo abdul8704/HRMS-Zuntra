@@ -3,93 +3,95 @@ const User = require("../models/userCredentials.js");
 const ApiError = require("../errors/ApiError.js");
 const attendanceHelper = require("../utils/attendanceHelper.js");
 const LeaveApplication = require("../models/attendanceManagement/leaveApplication.js");
-const Holiday = require('./holidayService.js')
+const Holiday = require("./holidayService.js");
 
 const markAttendanceOnLogin = async (userid, mode) => {
-  const today = attendanceHelper.normalizeToUTCDate(new Date());
-  const now = attendanceHelper.toUTCTimeOnly(new Date());
-
-  try {
-    const shiftData = await User.findById(userid).populate("shift", "startTime endTime");
+    const today = attendanceHelper.normalizeToUTCDate(new Date());
+    const now = attendanceHelper.toUTCTimeOnly(new Date());
+    const shiftData = await User.findById(userid).populate(
+        "shift",
+        "startTime endTime"
+    );
 
     if (!shiftData) throw new ApiError(404, "User not found");
-    if (!shiftData.shift) throw new ApiError(400, "User has no valid shift assigned");
+    if (!shiftData.shift)
+        throw new ApiError(400, "User has no valid shift assigned");
 
     const shiftStartTime = new Date(shiftData.shift.startTime);
     const shiftEndTime = new Date(shiftData.shift.endTime);
 
     if (isNaN(shiftStartTime.getTime()) || isNaN(shiftEndTime.getTime())) {
-      throw new ApiError(400, "Unable to process shift timings");
+        throw new ApiError(400, "Unable to process shift timings");
     }
 
     let attendance = await Attendance.findOne({ userid, date: today });
 
-    // 👇 If an attendance record exists, auto-close last session if it's still open
-    if (attendance && attendance.sessions.length > 0) {
-      const lastSession = attendance.sessions[attendance.sessions.length - 1];
-
-      if (lastSession && !lastSession.logoutTime && lastSession.lastRequest) {
-        // Use lastRequest as logoutTime
-        const logoutTime = attendanceHelper.toUTCTimeOnly(new Date(lastSession.lastRequest));
-
-        if (logoutTime > new Date(lastSession.loginTime)) {
-          const sessionDurationMs = logoutTime - new Date(lastSession.loginTime);
-          const sessionDurationMinutes = sessionDurationMs / (1000 * 60);
-
-          lastSession.logoutTime = logoutTime;
-          attendance.workingMinutes += sessionDurationMinutes;
-          await attendance.save();
-        }
-      }
-    }
-
-    // If no record → first login of the day
     if (!attendance) {
-      attendance = new Attendance({
-        userid,
-        date: today,
-        sessions: [
-          {
-            loginTime: now,
-            lastRequest: now,
-            mode: now >= shiftStartTime && now <= shiftEndTime ? mode : "extra",
-          },
-        ],
-        workingMinutes: 0,
-        breakMinutes: 0,
-        status: mode === "remote" ? "remote" : "present",
-      });
+        attendance = new Attendance({
+            userid,
+            date: today,
+            sessions: [
+                {
+                    loginTime: now,
+                    lastRequest: now,
+                    mode:
+                        now >= shiftStartTime && now <= shiftEndTime
+                            ? mode
+                            : "extra",
+                },
+            ],
+            workingMinutes: 0,
+            breakMinutes: 0,
+            status: mode === "remote" ? "remote" : "present",
+        });
 
-      if (shiftStartTime - now <= 60 * 60 * 1000 || now - shiftStartTime >= 0) {
-        attendance.lateBy = (now - shiftStartTime) / 60_000;
-      }
+        if (
+            shiftStartTime - now <= 60 * 60 * 1000 ||
+            now - shiftStartTime >= 0
+        ) {
+            attendance.lateBy = (now - shiftStartTime) / 60_000;
+        }
 
-      await attendance.save();
-      return { success: true, message: "Attendance marked (first login of the day)" };
+        await attendance.save();
+        return {
+            success: true,
+            message: "Attendance marked (first login of the day)",
+        };
     }
 
-    // Existing record → create new session
-    const lastSession = attendance.sessions[attendance.sessions.length - 1];
+    // 👇 If an attendance record exists, auto-close last session if it's still open
+    if (attendance.sessions.length > 0) {
+        const lastSession = attendance.sessions[attendance.sessions.length - 1];
 
+        if (lastSession && !lastSession.logoutTime && lastSession.lastRequest) {
+            // Use lastRequest as logoutTime
+            const logoutTime = lastSession.lastRequest;
+
+            if (logoutTime > new Date(lastSession.loginTime)) {
+                const sessionDurationMs =
+                    logoutTime - new Date(lastSession.loginTime);
+                const sessionDurationMinutes = sessionDurationMs / (1000 * 60);
+
+                lastSession.logoutTime = logoutTime;
+                attendance.workingMinutes += sessionDurationMinutes;
+                await attendance.save();
+            }
+        }
+    }
+    // Existing record → create new session
     if (attendance.status === "remote" && mode === "onsite") {
-      attendance.status = "present";
+        attendance.status = "present";
     }
 
     attendance.sessions.push({
-      loginTime: now,
-      lastRequest: now,
-      mode: now >= shiftStartTime && now <= shiftEndTime ? mode : "extra",
+        loginTime: now,
+        lastRequest: now,
+        mode: now >= shiftStartTime && now <= shiftEndTime ? mode : "extra",
     });
 
     await attendance.save();
     return { success: true, message: "Attendance updated (subsequent login)" };
-  } catch (error) {
-    if (error instanceof ApiError) throw error;
-    throw new ApiError(500, "Failed to mark attendance on login", error.message);
-  }
 };
-
-
 
 const markEndOfSession = async (userid, logout) => {
     const today = attendanceHelper.normalizeToUTCDate(new Date());
@@ -176,7 +178,6 @@ const adminProcessLeaveRequest = async (
     decision,
     comments = "NIL"
 ) => {
-
     const finalDecision =
         decision.toUpperCase() === "APPROVED" ? "APPROVED" : "REJECTED";
     const leaveApplication = await LeaveApplication.findById(leaveId);
@@ -197,8 +198,7 @@ const adminProcessLeaveRequest = async (
             leaveApplication.adminReviewedAt = now;
             leaveApplication.adminReviewComment = comments;
         }
-    }
-    else {
+    } else {
         leaveApplication.status = finalDecision;
         leaveApplication.adminAction = finalDecision;
         leaveApplication.adminReviewer = userid;
@@ -206,21 +206,31 @@ const adminProcessLeaveRequest = async (
         leaveApplication.adminReviewComment = comments;
     }
 
-
-
     await leaveApplication.save();
 };
 
-const editLeaveRequest = async (leaveId, userid, leaveCategory, dates, reason) => {
+const editLeaveRequest = async (
+    leaveId,
+    userid,
+    leaveCategory,
+    dates,
+    reason
+) => {
     const leaveApplication = await LeaveApplication.findById(leaveId);
-    const now = Date.now()
+    const now = Date.now();
 
     if (String(leaveApplication.userid) !== userid) {
-        throw new ApiError(403, "YOU CANNOT CHANGE OTHER PEOPLE's LEAVE APPLICATION");
+        throw new ApiError(
+            403,
+            "YOU CANNOT CHANGE OTHER PEOPLE's LEAVE APPLICATION"
+        );
     }
 
     if (leaveApplication.status !== "PENDING") {
-        throw new ApiError(403, "FORBIDDEN. ADMINS have already taken action. Cannot edit now.")
+        throw new ApiError(
+            403,
+            "FORBIDDEN. ADMINS have already taken action. Cannot edit now."
+        );
     }
 
     leaveApplication.leaveType = leaveCategory.toUpperCase();
@@ -229,7 +239,7 @@ const editLeaveRequest = async (leaveId, userid, leaveCategory, dates, reason) =
     leaveApplication.appliedOn = now;
 
     await leaveApplication.save();
-}
+};
 
 const deleteLeaveRequest = async (leaveId, userid) => {
     const leaveApplication = await LeaveApplication.findById(leaveId);
@@ -249,13 +259,9 @@ const deleteLeaveRequest = async (leaveId, userid) => {
     }
 
     await LeaveApplication.findByIdAndDelete(leaveId);
-}
+};
 
-const fetchAttendanceRecords = async (
-    userid,
-    startDate,
-    endDate,
-) => {
+const fetchAttendanceRecords = async (userid, startDate, endDate) => {
     const start = attendanceHelper.normalizeToUTCDate(startDate);
     start.setUTCHours(0, 0, 0, 0);
 
@@ -268,10 +274,13 @@ const fetchAttendanceRecords = async (
 
     const holidays = await Holiday.getHolidaysInRange(start, end, userid);
 
-    const attendanceRecords = await Attendance.find({
-        userid,
-        date: { $gte: start, $lte: end },
-    }, { sessions: 0 }).sort({ date: 1 });
+    const attendanceRecords = await Attendance.find(
+        {
+            userid,
+            date: { $gte: start, $lte: end },
+        },
+        { sessions: 0 }
+    ).sort({ date: 1 });
 
     const attendanceMap = new Map();
     for (const record of attendanceRecords) {
@@ -286,11 +295,7 @@ const fetchAttendanceRecords = async (
     return { start, totalDays, attendanceMap, holidays };
 };
 
-const getCalendarDataOnly = async (
-    userid,
-    startDate,
-    endDate,
-) => {
+const getCalendarDataOnly = async (userid, startDate, endDate) => {
     const {
         start,
         totalDays,
@@ -314,7 +319,7 @@ const getCalendarDataOnly = async (
         calendar.push({ date: currentDateStr, status });
     }
 
-    return calendar
+    return calendar;
 };
 
 const getWorkBreakCompositionOnly = async (userid, todayStr) => {
@@ -378,7 +383,6 @@ const getWorkBreakCompositionOnly = async (userid, todayStr) => {
         last30Days: workBreakComposition30,
     };
 };
-
 
 const getAttendanceDataOnly = async (userid, startDate, endDate) => {
     const {
@@ -464,37 +468,40 @@ const getAttendanceDataOnly = async (userid, startDate, endDate) => {
     };
 };
 
-
 const getTimeCards = async (userid, date) => {
     const attendance = await Attendance.findOne({ userid, date });
 
     if (!attendance) {
-        return ({
+        return {
             login: "N/A",
             logout: "N/A",
             work: "N/A",
             break: "N/A",
-        });
+        };
     }
 
     const N = attendance.sessions.length;
 
-    let loginTime = 'N/A';
-    let logoutTime = 'N/A';
-    let breakTime = 'N/A';
-    let workTime = 'N/A';
+    let loginTime = "N/A";
+    let logoutTime = "N/A";
+    let breakTime = "N/A";
+    let workTime = "N/A";
 
     if (attendance.sessions[0].loginTime)
-        loginTime = attendanceHelper.formatTime(attendance.sessions[0].loginTime)
+        loginTime = attendanceHelper.formatTime(
+            attendance.sessions[0].loginTime
+        );
 
     if (attendance.sessions[N - 1].logoutTime)
-        logoutTime = attendanceHelper.formatTime(attendance.sessions[N - 1].logoutTime)
+        logoutTime = attendanceHelper.formatTime(
+            attendance.sessions[N - 1].logoutTime
+        );
 
     if (attendance.workingMinutes)
         workTime = attendanceHelper.convertMinutes(attendance.workingMinutes);
 
     if (attendance.breakMinutes)
-        breakTime = attendanceHelper.convertMinutes(attendance.breakMinutes)
+        breakTime = attendanceHelper.convertMinutes(attendance.breakMinutes);
 
     const timeCards = {
         login: loginTime,

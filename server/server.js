@@ -37,9 +37,8 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(apiLogger);
 app.use("/auth", authRouter)
-app.use("/api", JWTauth);
+app.use("/api", JWTauth, apiLogger);
 
 app.use("/api/hr", hrRoutes);
 app.use("/api/course", courseRouter);
