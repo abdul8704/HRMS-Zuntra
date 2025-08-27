@@ -170,7 +170,7 @@ const getEmployeesOnLeaveToday = async () => {
         _id: { $nin: attendedUserIds },
         role: { $exists: true, $ne: null }
       },
-      "username fullName role profilePicture email"
+      "username role profilePicture email"
     )
     .populate("role", "role")   // 🔑 populate role name
     .lean();
