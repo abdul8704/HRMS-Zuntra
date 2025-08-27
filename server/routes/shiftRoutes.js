@@ -5,8 +5,9 @@ const { requirePermission, requireAdminOrMe } = require("../middlewares/requireP
 
 
 router.get('/', requirePermission("employeeManagement"), shiftController.getAllShifts); 
+router.get("/one-shift/:shiftId", requirePermission("employeeManagement"), shiftController.getShiftById);   
 router.post("/new-shift", requirePermission("employeeManagement"), shiftController.addShift);
-router.put("/:shiftName", requirePermission("employeeManagement"), shiftController.editShift); 
-router.delete("/:shiftName", requirePermission("employeeManagement"), shiftController.deleteShift); 
+router.put("/:shiftId", requirePermission("employeeManagement"), shiftController.editShift); 
+router.delete("/delete/:shiftId/:newShiftId", requirePermission("employeeManagement"), shiftController.deleteShift); 
 
 module.exports = router;

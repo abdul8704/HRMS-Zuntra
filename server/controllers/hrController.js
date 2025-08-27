@@ -41,10 +41,11 @@ const getPendingEmployees = asyncHandler(async (req, res) => {
     res.status(200).json({
         success: true,
         pendingEmployees: formattedEmployees,
-    });
+    }); 
 });
 
 const getPendingLeaveReqs = asyncHandler(async (req, res) => {
+    
     const pendingLeaveReqs = await HrService.getPendingLeaveRequests();
 
     const formattedRequest = pendingLeaveReqs.map((leaveReq) => ({
@@ -58,10 +59,10 @@ const getPendingLeaveReqs = asyncHandler(async (req, res) => {
         dates: leaveReq.dates.map((date) => date.toISOString().split("T")[0]),
         reason: leaveReq.reason,
         status: leaveReq.status,
-        TL: leaveReq.userid.AdminAction,
-        HR: leaveReq.userid.superAdminAction,
-        TLComment: leaveReq.userid.adminReviewComment,
-        HRComment: leaveReq.userid.superAdminReviewComment,
+        TL: leaveReq.adminAction,
+        HR: leaveReq.superAdminAction,
+        TLComment: leaveReq.adminReviewComment,
+        HRComment: leaveReq.superAdminReviewComment,
     }));
 
     res.status(200).json({ success: true, pendingLeaveReqs: formattedRequest });
@@ -87,9 +88,45 @@ const processLeaveReq = asyncHandler(async (req, res) => {
 const getAllLeaveReqs = asyncHandler(async (req, res) => {
     const { userid } = req.user;
     const leaveData = await HrService.fetchAllLeaveRequests();
+    const formattedRequest = leaveData.map((leaveReq) => ({
+        leaveId: leaveReq._id,
+        leaveType: leaveReq.leaveType,
+        requestedBy: leaveReq.userid.username,
+        requestedId: leaveReq.userid._id,
+        requestedUserEmail: leaveReq.userid.email,
+        requestedPhone: leaveReq.userid.phoneNumber,
+        appliedOn: leaveReq.appliedOn.toISOString().split("T")[0],
+        dates: leaveReq.dates.map((date) => date.toISOString().split("T")[0]),
+        reason: leaveReq.reason,
+        status: leaveReq.status,
+        TL: leaveReq.adminAction,
+        HR: leaveReq.superAdminAction,
+        TLComment: leaveReq.adminReviewComment,
+        HRComment: leaveReq.superAdminReviewComment,
+    }));
 
-    return res.status(200).json({ success: true, LeaveData: leaveData });
+    res.status(200).json({ success: true, leaveData: formattedRequest });
+
 });
+const getEmployeesOnLeaveToday = asyncHandler(async (req, res) => {
+  const employees = await HrService.getEmployeesOnLeaveToday();
+
+  const formatted = employees.map(emp => ({
+    userId: emp._id,
+    name: emp.username,   
+    role: emp.role?.role,    
+    requestedId: emp._id,
+    email: emp.email,
+  }));
+
+//   console.log(formatted);
+
+  res.status(200).json({
+    success: true,
+    employeesOnLeave: formatted,
+  });
+});
+
 
 module.exports = {
     acceptUser,
@@ -97,4 +134,6 @@ module.exports = {
     getPendingLeaveReqs,
     processLeaveReq,
     getAllLeaveReqs,
+    getEmployeesOnLeaveToday,
+
 };

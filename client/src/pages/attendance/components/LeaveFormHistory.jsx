@@ -4,53 +4,48 @@ import api from '../../../api/axios'
 import { Loading } from '../../utils/Loading';
 import { BASE_URL } from '../../../api/axios';
 
-export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as prop, default to 'hr'
+export const LeaveFormHistory = ({ userRole = 'default' }) => { // Approve userRole as prop, default to 'hr'
   const [leaveHistory, setLeaveHistory] = useState([]);
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // Form state for HR updates
   const [hrStatus, setHrStatus] = useState('');
   const [hrReason, setHrReason] = useState('');
-  
+
   // Form state for Team Lead updates
   const [tlStatus, setTlStatus] = useState('');
   const [tlReason, setTlReason] = useState('');
 
   useEffect(() => {
-  const fetchPendingLeaveReqs = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get("/api/hr/leave/pending-req"); // your API endpoint
+    const fetchleaveData = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/api/hr/leave/all-req"); // your API endpoint
 
-      if (response.data.success && response.data.pendingLeaveReqs?.length > 0) {
-        const updatedData = response.data.pendingLeaveReqs.map(emp => ({
-          ...emp,
-          employeeName: emp.requestedBy || 'Unknown',
-          employeeProfile: `${BASE_URL}/uploads/profilePictures/${emp.requestedId}.png`,
+        if (response.data.success && response.data.leaveData?.length > 0) {
+          const updatedData = response.data.leaveData.map(emp => ({
+            ...emp,
+            employeeName: emp.requestedBy || 'Unknown',
+            employeeProfile: `${BASE_URL}/uploads/profilePictures/${emp.requestedId}.png`,
+          }));
 
-        }));
-        setLeaveHistory(updatedData);
-      } else {
-        setLeaveHistory([]); // blank if none
+          setLeaveHistory(updatedData);
+        } else {
+          setLeaveHistory([]); // blank if none
+        }
+      } catch (err) {
+        console.error("Error fetching pending leave requests:", err);
+        setLeaveHistory([]);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      console.error("Error fetching pending leave requests:", err);
-      setLeaveHistory([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchPendingLeaveReqs();
-}, []);
-
-
-    
-
-  
+    fetchleaveData();
+  }, []);
 
   const formatDate = (rawDate) => {
     const date = new Date(rawDate);
@@ -63,18 +58,22 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
   const getSymbol = (value) => {
     switch (value?.toLowerCase()) {
       case 'approved':
+        return '✓';
       case 'accepted':
         return '✓';
       case 'rejected':
         return '✕';
-      default:
+      case 'pending':
         return '-';
+      default:
+        return 'data-varalai';
     }
   };
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'approved':
+        return 'text-green-600';
       case 'accepted':
         return 'text-green-600';
       case 'rejected':
@@ -91,10 +90,10 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
     setShowPopup(false);
     setTimeout(() => {
       setSelectedLeave(item);
-      setHrStatus(item.superAdminAction || '');
-      setHrReason(item.superAdminReason || '');
-      setTlStatus(item.adminAction || '');
-      setTlReason(item.adminReason || '');
+      setHrStatus(item.HR || '');
+      setHrReason(item.HRComment || '');
+      setTlStatus(item.TL || '');
+      setTlReason(item.TLComment || '');
       setShowPopup(true);
     }, 0);
   };
@@ -105,7 +104,7 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
         alert('Please select HR status');
         return;
       }
-      
+
       if (!hrReason.trim()) {
         alert('Please provide HR reason');
         return;
@@ -115,7 +114,7 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
         alert('Please select Team Lead status');
         return;
       }
-      
+
       if (!tlReason.trim()) {
         alert('Please provide Team Lead reason');
         return;
@@ -124,38 +123,60 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
 
     try {
       setIsSaving(true);
-      
-      let updateData = {};
-      if (userRole === 'hr') {
-        updateData = {
-          superAdminAction: hrStatus,
-          superAdminReason: hrReason
-        };
-      } else if (userRole === 'teamlead') {
-        updateData = {
-          adminAction: tlStatus,
-          adminReason: tlReason
-        };
-      }
-      
-      // API call to update status and reason
-      const response = await api.put(`/api/employee/leave/requests/${selectedLeave._id}`, updateData);
 
-      if (response.data.success) {
-        // Update the local state
-        setLeaveHistory(prevHistory => 
-          prevHistory.map(item => 
-            item._id === selectedLeave._id 
-              ? { ...item, ...updateData }
-              : item
-          )
-        );
-        
-        setShowPopup(false);
-        alert(`Leave status updated successfully by ${userRole === 'hr' ? 'HR' : 'Team Lead'}`);
-      } else {
-        alert('Failed to update leave status');
+      if (userRole == 'hr') {
+        const payload = {
+          leaveId: selectedLeave.leaveId,
+          decision: hrStatus,
+          comment: hrReason,
+        };
+
+        const response = await api.post(`/api/hr/leave/process-req`, payload);
+
+        if (response.data.success) {
+          // Update the local state
+          setLeaveHistory(prevHistory =>
+            prevHistory.map(item =>
+              item.leaveId === selectedLeave.leaveId
+                ? { ...item, HR: hrStatus, HRComment: hrReason, status: hrStatus }
+                : item
+            )
+          );
+
+          setShowPopup(false);
+          alert(`Leave status updated successfully by ${userRole === 'hr' ? 'HR' : 'Team Lead'}`);
+        } else {
+          alert('Failed to update leave status');
+        }
       }
+      else {
+        const payload = {
+          leaveId: selectedLeave.leaveId,
+          decision: tlStatus,
+          comment: tlReason,
+        };
+
+        const response = await api.post(`/api/employee/leave/process-req`, payload);
+
+        if (response.data.success) {
+          // Update the local state
+          setLeaveHistory(prevHistory =>
+            prevHistory.map(item =>
+              item.leaveId === selectedLeave.leaveId
+                ? { ...item, TL: tlStatus, TLComment: tlReason, status: (item.HR === "PENDING") ? tlStatus : item.HR }
+                : item
+            )
+          );
+
+          setShowPopup(false);
+          alert(`Leave status updated successfully by ${userRole === 'hr' ? 'HR' : 'Team Lead'}`);
+        } else {
+          alert('Failed to update leave status');
+        }
+      }
+
+
+
     } catch (error) {
       console.error('Error updating leave status:', error);
       alert('Error updating leave status');
@@ -165,10 +186,10 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
   };
 
   const handleCancel = () => {
-    setHrStatus(selectedLeave?.superAdminAction || '');
-    setHrReason(selectedLeave?.superAdminReason || '');
-    setTlStatus(selectedLeave?.adminAction || '');
-    setTlReason(selectedLeave?.adminReason || '');
+    setHrStatus(selectedLeave?.HR || '');
+    setHrReason(selectedLeave?.HRComment || '');
+    setTlStatus(selectedLeave?.TL || '');
+    setTlReason(selectedLeave?.TLComment || '');
     setShowPopup(false);
   };
 
@@ -181,7 +202,7 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
               <tr className="bg-gray-100 border-b">
                 <th className="p-2 text-left">Employee</th>
                 <th className="p-2 text-left">Date</th>
-                
+
                 <th className="p-2 text-center">TL</th>
                 <th className="p-2 text-center">HR</th>
                 <th className="p-2 text-left">Status</th>
@@ -191,17 +212,24 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
             <tbody>
               {leaveHistory.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
-                   <td className="p-2 flex items-center gap-2">
-  <img src={item.employeeProfile} alt="Profile" className="w-8 h-8 rounded-full" />
-  <span>{item.employeeName}</span>
-</td>
-                  <td className="p-2">{formatDate(item.dates[0])}</td>
-                 
+                  <td className="p-2 flex items-center gap-2">
+                    <img src={item.employeeProfile} alt="Profile" className="w-8 h-8 rounded-full" />
+                    <span>{item.employeeName}</span>
+                  </td>
+                  <td className="p-2">
+                    {item.dates[0] !== item.dates[item.dates.length - 1] ? (
+                      <>
+                        {formatDate(item.dates[0])} <span className="mx-1">To</span> {formatDate(item.dates[item.dates.length - 1])}
+                      </>
+                    ) : (
+                      formatDate(item.dates[0])
+                    )}
+                  </td>
 
-                  <td className="p-2 text-center">{getSymbol(item.adminAction)}</td>
-                  <td className="p-2 text-center">{getSymbol(item.superAdminAction)}</td>
+                  <td className="p-2 text-center">{getSymbol(item.TL)}</td>
+                  <td className="p-2 text-center">{getSymbol(item.HR)}</td>
                   <td className={`p-2 font-medium ${getStatusColor(item.status)}`}>
-                    {item.status}
+                    {item.status.toUpperCase()}
                   </td>
                   <td className="p-2">
                     <div className="flex justify-center items-center">
@@ -234,9 +262,9 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
                 {/* Employee Profile Section */}
                 <div className="bg-gray-50 rounded-lg p-4 mb-6">
                   <div className="flex items-center gap-4">
-                    <img 
-                      src={selectedLeave.employeeProfile} 
-                      alt="Employee Profile" 
+                    <img
+                      src={selectedLeave.employeeProfile}
+                      alt="Employee Profile"
                       className="w-16 h-16 rounded-full border-2 border-gray-300"
                     />
                     <div className="flex-1">
@@ -287,36 +315,36 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
                       <div className="font-semibold text-gray-700 mb-1">Team Lead Status:</div>
                       {userRole === 'teamlead' ? (
                         <select
-                          value={tlStatus}
+                          value={tlStatus.toUpperCase()}
                           onChange={(e) => setTlStatus(e.target.value)}
                           className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
-                          <option value="">PENDING</option>
-                          <option value="approved">Approve</option>
-                          <option value="rejected">Reject</option>
+                          <option value="">Pending</option>
+                          <option value="APPROVED">Approve</option>
+                          <option value="REJECTED">Reject</option>
                         </select>
                       ) : (
                         <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 break-words whitespace-pre-wrap max-w-full">
-                          {selectedLeave.adminAction || '-'}
+                          {selectedLeave.TL || '-'}
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1 min-w-[150px]">
                       <div className="font-semibold text-gray-700 mb-1">HR Status:</div>
                       {userRole === 'hr' ? (
                         <select
-                          value={hrStatus}
+                          value={hrStatus.toUpperCase()}
                           onChange={(e) => setHrStatus(e.target.value)}
                           className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
-                          <option value="">PENDING</option>
-                          <option value="accepted">Accept</option>
-                          <option value="rejected">Reject</option>
+                          <option value="">Pending</option>
+                          <option value="APPROVED">Approve</option>
+                          <option value="REJECTED">Reject</option>
                         </select>
                       ) : (
                         <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 break-words whitespace-pre-wrap max-w-full">
-                          {selectedLeave.superAdminAction || '-'}
+                          {selectedLeave.HR || '-'}
                         </div>
                       )}
                     </div>
@@ -335,11 +363,11 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
                         />
                       ) : (
                         <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 h-16 overflow-y-auto break-words whitespace-pre-wrap">
-                          {selectedLeave.adminReason || '-'}
+                          {selectedLeave.TLComment || '-'}
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex-1 min-w-[150px]">
                       <div className="font-semibold text-gray-700 mb-1">HR Reason:</div>
                       {userRole === 'hr' ? (
@@ -351,7 +379,7 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
                         />
                       ) : (
                         <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 h-16 overflow-y-auto break-words whitespace-pre-wrap">
-                          {selectedLeave.superAdminReason || '-'}
+                          {selectedLeave.HRComment || '-'}
                         </div>
                       )}
                     </div>
@@ -359,31 +387,38 @@ export const LeaveFormHistory = ({ userRole = 'hr' }) => { // Accept userRole as
                 </div>
 
                 {/* Save and Cancel Buttons */}
-                <div className="flex justify-center gap-4 mt-6 pt-4 border-t">
-                  <button
-                    onClick={handleCancel}
-                    disabled={isSaving}
-                    className="py-3 min-w-[120px] rounded-full font-medium transition-colors duration-300 bg-gray-300 text-gray-700 hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSave}
-                    disabled={
-                      isSaving || 
-                      (userRole === 'hr' && (!hrStatus || !hrReason.trim())) ||
-                      (userRole === 'teamlead' && (!tlStatus || !tlReason.trim()))
-                    }
-                    className={`py-3 min-w-[120px] rounded-full font-medium transition-colors duration-300
-                      ${((userRole === 'hr' && hrStatus && hrReason.trim()) || 
-                         (userRole === 'teamlead' && tlStatus && tlReason.trim())) && !isSaving
-                        ? 'bg-[#BBD3CC] text-gray-700 hover:bg-[#A6C4BA]'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
-                  >
-                    {isSaving ? 'Saving...' : 'Save'}
-                  </button>
-                </div>
+                {userRole !== 'default' ? (
+                  <div className="flex justify-center gap-4 mt-6 pt-4 border-t">
+                    <button
+                      onClick={handleCancel}
+                      disabled={isSaving}
+                      className="py-3 min-w-[120px] rounded-full font-medium transition-colors duration-300 bg-gray-300 text-gray-700 hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => handleSave()}
+                      disabled={
+                        isSaving ||
+                        (userRole === 'hr' && (hrStatus == 'PENDING' || hrStatus == '' || !hrReason.trim())) ||
+                        (userRole === 'teamlead' && (tlStatus == 'PENDING' || tlStatus == '' || !tlReason.trim()))
+                      }
+                      className={`py-3 min-w-[120px] rounded-full font-medium transition-colors duration-300
+                        ${((userRole === 'hr' && hrStatus && hrReason.trim()) ||
+                          (userRole === 'teamlead' && tlStatus && tlReason.trim())) && !isSaving
+                          ? 'bg-[#BBD3CC] text-gray-700 hover:bg-[#A6C4BA]'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        }`}
+                    >
+                      {isSaving ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                ) : (
+                  <></>
+                )
+                } 
+                
+
               </div>
             </div>
           )}

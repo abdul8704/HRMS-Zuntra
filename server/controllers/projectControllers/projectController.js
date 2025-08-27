@@ -1,9 +1,9 @@
 const asyncHandler = require('express-async-handler');
-const projectService = require("../services/projectService");
-const EmployeeService = require("../services/employeeService");
-const ApiError = require("../errors/ApiError");
-const dateUtils = require("../utils/dateUtils");
-const roleService = require("../services/rolesService")
+const projectService = require("../../services/projectService");
+const EmployeeService = require("../../services/employeeService");
+const ApiError = require("../../errors/ApiError");
+const dateUtils = require("../../utils/dateUtils");
+const roleService = require("../../services/rolesService")
 
 
 // @desc Get all ongoing projects

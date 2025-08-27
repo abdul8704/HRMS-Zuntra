@@ -13,7 +13,8 @@ router.post('/leave/process-req', requirePermission("leaveManagement"), hrContro
 router.get('/leave/all-req', requirePermission("leaveManagement"), hrController.getAllLeaveReqs)
 router.post('/leave/process-req', requirePermission("leaveManagement"), hrController.processLeaveReq)
 router.patch('/leave/edit-req-action', requirePermission("leaveManagement"), employeeController.processLeaveRequest);
-
+router.get("/leave/today",requirePermission("leaveManagement"), hrController.getEmployeesOnLeaveToday);
 module.exports = router;
 
 // TODO: isolate leave mgmt from employee mgmt
+ 

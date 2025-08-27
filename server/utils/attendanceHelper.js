@@ -11,11 +11,23 @@ function normalizeToUTCDate(date) {
 }
 
 function parseDateAsUTC(dateStr) {
+    if (!dateStr) return NaN;
+
+    // If format is YYYY-MM-DD (no time), parse manually as UTC
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        const [y, m, d] = dateStr.split('-').map(Number);
+        return new Date(Date.UTC(y, m - 1, d));
+    }
+
+    // Else fallback: let JS parse, then normalize
     const parsed = new Date(dateStr);
+    if (isNaN(parsed)) return NaN;
+
     return new Date(
         Date.UTC(parsed.getFullYear(), parsed.getMonth(), parsed.getDate())
     );
 }
+
 
 
 // Return time-only version of a Date in UTC
@@ -64,7 +76,7 @@ const formatTime = (inputTime) => {
 const convertMinutes = (totalMinutes) => {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-  return `${hours}H ${minutes}M`;
+  return (hours > 0) ? `${hours}H ${minutes}M`: `${minutes}M`;
 };
 
 module.exports = {

@@ -1,4 +1,5 @@
-// models/Task.js
+import mongoose from "mongoose";
+
 const taskSchema = new Schema(
     {
         title: { type: String, required: true },

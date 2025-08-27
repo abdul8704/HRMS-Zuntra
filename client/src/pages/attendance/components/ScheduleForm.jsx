@@ -37,18 +37,33 @@ export const ScheduleForm = ({ handleClose }) => {
     return [];
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (actionType === 'event') {
       const eventData = {
-        name,
+        title: name,
         description,
-        dates: getDatesArray(),
+        date: getDatesArray(),
       };
       console.log("Submitting Event:", eventData);
-      // 👉 POST /api/schedule/event
+      try {
+        const eventResponse = await axios.post("/api/events/create", eventData);
+        if (eventResponse.status === 201) {
+          alert("Event scheduled successfully");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Trouble while scheduling event!");
+      }
+      setDateOption('single');
+      setSingleDate('');
+      setFromDate('');
+      setToDate('');
+      setName('');
+      setDescription('');
 
+      //Holiday post
     } else if (actionType === 'leave') {
       const leaveData = {
         name,
@@ -57,14 +72,20 @@ export const ScheduleForm = ({ handleClose }) => {
       };
       console.log("Submitting Holiday:", leaveData);
       try {
-      const leaveResponse = await axios.post("api/holidays/add", leaveData);
-      if (leaveResponse.status === 201) {
-        alert("Holiday scheduled successfully");
+        const leaveResponse = await axios.post("api/holidays/add", leaveData);
+        if (leaveResponse.status === 201) {
+          alert("Holiday scheduled successfully");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Trouble while scheduling holiday!");
       }
-    } catch (error) {
-      console.error(error);
-      alert("Trouble while scheduling");
-    }
+      setDateOption('single');
+      setSingleDate('');
+      setFromDate('');
+      setToDate('');
+      setName('');
+      setSelectedReligion('');
     }
   };
 
@@ -82,6 +103,7 @@ export const ScheduleForm = ({ handleClose }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-sm border p-4 h-full overflow-hidden">
+      <h1 className='text-center text-lg font-semibold text-gray-800 mb-2'>Mark Event/Holiday</h1>
       <form
         onSubmit={handleSubmit}
         className="flex flex-col gap-3 text-gray-700 w-full h-full overflow-y-auto max-h-[500px]"
@@ -158,7 +180,7 @@ export const ScheduleForm = ({ handleClose }) => {
           <input
             type="date"
             value={singleDate}
-            min={today}
+            min={tomorrowStr}
             onChange={(e) => {
               const val = e.target.value;
               if (val < today) return;  // ⛔ block past dates
@@ -174,7 +196,7 @@ export const ScheduleForm = ({ handleClose }) => {
               <input
                 type="date"
                 value={fromDate}
-                min={today}
+                min={tomorrowStr}
                 onChange={(e) => {
                   const val = e.target.value;
                   if (val < today) return;  // ⛔ block past dates
@@ -226,7 +248,7 @@ export const ScheduleForm = ({ handleClose }) => {
         )}
 
         {/* Buttons */}
-        <div className="flex flex-col sm:flex-row justify-center gap-3 mt-auto pt-3">
+        <div className="flex flex-col sm:flex-row justify-center gap-3 pt-1 mb-6">
           <button
             type="button"
             onClick={handleCancel}

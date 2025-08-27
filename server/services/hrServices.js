@@ -5,6 +5,7 @@ const Role = require("../models/roles");
 const attendanceHelper = require("../utils/attendanceHelper");
 const ApiError = require("../errors/ApiError");
 const LeaveApplication = require("../models/attendanceManagement/leaveApplication");
+const Attendance = require("../models/attendanceManagement/attendance");
 
 const updateUserData = async (email, shiftId, campusId, roleId) => {
     try {
@@ -71,7 +72,8 @@ const getPendingLeaveRequests = async () => {
 }
 
 const superAdminProcessLeaveRequest = async (userid, leaveId, decision, comments = 'NIL') => {
-    const finalDecision = decision.toUpperCase();
+    const finalDecision =
+        decision.toUpperCase() === "APPROVED" ? "APPROVED" : "REJECTED";
     const leaveApplication = await LeaveApplication.findById(leaveId);
     const now = new Date();
 
@@ -79,7 +81,7 @@ const superAdminProcessLeaveRequest = async (userid, leaveId, decision, comments
         throw new ApiError(400, 'Requested Leave application not found');
     }
 
-   leaveApplication.status = finalDecision === "APPROVED" ? "APPROVED" : "REJECTED";
+   leaveApplication.status = finalDecision ;
    leaveApplication.superAdminAction = finalDecision;
    leaveApplication.superAdminReviewer = userid;
    leaveApplication.superAdminReviewComment = comments;
@@ -90,7 +92,10 @@ const superAdminProcessLeaveRequest = async (userid, leaveId, decision, comments
 
 
 const fetchAllLeaveRequests = async () => {
-    const leaveData = await LeaveApplication.find({})
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); 
+
+    let leaveData = await LeaveApplication.find({})
         .populate({
             path: "userid",
             select: "username email phoneNumber profilePicture",
@@ -98,9 +103,31 @@ const fetchAllLeaveRequests = async () => {
         .populate({
             path: "adminReviewer superAdminReviewer",
             select: "username email phoneNumber profilePicture",
-        });
-        return leaveData;
-}
+        })
+        .lean();
+    
+
+    leaveData.sort((a, b) => new Date(a.dates[0]) - new Date(b.dates[0]));
+
+    const array1 = []; 
+    const array2 = []; 
+    const array3 = []; 
+    leaveData.forEach(item => {
+        const tlApproved = item.adminAction?.toLowerCase() === "approved";
+        const hrEmpty = !item.superAdminAction || item.superAdminAction?.toLowerCase() === "pending";
+        const tlEmpty = !item.adminAction || item.adminAction?.toLowerCase() === "pending";
+
+        if (tlApproved && hrEmpty) {
+            array1.push(item);
+        } else if (tlEmpty && hrEmpty) {
+            array2.push(item);
+        } else {
+            array3.push(item);
+        }
+    });
+
+    return [...array1, ...array2, ...array3];
+};
 
 //@desc onboarding courses by role id
 const setOnboardingCourses = async (userId, roleid) => {
@@ -122,6 +149,37 @@ const setOnboardingCourses = async (userId, roleid) => {
     }
 };
 
+const getEmployeesOnLeaveToday = async () => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    // 1️⃣ Find attendance records for today
+    const todaysAttendance = await Attendance.find({
+      date: { $gte: today, $lt: tomorrow }
+    }).select("userid");
+
+    const attendedUserIds = todaysAttendance.map(a => a.userid.toString());
+
+    // 2️⃣ Find users not in attendance, only with a role assigned
+    const employeesOnLeave = await UserCredentials.find(
+      { 
+        _id: { $nin: attendedUserIds },
+        role: { $exists: true, $ne: null }
+      },
+      "username role profilePicture email"
+    )
+    .populate("role", "role")   // 🔑 populate role name
+    .lean();
+
+    return employeesOnLeave;
+  } catch (error) {
+    throw new ApiError(500, "Failed to fetch employees on leave: " + error.message);
+  }
+};
 
 module.exports = {
     updateUserData,
@@ -132,4 +190,5 @@ module.exports = {
     superAdminProcessLeaveRequest,
     fetchAllLeaveRequests,
     setOnboardingCourses,
+    getEmployeesOnLeaveToday,
 };
