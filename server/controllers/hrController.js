@@ -119,7 +119,7 @@ const getEmployeesOnLeaveToday = asyncHandler(async (req, res) => {
     email: emp.email,
   }));
 
-  console.log(formatted);
+//   console.log(formatted);
 
   res.status(200).json({
     success: true,

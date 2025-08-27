@@ -6,126 +6,90 @@ const LeaveApplication = require("../models/attendanceManagement/leaveApplicatio
 const Holiday = require('./holidayService.js')
 
 const markAttendanceOnLogin = async (userid, mode) => {
-    const today = attendanceHelper.normalizeToUTCDate(new Date());
-    try {
-        const shiftData = await User.findById(userid).populate(
-            "shift",
-            "startTime endTime"
-        );
+  const today = attendanceHelper.normalizeToUTCDate(new Date());
+  const now = attendanceHelper.toUTCTimeOnly(new Date());
 
-        if (!shiftData) {
-            throw new ApiError(404, "User not found");
-        }
+  try {
+    const shiftData = await User.findById(userid).populate("shift", "startTime endTime");
 
-        if (!shiftData.shift) {
-            throw new ApiError(
-                400,
-                "User does not have a shift assigned or assigned shift is invalid"
-            );
-        }
+    if (!shiftData) throw new ApiError(404, "User not found");
+    if (!shiftData.shift) throw new ApiError(400, "User has no valid shift assigned");
 
-        const shiftStartTime = new Date(shiftData.shift.startTime);
-        const shiftEndTime = new Date(shiftData.shift.endTime);
+    const shiftStartTime = new Date(shiftData.shift.startTime);
+    const shiftEndTime = new Date(shiftData.shift.endTime);
 
-        if (isNaN(shiftStartTime.getTime(), isNaN(shiftEndTime.getTime()))) {
-            throw new ApiError(400, "Unable to process shift timings");
-        }
-
-        const now = attendanceHelper.toUTCTimeOnly(new Date());
-
-        let attendance = await Attendance.findOne({ userid, date: today });
-
-        if (!attendance) {
-            // this statement determines if, this is the first session of the day. create a record, mark present.
-            attendance = new Attendance({
-                userid,
-                date: today,
-                sessions: [
-                    {
-                        loginTime: now,
-                        mode:
-                            now >= shiftStartTime && now <= shiftEndTime
-                                ? mode
-                                : "extra",
-                    },
-                ],
-                workingMinutes: 0,
-                breakMinutes: 0,
-                status: mode === "remote" ? "remote" : "present",
-            });
-
-            if (shiftStartTime - now <= 60 * 60 * 1000 || now - shiftStartTime >= 0) {
-                attendance.lateBy = (now - shiftStartTime) / 60_000;
-            }
-
-            await attendance.save();
-
-            return {
-                success: true,
-                message: "Attendance marked (first login of the day)",
-            };
-        }
-
-        // if employee previously logged in remotely, then starts another session onsite, update attendance type of day to onsite.
-        if (attendance.status === "remote" && mode === "onsite") {
-            attendance.status = "present";
-        }
-
-        const lastSession = attendance.sessions[attendance.sessions.length - 1];
-
-        // Previous session exists and has no logout time
-        if (lastSession && !lastSession.logoutTime) {
-            const sessionDurationMs = now - new Date(lastSession.loginTime);
-            const sessionDurationMinutes = sessionDurationMs / (1000 * 60);
-
-            lastSession.logoutTime = now;
-            attendance.workingMinutes += sessionDurationMinutes;
-        }
-
-        // If previous session had logoutTime, calculate break only if within shift hours
-        if (lastSession?.logoutTime) {
-            const breakDurationMs = now - new Date(lastSession.logoutTime);
-            const breakDurationMinutes = breakDurationMs / (1000 * 60);
-
-            const isWithinShift = now >= shiftStartTime && now <= shiftEndTime;
-
-            attendance.sessions.push({
-                loginTime: now,
-                mode: isWithinShift ? mode : "extra",
-            });
-
-            if (!attendance.lateBy && (shiftStartTime - now >= 60 * 60 * 1000 || now - shiftStartTime > 0))
-                attendance.lateBy = (now - shiftStartTime) / 60_000;
-
-            if (isWithinShift && breakDurationMinutes > 1) {
-                // TODO: update this to whatever client wants
-                attendance.breakMinutes += breakDurationMinutes;
-            }
-        } else {
-            // No previous session? Just push a new session (shouldn’t occur, but safe fallback)
-            attendance.sessions.push({
-                loginTime: now,
-                mode:
-                    now >= shiftStartTime && now <= shiftEndTime
-                        ? mode
-                        : "extra",
-            });
-        }
-
-        await attendance.save();
-        return {
-            success: true,
-            message: "Attendance updated (subsequent login)",
-        };
-    } catch (error) {
-        if (error instanceof ApiError) throw error;
-        throw new ApiError(
-            500,
-            "Failed to mark attendance on login",
-            error.message
-        );
+    if (isNaN(shiftStartTime.getTime()) || isNaN(shiftEndTime.getTime())) {
+      throw new ApiError(400, "Unable to process shift timings");
     }
+
+    let attendance = await Attendance.findOne({ userid, date: today });
+
+    // 👇 If an attendance record exists, auto-close last session if it's still open
+    if (attendance && attendance.sessions.length > 0) {
+      const lastSession = attendance.sessions[attendance.sessions.length - 1];
+
+      if (lastSession && !lastSession.logoutTime && lastSession.lastRequest) {
+        // Use lastRequest as logoutTime
+        const logoutTime = attendanceHelper.toUTCTimeOnly(new Date(lastSession.lastRequest));
+
+        if (logoutTime > new Date(lastSession.loginTime)) {
+          const sessionDurationMs = logoutTime - new Date(lastSession.loginTime);
+          const sessionDurationMinutes = sessionDurationMs / (1000 * 60);
+
+          lastSession.logoutTime = logoutTime;
+          attendance.workingMinutes += sessionDurationMinutes;
+          await attendance.save();
+        }
+      }
+    }
+
+    // If no record → first login of the day
+    if (!attendance) {
+      attendance = new Attendance({
+        userid,
+        date: today,
+        sessions: [
+          {
+            loginTime: now,
+            lastRequest: now,
+            mode: now >= shiftStartTime && now <= shiftEndTime ? mode : "extra",
+          },
+        ],
+        workingMinutes: 0,
+        breakMinutes: 0,
+        status: mode === "remote" ? "remote" : "present",
+      });
+
+      if (shiftStartTime - now <= 60 * 60 * 1000 || now - shiftStartTime >= 0) {
+        attendance.lateBy = (now - shiftStartTime) / 60_000;
+      }
+
+      await attendance.save();
+      return { success: true, message: "Attendance marked (first login of the day)" };
+    }
+
+    // Existing record → create new session
+    const lastSession = attendance.sessions[attendance.sessions.length - 1];
+
+    if (attendance.status === "remote" && mode === "onsite") {
+      attendance.status = "present";
+    }
+
+    attendance.sessions.push({
+      loginTime: now,
+      lastRequest: now,
+      mode: now >= shiftStartTime && now <= shiftEndTime ? mode : "extra",
+    });
+
+    await attendance.save();
+    return { success: true, message: "Attendance updated (subsequent login)" };
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(500, "Failed to mark attendance on login", error.message);
+  }
 };
+
+
 
 const markEndOfSession = async (userid, logout) => {
     const today = attendanceHelper.normalizeToUTCDate(new Date());
@@ -234,7 +198,7 @@ const adminProcessLeaveRequest = async (
             leaveApplication.adminReviewComment = comments;
         }
     }
-    else{
+    else {
         leaveApplication.status = finalDecision;
         leaveApplication.adminAction = finalDecision;
         leaveApplication.adminReviewer = userid;
@@ -242,7 +206,7 @@ const adminProcessLeaveRequest = async (
         leaveApplication.adminReviewComment = comments;
     }
 
-    
+
 
     await leaveApplication.save();
 };
@@ -510,7 +474,7 @@ const getTimeCards = async (userid, date) => {
             logout: "N/A",
             work: "N/A",
             break: "N/A",
-        });     
+        });
     }
 
     const N = attendance.sessions.length;
@@ -522,16 +486,16 @@ const getTimeCards = async (userid, date) => {
 
     if (attendance.sessions[0].loginTime)
         loginTime = attendanceHelper.formatTime(attendance.sessions[0].loginTime)
-    
-    if(attendance.sessions[N-1].logoutTime)
-        logoutTime = attendanceHelper.formatTime(attendance.sessions[N-1].logoutTime)
 
-    if(attendance.workingMinutes)
+    if (attendance.sessions[N - 1].logoutTime)
+        logoutTime = attendanceHelper.formatTime(attendance.sessions[N - 1].logoutTime)
+
+    if (attendance.workingMinutes)
         workTime = attendanceHelper.convertMinutes(attendance.workingMinutes);
 
-    if(attendance.breakMinutes)
+    if (attendance.breakMinutes)
         breakTime = attendanceHelper.convertMinutes(attendance.breakMinutes)
-    
+
     const timeCards = {
         login: loginTime,
         logout: logoutTime,

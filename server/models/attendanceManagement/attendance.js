@@ -10,6 +10,9 @@ const sessionSchema = new mongoose.Schema({
     logoutTime: {
         type: Date,
     },
+    lastRequest:{
+        type: Date,
+    },
     mode: {
         type: String,
         enum: ["onsite", "remote", "extra"]
