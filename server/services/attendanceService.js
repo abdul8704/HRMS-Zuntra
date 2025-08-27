@@ -63,7 +63,12 @@ const markAttendanceOnLogin = async (userid, mode) => {
     if (attendance.sessions.length > 0) {
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
 
-        if (lastSession && !lastSession.logoutTime && lastSession.lastRequest) {
+        if (
+            (lastSession &&
+                !lastSession.logoutTime &&
+                lastSession.lastRequest) ||
+            (lastSession && lastSession.logoutTime && lastSession.lastRequest && lastSession.logoutTime < lastSession.lastRequest)
+        ) {
             // Use lastRequest as logoutTime
             const logoutTime = lastSession.lastRequest;
 
