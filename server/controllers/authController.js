@@ -17,7 +17,7 @@ const handleRefreshToken = asyncHandler((req, res) => {
         throw new ApiError(401, "Refresh token not found in cookies");
 
     const refreshToken = cookies.refreshToken;
-
+    
     try {
         const user = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
         const newToken = jwtUtils.generateToken({ userid: user.userid });
@@ -35,13 +35,8 @@ const handleLogin = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Provide credentials!!");
 
     const verifyLogin = await authService.verifyLogin(email, password);
-    console.log(verifyLogin);
 
-    if(verifyLogin.userData.allowedAccess === null){
-        console.log("Not admitted yet");
-        return res.status(200).json({ success: false, message: "Not admitted yet" });
-    }
-    else if (verifyLogin.success === true) {
+    if (verifyLogin.success === true) {
         const token = jwtUtils.generateToken(verifyLogin.userData);
         const refreshToken = jwtUtils.generateRefreshToken(verifyLogin.userData);
 
@@ -58,6 +53,12 @@ const handleLogin = asyncHandler(async (req, res) => {
             sameSite: "Lax",
             maxAge: 1 * 24 * 60 * 60 * 1000, // TODO: change to 15 mins during deployment 1 days
         });
+
+        if (verifyLogin.role === null) {
+            return res
+                .status(200)
+                .json({ success: false, message: "Not admitted yet" });
+        }
 
         res.status(200).json({
             success: true,
@@ -97,7 +98,6 @@ const geoFenceLogin = asyncHandler(async (req, res) => {
         await attendanceService.markAttendanceOnLogin(userid, "onsite");
     else
         await attendanceService.markAttendanceOnLogin(userid, "remote");
-    console.log("Done")
     res.status(200).json({ success: true, message: "Attendance marked" });
 })
 

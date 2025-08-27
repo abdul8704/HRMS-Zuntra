@@ -143,7 +143,6 @@ export const Login = () => {
         return;
       }
       else if (response.status === 200 && response.data.success === false) {
-        console.log("Not admitted yet")
         navigate("/newdashboard")
         return;
       }

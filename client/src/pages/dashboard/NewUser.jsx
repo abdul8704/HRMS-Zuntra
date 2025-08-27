@@ -1,11 +1,7 @@
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import zuntraLogo from "../../assets/zuntra.png";
 
 export const NewUser = () => {
   const hasAccess = false;
-  const navigate = useNavigate();
-  const location = useLocation();
 
   return (
     <div className="relative w-full h-full">

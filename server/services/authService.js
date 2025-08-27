@@ -31,6 +31,7 @@ const verifyLogin = async (email, password) => {
             userid: userData._id,
             allowedAccess: userData.role ? userData.role.allowedAccess : null,
         },
+        role: userData.role ? userData.role._id : null,
     };
 };
 
