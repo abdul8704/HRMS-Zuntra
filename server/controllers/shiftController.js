@@ -4,9 +4,17 @@ const ShiftService = require('../services/shiftService');
 
 const getAllShifts = asyncHandler(async (req, res) => {
     const shifts = await ShiftService.getAllShiftsData();
-    if (shifts.length === 0)
-         throw new ApiError(404, "No shifts found");
+
     return res.status(200).json(shifts);
+});
+
+const getShiftById = asyncHandler(async (req, res) => {
+    const { shiftId } = req.params;
+
+    const shift = await ShiftService.getShiftByIdService(shiftId);
+    if (!shift) throw new ApiError(404, "Shift not found");
+
+    return res.status(200).json(shift);
 });
 
 const addShift = asyncHandler(async (req, res) => {
@@ -20,19 +28,19 @@ const addShift = asyncHandler(async (req, res) => {
 });
 
 const editShift = asyncHandler(async (req, res) => {
-    const { shiftName } = req.params;
+    const { shiftId } = req.params;
     const updatedData = req.body;
 
-    const result = await ShiftService.editShift(shiftName, updatedData);
+    const result = await ShiftService.editShift(shiftId, updatedData);
     if (!result.success) throw new ApiError(404, result.message);4  
 
     return res.status(200).json(result.updatedShift);
 });
 
 const deleteShift = asyncHandler(async (req, res) => {
-    const { shiftName } = req.params;
+    const { shiftId, newShiftId } = req.params;
 
-    const result = await ShiftService.deleteShift(shiftName);
+    const result = await ShiftService.deleteShift(shiftId, newShiftId);
     if (!result.success) throw new ApiError(404, result.message);
 
     return res.status(200).json({ message: result.message });
@@ -43,4 +51,5 @@ module.exports = {
     addShift,
     editShift,
     deleteShift,
+    getShiftById,
 };

@@ -1,4 +1,5 @@
 const Shift = require("../models/shift");
+const UserCredentials = require("../models/userCredentials");
 
 const getAllShiftsData = async () => {
     try {
@@ -7,6 +8,11 @@ const getAllShiftsData = async () => {
     } catch (error) {
         throw new ApiError(500, "Failed to fetch shifts data:", error.message);
     }
+};
+
+const getShiftByIdService = async (shiftId) => {
+    const shift = await Shift.findById(shiftId);
+    return shift;
 };
 
 const createNewShift = async (shiftData) => {
@@ -18,10 +24,10 @@ const createNewShift = async (shiftData) => {
     }
 };
 
-const editShift = async (shiftName, updatedData) => {
+const editShift = async (shiftId, updatedData) => {
     try {
-        const updatedShift = await Shift.findOneAndUpdate(
-            { shiftName: shiftName },
+        const updatedShift = await Shift.findByIdAndUpdate(
+            shiftId,
             { $set: updatedData },
             { new: true }
         );
@@ -35,23 +41,15 @@ const editShift = async (shiftName, updatedData) => {
     }
 };
 
-const deleteShift = async (shiftName) => {
-    try {
-        const deletedShift = await Shift.findOneAndDelete({
-            shiftName: shiftName,
-        });
-
-        if (!deletedShift)
-            return { success: false, message: "Shift not found" };
-
-        return { success: true, message: "Shift deleted successfully" };
-    } catch (error) {
-        throw new ApiError(500, "Failed to delete shift:", error.message);
-    }
+const deleteShift = async (shiftId, alternateShiftId = null) => {
+    await UserCredentials.updateMany({ shift: shiftId }, { shift: alternateShiftId });
+    const deletedShift = await Shift.findByIdAndDelete(shiftId);
+    return { success: true, message: "Shift deleted successfully", deletedShift };
 };
 
 module.exports = {
     getAllShiftsData,
+    getShiftByIdService,
     createNewShift,
     editShift,
     deleteShift,
