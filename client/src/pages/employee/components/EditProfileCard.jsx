@@ -29,7 +29,7 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
   const religionInputRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  const religions = ['Hindu', 'Muslim', 'Christian', 'Atheist', 'Other'];
+  const religions = ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Buddhism', 'Other'];
 
   const isFormValid =
     dob.trim() &&
@@ -59,6 +59,7 @@ export const EditProfileCard = ({ data, onClose, onSave }) => {
       }
 
       alert('Profile updated successfully');
+      window.location.reload();
       onSave?.();
       onClose?.();
     } catch (error) {
