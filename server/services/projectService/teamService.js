@@ -88,9 +88,101 @@ const addMembersToTeamService = async (teamId, users) => {
     return;
 };
 
+const isThisUserTL = async (userId) => {
+    const proj = await Team.find({ teamLead: userId }, {
+        teamName: 1,
+        teamDescription: 1,
+        teamLead: 1,
+        _id: 1
+    });
+
+    if(proj.length === 0)
+        return false;
+
+    return proj;
+};
+
+
+const userTLofProj = async (userId, teamId) => {
+    const proj = await Team.findById({ _id: teamId }, {
+        teamName: 1,
+        teamDescription: 1,
+        teamLead: 1,
+        _id: 1
+    });
+
+    if(proj.length == 0 || proj.teamLead != userId)
+        return false;
+
+    return proj;
+
+}
+
+const getTeamsUserPartOf = async (userId) => {
+    const teams = await TeamMember.find({ userId }, {
+        teamId: 1,
+        _id: 0
+    }).populate({
+        path: "teamId",
+        select: "teamName teamDescription teamLead",
+        populate: {
+            path: "teamLead",
+            select: "username _id"
+        }
+    });
+
+    const teamLeads = await isThisUserTL(userId);
+
+    return { teams, teamLeads };
+}
+
+const updateTeamService = async (teamId, data) => {
+    const team = await Team.findById(teamId);
+
+    if(!team)
+        throw new ApiError(404, "Team not found");
+
+    team.teamName = data.teamName || team.teamName;
+    team.teamLead = data.teamLead || team.teamLead;
+    team.teamDescription = data.teamDescription || team.teamDescription;
+
+    await team.save();
+
+    return team;
+}
+
+const deleteTeamMemberService = async (teamId, userId) => {
+    const team = await TeamMember.findOneAndDelete({ teamId, userId });
+
+    if(!team)
+        throw new ApiError(404, "Team member not found");
+
+    return team;
+}
+
+const deleteTeam = async (teamId) => {
+    const teamMembers = await TeamMember.deleteMany({ teamId });
+
+    if(teamMembers.length > 0)
+        throw new ApiError(400, "Team has members. Please remove them first");
+
+    const team = await Team.findByIdAndDelete(teamId);
+
+    if(!team)
+        throw new ApiError(404, "Team not found");
+    console.log(team, teamMembers)
+    return team;
+}
+
 module.exports = {
     createNewTeamService,
     getMembersOfTeamService,
     getAllTeamsService,
     addMembersToTeamService,
+    isThisUserTL,
+    userTLofProj,
+    getTeamsUserPartOf,
+    updateTeamService,
+    deleteTeamMemberService,
+    deleteTeam,
 };

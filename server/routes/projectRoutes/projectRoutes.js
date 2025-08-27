@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const projectController = require("../../controllers/projectController");
+const projectController = require("../../controllers/projectControllers/projectController");
+
+
 router.get("/all/ongoing", projectController.getAllOnGoingProjects);
 router.get("/all/finished", projectController.getAllFinishedProjects);
 router.get("/all/date/:date", projectController.getAllProjectsOnDate);

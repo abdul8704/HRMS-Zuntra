@@ -67,9 +67,105 @@ const addMembersToTeamController = asyncHandler(async (req, res) => {
     });
 });
 
+const checkUserTL = asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+
+    if (!userId) {
+        throw new ApiError(400, "Please provide all the required fields");
+    }
+
+    const isTL = await teamService.isUserThisTL(userId);
+
+    if(!isTL)
+        return res.status(200).json({
+            success: false,
+            message: "User is not the TL of any team",
+        });
+
+    return res.status(200).json({
+        success: true,
+        isTL,
+    });
+});
+
+const checkUserTLOfProj = asyncHandler(async (req, res) => {
+    const { userId, teamId } = req.body;
+
+    if(!userId || !teamId)
+        throw new ApiError(400, "Please provide all the required fields");
+
+    const isTL = await teamService.userTLofProj(userId, teamId);
+
+    if(isTL.length === 0)
+        return res.status(200).json({
+            success: false,
+            message: "User is not the TL of the project",
+        });
+    
+    return res.status(200).json({
+        success: true,
+        isTL,
+    });
+})
+
+const getTeamsUserIn = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    if(!userId)
+        throw new ApiError(400, "Please provide all the required fields");
+
+    const teams = await teamService.getTeamsUserPartOf(userId);
+
+    return res.status(200).json({
+        success: true,
+        memberOf: teams.teams,
+        leaderOf: teams.teamLeads
+    });
+});
+
+const updateTeam = asyncHandler(async (req, res) => {
+    const { teamId } = req.params;
+    const data = req.body;
+
+    if(!data.teamName && !data.teamDescription && !data.teamMembers)
+        throw new ApiError(400, "Please provide some data to update team");
+
+    const updatedTeam = await teamService.updateTeamService(teamId, data);
+
+    return res.status(203).json({ success: true, team: updatedTeam })
+})
+
+const deleteTeamMember = asyncHandler(async (req, res) => {
+    const { teamId, userId } = req.params;
+
+    if(!teamId || !userId)
+        throw new ApiError(400, "Please provide all the required fields");
+
+    const updatedTeam = await teamService.deleteTeamMemberService(teamId, userId);
+
+    return res.status(203).json({ success: true, team: updatedTeam })
+})
+
+const deleteTeam = asyncHandler(async (req, res) => {
+    const { teamId } = req.params;
+    console.log("hi ", teamId)
+    if(!teamId)
+        throw new ApiError(400, "Please provide all the required fields");
+
+    const updatedTeam = await teamService.deleteTeam(teamId);
+
+    return res.status(203).json({ success: true, team: updatedTeam })
+})
+
 module.exports = {
     getAllTeamsController,
     getMembersOfTeamController,
     createTeamController,
     addMembersToTeamController,
+    checkUserTL,
+    checkUserTLOfProj,
+    getTeamsUserIn,
+    updateTeam,
+    deleteTeamMember,
+    deleteTeam,
 };
