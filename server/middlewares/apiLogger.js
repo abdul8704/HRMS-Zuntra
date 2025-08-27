@@ -19,6 +19,7 @@ const apiLogger = async (req, res, next) => {
 
         if (!lastSession.logoutTime) {
           lastSession.lastRequest = requestTime; // 👈 same format as logoutTime
+          attendance.markModified("sessions");
           await attendance.save();
         }
       }
