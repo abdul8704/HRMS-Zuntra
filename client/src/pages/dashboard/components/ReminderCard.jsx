@@ -6,7 +6,6 @@ export const ReminderCard = ({ onPlusClick }) => {
   const [showForm, setShowForm] = useState(false);
   const [newTask, setNewTask] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
 
   // ✅ Fetch reminders on mount
   useEffect(() => {
@@ -17,10 +16,8 @@ export const ReminderCard = ({ onPlusClick }) => {
           const formatted = res.data.data.map(r => {
             const due = new Date(r.dueDate);
             const now = new Date();
-            const daysLeft = Math.max(
-              Math.ceil((due - now) / (1000 * 60 * 60 * 24)),
-              0
-            );
+            const daysLeft = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+
             return {
               id: r._id,
               text: r.reminder,
@@ -53,9 +50,9 @@ export const ReminderCard = ({ onPlusClick }) => {
 
   // ✅ Add new reminder
   const handleSubmit = async () => {
-    if (!newTask || !selectedDate || !selectedTime) return;
+    if (!newTask || !selectedDate) return;
 
-    const dueDate = new Date(`${selectedDate}T${selectedTime}`);
+    const dueDate = new Date(`${selectedDate}`);
 
     try {
       await api.post("/api/reminder/create", {
@@ -81,6 +78,7 @@ export const ReminderCard = ({ onPlusClick }) => {
           };
         });
         setReminders(formatted);
+        setShowForm(false);
       }
     } catch (err) {
       console.error("Error creating reminder:", err);
@@ -88,7 +86,6 @@ export const ReminderCard = ({ onPlusClick }) => {
 
     setNewTask("");
     setSelectedDate("");
-    setSelectedTime("");
     setShowForm(false);
   };
 
@@ -99,7 +96,6 @@ export const ReminderCard = ({ onPlusClick }) => {
 
   const handleDateSelect = (e) => {
     setSelectedDate(e.target.value);
-    setSelectedTime(""); // reset time when new date chosen
   };
 
   // ✅ Strike-through styles
@@ -149,14 +145,6 @@ export const ReminderCard = ({ onPlusClick }) => {
                 value={selectedDate}
                 onChange={handleDateSelect}
               />
-              {selectedDate && (
-                <input
-                  type="time"
-                  className="w-[90px] bg-white border border-gray-300 rounded-md py-1 px-2 text-xs opacity-70"
-                  value={selectedTime}
-                  onChange={(e) => setSelectedTime(e.target.value)}
-                />
-              )}
             </div>
 
             <button
@@ -210,7 +198,8 @@ export const ReminderCard = ({ onPlusClick }) => {
                   <span style={strikeLine(reminder.completed)} />
                 </span>
                 <span className="text-xs text-gray-500 whitespace-nowrap">
-                  {reminder.daysLeft} {reminder.daysLeft === 1 ? "day" : "days"} left
+                  {Math.abs(reminder.daysLeft)} {Math.abs(reminder.daysLeft) === 1 ? "day" : "days"} {reminder.daysLeft < 0 ? "overdue" : "left"}
+                  {reminder.daysLeft < 0 && "! "}
                 </span>
               </div>
             </li>
