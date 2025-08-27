@@ -22,6 +22,7 @@ const userCredentialsSchema = new mongoose.Schema({
     role: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "rolesDetails",
+        default: undefined
     },
     phoneNumber: {
         type: String,
@@ -34,10 +35,12 @@ const userCredentialsSchema = new mongoose.Schema({
     shift: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Shift",
+        default: undefined  
     },
     campus: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "GeoLocation",
+        default: undefined  
     },
 });
 

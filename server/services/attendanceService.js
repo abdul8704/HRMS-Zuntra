@@ -13,13 +13,17 @@ const markAttendanceOnLogin = async (userid, mode) => {
         "startTime endTime"
     );
 
-    if (!shiftData) throw new ApiError(404, "User not found");
-    if (!shiftData.shift)
-        throw new ApiError(400, "User has no valid shift assigned");
+    if (!shiftData) {
+        throw new ApiError(404, "User not found");
+    }
 
-    const shiftStartTime = new Date(shiftData.shift.startTime);
-    const shiftEndTime = new Date(shiftData.shift.endTime);
-
+    const shiftStartTime = shiftData.shift
+        ? new Date(shiftData.shift.startTime)
+        : new Date(new Date().setHours(0, 0, 0, 0));
+    const shiftEndTime = (shiftData.shift)
+        ? new Date(shiftData.shift.endTime)
+        : new Date(new Date().setHours(23, 59, 0, 0));
+        
     if (isNaN(shiftStartTime.getTime()) || isNaN(shiftEndTime.getTime())) {
         throw new ApiError(400, "Unable to process shift timings");
     }

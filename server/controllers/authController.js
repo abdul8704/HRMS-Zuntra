@@ -11,7 +11,6 @@ const sharp = require("sharp");
 const path = require("path");
 const fs = require("fs");
 
-
 const handleRefreshToken = asyncHandler((req, res) => {
     const cookies = req.cookies;
     if (!cookies?.refreshToken)
@@ -36,8 +35,13 @@ const handleLogin = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Provide credentials!!");
 
     const verifyLogin = await authService.verifyLogin(email, password);
+    console.log(verifyLogin);
 
-    if (verifyLogin.success === true) {
+    if(verifyLogin.userData.allowedAccess === null){
+        console.log("Not admitted yet");
+        return res.status(200).json({ success: false, message: "Not admitted yet" });
+    }
+    else if (verifyLogin.success === true) {
         const token = jwtUtils.generateToken(verifyLogin.userData);
         const refreshToken = jwtUtils.generateRefreshToken(verifyLogin.userData);
 
@@ -75,29 +79,25 @@ const geoFenceLogin = asyncHandler(async (req, res) => {
     const { latitude, longitude, email } = req.body;
     const user = await authService.getUserByEmail(email)
     
-    // TODO: change this to whatever,,,
-    if(!user.role){
-        return res.status(206).json({ success: true, message: "No attendance for you" })
-    }
     const userid = user._id;
     
     if(!user)
         throw new ApiError(404, "User not found");
 
-    if (!email || !latitude || !longitude || !user.campus)
+    if (!email || !latitude || !longitude)
         throw new ApiError(400, "Incomplete location data");
 
-    const isInsideGeofence = await GeoService.isWithinGeofence(
+    const isInsideGeofence = (user.campus)  ? await GeoService.isWithinGeofence(
         latitude,
         longitude,
         user.campus
-    );
+    ) : false;
 
     if(isInsideGeofence)
         await attendanceService.markAttendanceOnLogin(userid, "onsite");
     else
         await attendanceService.markAttendanceOnLogin(userid, "remote");
-
+    console.log("Done")
     res.status(200).json({ success: true, message: "Attendance marked" });
 })
 
