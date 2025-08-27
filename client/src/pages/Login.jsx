@@ -142,36 +142,42 @@ export const Login = () => {
         setShowPopup(true);
         return;
       }
+      else if (response.status === 200 && response.data.success === false) {
+        navigate("/newdashboard")
+        return;
+      }
 
-      setUser(response.data.credentials) // set creds on a global level
+      else {
+        setUser(response.data.credentials) // set creds on a global level
 
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          const res = await api.post("/auth/geofence", {
-            latitude, longitude, email: loginData.email
-          });
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            const res = await api.post("/auth/geofence", {
+              latitude, longitude, email: loginData.email
+            });
 
-          if (res.status === 200) {
-            console.log("Attendance Marked");
-            navigate("/dashboard");
-            setIsLoading(false);
+            if (res.status === 200) {
+              console.log("Attendance Marked");
+              navigate("/dashboard");
+              setIsLoading(false);
+            }
+            else if (res.status === 206) {
+              console.log("Request Pending Approval");
+              navigate("/dashboard");
+            }
+          },
+          (error) => {
+            console.error("Error getting location:", error);
+            setPopupContent({
+              type: 'error',
+              title: 'Location Access Denied',
+              message: 'We couldn’t access your location.'
+            });
+            setShowPopup(true);
           }
-          else if (res.status === 206) {
-            console.log("Request Pending Approval");
-            navigate("/dashboard");
-          }
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-          setPopupContent({
-            type: 'error',
-            title: 'Location Access Denied',
-            message: 'We couldn’t access your location.'
-          });
-          setShowPopup(true);
-        }
-      );
+        );
+      }
     } catch (err) {
       if (!err.response) {
         setPopupContent({
@@ -189,9 +195,9 @@ export const Login = () => {
           message: msg === "Wrong Password" ? "Wrong Password!!" : "User not found with this email!!"
         });
         setShowPopup(true);
-      } 
-        console.error(err.response);
-      
+      }
+      console.error(err.response);
+
     }
     finally {
       setIsLoading(false);
@@ -503,7 +509,7 @@ export const Login = () => {
                             )}
                           </div>
 
-                          <label htmlFor="profile-upload" className={`profile-edit-icon ${otpPhase?'opacity-0':'cursor-pointer'}`}>
+                          <label htmlFor="profile-upload" className={`profile-edit-icon ${otpPhase ? 'opacity-0' : 'cursor-pointer'}`}>
                             <span className="edit-icon">
                               {profileImage ? '✎' : '+'}
                             </span>
@@ -519,15 +525,15 @@ export const Login = () => {
                         </div>
 
                         <div>
-                          <input name="name" value={signupData.name} onChange={handleSignupChange} className={`login-input ${isLoading || otpPhase?'cursor-not-allowed opacity-60':''}`} type="text" placeholder="Name" disabled={otpPhase}/>
+                          <input name="name" value={signupData.name} onChange={handleSignupChange} className={`login-input ${isLoading || otpPhase ? 'cursor-not-allowed opacity-60' : ''}`} type="text" placeholder="Name" disabled={otpPhase} />
                           {formErrors.name && <p className="login-error-text">{formErrors.name}</p>}
                         </div>
                         <div>
-                          <input name="email" value={signupData.email} onChange={handleSignupChange} className={`login-input ${isLoading || otpPhase?'cursor-not-allowed opacity-60':''}`} type="text" placeholder="Email" disabled={otpPhase}/>
+                          <input name="email" value={signupData.email} onChange={handleSignupChange} className={`login-input ${isLoading || otpPhase ? 'cursor-not-allowed opacity-60' : ''}`} type="text" placeholder="Email" disabled={otpPhase} />
                           {formErrors.email && <p className="login-error-text">{formErrors.email}</p>}
                         </div>
                         <div>
-                          <input name="phone" value={signupData.phone} onChange={handleSignupChange} className={`login-input ${isLoading || otpPhase?'cursor-not-allowed opacity-60':''}`} type="text" placeholder="Phone Number" disabled={otpPhase}/>
+                          <input name="phone" value={signupData.phone} onChange={handleSignupChange} className={`login-input ${isLoading || otpPhase ? 'cursor-not-allowed opacity-60' : ''}`} type="text" placeholder="Phone Number" disabled={otpPhase} />
                           {formErrors.phone && <p className="login-error-text">{formErrors.phone}</p>}
                         </div>
 
@@ -539,7 +545,7 @@ export const Login = () => {
                                   name="password"
                                   value={signupData.password}
                                   onChange={handleSignupChange}
-                                  className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`}
+                                  className={`login-input ${isLoading ? 'cursor-not-allowed opacity-60' : ''}`}
                                   type={showPassword ? "text" : "password"}
                                   placeholder="Password"
                                 />
@@ -569,7 +575,7 @@ export const Login = () => {
                                   name="confirmPassword"
                                   value={signupData.confirmPassword}
                                   onChange={handleSignupChange}
-                                  className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`}
+                                  className={`login-input ${isLoading ? 'cursor-not-allowed opacity-60' : ''}`}
                                   type={showConfirmPassword ? "text" : "password"}
                                   placeholder="Confirm Password"
                                 />
@@ -618,7 +624,7 @@ export const Login = () => {
                     }}>
                       <div className="login-input-container">
                         <div>
-                          <input name="email" value={loginData.email} onChange={handleLoginChange} className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`} type="text" placeholder="Email" />
+                          <input name="email" value={loginData.email} onChange={handleLoginChange} className={`login-input ${isLoading ? 'cursor-not-allowed opacity-60' : ''}`} type="text" placeholder="Email" />
                           {formErrors.email && <p className="login-error-text">{formErrors.email}</p>}
                         </div>
                         <div className="password-field-container">
@@ -627,7 +633,7 @@ export const Login = () => {
                               name="password"
                               value={loginData.password}
                               onChange={handleLoginChange}
-                              className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`}
+                              className={`login-input ${isLoading ? 'cursor-not-allowed opacity-60' : ''}`}
                               type={showLoginPassword ? "text" : "password"}
                               placeholder="Password"
                             />
@@ -668,13 +674,13 @@ export const Login = () => {
                     <div className="login-input-container">
                       {!otpSent && (
                         <div>
-                          <input name="email" value={resetData.email} onChange={handleResetChange} className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`} type="text" placeholder="Enter Email" />
+                          <input name="email" value={resetData.email} onChange={handleResetChange} className={`login-input ${isLoading ? 'cursor-not-allowed opacity-60' : ''}`} type="text" placeholder="Enter Email" />
                           {formErrors.email && <p className="login-error-text">{formErrors.email}</p>}
                         </div>
                       )}
                       {otpSent && !otpVerified && (
                         <div>
-                          <input name="otp" value={resetData.otp} onChange={handleResetChange} className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`} type="text" placeholder="Enter OTP" />
+                          <input name="otp" value={resetData.otp} onChange={handleResetChange} className={`login-input ${isLoading ? 'cursor-not-allowed opacity-60' : ''}`} type="text" placeholder="Enter OTP" />
                           {formErrors.otp && <p className="login-error-text">{formErrors.otp}</p>}
                         </div>
                       )}
@@ -686,7 +692,7 @@ export const Login = () => {
                                 name="password"
                                 value={resetData.password}
                                 onChange={handleResetChange}
-                                className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`}
+                                className={`login-input ${isLoading ? 'cursor-not-allowed opacity-60' : ''}`}
                                 type={showResetPassword ? "text" : "password"}
                                 placeholder="New Password"
                               />
@@ -716,7 +722,7 @@ export const Login = () => {
                                 name="confirmPassword"
                                 value={resetData.confirmPassword}
                                 onChange={handleResetChange}
-                                className={`login-input ${isLoading?'cursor-not-allowed opacity-60':''}`}
+                                className={`login-input ${isLoading ? 'cursor-not-allowed opacity-60' : ''}`}
                                 type={showResetConfirmPassword ? "text" : "password"}
                                 placeholder="Confirm Password"
                               />

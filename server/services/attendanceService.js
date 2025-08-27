@@ -13,13 +13,17 @@ const markAttendanceOnLogin = async (userid, mode) => {
         "startTime endTime"
     );
 
-    if (!shiftData) throw new ApiError(404, "User not found");
-    if (!shiftData.shift)
-        throw new ApiError(400, "User has no valid shift assigned");
+    if (!shiftData) {
+        throw new ApiError(404, "User not found");
+    }
 
-    const shiftStartTime = new Date(shiftData.shift.startTime);
-    const shiftEndTime = new Date(shiftData.shift.endTime);
-
+    const shiftStartTime = shiftData.shift
+        ? new Date(shiftData.shift.startTime)
+        : new Date(new Date().setHours(0, 0, 0, 0));
+    const shiftEndTime = (shiftData.shift)
+        ? new Date(shiftData.shift.endTime)
+        : new Date(new Date().setHours(23, 59, 0, 0));
+        
     if (isNaN(shiftStartTime.getTime()) || isNaN(shiftEndTime.getTime())) {
         throw new ApiError(400, "Unable to process shift timings");
     }
@@ -63,7 +67,12 @@ const markAttendanceOnLogin = async (userid, mode) => {
     if (attendance.sessions.length > 0) {
         const lastSession = attendance.sessions[attendance.sessions.length - 1];
 
-        if (lastSession && !lastSession.logoutTime && lastSession.lastRequest) {
+        if (
+            (lastSession &&
+                !lastSession.logoutTime &&
+                lastSession.lastRequest) ||
+            (lastSession && lastSession.logoutTime && lastSession.lastRequest && lastSession.logoutTime < lastSession.lastRequest)
+        ) {
             // Use lastRequest as logoutTime
             const logoutTime = lastSession.lastRequest;
 

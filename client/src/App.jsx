@@ -42,6 +42,7 @@ function App() {
             <Route path="/employee/:navId" element={<EmployeeManagement />} />
             <Route path="/employee/:empId/details/:navId" element={<EmployeeDetails type="user" />} />
             <Route path="/employee/role/:roleId/details" element={<EmployeeDetails type="role" />} />
+            <Route path="/course/:courseId/details" element={<EmployeeDetails type="course" />} />
             <Route path="/courses/:navId" element={<CourseManagement />} />
             <Route path="/course/:courseId/intro" element={<CourseIntro />} />
             <Route path="/course/learn/:courseId" element={<CourseLearn />} />

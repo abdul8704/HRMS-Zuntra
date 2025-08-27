@@ -8,6 +8,6 @@ router.get('/', requirePermission("employeeManagement"), shiftController.getAllS
 router.get("/one-shift/:shiftId", requirePermission("employeeManagement"), shiftController.getShiftById);   
 router.post("/new-shift", requirePermission("employeeManagement"), shiftController.addShift);
 router.put("/:shiftId", requirePermission("employeeManagement"), shiftController.editShift); 
-router.delete("/delete/:shiftId/:newShiftId", requirePermission("employeeManagement"), shiftController.deleteShift); 
+router.delete("/delete-shift", requirePermission("employeeManagement"), shiftController.deleteShift); 
 
 module.exports = router;

@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
     const location = useLocation();
 
     useEffect(() => {
-        const isLoginRoute = location.pathname === "/";
+        const isLoginRoute = location.pathname === "/" || location.pathname === "/newdashboard";
 
         if (sessionInitialized || isLoginRoute) {
             setAuthDataLoading(false);

@@ -31,7 +31,7 @@ const LeaveTable = ({ data }) => {
   };
 
   return (
-    <div className="bg-gray-200 text-gray-800 rounded-lg shadow-lg pb-2">
+    <div className="bg-gray-200 text-gray-800 rounded-lg h-full flex flex-col">
       {/* Top Bar */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-gray-400">
         <h2 className="font-semibold">Leave Record</h2>
@@ -42,7 +42,7 @@ const LeaveTable = ({ data }) => {
       </div>
 
       {/* Table */}
-      <div className="h-[255px] overflow-y-auto">
+      <div className="h-full overflow-y-auto">
         <table className="w-full text-sm text-left border-collapse">
           <thead className="sticky top-0 bg-gray-300 text-gray-800 z-10">
             <tr>
@@ -67,7 +67,7 @@ const LeaveTable = ({ data }) => {
                 </td>
               </tr>
             )))
-            }
+          }
           </tbody>
         </table>
       </div>

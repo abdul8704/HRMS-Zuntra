@@ -97,7 +97,7 @@ export const EmployeeDetailsAssignment = ({ userid }) => {
         <AttendanceCard data={{userid, startDate, endDate}} />
       </div>
 
-      <div className='bg-black/20 col-start-6 col-end-10 row-start-7 row-end-12 min-h-0 rounded-lg'>
+      <div className='bg-gray-200 col-start-6 col-end-10 row-start-7 row-end-12 min-h-0 rounded-lg'>
         <LeaveTable data={{userid}} />
       </div>
 

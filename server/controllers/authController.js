@@ -11,14 +11,13 @@ const sharp = require("sharp");
 const path = require("path");
 const fs = require("fs");
 
-
 const handleRefreshToken = asyncHandler((req, res) => {
     const cookies = req.cookies;
     if (!cookies?.refreshToken)
         throw new ApiError(401, "Refresh token not found in cookies");
 
     const refreshToken = cookies.refreshToken;
-
+    
     try {
         const user = jwt.verify(refreshToken, process.env.JWT_REFRESH_KEY);
         const newToken = jwtUtils.generateToken({ userid: user.userid });
@@ -55,6 +54,12 @@ const handleLogin = asyncHandler(async (req, res) => {
             maxAge: 1 * 24 * 60 * 60 * 1000, // TODO: change to 15 mins during deployment 1 days
         });
 
+        if (verifyLogin.role === null) {
+            return res
+                .status(200)
+                .json({ success: false, message: "Not admitted yet" });
+        }
+
         res.status(200).json({
             success: true,
             message: "Login successful",
@@ -75,29 +80,24 @@ const geoFenceLogin = asyncHandler(async (req, res) => {
     const { latitude, longitude, email } = req.body;
     const user = await authService.getUserByEmail(email)
     
-    // TODO: change this to whatever,,,
-    if(!user.role){
-        return res.status(206).json({ success: true, message: "No attendance for you" })
-    }
     const userid = user._id;
     
     if(!user)
         throw new ApiError(404, "User not found");
 
-    if (!email || !latitude || !longitude || !user.campus)
+    if (!email || !latitude || !longitude)
         throw new ApiError(400, "Incomplete location data");
 
-    const isInsideGeofence = await GeoService.isWithinGeofence(
+    const isInsideGeofence = (user.campus)  ? await GeoService.isWithinGeofence(
         latitude,
         longitude,
         user.campus
-    );
+    ) : false;
 
     if(isInsideGeofence)
         await attendanceService.markAttendanceOnLogin(userid, "onsite");
     else
         await attendanceService.markAttendanceOnLogin(userid, "remote");
-
     res.status(200).json({ success: true, message: "Attendance marked" });
 })
 
