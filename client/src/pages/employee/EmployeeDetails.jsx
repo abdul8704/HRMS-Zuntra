@@ -90,7 +90,7 @@ export const EmployeeDetails = ({ type }) => {
         <Loading />
       ) : (
         <>
-          <SidebarDetails type={type} empId={empId} />
+          <SidebarDetails type={type} empid={empId} />
 
           <div className="flex flex-col flex-1 gap-[1rem] p-[1rem]">
             {type === "user" && (
