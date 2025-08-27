@@ -10,6 +10,11 @@ router.get("/", requirePermission("general"), geoLocationController.getAllBranch
 router.post("/new-branch", requirePermission("companyManagement"), geoLocationController.addNewBranch);
 router.patch("/edit-branch", requirePermission("companyManagement"), geoLocationController.editCampusLocation);
 router.post("/delete-branch", requirePermission("companyManagement"), geoLocationController.deleteCampusLocation);
+router.delete(
+    "/delete-branch/",
+    requirePermission("companyManagement"),
+    geoLocationController.deleteCampusLocation
+);
 
 module.exports = router;
 

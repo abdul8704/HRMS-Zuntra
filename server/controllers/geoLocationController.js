@@ -36,7 +36,8 @@ const editCampusLocation = asyncHandler(async (req, res) => {
 });
 
 const deleteCampusLocation = asyncHandler(async (req, res) => {
-    const { oldCampusId, newCampusId } = req.body;
+    const { oldCampusId } = req.query;
+    const newCampusId = req.query.newCampusId ? req.query.newCampusId : null;
 
     await GeoService.deleteCampusLocation(oldCampusId, newCampusId);
     res.status(204).send();
