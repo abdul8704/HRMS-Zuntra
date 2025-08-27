@@ -1,84 +1,109 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import api from "../../../api/axios"; // your axios instance
 
 export const ReminderCard = ({ onPlusClick }) => {
-  const [reminders, setReminders] = useState([
-    { id: 1, text: "Today is payroll day, must have to give pay to employee's 1", daysLeft: 2, completed: false },
-    { id: 2, text: "Today is payroll day, must have to give pay to employee's 2", daysLeft: 5, completed: false },
-    { id: 3, text: "Today is payroll day, must have to give pay to employee's 3", daysLeft: 1, completed: false },
-    { id: 4, text: "Today is payroll day, must have to give pay to employee's 4", daysLeft: 3, completed: false },
-    { id: 5, text: "Today is payroll day, must have to give pay to employee's 5", daysLeft: 2, completed: false },
-    { id: 6, text: "Today is payroll day, must have to give pay to employee's 6", daysLeft: 5, completed: false },
-  ]);
-
+  const [reminders, setReminders] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [newTask, setNewTask] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
-  const [nextId, setNextId] = useState(7);
 
-  const toggleComplete = (id) => {
-    setReminders(prevReminders =>
-      prevReminders.map(reminder =>
-        reminder.id === id
-          ? { ...reminder, completed: !reminder.completed }
-          : reminder
-      )
-    );
-
-    setTimeout(() => {
-      setReminders(prevReminders => {
-        const idx = prevReminders.findIndex(r => r.id === id);
-        if (idx === -1) return prevReminders;
-
-        const updated = [...prevReminders];
-        const [item] = updated.splice(idx, 1);
-
-        if (item.completed) {
-          updated.push(item); // move to bottom if completed
-        } else {
-          updated.unshift(item); // move back to top if uncompleted
+  // ✅ Fetch reminders on mount
+  useEffect(() => {
+    const fetchReminders = async () => {
+      try {
+        const res = await api.get("/api/reminder/all");
+        if (res.data.success) {
+          const formatted = res.data.data.map(r => {
+            const due = new Date(r.dueDate);
+            const now = new Date();
+            const daysLeft = Math.max(
+              Math.ceil((due - now) / (1000 * 60 * 60 * 24)),
+              0
+            );
+            return {
+              id: r._id,
+              text: r.reminder,
+              daysLeft,
+              completed: r.isCompleted,
+            };
+          });
+          setReminders(formatted);
         }
+      } catch (err) {
+        console.error("Error fetching reminders:", err);
+      }
+    };
+    fetchReminders();
+  }, []);
 
-        return updated;
-      });
-    }, 1000);
+  // ✅ Toggle completion
+  const toggleComplete = async (id) => {
+    try {
+      await api.put("/api/reminder/toggle", { reminderId: id });
+      setReminders((prev) =>
+        prev.map((r) =>
+          r.id === id ? { ...r, completed: !r.completed } : r
+        )
+      );
+    } catch (err) {
+      console.error("Error toggling reminder:", err);
+    }
   };
 
-  const handleAddClick = () => setShowForm(prev => !prev);
-
-  const handleDateSelect = (e) => {
-    setSelectedDate(e.target.value);
-    setSelectedTime("");
-  };
-
-  const handleSubmit = () => {
+  // ✅ Add new reminder
+  const handleSubmit = async () => {
     if (!newTask || !selectedDate || !selectedTime) return;
 
-    const selected = new Date(`${selectedDate}T${selectedTime}`);
-    const now = new Date();
-    const daysLeft = Math.ceil((selected - now) / (1000 * 60 * 60 * 24));
+    const dueDate = new Date(`${selectedDate}T${selectedTime}`);
 
-    const newReminder = {
-      id: nextId,
-      text: newTask,
-      daysLeft: Math.max(daysLeft, 0),
-      completed: false,
-    };
+    try {
+      await api.post("/api/reminder/create", {
+        reminder: newTask,
+        dueDate,
+      });
 
-    setReminders([...reminders, newReminder]);
-    setNextId(nextId + 1);
+      // refresh reminders
+      const res = await api.get("/api/reminder/all");
+      if (res.data.success) {
+        const formatted = res.data.data.map(r => {
+          const due = new Date(r.dueDate);
+          const now = new Date();
+          const daysLeft = Math.max(
+            Math.ceil((due - now) / (1000 * 60 * 60 * 24)),
+            0
+          );
+          return {
+            id: r._id,
+            text: r.reminder,
+            daysLeft,
+            completed: r.isCompleted,
+          };
+        });
+        setReminders(formatted);
+      }
+    } catch (err) {
+      console.error("Error creating reminder:", err);
+    }
+
     setNewTask("");
     setSelectedDate("");
     setSelectedTime("");
     setShowForm(false);
   };
 
-  // Inline animation styles
-  const strikeBase = {
-    position: "relative",
-    display: "inline-block",
+  // ✅ Missing handlers
+  const handleAddClick = () => {
+    setShowForm((prev) => !prev);
   };
 
+  const handleDateSelect = (e) => {
+    setSelectedDate(e.target.value);
+    setSelectedTime(""); // reset time when new date chosen
+  };
+
+  // ✅ Strike-through styles
+  const strikeBase = { position: "relative", display: "inline-block" };
   const strikeLine = (completed) => ({
     content: "''",
     position: "absolute",
@@ -90,7 +115,7 @@ export const ReminderCard = ({ onPlusClick }) => {
     width: completed ? "100%" : "0%",
     transition: "width 0.3s ease",
   });
-
+  
   return (
     <div className="w-full h-full rounded-2xl flex flex-col text-[clamp(0.7rem,1.2vw,1rem)] p-[clamp(0.5rem,1vw,1rem)]">
       {/* Header */}

@@ -1,20 +1,22 @@
 const asyncHandler = require("express-async-handler");
 const reminderService = require("../services/reminderService");
 const ApiError = require("../errors/ApiError");
-const dateHelper = require("../utils/attendanceHelper");
 
 // @desc    Create new reminder
-// @route   POST /api/reminders/create
+// @route   POST /api/reminder/create
 const createReminder = asyncHandler(async (req, res) => {
-  const userid = req.user.userid;
+  const { userid } = req.user;
   const { reminder, dueDate } = req.body;
-  let normalizedDate = new Date(dueDate).toISOString();
 
   if (!reminder || !dueDate) {
     throw new ApiError(400, "Fields 'reminder' and 'dueDate' are required");
   }
 
-  await reminderService.createReminder({ userid, reminder, normalizedDate });
+  await reminderService.createReminder({
+    userid,
+    reminder,
+    dueDate: new Date(dueDate),
+  });
 
   res.status(201).json({
     success: true,
@@ -23,14 +25,10 @@ const createReminder = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all reminders
-// @route   GET /api/reminders/all
+// @route   GET /api/reminder/all
 const getAllReminders = asyncHandler(async (req, res) => {
-  const userid = req.user.userid;
+  const { userid } = req.user;
   const reminders = await reminderService.getAllReminders(userid);
-
-  if (!reminders.length) {
-    throw new ApiError(404, "No reminders found");
-  }
 
   res.status(200).json({
     success: true,
@@ -39,15 +37,10 @@ const getAllReminders = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get today's reminders
-// @route   GET /api/reminders/all/today
+// @route   GET /api/reminder/all/today
 const getTodaysReminders = asyncHandler(async (req, res) => {
-  const userid = req.user.userid;
-
+  const { userid } = req.user;
   const reminders = await reminderService.getTodaysReminders(userid);
-
-  if (!reminders.length) {
-    throw new ApiError(404, "No reminders for today");
-  }
 
   res.status(200).json({
     success: true,
@@ -55,6 +48,7 @@ const getTodaysReminders = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Toggle reminder completion
 const toggleReminderCompletion = asyncHandler(async (req, res) => {
   const { reminderId } = req.body;
   const { userid } = req.user;
@@ -70,47 +64,45 @@ const toggleReminderCompletion = asyncHandler(async (req, res) => {
   });
 });
 
-const editRemainder = asyncHandler(async (req, res) => {
-    const { reminderId, updateData } = req.body;
-    const { userid } = req.user;
-    const { reminder, dueDate } = updateData;
-  console.log(updateData)
-    if(!reminderId || !reminder || !dueDate) {
-        throw new ApiError(400, "Reminder ID, reminder and due date are required");
-    }
+// @desc    Edit reminder
+const editReminder = asyncHandler(async (req, res) => {
+  const { reminderId, updateData } = req.body;
+  const { userid } = req.user;
 
-    const updatedReminder = await reminderService.editRemainder(
-        userid,reminderId,
-        updateData
-    );
+  if (!reminderId || !updateData?.reminder || !updateData?.dueDate) {
+    throw new ApiError(400, "Reminder ID, reminder and due date are required");
+  }
 
-    res.status(200).json({
-        success: true,
-        data: updatedReminder,
-    });
+  const updatedReminder = await reminderService.editReminder(userid, reminderId, updateData);
+
+  res.status(200).json({
+    success: true,
+    data: updatedReminder,
+  });
 });
 
+// @desc    Delete reminder
 const deleteReminder = asyncHandler(async (req, res) => {
-    const { reminderId } = req.query;
-    const { userid } = req.user;
+  const { reminderId } = req.query;
+  const { userid } = req.user;
 
-    if (!reminderId) 
-        throw new ApiError(400, "Reminder ID is required");
+  if (!reminderId) {
+    throw new ApiError(400, "Reminder ID is required");
+  }
 
-    const deletedReminder = await reminderService.deleteReminder(userid, reminderId);
+  const deletedReminder = await reminderService.deleteReminder(userid, reminderId);
 
-    res.status(200).json({
-        success: true,
-        data: deletedReminder,
-    });
+  res.status(200).json({
+    success: true,
+    data: deletedReminder,
+  });
 });
-
 
 module.exports = {
-    createReminder,
-    getAllReminders,
-    getTodaysReminders,
-    toggleReminderCompletion,
-    deleteReminder,
-    editRemainder,
+  createReminder,
+  getAllReminders,
+  getTodaysReminders,
+  toggleReminderCompletion,
+  editReminder,
+  deleteReminder,
 };
