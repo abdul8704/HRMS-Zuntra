@@ -189,6 +189,50 @@ export const LeaveFormHistory = ({ userRole = 'default' }) => { // Approve userR
     }
   };
 
+  // add new state
+  const [isEditing, setIsEditing] = useState(false);
+
+  // delete leave request
+  const handleDeleteLeave = async () => {
+    if (!window.confirm("Are you sure you want to delete this leave request?")) return;
+
+    try {
+      await api.delete(`/api/employee/leave/delete-req/${selectedLeave.leaveId}`);
+      
+      setLeaveHistory(prev => prev.filter(item => item.leaveId !== selectedLeave.leaveId));
+      setShowPopup(false);
+    } catch (error) {
+      console.error("Error deleting leave:", error);
+      alert("Failed to delete leave request");
+    }
+  };
+
+  // update leave request
+  const handleUpdateLeave = async () => {
+    try {
+      await api.patch("/api/employee/leave/update-req",  {
+        reason: selectedLeave.reason,
+        dates: selectedLeave.dates,
+        leaveType: selectedLeave.leaveType,
+        leaveId: selectedLeave.leaveId,
+        requestedId: selectedLeave.requestedId
+      });
+
+      setLeaveHistory(prev =>
+        prev.map(item =>
+          item.leaveId === selectedLeave.leaveId ? { ...item, ...selectedLeave } : item
+        )
+      );
+
+      setIsEditing(false);
+      setShowPopup(false);
+    } catch (error) {
+      console.error("Error updating leave:", error);
+      alert("Failed to update leave request");
+    }
+  };
+
+
   const handleCancel = () => {
     setHrStatus(selectedLeave?.HR || '');
     setHrReason(selectedLeave?.HRComment || '');
@@ -212,7 +256,7 @@ export const LeaveFormHistory = ({ userRole = 'default' }) => { // Approve userR
                 <th className="p-2 text-left">Status</th>
                 <th className="p-2 text-center">View</th>
               </tr>
-            </thead>
+            </thead>  
             <tbody>
               {leaveHistory.map((item, index) => (
                 <tr key={index} className="border-b hover:bg-gray-50">
@@ -282,35 +326,95 @@ export const LeaveFormHistory = ({ userRole = 'default' }) => { // Approve userR
                     </div>
                   </div>
                 </div>
+                <div className="flex gap-4 w-full text-sm mb-2">
+                  <div className="w-1/2">
+                    <div className="font-semibold text-gray-700 mb-1">Start Date:</div>
+                    {isEditing ? (
+                      <input
+                        type="date"
+                        value={selectedLeave.dates[0]}
+                        onChange={(e) => {
+                          const updatedDates = [...selectedLeave.dates];
+                          updatedDates[0] = e.target.value;
+                          setSelectedLeave({ ...selectedLeave, dates: updatedDates });
+                        }}
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    ) : (
+                      <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800">
+                        {selectedLeave.dates[0]}
+                      </div>
+                    )}
+                  </div>
+                  <div className="w-1/2">
+                    <div className="font-semibold text-gray-700 mb-1">End Date:</div>
+                    {isEditing ? (
+                      <input
+                        type="date"
+                        value={selectedLeave.dates[1] || selectedLeave.dates[0]}
+                        onChange={(e) => {
+                          const updatedDates = [...selectedLeave.dates];
+                          updatedDates[1] = e.target.value;
+                          setSelectedLeave({ ...selectedLeave, dates: updatedDates });
+                        }}
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    ) : (
+                      <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800">
+                        {selectedLeave.dates[1] || selectedLeave.dates[0]}
+                      </div>
+                    )}
+                  </div>
+                  <div className="w-1/2">
+                    <div className="font-semibold text-gray-700 mb-1">Category:</div>
+                    {isEditing ? (
+                      <select
+                        value={selectedLeave.leaveType}
+                        onChange={(e) =>
+                          setSelectedLeave({ ...selectedLeave, leaveType: e.target.value })
+                        }
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="CASUAL">Casual</option>
+                        <option value="SICK">Sick</option>
+                        <option value="EMERGENCY">Emergency</option>
+                        <option value="INFORMED">Informed</option>
+                        <option value="MEDICAL">Medical</option>
+                      </select>
+                    ) : (
+                      <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800">
+                        {selectedLeave.leaveType}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                  
+
 
                 <div className="space-y-3 text-sm">
                   {/* Dates & Category */}
-                  <div className="flex gap-4 flex-wrap">
-                    {[{ label: 'Start Date', value: formatDate(selectedLeave.dates[0]) },
-                    { label: 'End Date', value: formatDate(selectedLeave.dates[selectedLeave.dates.length - 1]) },
-                    { label: 'Category', value: selectedLeave.leaveCategory || '-' },
-                    ].map((item, index) => (
-                      <div key={index} className="flex-1 min-w-[120px]">
-                        <div className="font-semibold text-gray-700 mb-1">{item.label}:</div>
-                        <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 break-words whitespace-pre-wrap max-w-full">
-                          {item.value}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+
+
 
                   {/* Employee Reason */}
                   <div className="flex gap-4">
-                    {[{ label: 'Employee Reason', value: selectedLeave.reason || '-' }].map(
-                      (item, index) => (
-                        <div key={index} className="w-full">
-                          <div className="font-semibold text-gray-700 mb-1">{item.label}:</div>
-                          <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 h-16 overflow-y-auto break-words whitespace-pre-wrap">
-                            {item.value}
-                          </div>
+                    <div className="w-full">
+                      <div className="font-semibold text-gray-700 mb-1">Employee Reason:</div>
+                      {isEditing ? (
+                        <textarea
+                          value={selectedLeave.reason}
+                          onChange={(e) =>
+                            setSelectedLeave({ ...selectedLeave, reason: e.target.value })
+                          }
+                          className="w-full h-16 border border-gray-300 rounded-md px-3 py-2 text-gray-800 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      ) : (
+                        <div className="bg-gray-100 rounded-md px-3 py-2 text-gray-800 h-16 overflow-y-auto break-words whitespace-pre-wrap">
+                          {selectedLeave.reason || "-"}
                         </div>
-                      )
-                    )}
+                      )}
+                    </div>
                   </div>
 
                   {/* TL Status & HR Status */}
@@ -418,7 +522,44 @@ export const LeaveFormHistory = ({ userRole = 'default' }) => { // Approve userR
                     </button>
                   </div>
                 ) : (
-                  <></>
+                    <div className="flex justify-center gap-4 mt-6 pt-4 border-t">
+                      {!isEditing ? (
+                        <>
+                          <button
+                            onClick={() => setIsEditing(true)}
+                            disabled={selectedLeave.TL !== "PENDING" || selectedLeave.HR !== "PENDING"}
+                            className={`py-3 min-w-[120px] rounded-full font-medium 
+          ${selectedLeave.TL !== "PENDING" || selectedLeave.HR !== "PENDING"
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-blue-500 text-white hover:bg-blue-600"
+                              }`}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={handleDeleteLeave}
+                            className="py-3 min-w-[120px] rounded-full font-medium bg-red-500 text-white hover:bg-red-600"
+                          >
+                            Delete
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => setIsEditing(false)}
+                            className="py-3 min-w-[120px] rounded-full font-medium bg-gray-300 text-gray-700 hover:bg-gray-400"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={handleUpdateLeave}
+                            className="py-3 min-w-[120px] rounded-full font-medium bg-green-500 text-white hover:bg-green-600"
+                          >
+                            Update
+                          </button>
+                        </>
+                      )}
+                    </div>
                 )
                 } 
                 

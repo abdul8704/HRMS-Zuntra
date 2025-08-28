@@ -25,6 +25,9 @@ router.patch('/leave/edit-req-action', requirePermission("leaveManagement"), emp
 
 
 router.patch('/leave/update-req', employeeController.editLeaveRequest);
-router.delete('/leave/delete-req', employeeController.deleteLeaveRequest) //TODO: need a rbac controller that check if only me
+router.delete(
+    "/leave/delete-req/:leaveId",
+    employeeController.deleteLeaveRequest
+); //TODO: need a rbac controller that check if only me
 
 module.exports = router;

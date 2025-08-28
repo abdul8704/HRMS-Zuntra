@@ -168,30 +168,28 @@ const processLeaveRequest = asyncHandler(async (req, res) => {
 });
 
 const editLeaveRequest = asyncHandler(async (req, res) => {
-    const { userid } = req.user;
-    const { leaveId, leaveCategory, dates, reason } = req.body;
+    const payload = req.body;
 
-    if (!leaveId || !leaveCategory || !dates || !reason) {
-        throw new ApiError(
-            400,
-            "Incomplete data given to update leave request"
-        );
+    if(!payload.requestedId || !payload.leaveId) {
+        throw new ApiError(400, "Incomplete data to edit leave request");
     }
 
-    await attendanceService.editLeaveRequest(
-        leaveId,
-        userid,
-        leaveCategory,
-        dates,
-        reason
-    );
+    const updateData = {
+        userid: payload.requestedId,
+        leaveType: payload.leaveType,
+        dates: payload.dates,
+        reason: payload.reason,
+        leaveId: payload.leaveId
+    };
 
-    res.status(200).json({ success: true, message: "successfullt updated" });
+    await attendanceService.editLeaveRequest(updateData.leaveId, payload.requestedId, updateData);
+
+    res.status(200).json({ success: true, message: "successfully updated" });
 });
 
 const deleteLeaveRequest = asyncHandler(async (req, res) => {
     const { userid } = req.user;
-    const { leaveId } = req.body;
+    const { leaveId } = req.params;
 
     if (!leaveId) {
         throw new ApiError(

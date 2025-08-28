@@ -249,12 +249,9 @@ const adminProcessLeaveRequest = async (
 const editLeaveRequest = async (
     leaveId,
     userid,
-    leaveCategory,
-    dates,
-    reason
+    payload
 ) => {
     const leaveApplication = await LeaveApplication.findById(leaveId);
-    const now = Date.now();
 
     if (String(leaveApplication.userid) !== userid) {
         throw new ApiError(
@@ -270,10 +267,9 @@ const editLeaveRequest = async (
         );
     }
 
-    leaveApplication.leaveType = leaveCategory.toUpperCase();
-    leaveApplication.dates = dates;
-    leaveApplication.reason = reason;
-    leaveApplication.appliedOn = now;
+    leaveApplication.leaveType = payload.leaveType;
+    leaveApplication.dates = payload.dates;
+    leaveApplication.reason = payload.reason;
 
     await leaveApplication.save();
 };
@@ -285,13 +281,6 @@ const deleteLeaveRequest = async (leaveId, userid) => {
         throw new ApiError(
             403,
             "YOU CANNOT DELETE OTHER PEOPLE's LEAVE APPLICATION"
-        );
-    }
-
-    if (leaveApplication.status !== "PENDING") {
-        throw new ApiError(
-            403,
-            "FORBIDDEN. ADMINS have already taken action. Cannot delete now."
         );
     }
 
