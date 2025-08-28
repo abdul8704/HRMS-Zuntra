@@ -165,7 +165,7 @@ export function SidebarDetails({ type}) {
 
               <div className="text-center">
                 <h2 className="text-black text-xl md:text-2xl font-semibold">
-                  {data.username}
+                  {data.username} 
                 </h2>
               </div>
 

@@ -38,7 +38,8 @@ const editShift = asyncHandler(async (req, res) => {
 });
 
 const deleteShift = asyncHandler(async (req, res) => {
-    const { shiftId, newShiftId } = req.params;
+    const { shiftId } = req.query;
+    const newShiftId = req.query.newShiftId ? req.query.newShiftId : null;
 
     const result = await ShiftService.deleteShift(shiftId, newShiftId);
     if (!result.success) throw new ApiError(404, result.message);
