@@ -20,6 +20,7 @@ const eventRoutes = require("./routes/eventRoutes");
 const holidayRoutes = require("./routes/holidayRoutes");
 const companyDocumentsRouter = require("./routes/companyDocumentsRoutes");
 const teamRoutes = require("./routes/projectRoutes/teamRoutes");
+const phaseRoutes = require("./routes/projectRoutes/phaseRoutes");
 const path = require("path");
 
 const errorHandler=require('./middlewares/errorHandler')
@@ -54,6 +55,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/docs", companyDocumentsRouter);
 app.use("/api/holidays", holidayRoutes);
 app.use("/api/project/team", teamRoutes);
+app.use("/api/project/phase", phaseRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(errorHandler);
 

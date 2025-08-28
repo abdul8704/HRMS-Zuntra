@@ -1,4 +1,6 @@
-// models/Phase.js  (a sub-project / phase)
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
+
 const phaseSchema = new Schema(
     {
         project: {
