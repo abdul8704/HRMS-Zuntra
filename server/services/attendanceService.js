@@ -177,8 +177,36 @@ const applyLeave = async (userid, leaveCategory, dates, reason) => {
 };
 
 const getLeaveRequests = async (userid) => {
-    const leaveRequests = LeaveApplication.find({ userid: userid });
-    return leaveRequests;
+    const leaveRequests = await LeaveApplication.find({ userid: userid })
+        .populate({
+            path: "userid",
+            select: "username email phoneNumber profilePicture",
+        })
+        .populate({
+            path: "adminReviewer superAdminReviewer",
+            select: "username email phoneNumber profilePicture",
+        })
+        .sort({ dates: -1 })
+        .lean();
+
+    const formattedRequest = leaveRequests.map((leaveReq) => ({
+        leaveId: leaveReq._id,
+        leaveType: leaveReq.leaveType,
+        requestedBy: leaveReq.userid.username,
+        requestedId: leaveReq.userid._id,
+        requestedUserEmail: leaveReq.userid.email,
+        requestedPhone: leaveReq.userid.phoneNumber,
+        appliedOn: leaveReq.appliedOn.toISOString().split("T")[0],
+        dates: leaveReq.dates.map((date) => date.toISOString().split("T")[0]),
+        reason: leaveReq.reason,
+        status: leaveReq.status,
+        TL: leaveReq.adminAction,
+        HR: leaveReq.superAdminAction,
+        TLComment: leaveReq.adminReviewComment,
+        HRComment: leaveReq.superAdminReviewComment,
+    }));
+
+    return formattedRequest;
 };
 
 const adminProcessLeaveRequest = async (

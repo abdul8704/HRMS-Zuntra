@@ -86,7 +86,6 @@ const processLeaveReq = asyncHandler(async (req, res) => {
 });
 
 const getAllLeaveReqs = asyncHandler(async (req, res) => {
-    const { userid } = req.user;
     const leaveData = await HrService.fetchAllLeaveRequests();
     const formattedRequest = leaveData.map((leaveReq) => ({
         leaveId: leaveReq._id,
@@ -118,8 +117,6 @@ const getEmployeesOnLeaveToday = asyncHandler(async (req, res) => {
     requestedId: emp._id,
     email: emp.email,
   }));
-
-//   console.log(formatted);
 
   res.status(200).json({
     success: true,

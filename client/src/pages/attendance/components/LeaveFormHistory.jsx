@@ -3,6 +3,7 @@ import { Eye } from 'lucide-react';
 import api from '../../../api/axios'
 import { Loading } from '../../utils/Loading';
 import { BASE_URL } from '../../../api/axios';
+import { useAuth } from '../../../context/AuthContext';
 
 export const LeaveFormHistory = ({ userRole = 'default' }) => { // Approve userRole as prop, default to 'hr'
   const [leaveHistory, setLeaveHistory] = useState([]);
@@ -18,15 +19,18 @@ export const LeaveFormHistory = ({ userRole = 'default' }) => { // Approve userR
   // Form state for Team Lead updates
   const [tlStatus, setTlStatus] = useState('');
   const [tlReason, setTlReason] = useState('');
-
+  const { user, authDataLoading } = useAuth();
+  
+  const userid = user?.userid;
   useEffect(() => {
+    if (!userid) return;
     const fetchleaveData = async () => {
       try {
         setLoading(true);
-        const response = await api.get("/api/hr/leave/all-req"); // your API endpoint
+        const response = await api.get(`/api/employee/leave/requests/${userid}`); // your API endpoint
 
-        if (response.data.success && response.data.leaveData?.length > 0) {
-          const updatedData = response.data.leaveData.map(emp => ({
+        if (response.data.success && response.data.leaveRequests?.length > 0) {
+          const updatedData = response.data.leaveRequests.map(emp => ({
             ...emp,
             employeeName: emp.requestedBy || 'Unknown',
             employeeProfile: `${BASE_URL}/uploads/profilePictures/${emp.requestedId}.png`,

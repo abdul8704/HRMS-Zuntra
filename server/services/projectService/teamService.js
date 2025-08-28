@@ -34,6 +34,21 @@ const getAllTeamsService = async () => {
     return teams;
 };
 
+const getTeamsOfProjectService = async (projectId) => { // TODO: do this after finishing project
+    const teams = await Team.find({ projectId })
+        .select("teamName teamDescription") // only include these from Team
+        .populate({
+            path: "teamLead",
+            select: "username role _id", // username, role, userid
+            populate: {
+                path: "role", // populate role reference
+                select: "role", // 👈 make sure this matches your schema field
+            },
+        });
+
+    return teams;
+};
+
 const createNewTeamService = async (data) => {
     const { teamLeadId, teamName, teamDescription = "", teamMembers } = data;
 
@@ -178,6 +193,7 @@ module.exports = {
     createNewTeamService,
     getMembersOfTeamService,
     getAllTeamsService,
+    getTeamsOfProjectService,
     addMembersToTeamService,
     isThisUserTL,
     userTLofProj,
