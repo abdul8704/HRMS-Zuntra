@@ -50,19 +50,20 @@ const addShift = asyncHandler(async (req, res) => {
 });
 
 const editRole = asyncHandler(async (req, res) => {
-  const { roleName } = req.params;
+  const { roleId } = req.params;
   const updatedData = req.body;
 
   if (
-    !roleName ||
+    !roleId ||
     !updatedData.role ||
     !updatedData.color ||
-    !updatedData.onboarddingCourses ||
-    !updatedData.baseSalary
+    !updatedData.onboardingCourses ||
+    !updatedData.baseSalary ||
+    !updatedData.allowedAccess
   )
     throw new ApiError(400, "Incomplete role data for update");
 
-  const result = await RoleService.editRole(roleName, updatedData);
+  const result = await RoleService.editRole(roleId, updatedData);
 
   if (!result.success) throw new ApiError(404, result.message);
 

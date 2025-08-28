@@ -1,5 +1,6 @@
 const Role = require("../models/roles");
 const UserCredentials = require("../models/userCredentials");
+const ApiError = require("../errors/ApiError");
 // Get all roles
 const getAllRolesData = async () => {
     try {
@@ -22,6 +23,10 @@ const getRoleDetailsById = async (roleid) => {
             return null;
         }
         const roleDetail = await Role.findOne({ _id: roleid });
+
+        if(!roleDetail){
+            return null;
+        }
         const userCount = await UserCredentials.countDocuments({ role : roleid });
         return { ...roleDetail.toObject(), userCount};
     } catch (error) {
@@ -38,10 +43,10 @@ const createNewRole = async (roleData) => {
     }
 };
 
-const editRole = async (roleName, updatedData) => {
+const editRole = async (roleId, updatedData) => {
     try {
         const updatedRole = await Role.findOneAndUpdate(
-            { role: roleName },
+            { _id: roleId },
             { $set: updatedData },
             { new: true }
         );
@@ -55,9 +60,11 @@ const editRole = async (roleName, updatedData) => {
     }
 };
 
-const deleteRole = async (roleName) => {
+const deleteRole = async (roleId) => {
     try {
-        const deletedRole = await Role.findOneAndDelete({ role: roleName });
+        await UserCredentials.updateMany({ role: roleId }, { $unset: { role: 1 } });
+        const deletedRole = await Role.findOneAndDelete({ _id: roleId });
+
         if (!deletedRole) {
             return { success: false, message: "Role not found" };
         }
