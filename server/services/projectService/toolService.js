@@ -1,7 +1,8 @@
 const Tool = require("../../models/projectManagement/tool");
+const Phase = require("../../models/projectManagement/phase");
 
 const getAllTools = async () => {
-    return Tool.find({}).lean();
+    return Tool.find({}).sort({ expiresOn: -1 }).lean();
 };
 
 const getToolById = async (toolId) => {
@@ -19,6 +20,10 @@ const updateToolById = async (toolId, updateData) => {
 };
 
 const deleteToolById = async (toolId) => {
+    await Phase.updateMany(
+        { "tools.tool": toolId },
+        { $pull: { tools: { tool: toolId } } }
+    );
     return Tool.findByIdAndDelete(toolId);
 };
 
