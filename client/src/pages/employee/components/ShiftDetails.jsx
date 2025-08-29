@@ -263,22 +263,6 @@ const formatLocalTime = (utcString) => {
                   </div>
                 </div>
 
-                <div>
-                  <label htmlFor="noOfUsers" className="block text-sm font-medium text-gray-700 mb-1">
-                    Number of Users
-                  </label>
-                  <input
-                    type="number"
-                    id="noOfUsers"
-                    name="noOfUsers"
-                    value={formData.noOfUsers}
-                    onChange={handleInputChange}
-                    min="1"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
-                    placeholder="Enter number of users"
-                  />
-                </div>
-
                 <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4">
                   <button
                     type="button"
