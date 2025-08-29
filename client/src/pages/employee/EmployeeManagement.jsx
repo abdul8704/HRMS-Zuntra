@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Sidebar } from '../../components/Sidebar'
 import { Navbar } from '../../components/Navbar'
 import { Loading } from '../utils/Loading'
-
+import { ShiftDetails  } from './components/ShiftDetails'
 import { EmployeeCard } from './components/EmployeeCard'
 import { RoleCard } from './components/RoleCard'
 import AddRole from './components/AddRole'
