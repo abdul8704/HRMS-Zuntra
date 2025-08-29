@@ -56,7 +56,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/docs", companyDocumentsRouter);
 app.use("/api/holidays", holidayRoutes);
 app.use("/api/project/team", teamRoutes);
-app.use("/api/project/phase", phaseRoutes);
+app.use("/api/phase", phaseRoutes);
 app.use("/api/tools", toolsRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(errorHandler);
