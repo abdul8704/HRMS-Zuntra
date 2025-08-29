@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-
-export const AddLocationForm = ({ isOpen = false, onClose = () => { }, onSubmit = () => { } }) => {
+import axios from "../../../api/axios";
+export const AddLocationForm = ({ isOpen = false, onClose = () => { }, refreshLocations = () => { } }) => {
   const [formData, setFormData] = useState({
     campusName: '',
     embedURL: '',
@@ -13,30 +13,20 @@ export const AddLocationForm = ({ isOpen = false, onClose = () => { }, onSubmit 
     radius: ''
   });
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const [loading, setLoading] = useState(false);
 
-    setFormErrors(prev => ({
-      ...prev,
-      [field]: ''
-    }));
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormErrors(prev => ({ ...prev, [field]: '' }));
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     const { campusName, embedURL, radius } = formData;
-    const errors = {
-      campusName: '',
-      embedURL: '',
-      radius: ''
-    };
-
+    const errors = { campusName: "", embedURL: "", radius: "" };
     let isValid = true;
 
     if (!campusName.trim()) {
-      errors.campusName = 'Branch name is required.';
+      errors.campusName = "Branch name is required.";
       isValid = false;
     }
     if (!embedURL.trim()) {
@@ -49,81 +39,89 @@ export const AddLocationForm = ({ isOpen = false, onClose = () => { }, onSubmit 
 
     const radiusValue = parseFloat(radius);
     if (!radius.trim()) {
-      errors.radius = 'Radius is required.';
+      errors.radius = "Radius is required.";
       isValid = false;
     } else if (isNaN(radiusValue) || radiusValue <= 0) {
-      errors.radius = 'Radius must be a valid positive number.';
+      errors.radius = "Radius must be a valid positive number.";
       isValid = false;
     }
 
     setFormErrors(errors);
-
     if (!isValid) return;
 
-    onSubmit({ ...formData, radius: radiusValue });
-    onClose();
+    try {
+      setLoading(true);
+
+      const res = await axios.post("/api/branch/new-branch", {
+        campusName,
+        embedURL,
+        radius: radiusValue,
+      });
+
+      // ✅ Success
+      console.log("Added:", res.data);
+      refreshLocations(); // reload list
+      onClose();
+    } catch (err) {
+      console.error("Add branch failed:", err);
+      alert(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   if (!isOpen) return null;
 
   return (
-    <>
-      <div className="add-loc-overlay">
-        <div className="add-loc-container">
-          <button onClick={onClose} className="add-loc-close-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6l12 12" stroke="#000" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </button>
-
-          <div className="add-loc-content">
-            <h2 className="add-loc-title">Add New Company Location</h2>
-
-            <form className="add-loc-input-group" onSubmit={(e) => e.preventDefault()}>
-              <div>
-                <input
-                  type="text"
-                  placeholder="Enter campus name"
-                  value={formData.campusName}
-                  onChange={(e) => handleInputChange('campusName', e.target.value)}
-                  className="add-loc-input"
-                />
-                {formErrors.campusName && <p className="add-loc-error-text">{formErrors.campusName}</p>}
-              </div>
-
-              <div>
-                <input
-                  type="text"
-                  placeholder="Enter address URL"
-                  value={formData.embedURL}
-                  onChange={(e) => handleInputChange('embedURL', e.target.value)}
-                  className="add-loc-input"
-                />
-                {formErrors.embedURL && <p className="add-loc-error-text">{formErrors.embedURL}</p>}
-              </div>
-
-              <div>
-                <input
-                  type="Number"
-                  min="0"
-                  placeholder="Enter radius (in meters)"
-                  value={formData.radius}
-                  onChange={(e) => handleInputChange('radius', e.target.value)}
-                  className="add-loc-input"
-                />
-                {formErrors.radius && <p className="add-loc-error-text">{formErrors.radius}</p>}
-              </div>
-            </form>
-
-            <div className="add-loc-button-wrapper">
-              <button onClick={handleAdd} className="add-loc-add-btn">
-                Add
-              </button>
+    <div className="add-loc-overlay">
+      <div className="add-loc-container">
+        <button onClick={onClose} className="add-loc-close-btn">✕</button>
+        <div className="add-loc-content">
+          <h2 className="add-loc-title">Add New Company Location</h2>
+          <form className="add-loc-input-group" onSubmit={(e) => e.preventDefault()}>
+            <div>
+              <input
+                type="text"
+                placeholder="Enter campus name"
+                value={formData.campusName}
+                onChange={(e) => handleInputChange('campusName', e.target.value)}
+                className="add-loc-input"
+              />
+              {formErrors.campusName && <p className="add-loc-error-text">{formErrors.campusName}</p>}
             </div>
+
+            <div>
+              <input
+                type="text"
+                placeholder="Enter address URL"
+                value={formData.embedURL}
+                onChange={(e) => handleInputChange('embedURL', e.target.value)}
+                className="add-loc-input"
+              />
+              {formErrors.embedURL && <p className="add-loc-error-text">{formErrors.embedURL}</p>}
+            </div>
+
+            <div>
+              <input
+                type="number"
+                min="0"
+                placeholder="Enter radius (in meters)"
+                value={formData.radius}
+                onChange={(e) => handleInputChange('radius', e.target.value)}
+                className="add-loc-input"
+              />
+              {formErrors.radius && <p className="add-loc-error-text">{formErrors.radius}</p>}
+            </div>
+          </form>
+
+          <div className="add-loc-button-wrapper">
+            <button onClick={handleAdd} disabled={loading} className="add-loc-add-btn">
+              {loading ? "Adding..." : "Add"}
+            </button>
           </div>
         </div>
       </div>
-
       <style>
         {`
           .add-loc-overlay {
@@ -223,6 +221,6 @@ export const AddLocationForm = ({ isOpen = false, onClose = () => { }, onSubmit 
           }
         `}
       </style>
-    </>
+    </div>
   );
 };

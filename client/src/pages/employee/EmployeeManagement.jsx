@@ -86,10 +86,10 @@ const ShiftDetails = () => {
       alert('Please fill in all fields');
       return;
     }
-    
+
     if (editingShift) {
       // Update existing shift
-      setShifts(prev => prev.map(shift => 
+      setShifts(prev => prev.map(shift =>
         shift.id === editingShift.id ? { ...formData, id: editingShift.id } : shift
       ));
     } else {
@@ -100,7 +100,7 @@ const ShiftDetails = () => {
       };
       setShifts(prev => [...prev, newShift]);
     }
-    
+
     closeModal();
   };
 
@@ -149,7 +149,7 @@ const ShiftDetails = () => {
               <th className="text-left py-4 px-4 font-bold text-gray-900 text-sm">
                 No. of Users
               </th>
-              
+
             </tr>
           </thead>
           <tbody>
@@ -164,30 +164,30 @@ const ShiftDetails = () => {
                 <td className="py-4 px-4 text-sm text-black">
                   {shift.endTime}
                 </td>
-                
+
                 <td className="py-4 px-4 text-sm text-black relative pr-20">
-  {shift.noOfUsers}
-  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2">
-    <button
-      onClick={() => openModal(shift)}
-      className="text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200"
-      title="Edit shift"
-    >
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      </svg>
-    </button>
-    <button
-      onClick={() => handleDeleteShift(shift.id)}
-      className="text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200"
-      title="Delete shift"
-    >
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-      </svg>
-    </button>
-  </div>
-</td>
+                  {shift.noOfUsers}
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2">
+                    <button
+                      onClick={() => openModal(shift)}
+                      className="text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200"
+                      title="Edit shift"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleDeleteShift(shift.id)}
+                      className="text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200"
+                      title="Delete shift"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -210,7 +210,7 @@ const ShiftDetails = () => {
             <h2 className="text-xl font-bold mb-4 text-gray-900">
               {editingShift ? 'Edit Shift' : 'Add New Shift'}
             </h2>
-            
+
             <div className="space-y-4">
               <div>
                 <label htmlFor="shiftName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -590,37 +590,75 @@ export const EmployeeManagement = () => {
   const handleConfirmRemoval = useCallback(async (data) => {
     try {
       console.log('Employee removal confirmed:', data);
-      
+
       // Uncomment and modify API call as needed:
       // const response = await api.delete(`/api/employee/${data.employeeId}`, {
       //   data: { message: data.message }
       // })
-      
+
       // if (response.data.success) {
       //   // Remove from pending employees if it's from newusers section
       //   setPendingEmployees(prev => prev.filter(emp => emp._id !== data.employeeId))
       //   // Or remove from regular employees if it's from all section
       //   setEmployees(prev => prev.filter(emp => emp._id !== data.employeeId))
       // }
-      
+
       handleCloseRemovePopup();
     } catch (error) {
       console.error('Error removing employee:', error);
       alert('Failed to remove employee. Please try again.');
     }
   }, [handleCloseRemovePopup])
-
-  const handleAddNewBranch = useCallback(async formData => {
+  const fetchBranches = async () => {
     try {
-      const response = await api.post('/api/branch/new-branch', formData)
-      if (response.data.success) {
-        setBranches(prev => [...prev, response.data.branch])
-        setShowLocationForm(false)
-      }
-    } catch (error) {
-      console.error('Error adding new branch:', error)
+      const res = await api.get("/api/branch");
+      setBranches(res.data.branches || []);
+    } catch (err) {
+      console.error("Failed to fetch branches:", err);
     }
-  }, [])
+  };
+
+  // add a branch
+  const handleAddBranch = async (formData) => {
+    try {
+      const res = await api.post("/api/branch/new-branch", formData);
+      if (res.data.success) {
+        setBranches(prev => [...prev, res.data.branch]);
+        setShowLocationForm(false);
+      }
+    } catch (err) {
+      console.error("Error adding branch:", err);
+    }
+  };
+
+  // edit a branch
+  const handleEditBranch = async (branchId, updates) => {
+    try {
+      const res = await api.put(`/api/branch/${branchId}`, updates);
+      if (res.data.success) {
+        setBranches(prev =>
+          prev.map(b => (b._id === branchId ? res.data.branch : b))
+        );
+      }
+    } catch (err) {
+      console.error("Error editing branch:", err);
+    }
+  };
+
+  // delete a branch
+  const handleDeleteBranch = async (branchId) => {
+    if (!window.confirm("Are you sure you want to delete this branch?")) return;
+
+    try {
+      const res = await api.delete(`/api/branch/${branchId}`);
+      if (res.data.success) {
+        setBranches(prev => prev.filter(b => b._id !== branchId));
+      }
+    } catch (err) {
+      console.error("Error deleting branch:", err);
+    }
+  };
+
 
   // Clear all filters
   const handleClearFilters = useCallback(() => {
@@ -629,8 +667,8 @@ export const EmployeeManagement = () => {
       navId === 'newusers'
         ? ''
         : navId === 'locations'
-        ? 'All Locations'
-        : 'All Roles'
+          ? 'All Locations'
+          : 'All Roles'
     )
     setRoleSearchTerm('All Roles')
     setSelectedLoginStatus('All Users')
@@ -717,20 +755,20 @@ export const EmployeeManagement = () => {
               navId === 'roles' ||
               navId === 'newusers' ||
               navId === 'locations') && (
-              <input
-                type='text'
-                placeholder={
-                  navId === 'roles'
-                    ? 'Search roles'
-                    : navId === 'locations'
-                    ? 'Search locations'
-                    : 'Search by name, email, or phone'
-                }
-                className='bg-white/50 flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A6C4BA]'
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
-            )}
+                <input
+                  type='text'
+                  placeholder={
+                    navId === 'roles'
+                      ? 'Search roles'
+                      : navId === 'locations'
+                        ? 'Search locations'
+                        : 'Search by name, email, or phone'
+                  }
+                  className='bg-white/50 flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A6C4BA]'
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+              )}
 
             {/* Role Dropdown - Only for 'all' navId */}
             {navId === 'all' && (
@@ -758,9 +796,8 @@ export const EmployeeManagement = () => {
                     }}
                   >
                     <svg
-                      className={`w-4 h-4 transition-transform ${
-                        showRoleDropdown ? 'rotate-180' : ''
-                      }`}
+                      className={`w-4 h-4 transition-transform ${showRoleDropdown ? 'rotate-180' : ''
+                        }`}
                       fill='none'
                       stroke='currentColor'
                       viewBox='0 0 24 24'
@@ -784,9 +821,8 @@ export const EmployeeManagement = () => {
                       filteredRoleDropdown.map((role, idx) => (
                         <div
                           key={idx}
-                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${
-                            selectedRole === role ? 'bg-[#BBD3CC]' : ''
-                          }`}
+                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedRole === role ? 'bg-[#BBD3CC]' : ''
+                            }`}
                           onClick={() => {
                             setSelectedRole(role)
                             setRoleSearchTerm(role)
@@ -823,9 +859,8 @@ export const EmployeeManagement = () => {
                 >
                   <span>{selectedLoginStatus}</span>
                   <svg
-                    className={`w-4 h-4 transition-transform ${
-                      showLoginDropdown ? 'rotate-180' : ''
-                    }`}
+                    className={`w-4 h-4 transition-transform ${showLoginDropdown ? 'rotate-180' : ''
+                      }`}
                     fill='none'
                     stroke='currentColor'
                     viewBox='0 0 24 24'
@@ -843,9 +878,8 @@ export const EmployeeManagement = () => {
                     {['All Users', 'Present', 'Absent'].map(status => (
                       <div
                         key={status}
-                        className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${
-                          selectedLoginStatus === status ? 'bg-[#BBD3CC]' : ''
-                        }`}
+                        className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedLoginStatus === status ? 'bg-[#BBD3CC]' : ''
+                          }`}
                         onClick={() => {
                           setSelectedLoginStatus(status)
                           setShowLoginDropdown(false)
@@ -890,10 +924,10 @@ export const EmployeeManagement = () => {
               {navId === 'all'
                 ? 'employees'
                 : navId === 'newusers'
-                ? 'new users'
-                : navId === 'locations'
-                ? 'locations'
-                : 'roles'}
+                  ? 'new users'
+                  : navId === 'locations'
+                    ? 'locations'
+                    : 'roles'}
             </div>
             <div className='flex gap-2'>
               {searchTerm && (
@@ -1056,9 +1090,11 @@ export const EmployeeManagement = () => {
             ) : (
               currentData.data.map((loc, index) => (
                 <GeoFencing
-                  key={index}
+                  key={loc._id}
                   embedUrl={loc.embedURL}
                   branchName={loc.campusName}
+                  onEdit={() => handleEditBranch(loc._id, { campusName: "Updated Name" })}
+                  onDelete={() => handleDeleteBranch(loc._id)}
                 />
               ))
             )}
@@ -1126,7 +1162,7 @@ export const EmployeeManagement = () => {
           <AddLocationForm
             isOpen={showLocationForm}
             onClose={() => setShowLocationForm(false)}
-            onSubmit={handleAddNewBranch}
+            onSubmit={handleAddBranch}
           />
         )}
       </div>
