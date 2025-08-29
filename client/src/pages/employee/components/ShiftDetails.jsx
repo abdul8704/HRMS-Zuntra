@@ -1,23 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../../../api/axios';
 
 export const ShiftDetails = () => {
-  const [shifts, setShifts] = useState([
-    {
-      id: 1,
-      shiftName: "Morning Shift",
-      startTime: "09:00",
-      endTime: "17:00",
-      noOfUsers: "12"
-    },
-    {
-      id: 2,
-      shiftName: "Night Shift",
-      startTime: "22:00",
-      endTime: "06:00",
-      noOfUsers: "8"
-    }
-  ]);
-
+  const [shifts, setShifts] = useState([]);
+  const [loading, setLoading] = useState([false]);
+  const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingShift, setEditingShift] = useState(null);
   const [formData, setFormData] = useState({
@@ -26,6 +13,25 @@ export const ShiftDetails = () => {
     endTime: '',
     noOfUsers: ''
   });
+
+  useEffect(() => {
+  const fetchShifts = async () => {
+    try {
+      const res = await api.get("/api/shifts/");
+      console.log("api resonses", res);
+      // if (!res.status==200) throw new Error("Failed to fetch shifts");
+      setShifts(res.data); // API response should be an array of shifts
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchShifts();
+}, []);
+
 
   const openModal = (shift = null) => {
     if (shift) {
@@ -85,6 +91,14 @@ export const ShiftDetails = () => {
     closeModal();
   };
 
+  // Convert UTC datetime string to local time (HH:mm format)
+const formatLocalTime = (utcString) => {
+  if (!utcString) return "";
+  const date = new Date(utcString); // converts to local Date automatically
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
+
   const PlusButton = () => {
     return (
       <button
@@ -125,11 +139,11 @@ export const ShiftDetails = () => {
             <div className="space-y-2 text-sm text-gray-600">
               <div className="flex justify-between">
                 <span className="font-medium">Start Time:</span>
-                <span>{shift.startTime}</span>
+                <span>{formatLocalTime(shift.startTime)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">End Time:</span>
-                <span>{shift.endTime}</span>
+                <span>{formatLocalTime(shift.endTime)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">No. of Users:</span>
@@ -169,10 +183,10 @@ export const ShiftDetails = () => {
                   {shift.shiftName}
                 </td>
                 <td className="py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm text-black">
-                  {shift.startTime}
+                  {formatLocalTime(shift.startTime)}
                 </td>
                 <td className="py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm text-black">
-                  {shift.endTime}
+                  {formatLocalTime(shift.endTime)}
                 </td>
                 <td className="py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm text-black">
                   {shift.noOfUsers}
