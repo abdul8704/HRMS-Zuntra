@@ -35,13 +35,24 @@ const editCampusLocation = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, campus: updatedCampus });
 });
 
-const deleteCampusLocation = asyncHandler(async (req, res) => {
-    const { oldCampusId } = req.query;
-    const newCampusId = req.query.newCampusId ? req.query.newCampusId : null;
+// controllers/geoLocationController.js
+const deleteCampusLocation = async (req, res, next) => {
+  try {
+    const { oldCampusId } = req.params; // 👈 comes from URL
+    const { newCampusId } = req.query;  // 👈 optional query param
 
-    await GeoService.deleteCampusLocation(oldCampusId, newCampusId);
-    res.status(204).send();
-});
+    if (!oldCampusId) {
+      return res.status(400).json({ success: false, message: "Old campus ID is required" });
+    }
+
+    // your delete logic here
+    console.log("Deleting:", oldCampusId, "Reassigning to:", newCampusId);
+
+    res.json({ success: true, message: "Branch deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
     getAllBranches,

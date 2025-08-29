@@ -7,6 +7,7 @@ const LocationEditPopup = ({
   isOpen, 
   onClose, 
   onSave, 
+  currentCampusId, 
   currentBranchName = '', 
   currentEmbedUrl = '', 
   currentGeoFenceRadius = '' 

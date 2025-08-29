@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../api/axios';
 
-export const ShiftDetails = () => {
+export const ShiftTable = () => {
   const [shifts, setShifts] = useState([]);
   const [loading, setLoading] = useState([false]);
   const [error, setError] = useState("");

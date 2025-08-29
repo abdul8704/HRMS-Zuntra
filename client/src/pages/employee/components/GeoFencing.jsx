@@ -3,7 +3,7 @@ import { MoreVertical } from 'lucide-react';
 import LocationDeletePopup from './LocationDeletePopup';
 import LocationEditPopup from './LocationEditPopup';
 
-export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius }) => {
+export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius , _id}) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showEditPopup, setShowEditPopup] = useState(false);
@@ -101,6 +101,7 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius }) => {
         isOpen={showEditPopup}
         onClose={handleEditCancel}
         onSave={handleEditSave}
+        currentCampusId={_id}
         currentBranchName={branchName}
         currentEmbedUrl={embedUrl}
         currentGeoFenceRadius={geoFenceRadius}
@@ -111,6 +112,7 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius }) => {
         isOpen={showDeletePopup}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
+        oldCampusId={_id}
         locationName={branchName}
       />
     </div>
