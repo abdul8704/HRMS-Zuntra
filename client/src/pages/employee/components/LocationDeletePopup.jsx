@@ -1,8 +1,20 @@
 import React from 'react';
-import { X } from 'lucide-react';
+import { X } from 'lucide-react'; 
+import axios from "../../../api/axios";
 
 const LocationDeletePopup = ({ isOpen, onClose, onConfirm, locationName }) => {
   if (!isOpen) return null;
+  const handleDelete = async (id, newId) => {
+  try {
+    await axios.delete("/api/branch/delete-branch", {
+      params: { oldCampusId: id, newCampusId: newId }
+    });
+    toast.success("Location deleted successfully");
+    refreshData();
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Failed to delete location");
+  }
+};
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
