@@ -21,11 +21,12 @@ const holidayRoutes = require("./routes/holidayRoutes");
 const companyDocumentsRouter = require("./routes/companyDocumentsRoutes");
 const teamRoutes = require("./routes/projectRoutes/teamRoutes");
 const phaseRoutes = require("./routes/projectRoutes/phaseRoutes");
+const toolsRoutes = require("./routes/projectRoutes/toolsRoutes");
 const path = require("path");
 
-const errorHandler=require('./middlewares/errorHandler')
-const JWTauth = require('./middlewares/authenticateJWT')
-const apiLogger = require('./middlewares/apiLogger')
+const errorHandler = require("./middlewares/errorHandler");
+const JWTauth = require("./middlewares/authenticateJWT");
+const apiLogger = require("./middlewares/apiLogger");
 
 const corsOptions = {
     origin: ["http://localhost:5173", "http://localhost:5174"],
@@ -38,7 +39,7 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
-app.use("/auth", authRouter)
+app.use("/auth", authRouter);
 app.use("/api", JWTauth, apiLogger);
 
 app.use("/api/hr", hrRoutes);
@@ -56,6 +57,7 @@ app.use("/api/docs", companyDocumentsRouter);
 app.use("/api/holidays", holidayRoutes);
 app.use("/api/project/team", teamRoutes);
 app.use("/api/project/phase", phaseRoutes);
+app.use("/api/tools", toolsRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(errorHandler);
 

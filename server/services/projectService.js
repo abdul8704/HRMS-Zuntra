@@ -8,7 +8,11 @@ const getAllOnGoingProjects = async () => {
         const projectsList = await Project.find({ status: { $eq: "Ongoing" } });
         return projectsList;
     } catch (error) {
-        throw new ApiError("Failed to fetch ongoing projects:", error.message);
+        throw new ApiError(
+            500,
+            "Failed to fetch ongoing projects",
+            error.message
+        );
     }
 };
 
@@ -20,7 +24,11 @@ const getAllFinishedProjects = async () => {
         });
         return projectsList;
     } catch (error) {
-        throw new ApiError("Failed to fetch finished projects:", error.message);
+        throw new ApiError(
+            500,
+            "Failed to fetch finished projects",
+            error.message
+        );
     }
 };
 
@@ -30,7 +38,11 @@ const getAProject = async (id) => {
         const project = await Project.findById(id);
         return project;
     } catch (error) {
-        throw new ApiError("Failed to fetch project details:", error.message);
+        throw new ApiError(
+            500,
+            "Failed to fetch project details",
+            error.message
+        );
     }
 };
 
@@ -42,7 +54,11 @@ const getAllProjectsOnDate = async (startOfDay, endOfDay) => {
         });
         return projectsList;
     } catch (error) {
-        throw new ApiError(500, "Failed to fetch projects on date:", error.message);
+        throw new ApiError(
+            500,
+            "Failed to fetch projects on date:",
+            error.message
+        );
     }
 };
 
