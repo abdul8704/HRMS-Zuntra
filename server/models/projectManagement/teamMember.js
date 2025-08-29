@@ -16,7 +16,7 @@ const membershipSchema = new mongoose.Schema(
         },
         role: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Role",
+            ref: "rolesDetails",
             required: true,
         },
         active: { type: Boolean, default: true },
