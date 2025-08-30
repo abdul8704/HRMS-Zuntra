@@ -5,7 +5,6 @@ const GeoUtils = require("../utils/geoFencing");
 
 const getAllBranches = asyncHandler(async (req, res) => {
     const branches = await GeoService.getAllCampusLocations();
-    console.log(branches);
     res.status(200).json({ success: true, branches: branches });
 });
 

@@ -15,7 +15,7 @@ const LocationEditPopup = ({
   // ✅ Add the missing useState declarations
   const [branchName, setBranchName] = useState(currentBranchName);
   const [embedUrl, setEmbedUrl] = useState(currentEmbedUrl);
- const [geoFenceRadius, setGeoFenceRadius] = useState(currentGeoFenceRadius?.toString() || "");
+  const [geoFenceRadius, setGeoFenceRadius] = useState(currentGeoFenceRadius);
 
   // Sync local state with props when popup opens
   useEffect(() => {
