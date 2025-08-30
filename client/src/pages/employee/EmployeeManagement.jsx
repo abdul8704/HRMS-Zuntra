@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Sidebar } from '../../components/Sidebar'
 import { Navbar } from '../../components/Navbar'
 import { Loading } from '../utils/Loading'
-import { ShiftTable  } from './components/ShiftTable'
+import { ShiftTable } from './components/ShiftTable'
 import { EmployeeCard } from './components/EmployeeCard'
 import { RoleCard } from './components/RoleCard'
 import AddRole from './components/AddRole'
@@ -633,42 +633,36 @@ export const EmployeeManagement = () => {
 
   // edit a branch
   const handleEditBranch = async (oldCampusId, updates) => {
-  try {
-    const res = await api.patch("/api/branch/edit-branch", {
-      oldCampusId,
-      ...updates
-    });
-    if (res.data.success) {
-      // Refresh the branches list or update state
-      fetchBranches(); // Call your fetch function
-      // OR update state manually:
-      // setBranches(prev => 
-      //   prev.map(b => (b._id === oldCampusId ? res.data.campus : b))
-      // );
+    try {
+      const res = await api.patch("/api/branch/edit-branch", {
+        oldCampusId,
+        ...updates
+      });
+      if (res.data.success) {
+        // Refresh the branches list or update state
+        fetchBranches(); // Call your fetch function
+        // OR update state manually:
+        // setBranches(prev => 
+        //   prev.map(b => (b._id === oldCampusId ? res.data.campus : b))
+        // );
+      }
+    } catch (err) {
+      console.error("Error editing branch:", err);
     }
-  } catch (err) {
-    console.error("Error editing branch:", err);
-  }
-};
+  };
 
-// Update your delete function to match your backend:
-const handleDeleteBranch = async (oldCampusId, newCampusId = null) => {
-  if (!window.confirm("Are you sure you want to delete this branch?")) return;
-
+  // Update your delete function to match your backend:
+  const handleDeleteBranch = async (oldCampusId, newCampusId = null) => {
   try {
-    const url = newCampusId 
-      ? `/api/branch/delete-branch?newCampusId=${newCampusId}`
-      : `/api/branch/delete-branch`;
-    
-    const res = await api.delete(url, {
-      params: { oldCampusId }
-    });
-    
-    if (res.data.success) {
-      setBranches(prev => prev.filter(b => b._id !== oldCampusId));
-    }
-  } catch (err) {
-    console.error("Error deleting branch:", err);
+    console.log("Calling delete API with:", { oldCampusId, newCampusId });
+    const response = await axios.delete(
+      `/geo-location/delete/${oldCampusId}`,
+      { data: { moveUsersTo: newCampusId } }
+    );
+    console.log("Delete success:", response.data);
+    setGeoLocations(prev => prev.filter(loc => loc._id !== oldCampusId));
+  } catch (error) {
+    console.error("Error deleting branch:", error.response || error);
   }
 };
 
@@ -1085,51 +1079,51 @@ const handleDeleteBranch = async (oldCampusId, newCampusId = null) => {
 
         {/* Geofencing */}
         {navId === 'locations' && (
-  <div className='flex flex-col px-[1rem] gap-4 overflow-y-auto flex-1'>
-    {currentData.loading ? (
-      <div className='text-center col-span-full mt-4 text-gray-600 font-semibold'>
-        <Loading />
-      </div>
-    ) : currentData.error ? (
-      <p className='text-center mt-4 text-red-500 font-semibold'>
-        Error fetching branches
-      </p>
-    ) : currentData.data.length === 0 ? (
-      <p className='text-center mt-4 text-gray-500 font-medium'>
-        {currentData.total === 0
-          ? 'No branches available'
-          : 'No branches match the current filters'}
-      </p>
-    ) : (
-      currentData.data.map((loc, index) => (
-  <GeoFencing
-    key={loc._id}
-    embedUrl={loc.embedURL}
-    branchName={loc.campusName}
-    _id={loc._id}
-    geoFenceRadius={loc.radius}
-    onRefresh={fetchBranches} // ✅ Pass refresh function instead of edit handler
-    onDelete={() => handleDeleteBranch(loc._id)}
-  />
-))
+          <div className='flex flex-col px-[1rem] gap-4 overflow-y-auto flex-1'>
+            {currentData.loading ? (
+              <div className='text-center col-span-full mt-4 text-gray-600 font-semibold'>
+                <Loading />
+              </div>
+            ) : currentData.error ? (
+              <p className='text-center mt-4 text-red-500 font-semibold'>
+                Error fetching branches
+              </p>
+            ) : currentData.data.length === 0 ? (
+              <p className='text-center mt-4 text-gray-500 font-medium'>
+                {currentData.total === 0
+                  ? 'No branches available'
+                  : 'No branches match the current filters'}
+              </p>
+            ) : (
+              currentData.data.map((loc, index) => (
+                <GeoFencing
+                  key={loc._id}
+                  embedUrl={loc.embedURL}
+                  branchName={loc.campusName}
+                  _id={loc._id}
+                  geoFenceRadius={loc.radius}
+                  onRefresh={fetchBranches} // ✅ Pass refresh function instead of edit handler
+                  onDelete={() => handleDeleteBranch(loc._id)}
+                />
+              ))
 
-    )}
-    <button
-      className='fixed bottom-8 right-20 w-14 h-14 bg-[#BBD3CC] text-[#6c6c6c] rounded-full flex items-center justify-center text-2xl font-bold cursor-pointer hover:scale-110 hover:bg-[#A6C4BA] transition-transform z-[1000]'
-      onClick={() => setShowLocationForm(true)}
-    >
-      <svg
-        xmlns='http://www.w3.org/2000/svg'
-        height='2rem'
-        viewBox='0 -960 960 960'
-        width='2rem'
-        fill='#000000'
-      >
-        <path d='M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z' />
-      </svg>
-    </button>
-  </div>
-)}
+            )}
+            <button
+              className='fixed bottom-8 right-20 w-14 h-14 bg-[#BBD3CC] text-[#6c6c6c] rounded-full flex items-center justify-center text-2xl font-bold cursor-pointer hover:scale-110 hover:bg-[#A6C4BA] transition-transform z-[1000]'
+              onClick={() => setShowLocationForm(true)}
+            >
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                height='2rem'
+                viewBox='0 -960 960 960'
+                width='2rem'
+                fill='#000000'
+              >
+                <path d='M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z' />
+              </svg>
+            </button>
+          </div>
+        )}
 
         {/* New Users */}
         {navId === 'newusers' && (

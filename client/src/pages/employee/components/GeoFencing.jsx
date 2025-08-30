@@ -18,7 +18,7 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius, _id, onEdit, 
 
   const handleOptionClick = (option) => {
     setShowMenu(false);
-    
+
     if (option === 'Edit') {
       if (!_id) {
         alert("Error: Cannot edit location - missing ID");
@@ -38,13 +38,13 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius, _id, onEdit, 
     // The LocationEditPopup handles the API call internally
     // Just close the popup and optionally refresh data
     setShowEditPopup(false);
-    
+
     // Optionally call parent's refresh function if you have one
     if (onEdit) onEdit();
   };
 
-  const handleDeleteConfirm = () => {
-    if (onDelete) onDelete();
+  const handleDeleteConfirm = (oldCampusId) => {
+    if (onDelete) onDelete(oldCampusId); // parent handles API
     setShowDeletePopup(false);
   };
 
@@ -112,6 +112,7 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius, _id, onEdit, 
         oldCampusId={_id}
         locationName={branchName}
       />
+
     </div>
   );
 };

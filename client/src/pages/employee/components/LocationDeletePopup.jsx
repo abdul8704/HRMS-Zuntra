@@ -6,51 +6,78 @@ import { toast } from "react-toastify";
 const LocationDeletePopup = ({
   isOpen,
   onClose,
+  onConfirm, // Add this prop to handle success callback
   locationName,
   oldCampusId,
-  branchName,
 }) => {
   const [campuses, setCampuses] = useState([]);
   const [newCampusId, setNewCampusId] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       axios
-  .get("/api/branch/")
-  .then((res) => {
-    console.log("branches response:", res.data);
+        .get("/api/branch/")
+        .then((res) => {
+          console.log("branches response:", res.data);
 
-    const list = Array.isArray(res.data?.branches) ? res.data.branches : [];
-    const filtered = list.filter((c) => c._id !== oldCampusId);
+          const list = Array.isArray(res.data?.branches) ? res.data.branches : [];
+          const filtered = list.filter((c) => c._id !== oldCampusId);
 
-    setCampuses(filtered);
+          setCampuses(filtered);
 
-    if (filtered.length > 0) {
-      setNewCampusId(filtered[0]._id);
-    }
-  })
-  .catch(() => toast.error("Failed to fetch campus list for reassignment"));
-
-
+          if (filtered.length > 0) {
+            setNewCampusId(filtered[0]._id);
+          }
+        })
+        .catch(() => toast.error("Failed to fetch campus list for reassignment"));
     }
   }, [isOpen, oldCampusId]);
 
- const handleDelete = async () => {
-  try {
-    console.log("Deleting with:", oldCampusId, branchName);
+  const handleDelete = async () => {
+    if (!oldCampusId) {
+      toast.error("Missing campus ID");
+      return;
+    }
 
-    await axios.delete("/api/branch/delete-branch", {
-      data: { oldCampusId }   // ✅ send id in request body (since backend expects it this way)
-    });
+    if (campuses.length > 0 && !newCampusId) {
+      toast.error("Please select a campus to move users to");
+      return;
+    }
 
-    alert("Branch deleted successfully");
-  } catch (error) {
-    console.error("Delete error:", error);
-    alert("Failed to delete branch");
-  } finally {
-    setShowDeletePopup(false);
-  }
-};
+    setIsDeleting(true);
+
+    try {
+      console.log("Deleting campus:", oldCampusId, "Moving users to:", newCampusId);
+
+      // Build URL with query parameters only (to match current backend route)
+      let deleteUrl = `/api/branch/delete-branch?oldCampusId=${oldCampusId}`;
+      
+      // Add newCampusId query parameter if selected
+      if (newCampusId) {
+        deleteUrl += `&newCampusId=${newCampusId}`;
+      }
+
+      const response = await axios.delete(deleteUrl);
+
+      if (response.data?.success) {
+        toast.success("Branch deleted successfully");
+        if (onConfirm) onConfirm(); // Call parent's success handler
+        onClose();
+      } else {
+        throw new Error(response.data?.message || "Delete failed");
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      console.error("Error response data:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+      console.error("Delete URL was:", deleteUrl);
+      const errorMessage = error.response?.data?.message || error.message || "Failed to delete branch";
+      toast.error(errorMessage);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -63,6 +90,7 @@ const LocationDeletePopup = ({
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
+            disabled={isDeleting}
           >
             <X className="w-5 h-5" />
           </button>
@@ -78,22 +106,33 @@ const LocationDeletePopup = ({
             ?
           </p>
 
-          {/* Dropdown to select replacement campus */}
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Move users to:
-          </label>
-          <select
-            className="w-full border rounded-md p-2"
-            value={newCampusId}
-            onChange={(e) => setNewCampusId(e.target.value)}
-          >
-            <option value="">-- Select a campus --</option>
-            {campuses.map((campus) => (
-              <option key={campus._id} value={campus._id}>
-                {campus.campusName}
-              </option>
-            ))}
-          </select>
+          {/* Only show dropdown if there are other campuses */}
+          {campuses.length > 0 && (
+            <>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Move users to:
+              </label>
+              <select
+                className="w-full border rounded-md p-2"
+                value={newCampusId}
+                onChange={(e) => setNewCampusId(e.target.value)}
+                disabled={isDeleting}
+              >
+                <option value="">-- Select a campus --</option>
+                {campuses.map((campus) => (
+                  <option key={campus._id} value={campus._id}>
+                    {campus.campusName}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
+
+          {campuses.length === 0 && (
+            <p className="text-sm text-amber-600 mt-2">
+              Warning: This is the only campus. All users will need to be reassigned manually.
+            </p>
+          )}
         </div>
 
         {/* Footer */}
@@ -101,14 +140,16 @@ const LocationDeletePopup = ({
           <button
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-black bg-gray-200 hover:bg-gray-400 rounded-md transition-colors"
+            disabled={isDeleting}
           >
             Cancel
           </button>
           <button
             onClick={handleDelete}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-md transition-colors"
+            disabled={isDeleting || (campuses.length > 0 && !newCampusId)}
+            className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 disabled:bg-red-300 rounded-md transition-colors"
           >
-            Delete
+            {isDeleting ? "Deleting..." : "Delete"}
           </button>
         </div>
       </div>
