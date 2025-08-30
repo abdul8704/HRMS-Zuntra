@@ -52,20 +52,6 @@ const getMembersOfTeamController = asyncHandler(async (req, res) => {
     });
 });
 
-const getTeamsOfProject = asyncHandler(async (req, res) => {
-    const { projectId } = req.params;
-
-    if (!projectId) {
-        throw new ApiError(400, "Please provide all the required fields");
-    }
-
-    const teams = await teamService.getTeamsOfProjectService(projectId);
-
-    return res.status(200).json({
-        status: "success",
-        teams,
-    });
-});
 
 const addMembersToTeamController = asyncHandler(async (req, res) => {
     const { teamId, users } = req.body;
@@ -163,7 +149,7 @@ const deleteTeamMember = asyncHandler(async (req, res) => {
 
 const deleteTeam = asyncHandler(async (req, res) => {
     const { teamId } = req.params;
-    console.log("hi ", teamId)
+
     if(!teamId)
         throw new ApiError(400, "Please provide all the required fields");
 
@@ -175,7 +161,6 @@ const deleteTeam = asyncHandler(async (req, res) => {
 module.exports = {
     getAllTeamsController,
     getMembersOfTeamController,
-    getTeamsOfProject,
     createTeamController,
     addMembersToTeamController,
     checkUserTL,
