@@ -44,11 +44,14 @@ const getMembersOfTeamController = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Please provide all the required fields");
     }
 
-    const team = await teamService.getMembersOfTeamService(teamId);
+    const { teamMembers, teamLead } = await teamService.getMembersOfTeamService(
+        teamId
+    );
 
     return res.status(200).json({
         status: "success",
-        team,
+        team: teamLead,
+        teamMembers,
     });
 });
 
