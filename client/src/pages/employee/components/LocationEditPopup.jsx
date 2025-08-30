@@ -1,6 +1,6 @@
 // frontend/components/LocationEditPopup.jsx
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { ChevronsUp, X } from 'lucide-react';
 import axios from "../../../api/axios";
 
 const LocationEditPopup = ({ 
@@ -14,7 +14,7 @@ const LocationEditPopup = ({
 }) => {
   const [branchName, setBranchName] = useState(currentBranchName);
   const [embedUrl, setEmbedUrl] = useState(currentEmbedUrl);
-  const [geoFenceRadius, setGeoFenceRadius] = useState(currentGeoFenceRadius);
+ const [geoFenceRadius, setGeoFenceRadius] = useState(currentGeoFenceRadius?.toString() || "");
 
   if (!isOpen) return null;
 
@@ -34,7 +34,6 @@ const LocationEditPopup = ({
     }
   }
 };
-
 
   const handleClose = () => {
     setBranchName(currentBranchName);

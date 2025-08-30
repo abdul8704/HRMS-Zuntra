@@ -1093,11 +1093,13 @@ export const EmployeeManagement = () => {
                   key={loc._id}
                   embedUrl={loc.embedURL}
                   branchName={loc.campusName}
+                  geoFenceRadius={loc.radius}
                   onEdit={() => handleEditBranch(loc._id, { campusName: "Updated Name" })}
                   onDelete={() => handleDeleteBranch(loc._id)}
                 />
               ))
-            )}
+            )
+            }
             <button
               className='fixed bottom-8 right-20 w-14 h-14 bg-[#BBD3CC] text-[#6c6c6c] rounded-full flex items-center justify-center text-2xl font-bold cursor-pointer hover:scale-110 hover:bg-[#A6C4BA] transition-transform z-[1000]'
               onClick={() => setShowLocationForm(true)}
