@@ -28,6 +28,8 @@ import { Unauthorized } from './pages/Unauthorized';
 import { RemoveEmployeePopup } from './pages/employee/components/RemoveEmployeePopup';
 import { NewUser } from './pages/dashboard/NewUser';
 import { TeamsDashboard } from './pages/teams/TeamsDashboard';
+import { TeamLeader } from './pages/teams/TeamLeader';
+import { TeamDetails } from './pages/teams/TeamDetails';
 
 
 function App() {
@@ -65,6 +67,9 @@ function App() {
             <Route path="*" element={<NotFound />} />
             <Route path="/newdashboard" element={<NewUser />} />
             <Route path="/teams" element={<TeamsDashboard />} />
+            <Route path="/team-leader/:teamLeaderId" element={<TeamLeader />} />
+             <Route path="/team-details/:teamId" element={<TeamDetails />} />
+            
 
           </Routes>
         </AuthProvider>
