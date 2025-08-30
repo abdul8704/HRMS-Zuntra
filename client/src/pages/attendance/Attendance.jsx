@@ -91,7 +91,6 @@ export const Attendance = ({ showScheduleForm = true }) => {
         setSelectedDate(date instanceof Date ? date : new Date(date));
     };
 
-
     return (
         (authDataLoading) ?
             <Loading />
@@ -194,7 +193,15 @@ export const Attendance = ({ showScheduleForm = true }) => {
                             </div>
                             <div className={`flex flex-col gap-4 w-full lg:w-1/2 h-full`}>
                                 <div className={`w-full ${!showScheduleForm && 'h-full'}`}>
-                                    <DayInfoCard selectedDate={selectedDate} userRole={user?.role} />
+                                    <DayInfoCard 
+  selectedDate={selectedDate} 
+  userRole={
+    user?.allowedAccess?.includes('companyManagement') || 
+    user?.allowedAccess?.includes('projectManagement') ? 'hr' : 
+    user?.role === 'CEO' ? 'ceo' : null
+  } 
+/>
+
                                 </div>
                                 {showScheduleForm && (
                                     <div className="w-full flex-1 min-h-6">
