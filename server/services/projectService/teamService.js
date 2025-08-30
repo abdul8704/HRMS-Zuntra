@@ -2,6 +2,7 @@ const ApiError = require("../../errors/ApiError");
 const Team = require("../../models/projectManagement/team");
 const TeamMember = require("../../models/projectManagement/teamMember");
 const UserCredentials = require("../../models/userCredentials");
+const Phase = require("../../models/projectManagement/phase");
 
 const getMembersOfTeamService = async (teamId) => {
     const teamMembers = await TeamMember.find(
@@ -21,21 +22,6 @@ const getMembersOfTeamService = async (teamId) => {
 
 const getAllTeamsService = async () => {
     const teams = await Team.find({})
-        .select("teamName teamDescription") // only include these from Team
-        .populate({
-            path: "teamLead",
-            select: "username role _id", // username, role, userid
-            populate: {
-                path: "role", // populate role reference
-                select: "role", // 👈 make sure this matches your schema field
-            },
-        });
-
-    return teams;
-};
-
-const getTeamsOfProjectService = async (projectId) => { // TODO: do this after finishing project
-    const teams = await Team.find({ projectId })
         .select("teamName teamDescription") // only include these from Team
         .populate({
             path: "teamLead",
@@ -151,6 +137,25 @@ const getTeamsUserPartOf = async (userId) => {
     return { teams, teamLeads };
 }
 
+const getTeamIdsUserPartOf = async (userId) => {
+    const { teams, teamLeads } = await getTeamsUserPartOf(userId);
+
+    let teamId = [];
+
+    if(teams.length > 0){
+        teams.forEach((team) => {
+            teamId.push(team.teamId._id);
+        });
+    }
+
+    if (teamLeads) {
+        teamLeads.forEach((teamLead) => {
+            teamId.push(teamLead._id);
+        });
+    }
+    return teamId;
+}
+
 const updateTeamService = async (teamId, data) => {
     const team = await Team.findById(teamId);
 
@@ -185,7 +190,7 @@ const deleteTeam = async (teamId) => {
 
     if(!team)
         throw new ApiError(404, "Team not found");
-    console.log(team, teamMembers)
+    
     return team;
 }
 
@@ -193,11 +198,11 @@ module.exports = {
     createNewTeamService,
     getMembersOfTeamService,
     getAllTeamsService,
-    getTeamsOfProjectService,
     addMembersToTeamService,
     isThisUserTL,
     userTLofProj,
     getTeamsUserPartOf,
+    getTeamIdsUserPartOf,
     updateTeamService,
     deleteTeamMemberService,
     deleteTeam,

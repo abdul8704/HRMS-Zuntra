@@ -2,29 +2,8 @@ const asyncHandler = require("express-async-handler");
 const ApiError = require("../../errors/ApiError");
 const projectService = require("../../services/projectService/projectService");
 const dateUtils = require("../../utils/dateUtils");
+const { get } = require("mongoose");
 
-// Helper function to calculate deadline
-const calculateDeadline = (endDate) => {
-    if (!endDate) return null;
-    const now = new Date();
-    const end = new Date(endDate);
-    const diffMs = end.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffMs > 0) {
-        return `${diffDays} days left`;
-    } else {
-        return `Overdue by ${Math.abs(diffDays)} days`;
-    }
-};
-
-// Helper function to format project response
-const formatProjectResponse = (project) => {
-    return {
-        ...project,
-        deadline: calculateDeadline(project.endDate),
-    };
-};
 
 // Get all projects
 const getAllProjects = asyncHandler(async (req, res) => {
@@ -114,6 +93,59 @@ const getProjectById = asyncHandler(async (req, res) => {
 
     const formattedProject = formatProjectResponse(project);
     return res.status(200).json({ success: true, data: formattedProject });
+});
+
+const getAllProjectsOfUser = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const projects = await projectService.getAllProjectsOfUserService(userId);
+    const formattedProjects = projects.map(formatProjectResponse);
+
+    return res.status(200).json({ success: true, formattedProjects });
+})
+
+const getOngoingProjectsByUser = asyncHandler( async (req, res) => {
+    const { userId } = req.params;
+
+    const projects = await projectService.getOngoingProjectsByUserService(userId);
+    const formattedProjects = projects.map(formatProjectResponse);
+
+    return res.status(200).json({ success: true, data: formattedProjects });
+})
+
+const getNotStartedProjectsByUser = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const projects = await projectService.getNotStartedProjectsByUserService(userId);
+    const formattedProjects = projects.map(formatProjectResponse);
+
+    return res.status(200).json({ success: true, data: formattedProjects });
+});
+
+const getOnHoldProjectsByUser = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const projects = await projectService.getOnHoldProjectsByUserService(userId);
+    const formattedProjects = projects.map(formatProjectResponse);
+
+    return res.status(200).json({ success: true, data: formattedProjects });
+});
+const getCompletedProjectsByUser = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const projects = await projectService.getCompletedProjectsByUserService(userId);
+    const formattedProjects = projects.map(formatProjectResponse);
+
+    return res.status(200).json({ success: true, data: formattedProjects });
+});
+
+const getCancelledProjectsByUser = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const projects = await projectService.getCancelledProjectsByUserService(userId);
+    const formattedProjects = projects.map(formatProjectResponse);
+
+    return res.status(200).json({ success: true, data: formattedProjects });
 });
 
 // Create new project
@@ -209,6 +241,29 @@ const deleteProject = asyncHandler(async (req, res) => {
     });
 });
 
+// Helper function to calculate deadline
+const calculateDeadline = (endDate) => {
+    if (!endDate) return null;
+    const now = new Date();
+    const end = new Date(endDate);
+    const diffMs = end.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMs > 0) {
+        return `${diffDays} days left`;
+    } else {
+        return `Overdue by ${Math.abs(diffDays)} days`;
+    }
+};
+
+// Helper function to format project response
+const formatProjectResponse = (project) => {
+    return {
+        ...project,
+        deadline: calculateDeadline(project.endDate),
+    };
+};
+
 module.exports = {
     getAllProjects,
     getAllOngoingProjects,
@@ -216,6 +271,12 @@ module.exports = {
     getAllOnHoldProjects,
     getAllCompletedProjects,
     getAllCancelledProjects,
+    getAllProjectsOfUser,
+    getOngoingProjectsByUser,
+    getOnHoldProjectsByUser,
+    getNotStartedProjectsByUser,
+    getCompletedProjectsByUser,
+    getCancelledProjectsByUser,
     getProjectById,
     createProject,
     updateProject,
