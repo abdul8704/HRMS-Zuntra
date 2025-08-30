@@ -111,7 +111,6 @@ const deletePhaseById = async (phaseId) => {
 // Get all teams of a project (from phases)
 const getPhaseTeams = async (phaseId) => {
     const phases = await Phase.find({ _id: phaseId }).populate("teams").lean();
-    console.log(phases);
     // Extract teams from the phases
     const allTeams = [];
     phases.forEach((phase) => {
@@ -121,6 +120,25 @@ const getPhaseTeams = async (phaseId) => {
     });
     return allTeams;
 };
+
+const getProjectIdOfTeams = async (teamIds) => {
+    if (!Array.isArray(teamIds) || teamIds.length === 0) {
+        return [];
+    }
+
+    // Find phases that include any of the given teamIds
+    const phases = await Phase.find(
+        { teams: { $in: teamIds } },
+        { project: 1 } // only fetch project field
+    ).lean();
+
+    // Extract unique projectIds
+    const projectIds = [
+        ...new Set(phases.map((phase) => String(phase.project))),
+    ];
+
+    return projectIds;
+}
 
 // Get all teams with members for a project
 const getAllTeamsWithMembers = async (phaseId) => {
@@ -212,4 +230,5 @@ module.exports = {
     getPhaseTeams,
     getAllTeamsWithMembers,
     addTeamsToPhaseById,
+    getProjectIdOfTeams,
 };
