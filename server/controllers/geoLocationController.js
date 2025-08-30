@@ -22,22 +22,35 @@ const addNewBranch = asyncHandler(async (req, res) => {
 const editCampusLocation = asyncHandler(async (req, res) => {
     const { oldCampusId, campusName, embedURL, radius } = req.body;
 
+    // Validate required fields
+    if (!oldCampusId) {
+        throw new ApiError(400, "Campus ID is required");
+    }
+
     if (!campusName && !embedURL && !radius) {
         throw new ApiError(400, "Please provide at least one field to update");
     }
 
-    const updatedCampus = await GeoService.editCampusLocation(oldCampusId, {
-        campusName,
-        embedURL,
-        radius
-    });
+    try {
+        const updatedCampus = await GeoService.editCampusLocation(oldCampusId, {
+            campusName,
+            embedURL,
+            radius
+        });
 
-    res.status(200).json({ success: true, campus: updatedCampus });
+        res.status(200).json({ 
+            success: true, 
+            message: "Campus location updated successfully",
+            campus: updatedCampus 
+        });
+    } catch (error) {
+        throw error; // Let asyncHandler handle the error
+    }
 });
 
 // controllers/geoLocationController.js
 const deleteCampusLocation = async (req, res, next) => {
-  try {
+  
     const { oldCampusId } = req.params; // 👈 comes from URL
     const { newCampusId } = req.query;  // 👈 optional query param
 
@@ -49,9 +62,7 @@ const deleteCampusLocation = async (req, res, next) => {
     console.log("Deleting:", oldCampusId, "Reassigning to:", newCampusId);
 
     res.json({ success: true, message: "Branch deleted successfully" });
-  } catch (error) {
-    next(error);
-  }
+  
 };
 
 module.exports = {
