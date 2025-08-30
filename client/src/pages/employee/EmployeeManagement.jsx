@@ -15,7 +15,7 @@ import { AddLocationForm } from './components/AddLocationForm'
 import { RemoveEmployeePopup } from './components/RemoveEmployeePopup' // ADDED
 import { useAuth } from '../../context/AuthContext'
 
-import api from '../../api/axios'
+import axios from '../../api/axios'
 import { BASE_URL } from '../../api/axios'
 
 // Shift Details Component
@@ -376,10 +376,10 @@ export const EmployeeManagement = () => {
 
       try {
         const [roles, emps, pending, brs] = await Promise.all([
-          api.get('/api/roles'),
-          api.get('/api/employee'),
-          api.get('/api/hr/pending'),
-          api.get('/api/branch')
+          axios.get('/api/roles'),
+          axios.get('/api/employee'),
+          axios.get('/api/hr/pending'),
+          axios.get('/api/branch')
         ])
 
         setRolesData(roles.data || [])
@@ -592,7 +592,7 @@ export const EmployeeManagement = () => {
       console.log('Employee removal confirmed:', data);
 
       // Uncomment and modify API call as needed:
-      // const response = await api.delete(`/api/employee/${data.employeeId}`, {
+      // const response = await axios.delete(`/api/employee/${data.employeeId}`, {
       //   data: { message: data.message }
       // })
 
@@ -611,7 +611,7 @@ export const EmployeeManagement = () => {
   }, [handleCloseRemovePopup])
   const fetchBranches = async () => {
     try {
-      const res = await api.get("/api/branch");
+      const res = await axios.get("/api/branch");
       setBranches(res.data.branches || []);
     } catch (err) {
       console.error("Failed to fetch branches:", err);
@@ -621,7 +621,7 @@ export const EmployeeManagement = () => {
   // add a branch
   const handleAddBranch = async (formData) => {
     try {
-      const res = await api.post("/api/branch/new-branch", formData);
+      const res = await axios.post("/api/branch/new-branch", formData);
       if (res.data.success) {
         setBranches(prev => [...prev, res.data.branch]);
         setShowLocationForm(false);
@@ -634,7 +634,7 @@ export const EmployeeManagement = () => {
   // edit a branch
   const handleEditBranch = async (oldCampusId, updates) => {
     try {
-      const res = await api.patch("/api/branch/edit-branch", {
+      const res = await axios.patch("/api/branch/edit-branch", {
         oldCampusId,
         ...updates
       });
@@ -655,10 +655,10 @@ export const EmployeeManagement = () => {
   const handleDeleteBranch = async (oldCampusId, newCampusId = null) => {
   try {
     console.log("Calling delete API with:", { oldCampusId, newCampusId });
-    const response = await axios.delete(
-      `/geo-location/delete/${oldCampusId}`,
-      { data: { moveUsersTo: newCampusId } }
-    );
+    const response = await axios.delete(`/geo-location/delete-branch`, {
+  data: { oldCampusId, moveUsersTo: newCampusId }
+})
+
     console.log("Delete success:", response.data);
     setGeoLocations(prev => prev.filter(loc => loc._id !== oldCampusId));
   } catch (error) {
