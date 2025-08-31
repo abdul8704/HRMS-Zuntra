@@ -2,12 +2,25 @@ const Shift = require("../models/shift");
 const UserCredentials = require("../models/userCredentials");
 
 const getAllShiftsData = async () => {
-    try {
-        const shiftsData = await Shift.find({});
-        return shiftsData;
-    } catch (error) {
-        throw new ApiError(500, "Failed to fetch shifts data:", error.message);
-    }
+  try {
+    // Fetch all shifts
+    const shiftsData = await Shift.find({});
+
+    const shiftsWithUserCount = await Promise.all(
+      shiftsData.map(async (shift) => {
+        const userCount = await UserCredentials.countDocuments({ shift: shift._id });
+        
+        return {
+          ...shift.toObject(),
+          userCount
+        };
+      })
+    );
+
+    return shiftsWithUserCount;
+  } catch (error) {
+    throw new ApiError(500, "Failed to fetch shifts data:", error.message);
+  }
 };
 
 const getShiftByIdService = async (shiftId) => {
