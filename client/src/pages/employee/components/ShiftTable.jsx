@@ -424,7 +424,7 @@ export const ShiftTable = () => {
                   .filter(s => s._id !== deletingShift._id)
                   .map(s => (
                     <option key={s._id} value={s._id}>
-                      {formatLocalTime(s.startTime)} - {formatLocalTime(s.endTime)} | {s.shiftName}
+                      {s.shiftName} | {formatLocalTime(s.startTime)} - {formatLocalTime(s.endTime)}
                     </option>
                   ))}
               </select>
