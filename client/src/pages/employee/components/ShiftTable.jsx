@@ -146,9 +146,8 @@ export const ShiftTable = () => {
           newShiftId: alternateShiftId,
         },
       });
-      console.log("res",res);
+      console.log("res", res);
       setShifts(prev => prev.filter(s => s._id !== shiftId));
-
       closeDeleteModal();
     } catch (err) {
       console.error("Failed to delete shift", err);
@@ -165,7 +164,6 @@ export const ShiftTable = () => {
 
     const updatedData = {
       shiftName: formData.shiftName,
-      // Convert the local "HH:mm" back to an ISO string (server-friendly)
       startTime: inputTimeToIso(formData.startTime),
       endTime: inputTimeToIso(formData.endTime),
       noOfUsers: formData.noOfUsers
@@ -174,13 +172,18 @@ export const ShiftTable = () => {
     if (editingShift) {
       updateShift(editingShift._id, updatedData)
     } else {
-      // Add new shift locally (and in real app you'd call POST)
-      const newShift = {
-        ...updatedData,
-        _id: Date.now().toString()
-      }
-      setShifts(prev => [...prev, newShift])
+      addShift(updatedData)
+    }
+  }
+
+  const addShift = async (shiftData) => {
+    try {
+      const res = await api.post('/api/shifts/new-shift', updatedData) // replace with your actual endpoint
+      console.log(res);
       closeModal()
+    } catch (err) {
+      console.error('Failed to add shift', err)
+      alert('Failed to add shift. Please try again.')
     }
   }
 
@@ -253,6 +256,7 @@ export const ShiftTable = () => {
         ))}
       </div>
 
+
       {/* Desktop Table View */}
       <div className='hidden sm:block overflow-x-auto'>
         <table className='w-full min-w-full'>
@@ -270,16 +274,13 @@ export const ShiftTable = () => {
               <th className='text-left py-3 px-2 md:py-4 md:px-4 font-bold text-gray-900 text-xs md:text-sm whitespace-nowrap'>
                 No. of Users
               </th>
-              <th className='text-left py-3 px-2 md:py-4 md:px-4 font-bold text-gray-900 text-xs md:text-sm whitespace-nowrap'>
-                Actions
-              </th>
             </tr>
           </thead>
           <tbody>
             {shifts.map(shift => (
               <tr
                 key={shift._id}
-                className='border-b border-gray-200 hover:bg-gray-50 transition-colors'
+                className='border-b border-gray-200 hover:bg-gray-50 transition-colors group'
               >
                 <td className='py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm text-black'>
                   {shift.shiftName}
@@ -290,28 +291,30 @@ export const ShiftTable = () => {
                 <td className='py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm text-black'>
                   {formatLocalTime(shift.endTime)}
                 </td>
-                <td className='py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm text-black'>
+                <td className='py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm text-black relative'>
                   {shift.noOfUsers}
-                </td>
-                <td className='py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm'>
-                  <button
-                    onClick={() => openModal(shift)}
-                    className='text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200'
-                    title='Edit shift'
-                  >
-                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => openDeleteModal(shift)}
-                    className='text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200'
-                    title='Delete shift'
-                  >
-                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' />
-                    </svg>
-                  </button>
+
+                  {/* Hover buttons */}
+                  <div className='absolute top-1/2 right-2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 flex space-x-2 transition-opacity duration-200'>
+                    <button
+                      onClick={() => openModal(shift)}
+                      className='text-gray-500 hover:text-gray-700 p-1'
+                      title='Edit shift'
+                    >
+                      <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => openDeleteModal(shift)}
+                      className='text-gray-500 hover:text-gray-700 p-1'
+                      title='Delete shift'
+                    >
+                      <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' />
+                      </svg>
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
