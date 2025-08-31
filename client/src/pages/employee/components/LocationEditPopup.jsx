@@ -3,36 +3,66 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import axios from "../../../api/axios";
 
-const LocationEditPopup = ({
-  isOpen,
-  onClose,
-  onSave,
-  currentCampusId,
-  currentBranchName = '',
-  currentEmbedUrl = '',
-  currentGeoFenceRadius = ''
+const LocationEditPopup = ({ 
+  isOpen, 
+  onClose, 
+  onSave, 
+  currentCampusId, 
+  currentBranchName = '', 
+  currentEmbedUrl = '', 
+  currentGeoFenceRadius = '' 
 }) => {
   // ✅ Add the missing useState declarations
   const [branchName, setBranchName] = useState(currentBranchName);
   const [embedUrl, setEmbedUrl] = useState(currentEmbedUrl);
-  const [geoFenceRadius, setGeoFenceRadius] = useState(currentGeoFenceRadius?.toString() || "");
+  const [geoFenceRadius, setGeoFenceRadius] = useState(currentGeoFenceRadius);
+
+  // Sync local state with props when popup opens
+  useEffect(() => {
+    if (isOpen) {
+      console.log("LocationEditPopup props:", {
+        currentCampusId,
+        currentBranchName,
+        currentEmbedUrl,
+        currentGeoFenceRadius
+      });
+      setBranchName(currentBranchName);
+      setEmbedUrl(currentEmbedUrl);
+      setGeoFenceRadius(currentGeoFenceRadius);
+    }
+  }, [isOpen, currentBranchName, currentEmbedUrl, currentGeoFenceRadius]);
 
   if (!isOpen) return null;
 
   const handleSave = async () => {
-    if (branchName.trim() && embedUrl.trim() && geoFenceRadius.trim()) {
-      try {
-        const res = await axios.patch("/api/branch/edit-branch", {
-          oldCampusId: currentCampusId,
-          campusName: branchName.trim(),
-          embedURL: embedUrl.trim(),
-          radius: parseFloat(geoFenceRadius.trim())
-        });
-        onSave(res);
-        onClose();
-      } catch (err) {
-        console.error("Error updating branch", err);
-      }
+    // Add validation
+    if (!currentCampusId) {
+      console.error("No campus ID provided!");
+      alert("Error: No campus ID available. Please close and try again.");
+      return;
+    }
+
+    if (!branchName.trim() || !embedUrl.trim() || !geoFenceRadius.trim()) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    try {
+      console.log("Sending request with campus ID:", currentCampusId);
+      
+      const response = await axios.patch("/api/branch/edit-branch", {
+        oldCampusId: currentCampusId,
+        campusName: branchName.trim(),
+        embedURL: embedUrl.trim(),
+        radius: parseFloat(geoFenceRadius.trim())
+      });
+
+      console.log("Update successful:", response.data);
+      onSave(); 
+      onClose();
+    } catch (err) {
+      console.error("Error updating branch", err.response?.data || err.message);
+      alert("Failed to update branch: " + (err.response?.data?.message || err.message));
     }
   };
 
@@ -43,10 +73,6 @@ const LocationEditPopup = ({
     setGeoFenceRadius(currentGeoFenceRadius);
     onClose();
   };
-  const isModified =
-    branchName.trim() !== currentBranchName.trim() ||
-    embedUrl.trim() !== currentEmbedUrl.trim() ||
-    geoFenceRadius.trim() !== (currentGeoFenceRadius?.toString().trim() || "");
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -101,11 +127,8 @@ const LocationEditPopup = ({
           <button onClick={handleClose} className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md">Cancel</button>
           <button
             onClick={handleSave}
-            disabled={!isModified}
-            className={`px-4 py-2 text-sm rounded-md ${isModified
-              ? "bg-[#BBD3CC] hover:bg-[#A6C4BA] text-gray-600"
-              : "bg-gray-300 text-gray-600 cursor-not-allowed"
-              }`}
+            disabled={!branchName.trim() || !embedUrl.trim() || !geoFenceRadius.trim()}
+            className="px-4 py-2 text-sm bg-[#BBD3CC] hover:bg-[#A6C4BA] disabled:bg-gray-300 rounded-md"
           >
             Save
           </button>
