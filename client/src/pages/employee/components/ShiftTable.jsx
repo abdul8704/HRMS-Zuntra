@@ -12,7 +12,7 @@ export const ShiftTable = () => {
   const [replacementShift, setReplacementShift] = useState('')
   const [formData, setFormData] = useState({
     shiftName: '',
-    startTime: '',
+    startTime: '', // stored as "HH:mm" for <input type="time">
     endTime: '',
     noOfUsers: ''
   })
@@ -20,27 +20,59 @@ export const ShiftTable = () => {
   useEffect(() => {
     const fetchShifts = async () => {
       try {
+        setLoading(true)
         const res = await api.get('/api/shifts/')
+        // expected res.data to be an array of shifts (with _id, shiftName, startTime, endTime, noOfUsers)
         setShifts(res.data)
       } catch (err) {
         console.error(err)
-        setError(err.message)
+        setError(err.message || 'Failed to fetch shifts')
       } finally {
         setLoading(false)
       }
     }
+
     fetchShifts()
   }, [])
+
+  // --- Helpers for time conversion ---
+  // Formats a UTC datetime string to the human readable local "hh:mm AM/PM" (used for display in table and delete dropdown)
+  const formatLocalTime = utcString => {
+    if (!utcString) return ''
+    const date = new Date(utcString)
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
+
+  // Converts a UTC datetime string into local "HH:mm" suitable for <input type="time"> default value
+  const utcToInputTime = utcString => {
+    if (!utcString) return ''
+    const d = new Date(utcString) // local time created from the UTC datetime string
+    const hh = d.getHours().toString().padStart(2, '0')
+    const mm = d.getMinutes().toString().padStart(2, '0')
+    return `${hh}:${mm}` // "HH:mm"
+  }
+
+  // Converts local "HH:mm" (from input) into an ISO string (local time -> ISO UTC representation)
+  const inputTimeToIso = timeHHMM => {
+    if (!timeHHMM) return ''
+    const [hhStr, mmStr] = timeHHMM.split(':')
+    const hh = parseInt(hhStr, 10)
+    const mm = parseInt(mmStr, 10)
+    const d = new Date()
+    d.setHours(hh, mm, 0, 0) // set to that local time today
+    return d.toISOString() // RFC ISO with timezone offset (UTC)
+  }
 
   // ---------- MODALS ----------
   const openModal = (shift = null) => {
     if (shift) {
       setEditingShift(shift)
       setFormData({
-        shiftName: shift.shiftName,
-        startTime: shift.startTime ? new Date(shift.startTime).toISOString().substring(11, 16) : '',
-        endTime: shift.endTime ? new Date(shift.endTime).toISOString().substring(11, 16) : '',
-        noOfUsers: shift.noOfUsers || ''
+        shiftName: shift.shiftName || '',
+        // USE utcToInputTime to get a local HH:mm for the input value (fixes the timezone bug)
+        startTime: utcToInputTime(shift.startTime),
+        endTime: utcToInputTime(shift.endTime),
+        noOfUsers: shift.noOfUsers ?? ''
       })
     } else {
       setEditingShift(null)
@@ -65,7 +97,7 @@ export const ShiftTable = () => {
     })
   }
 
-  const openDeleteModal = (shift) => {
+  const openDeleteModal = shift => {
     setDeletingShift(shift)
     setReplacementShift('')
     setIsDeleteModalOpen(true)
@@ -87,27 +119,36 @@ export const ShiftTable = () => {
   }
 
   // ---------- API PLACEHOLDER FUNCTIONS ----------
+  // updateShift: pass shift id and updated data. (placeholder for actual API call)
   const updateShift = async (shiftId, updatedData) => {
     try {
+      // Example placeholder API call (uncomment when real endpoint ready)
       // await api.put(`/api/shifts/${shiftId}`, updatedData)
+
+      // Update locally for immediate UI feedback
       setShifts(prev =>
-        prev.map(shift =>
-          shift._id === shiftId ? { ...shift, ...updatedData } : shift
-        )
+        prev.map(s => (s._id === shiftId ? { ...s, ...updatedData } : s))
       )
+
       closeModal()
     } catch (err) {
-      console.error(err)
+      console.error('Failed to update shift', err)
     }
   }
 
+  // deleteShift: pass current shift id and alternate shift id. (placeholder for actual API call)
   const deleteShift = async (shiftId, alternateShiftId) => {
     try {
+      // Example placeholder API call (uncomment when real endpoint ready)
       // await api.delete(`/api/shifts/${shiftId}`, { data: { alternateShiftId } })
-      setShifts(prev => prev.filter(shift => shift._id !== shiftId))
+
+      // Remove locally for immediate UI feedback
+      setShifts(prev => prev.filter(s => s._id !== shiftId))
+
+      // NOTE: you may also want to move users from deleted shift to alternateShiftId here (server will handle)
       closeDeleteModal()
     } catch (err) {
-      console.error(err)
+      console.error('Failed to delete shift', err)
     }
   }
 
@@ -120,27 +161,26 @@ export const ShiftTable = () => {
 
     const updatedData = {
       shiftName: formData.shiftName,
-      startTime: `1970-01-01T${formData.startTime}:00.000Z`,
-      endTime: `1970-01-01T${formData.endTime}:00.000Z`,
+      // Convert the local "HH:mm" back to an ISO string (server-friendly)
+      startTime: inputTimeToIso(formData.startTime),
+      endTime: inputTimeToIso(formData.endTime),
       noOfUsers: formData.noOfUsers
     }
 
     if (editingShift) {
       updateShift(editingShift._id, updatedData)
     } else {
-      const newShift = { ...updatedData, _id: Date.now().toString() }
+      // Add new shift locally (and in real app you'd call POST)
+      const newShift = {
+        ...updatedData,
+        _id: Date.now().toString()
+      }
       setShifts(prev => [...prev, newShift])
       closeModal()
     }
   }
 
-  // ---------- HELPERS ----------
-  const formatLocalTime = utcString => {
-    if (!utcString) return ''
-    const date = new Date(utcString)
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  }
-
+  // --- Plus button (unchanged UI) ---
   const PlusButton = () => {
     return (
       <button
@@ -177,15 +217,20 @@ export const ShiftTable = () => {
               className='text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200'
               title='Edit shift'
             >
-              ✏️
+              <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' />
+              </svg>
             </button>
             <button
               onClick={() => openDeleteModal(shift)}
               className='text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200'
               title='Delete shift'
             >
-              🗑️
+              <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' />
+              </svg>
             </button>
+
             <div className='space-y-2 text-sm text-gray-600'>
               <div className='flex justify-between'>
                 <span className='font-medium'>Start Time:</span>
@@ -209,23 +254,60 @@ export const ShiftTable = () => {
         <table className='w-full min-w-full'>
           <thead>
             <tr className='bg-gray-100 border-b border-gray-200'>
-              <th className='text-left py-3 px-2 md:py-4 md:px-4 font-bold'>Shift Name</th>
-              <th className='text-left py-3 px-2 md:py-4 md:px-4 font-bold'>Start Time</th>
-              <th className='text-left py-3 px-2 md:py-4 md:px-4 font-bold'>End Time</th>
-              <th className='text-left py-3 px-2 md:py-4 md:px-4 font-bold'>No. of Users</th>
-              <th className='text-left py-3 px-2 md:py-4 md:px-4 font-bold'>Actions</th>
+              <th className='text-left py-3 px-2 md:py-4 md:px-4 font-bold text-gray-900 text-xs md:text-sm whitespace-nowrap'>
+                Shift Name
+              </th>
+              <th className='text-left py-3 px-2 md:py-4 md:px-4 font-bold text-gray-900 text-xs md:text-sm whitespace-nowrap'>
+                Start Time
+              </th>
+              <th className='text-left py-3 px-2 md:py-4 md:px-4 font-bold text-gray-900 text-xs md:text-sm whitespace-nowrap'>
+                End Time
+              </th>
+              <th className='text-left py-3 px-2 md:py-4 md:px-4 font-bold text-gray-900 text-xs md:text-sm whitespace-nowrap'>
+                No. of Users
+              </th>
+              <th className='text-left py-3 px-2 md:py-4 md:px-4 font-bold text-gray-900 text-xs md:text-sm whitespace-nowrap'>
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
             {shifts.map(shift => (
-              <tr key={shift._id} className='border-b border-gray-200 hover:bg-gray-50'>
-                <td className='py-3 px-2 md:py-4 md:px-4'>{shift.shiftName}</td>
-                <td className='py-3 px-2 md:py-4 md:px-4'>{formatLocalTime(shift.startTime)}</td>
-                <td className='py-3 px-2 md:py-4 md:px-4'>{formatLocalTime(shift.endTime)}</td>
-                <td className='py-3 px-2 md:py-4 md:px-4'>{shift.noOfUsers}</td>
-                <td className='py-3 px-2 md:py-4 md:px-4'>
-                  <button onClick={() => openModal(shift)} className='mr-2'>✏️</button>
-                  <button onClick={() => openDeleteModal(shift)}>🗑️</button>
+              <tr
+                key={shift._id}
+                className='border-b border-gray-200 hover:bg-gray-50 transition-colors'
+              >
+                <td className='py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm text-black'>
+                  {shift.shiftName}
+                </td>
+                <td className='py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm text-black'>
+                  {formatLocalTime(shift.startTime)}
+                </td>
+                <td className='py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm text-black'>
+                  {formatLocalTime(shift.endTime)}
+                </td>
+                <td className='py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm text-black'>
+                  {shift.noOfUsers}
+                </td>
+                <td className='py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm'>
+                  <button
+                    onClick={() => openModal(shift)}
+                    className='text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200'
+                    title='Edit shift'
+                  >
+                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => openDeleteModal(shift)}
+                    className='text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200'
+                    title='Delete shift'
+                  >
+                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' />
+                    </svg>
+                  </button>
                 </td>
               </tr>
             ))}
@@ -236,7 +318,7 @@ export const ShiftTable = () => {
       {/* Plus Button */}
       <PlusButton />
 
-      {/* Edit/Add Modal */}
+      {/* Modal */}
       {isModalOpen && (
         <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1001] p-4'>
           <div className='bg-white rounded-lg w-full max-w-md mx-auto max-h-[90vh] overflow-y-auto'>
@@ -247,46 +329,72 @@ export const ShiftTable = () => {
 
               <div className='space-y-4'>
                 <div>
-                  <label htmlFor='shiftName' className='block text-sm font-medium text-gray-700 mb-1'>Shift Name</label>
+                  <label
+                    htmlFor='shiftName'
+                    className='block text-sm font-medium text-gray-700 mb-1'
+                  >
+                    Shift Name
+                  </label>
                   <input
                     type='text'
                     id='shiftName'
                     name='shiftName'
                     value={formData.shiftName}
                     onChange={handleInputChange}
-                    className='w-full px-3 py-2 border rounded-md'
+                    className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base'
+                    placeholder='Enter shift name'
                   />
                 </div>
 
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                   <div>
-                    <label htmlFor='startTime' className='block text-sm font-medium'>Start Time</label>
+                    <label
+                      htmlFor='startTime'
+                      className='block text-sm font-medium text-gray-700 mb-1'
+                    >
+                      Start Time
+                    </label>
                     <input
                       type='time'
                       id='startTime'
                       name='startTime'
                       value={formData.startTime}
                       onChange={handleInputChange}
-                      className='w-full px-3 py-2 border rounded-md'
+                      className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base'
                     />
                   </div>
 
                   <div>
-                    <label htmlFor='endTime' className='block text-sm font-medium'>End Time</label>
+                    <label
+                      htmlFor='endTime'
+                      className='block text-sm font-medium text-gray-700 mb-1'
+                    >
+                      End Time
+                    </label>
                     <input
                       type='time'
                       id='endTime'
                       name='endTime'
                       value={formData.endTime}
                       onChange={handleInputChange}
-                      className='w-full px-3 py-2 border rounded-md'
+                      className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base'
                     />
                   </div>
                 </div>
 
-                <div className='flex justify-end space-x-3 pt-4'>
-                  <button onClick={closeModal} className='px-4 py-2 bg-gray-200 rounded-md'>Cancel</button>
-                  <button onClick={handleSubmit} className='px-4 py-2 bg-blue-600 text-white rounded-md'>
+                <div className='flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-4'>
+                  <button
+                    type='button'
+                    onClick={closeModal}
+                    className='w-full sm:w-auto px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors text-sm sm:text-base order-2 sm:order-1'
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type='button'
+                    onClick={handleSubmit}
+                    className='w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base order-1 sm:order-2'
+                  >
                     {editingShift ? 'Update' : 'Add'} Shift
                   </button>
                 </div>
