@@ -13,20 +13,20 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius , id}) => {
 
   // Debug log
   useEffect(() => {
-    console.log("GeoFencing props:", { embedUrl, branchName, geoFenceRadius, _id });
-  }, [embedUrl, branchName, geoFenceRadius, _id]);
+    console.log("GeoFencing props:", { embedUrl, branchName, geoFenceRadius, id });
+  }, [embedUrl, branchName, geoFenceRadius, id]);
 
   const handleOptionClick = (option) => {
     setShowMenu(false);
 
     if (option === 'Edit') {
-      if (!_id) {
+      if (!id) {
         alert("Error: Cannot edit location - missing ID");
         return;
       }
       setShowEditPopup(true);
     } else if (option === 'Delete') {
-      if (!_id) {
+      if (!id) {
         alert("Error: Cannot delete location - missing ID");
         return;
       }
