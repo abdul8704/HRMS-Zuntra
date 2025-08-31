@@ -21,13 +21,13 @@ const LocationEditPopup = ({
   const handleSave = async () => {
     if (branchName.trim() && embedUrl.trim() && geoFenceRadius.trim()) {
       try {
-        await axios.patch("/api/branch/edit-branch", {
+        const res = await axios.patch("/api/branch/edit-branch", {
           oldCampusId: currentCampusId,
           campusName: branchName.trim(),
           embedURL: embedUrl.trim(),
           radius: parseFloat(geoFenceRadius.trim())
         });
-        onSave();
+        onSave(res);
         onClose();
       } catch (err) {
         console.error("Error updating branch", err);
