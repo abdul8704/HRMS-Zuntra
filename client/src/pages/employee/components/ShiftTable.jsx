@@ -121,9 +121,7 @@ export const ShiftTable = () => {
   // ---------- API PLACEHOLDER FUNCTIONS ----------
   // updateShift: pass shift id and updated data. (placeholder for actual API call)
   const updateShift = async (shiftId, updatedData) => {
-    console.log(updatedData);
     try {
-      // Make the API call to update the shift
       const res = await api.put(`/api/shifts/${shiftId}`, updatedData);
 
       const updatedShift = res.data;
@@ -139,21 +137,24 @@ export const ShiftTable = () => {
   };
 
 
-  // deleteShift: pass current shift id and alternate shift id. (placeholder for actual API call)
   const deleteShift = async (shiftId, alternateShiftId) => {
+    console.log("ids", shiftId, alternateShiftId);
     try {
-      // Example placeholder API call (uncomment when real endpoint ready)
-      // await api.delete(`/api/shifts/${shiftId}`, { data: { alternateShiftId } })
+      const res = await api.delete(`/api/shifts/delete-shift`, {
+        params: {
+          shiftId,
+          newShiftId: alternateShiftId,
+        },
+      });
+      console.log("res",res);
+      setShifts(prev => prev.filter(s => s._id !== shiftId));
 
-      // Remove locally for immediate UI feedback
-      setShifts(prev => prev.filter(s => s._id !== shiftId))
-
-      // NOTE: you may also want to move users from deleted shift to alternateShiftId here (server will handle)
-      closeDeleteModal()
+      closeDeleteModal();
     } catch (err) {
-      console.error('Failed to delete shift', err)
+      console.error("Failed to delete shift", err);
     }
-  }
+  };
+
 
   // ---------- SUBMIT ----------
   const handleSubmit = () => {
