@@ -14,7 +14,6 @@ export const ShiftTable = () => {
     shiftName: '',
     startTime: '', // stored as "HH:mm" for <input type="time">
     endTime: '',
-    noOfUsers: ''
   })
 
   useEffect(() => {
@@ -22,7 +21,6 @@ export const ShiftTable = () => {
       try {
         setLoading(true)
         const res = await api.get('/api/shifts/')
-        // expected res.data to be an array of shifts (with _id, shiftName, startTime, endTime, noOfUsers)
         setShifts(res.data)
       } catch (err) {
         console.error(err)
@@ -72,7 +70,6 @@ export const ShiftTable = () => {
         // USE utcToInputTime to get a local HH:mm for the input value (fixes the timezone bug)
         startTime: utcToInputTime(shift.startTime),
         endTime: utcToInputTime(shift.endTime),
-        noOfUsers: shift.noOfUsers ?? ''
       })
     } else {
       setEditingShift(null)
@@ -80,7 +77,6 @@ export const ShiftTable = () => {
         shiftName: '',
         startTime: '',
         endTime: '',
-        noOfUsers: ''
       })
     }
     setIsModalOpen(true)
@@ -93,7 +89,6 @@ export const ShiftTable = () => {
       shiftName: '',
       startTime: '',
       endTime: '',
-      noOfUsers: ''
     })
   }
 
@@ -166,7 +161,6 @@ export const ShiftTable = () => {
       shiftName: formData.shiftName,
       startTime: inputTimeToIso(formData.startTime),
       endTime: inputTimeToIso(formData.endTime),
-      noOfUsers: formData.noOfUsers
     }
 
     if (editingShift) {
@@ -249,7 +243,7 @@ export const ShiftTable = () => {
               </div>
               <div className='flex justify-between'>
                 <span className='font-medium'>No. of Users:</span>
-                <span>{shift.noOfUsers}</span>
+                <span>{shift.userCount}</span>
               </div>
             </div>
           </div>
@@ -292,7 +286,7 @@ export const ShiftTable = () => {
                   {formatLocalTime(shift.endTime)}
                 </td>
                 <td className='py-3 px-2 md:py-4 md:px-4 text-xs md:text-sm text-black relative'>
-                  {shift.noOfUsers}
+                  {shift.userCount}
 
                   {/* Hover buttons */}
                   <div className='absolute top-1/2 right-2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 flex space-x-2 transition-opacity duration-200'>
