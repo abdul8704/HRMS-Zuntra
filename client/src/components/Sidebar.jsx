@@ -536,7 +536,7 @@ export const Sidebar = ({ role = "HR", userProfileImage = null }) => {
         )}
 
         {/* Sidebar Items */}
-        <div className="relative flex-1 w-full overflow-y-auto">
+        <div className="relative flex-1 w-full overflow-y-auto overflow-x-hidden">
           <div
             className="absolute left-0 w-full h-[4.0rem] bg-white/50 transition-all duration-500 ease-in-out z-0"
             style={getPositionStyle(
