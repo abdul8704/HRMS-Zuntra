@@ -75,22 +75,7 @@ export const TeamsDashboard = () => {
     <div style={containerStyle}>
       <Sidebar role="EMP" />
       
-      <div style={contentStyle}>
-        <h1 style={titleStyle}>Teams Dashboard</h1>
-        <div style={gridStyle}>
-          {teams.map((team, index) => (
-            <TeamCard
-              key={`team-${index}`}
-              teamName={team.teamName}
-              teamDescription={team.teamDescription}
-              teamLeaderName={team.teamLeaderName}
-              profileImage={team.profileImage}
-              teamLeaderId={team.teamLeaderId}
-              onImageUpdate={handleImageUpdate} // Pass the update handler
-            />
-          ))}
-        </div>
-      </div>
+      
     </div>
   );
 };

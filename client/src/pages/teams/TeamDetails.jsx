@@ -160,7 +160,7 @@ export const TeamDetails = () => {
       setTeamData(team);
     } else {
       console.error(`Team with ID ${teamId} not found`);
-      navigate('/teams');
+      navigate('/projects/teams');
     }
   }, [teamId, navigate]);
 
