@@ -7,7 +7,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
   const [holiday, setHoliday] = useState(null);
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [loadingHoliday, setLoadingHoliday] = useState(false);
-  const [editingEvent, setEditingEvent] = useState(null);
+  const [editingEvent, setEditingEvent] = useState(true);
   const [deletingEvent, setDeletingEvent] = useState(null);
 
   // Format date like 24-aug-2025
