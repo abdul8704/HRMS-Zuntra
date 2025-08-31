@@ -3,7 +3,7 @@ import { MoreVertical } from 'lucide-react';
 import LocationDeletePopup from './LocationDeletePopup';
 import LocationEditPopup from './LocationEditPopup';
 
-export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius , _id}) => {
+export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius , id}) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showEditPopup, setShowEditPopup] = useState(false);
@@ -33,10 +33,7 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius , _id}) => {
   };
 
   const handleEditSave = (editedData) => {
-    // Handle saving all edited location data here
     console.log('Saving edited location data:', editedData);
-    // editedData will contain: { branchName, embedUrl, geoFenceRadius }
-    // Add your save/update API call or state update here
     setShowEditPopup(false);
   };
 
@@ -101,7 +98,7 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius , _id}) => {
         isOpen={showEditPopup}
         onClose={handleEditCancel}
         onSave={handleEditSave}
-        currentCampusId={_id}
+        currentCampusId={id}
         currentBranchName={branchName}
         currentEmbedUrl={embedUrl}
         currentGeoFenceRadius={geoFenceRadius}
@@ -112,7 +109,7 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius , _id}) => {
         isOpen={showDeletePopup}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
-        oldCampusId={_id}
+        oldCampusId={id}
         locationName={branchName}
       />
     </div>

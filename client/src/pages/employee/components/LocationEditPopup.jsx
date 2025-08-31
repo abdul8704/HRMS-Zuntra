@@ -3,37 +3,37 @@ import React, { useState } from 'react';
 import { ChevronsUp, X } from 'lucide-react';
 import axios from "../../../api/axios";
 
-const LocationEditPopup = ({ 
-  isOpen, 
-  onClose, 
-  onSave, 
-  currentCampusId, 
-  currentBranchName = '', 
-  currentEmbedUrl = '', 
-  currentGeoFenceRadius = '' 
+const LocationEditPopup = ({
+  isOpen,
+  onClose,
+  onSave,
+  currentCampusId,
+  currentBranchName = '',
+  currentEmbedUrl = '',
+  currentGeoFenceRadius = ''
 }) => {
   const [branchName, setBranchName] = useState(currentBranchName);
   const [embedUrl, setEmbedUrl] = useState(currentEmbedUrl);
- const [geoFenceRadius, setGeoFenceRadius] = useState(currentGeoFenceRadius?.toString() || "");
+  const [geoFenceRadius, setGeoFenceRadius] = useState(currentGeoFenceRadius?.toString() || "");
 
   if (!isOpen) return null;
 
   const handleSave = async () => {
-  if (branchName.trim() && embedUrl.trim() && geoFenceRadius.trim()) {
-    try {
-      await axios.patch("/api/branch/edit-branch", {
-        oldCampusId: currentCampusId,
-        campusName: branchName.trim(),
-        embedURL: embedUrl.trim(),
-        radius: parseFloat(geoFenceRadius.trim())
-      });
-      onSave(); 
-      onClose();
-    } catch (err) {
-      console.error("Error updating branch", err);
+    if (branchName.trim() && embedUrl.trim() && geoFenceRadius.trim()) {
+      try {
+        await axios.patch("/api/branch/edit-branch", {
+          oldCampusId: currentCampusId,
+          campusName: branchName.trim(),
+          embedURL: embedUrl.trim(),
+          radius: parseFloat(geoFenceRadius.trim())
+        });
+        onSave();
+        onClose();
+      } catch (err) {
+        console.error("Error updating branch", err);
+      }
     }
-  }
-};
+  };
 
   const handleClose = () => {
     setBranchName(currentBranchName);
@@ -41,6 +41,10 @@ const LocationEditPopup = ({
     setGeoFenceRadius(currentGeoFenceRadius);
     onClose();
   };
+  const isModified =
+    branchName.trim() !== currentBranchName.trim() ||
+    embedUrl.trim() !== currentEmbedUrl.trim() ||
+    geoFenceRadius.trim() !== (currentGeoFenceRadius?.toString().trim() || "");
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -98,8 +102,11 @@ const LocationEditPopup = ({
           <button onClick={handleClose} className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md">Cancel</button>
           <button
             onClick={handleSave}
-            disabled={!branchName.trim() || !embedUrl.trim() || !geoFenceRadius.trim()}
-            className="px-4 py-2 text-sm bg-[#BBD3CC] hover:bg-[#A6C4BA] disabled:bg-gray-300 rounded-md"
+            disabled={!isModified}
+            className={`px-4 py-2 text-sm rounded-md ${isModified
+              ? "bg-[#BBD3CC] hover:bg-[#A6C4BA] text-gray-600"
+              : "bg-gray-300 text-gray-600 cursor-not-allowed"
+              }`}
           >
             Save
           </button>
