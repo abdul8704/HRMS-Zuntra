@@ -2,6 +2,7 @@ const Notification = require("../models/notification");
 const ApiError = require("../errors/ApiError");
 const { getTeamIdsUserPartOf } = require("./projectService/teamService");
 
+
 const createNotification = async (
     message,
     postedBy,
@@ -72,7 +73,7 @@ const deleteNotification = async (notificationId, userId) => {
 const getAllNotifications = async (userId) => {
     // Get all team IDs the user is part of
     const userTeamIds = await getTeamIdsUserPartOf(userId);
-    console.log(userTeamIds)
+    console.log(userTeamIds);
     const notifications = await Notification.find({
         $or: [
             { applicableToAll: true },
@@ -84,9 +85,8 @@ const getAllNotifications = async (userId) => {
             select: "username email role",
             populate: {
                 path: "role",
-                select: "role"
-            }
-
+                select: "role",
+            },
         })
         .sort({ createdAt: -1 })
         .lean();
@@ -105,6 +105,8 @@ const getNotificationById = async (notificationId) => {
 
     return notification;
 };
+
+
 
 module.exports = {
     createNotification,

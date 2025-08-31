@@ -112,6 +112,54 @@ const deleteProjectById = async (projectId) => {
     return Project.findByIdAndDelete(projectId);
 };
 
+const getUserProjectPhaseDeadlines = async (userId, allProjects = false) => {
+    let phases;
+
+    if (allProjects) {
+        phases = await Phase.find({
+            status: "ongoing",
+            endDate: { $exists: true, $ne: null },
+        })
+            .populate("project", "name")
+            .lean();
+    } else {
+        const userTeamIds = await TeamService.getTeamIdsUserPartOf(userId);
+
+        phases = await Phase.find({
+            teams: { $in: userTeamIds },
+            endDate: { $exists: true, $ne: null },
+        })
+            .populate("project", "name")
+            .lean();
+    }
+
+    const today = new Date();
+    const projectPhaseDeadlines = [];
+
+    phases.forEach((phase) => {
+        if (phase.endDate) {
+            const deadline = new Date(phase.endDate);
+            const daysLeft = Math.ceil(
+                (deadline - today) / (1000 * 60 * 60 * 24)
+            );
+
+            projectPhaseDeadlines.push({
+                project: phase.project.name,
+                phase: phase.name,
+                deadline: deadline.toISOString().split("T")[0], // YYYY-MM-DD
+                daysLeft: daysLeft,
+                status: phase.status,
+            });
+        }
+    });
+
+    // Sort by closest deadlines first
+    projectPhaseDeadlines.sort((a, b) => a.daysLeft - b.daysLeft);
+
+    return projectPhaseDeadlines;
+};
+
+
 module.exports = {
     getAllProjects,
     getAllOngoingProjects,
@@ -129,4 +177,5 @@ module.exports = {
     createProject,
     updateProjectById,
     deleteProjectById,
+    getUserProjectPhaseDeadlines,
 };
