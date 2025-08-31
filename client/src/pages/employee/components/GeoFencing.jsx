@@ -3,7 +3,7 @@ import { MoreVertical } from 'lucide-react';
 import LocationDeletePopup from './LocationDeletePopup';
 import LocationEditPopup from './LocationEditPopup';
 
-export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius, _id, onEdit, onDelete }) => {
+export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius , id}) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showEditPopup, setShowEditPopup] = useState(false);
@@ -13,20 +13,20 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius, _id, onEdit, 
 
   // Debug log
   useEffect(() => {
-    console.log("GeoFencing props:", { embedUrl, branchName, geoFenceRadius, _id });
-  }, [embedUrl, branchName, geoFenceRadius, _id]);
+    console.log("GeoFencing props:", { embedUrl, branchName, geoFenceRadius, id });
+  }, [embedUrl, branchName, geoFenceRadius, id]);
 
   const handleOptionClick = (option) => {
     setShowMenu(false);
 
     if (option === 'Edit') {
-      if (!_id) {
+      if (!id) {
         alert("Error: Cannot edit location - missing ID");
         return;
       }
       setShowEditPopup(true);
     } else if (option === 'Delete') {
-      if (!_id) {
+      if (!id) {
         alert("Error: Cannot delete location - missing ID");
         return;
       }
@@ -34,9 +34,8 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius, _id, onEdit, 
     }
   };
 
-  const handleEditSave = () => {
-    // The LocationEditPopup handles the API call internally
-    // Just close the popup and optionally refresh data
+  const handleEditSave = (editedData) => {
+    console.log('Saving edited location data:', editedData);
     setShowEditPopup(false);
 
     // Optionally call parent's refresh function if you have one
@@ -99,7 +98,7 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius, _id, onEdit, 
         isOpen={showEditPopup}
         onClose={() => setShowEditPopup(false)}
         onSave={handleEditSave}
-        currentCampusId={_id}
+        currentCampusId={id}
         currentBranchName={branchName}
         currentEmbedUrl={embedUrl}
         currentGeoFenceRadius={geoFenceRadius}
@@ -109,7 +108,7 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius, _id, onEdit, 
         isOpen={showDeletePopup}
         onClose={() => setShowDeletePopup(false)}
         onConfirm={handleDeleteConfirm}
-        oldCampusId={_id}
+        oldCampusId={id}
         locationName={branchName}
       />
 

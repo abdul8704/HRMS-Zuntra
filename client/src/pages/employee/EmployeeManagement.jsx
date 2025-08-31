@@ -1097,7 +1097,7 @@ export const EmployeeManagement = () => {
             ) : (
               currentData.data.map((loc, index) => (
                 <GeoFencing
-                  key={loc._id}
+                  id={loc._id}
                   embedUrl={loc.embedURL}
                   branchName={loc.campusName}
                   _id={loc._id}
