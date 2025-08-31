@@ -8,7 +8,6 @@ require("dotenv").config();
 const hrRoutes = require("./routes/hr");
 const courseRouter = require("./routes/courseRoutes");
 const authRouter = require("./routes/authRoutes");
-const meetingRouter = require("./routes/meetingRoutes");
 const taskRouter = require("./routes/taskRoutes");
 const projectRouter = require("./routes/projectRoutes/projectRoutes");
 const employeeRouter = require("./routes/employeeRoutes");
@@ -22,6 +21,7 @@ const companyDocumentsRouter = require("./routes/companyDocumentsRoutes");
 const teamRoutes = require("./routes/projectRoutes/teamRoutes");
 const phaseRoutes = require("./routes/projectRoutes/phaseRoutes");
 const toolsRoutes = require("./routes/projectRoutes/toolsRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 const path = require("path");
 
 const errorHandler = require("./middlewares/errorHandler");
@@ -44,7 +44,7 @@ app.use("/api", JWTauth, apiLogger);
 
 app.use("/api/hr", hrRoutes);
 app.use("/api/course", courseRouter);
-app.use("/api/meeting", meetingRouter);
+
 app.use("/api/task", taskRouter);
 app.use("/api/project", projectRouter);
 app.use("/api/employee", employeeRouter);
@@ -58,6 +58,7 @@ app.use("/api/holidays", holidayRoutes);
 app.use("/api/project/team", teamRoutes);
 app.use("/api/phase", phaseRoutes);
 app.use("/api/tools", toolsRoutes);
+app.use("/api/notifications", notificationRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(errorHandler);
 
