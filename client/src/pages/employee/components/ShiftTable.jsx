@@ -121,20 +121,23 @@ export const ShiftTable = () => {
   // ---------- API PLACEHOLDER FUNCTIONS ----------
   // updateShift: pass shift id and updated data. (placeholder for actual API call)
   const updateShift = async (shiftId, updatedData) => {
+    console.log(updatedData);
     try {
-      // Example placeholder API call (uncomment when real endpoint ready)
-      // await api.put(`/api/shifts/${shiftId}`, updatedData)
+      // Make the API call to update the shift
+      const res = await api.put(`/api/shifts/${shiftId}`, updatedData);
 
-      // Update locally for immediate UI feedback
+      const updatedShift = res.data;
+
       setShifts(prev =>
-        prev.map(s => (s._id === shiftId ? { ...s, ...updatedData } : s))
-      )
+        prev.map(s => (s._id === shiftId ? updatedShift : s))
+      );
 
-      closeModal()
+      closeModal();
     } catch (err) {
-      console.error('Failed to update shift', err)
+      console.error("Failed to update shift", err);
     }
-  }
+  };
+
 
   // deleteShift: pass current shift id and alternate shift id. (placeholder for actual API call)
   const deleteShift = async (shiftId, alternateShiftId) => {
