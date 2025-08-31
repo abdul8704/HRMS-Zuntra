@@ -362,33 +362,12 @@ export const EmployeeManagement = () => {
         ...updates
       });
       if (res.data.success) {
-        // Refresh the branches list or update state
-        fetchBranches(); // Call your fetch function
-        // OR update state manually:
-        // setBranches(prev => 
-        //   prev.map(b => (b._id === oldCampusId ? res.data.campus : b))
-        // );
+       fetchBranches(); // Call your fetch function
       }
     } catch (err) {
       console.error("Error editing branch:", err);
     }
   };
-
-  // Update your delete function to match your backend:
-  const handleDeleteBranch = async (oldCampusId, newCampusId = null) => {
-    try {
-      console.log("Calling delete API with:", { oldCampusId, newCampusId });
-      const response = await axios.delete(`/geo-location/delete-branch`, {
-        data: { oldCampusId, moveUsersTo: newCampusId }
-      })
-
-      console.log("Delete success:", response.data);
-      setGeoLocations(prev => prev.filter(loc => loc._id !== oldCampusId));
-    } catch (error) {
-      console.error("Error deleting branch:", error.response || error);
-    }
-  };
-
 
   // Clear all filters
   const handleClearFilters = useCallback(() => {
@@ -826,7 +805,6 @@ export const EmployeeManagement = () => {
                   _id={loc._id}
                   geoFenceRadius={loc.radius}
                   onRefresh={fetchBranches} // ✅ Pass refresh function instead of edit handler
-                  onDelete={() => handleDeleteBranch(loc._id)}
                 />
               ))
 

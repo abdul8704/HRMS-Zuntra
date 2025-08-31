@@ -56,16 +56,14 @@ const deleteCampusLocation = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Old campus ID is required");
   }
 
-  try {
+
     await GeoService.deleteCampusLocation(oldCampusId, newCampusId);
 
     res.status(200).json({
       success: true,
       message: "Branch deleted successfully",
     });
-  } catch (error) {
-    throw error;
-  }
+
 });
 
 
