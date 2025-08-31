@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Sidebar } from '../../components/Sidebar'
 import { Navbar } from '../../components/Navbar'
 import { Loading } from '../utils/Loading'
-import { ShiftTable  } from './components/ShiftTable'
+import { ShiftTable } from './components/ShiftTable'
 import { EmployeeCard } from './components/EmployeeCard'
 import { RoleCard } from './components/RoleCard'
 import AddRole from './components/AddRole'
@@ -15,7 +15,7 @@ import { AddLocationForm } from './components/AddLocationForm'
 import { RemoveEmployeePopup } from './components/RemoveEmployeePopup' // ADDED
 import { useAuth } from '../../context/AuthContext'
 
-import api from '../../api/axios'
+import axios from '../../api/axios'
 import { BASE_URL } from '../../api/axios'
 
 // Shift Details Component
@@ -376,10 +376,10 @@ export const EmployeeManagement = () => {
 
       try {
         const [roles, emps, pending, brs] = await Promise.all([
-          api.get('/api/roles'),
-          api.get('/api/employee'),
-          api.get('/api/hr/pending'),
-          api.get('/api/branch')
+          axios.get('/api/roles'),
+          axios.get('/api/employee'),
+          axios.get('/api/hr/pending'),
+          axios.get('/api/branch')
         ])
 
         setRolesData(roles.data || [])
@@ -592,7 +592,7 @@ export const EmployeeManagement = () => {
       console.log('Employee removal confirmed:', data);
 
       // Uncomment and modify API call as needed:
-      // const response = await api.delete(`/api/employee/${data.employeeId}`, {
+      // const response = await axios.delete(`/api/employee/${data.employeeId}`, {
       //   data: { message: data.message }
       // })
 
@@ -611,7 +611,7 @@ export const EmployeeManagement = () => {
   }, [handleCloseRemovePopup])
   const fetchBranches = async () => {
     try {
-      const res = await api.get("/api/branch");
+      const res = await axios.get("/api/branch");
       setBranches(res.data.branches || []);
     } catch (err) {
       console.error("Failed to fetch branches:", err);
@@ -621,7 +621,7 @@ export const EmployeeManagement = () => {
   // add a branch
   const handleAddBranch = async (formData) => {
     try {
-      const res = await api.post("/api/branch/new-branch", formData);
+      const res = await axios.post("/api/branch/new-branch", formData);
       if (res.data.success) {
         setBranches(prev => [...prev, res.data.branch]);
         setShowLocationForm(false);
@@ -632,32 +632,39 @@ export const EmployeeManagement = () => {
   };
 
   // edit a branch
-  const handleEditBranch = async (branchId, updates) => {
+  const handleEditBranch = async (oldCampusId, updates) => {
     try {
-      const res = await api.put(`/api/branch/${branchId}`, updates);
+      const res = await axios.patch("/api/branch/edit-branch", {
+        oldCampusId,
+        ...updates
+      });
       if (res.data.success) {
-        setBranches(prev =>
-          prev.map(b => (b._id === branchId ? res.data.branch : b))
-        );
+        // Refresh the branches list or update state
+        fetchBranches(); // Call your fetch function
+        // OR update state manually:
+        // setBranches(prev => 
+        //   prev.map(b => (b._id === oldCampusId ? res.data.campus : b))
+        // );
       }
     } catch (err) {
       console.error("Error editing branch:", err);
     }
   };
 
-  // delete a branch
-  const handleDeleteBranch = async (branchId) => {
-    if (!window.confirm("Are you sure you want to delete this branch?")) return;
+  // Update your delete function to match your backend:
+  const handleDeleteBranch = async (oldCampusId, newCampusId = null) => {
+  try {
+    console.log("Calling delete API with:", { oldCampusId, newCampusId });
+    const response = await axios.delete(`/geo-location/delete-branch`, {
+  data: { oldCampusId, moveUsersTo: newCampusId }
+})
 
-    try {
-      const res = await api.delete(`/api/branch/${branchId}`);
-      if (res.data.success) {
-        setBranches(prev => prev.filter(b => b._id !== branchId));
-      }
-    } catch (err) {
-      console.error("Error deleting branch:", err);
-    }
-  };
+    console.log("Delete success:", response.data);
+    setGeoLocations(prev => prev.filter(loc => loc._id !== oldCampusId));
+  } catch (error) {
+    console.error("Error deleting branch:", error.response || error);
+  }
+};
 
 
   // Clear all filters
@@ -1093,13 +1100,14 @@ export const EmployeeManagement = () => {
                   id={loc._id}
                   embedUrl={loc.embedURL}
                   branchName={loc.campusName}
+                  _id={loc._id}
                   geoFenceRadius={loc.radius}
-                  onEdit={() => handleEditBranch(loc._id, { campusName: "Updated Name" })}
+                  onRefresh={fetchBranches} // ✅ Pass refresh function instead of edit handler
                   onDelete={() => handleDeleteBranch(loc._id)}
                 />
               ))
-            )
-            }
+
+            )}
             <button
               className='fixed bottom-8 right-20 w-14 h-14 bg-[#BBD3CC] text-[#6c6c6c] rounded-full flex items-center justify-center text-2xl font-bold cursor-pointer hover:scale-110 hover:bg-[#A6C4BA] transition-transform z-[1000]'
               onClick={() => setShowLocationForm(true)}

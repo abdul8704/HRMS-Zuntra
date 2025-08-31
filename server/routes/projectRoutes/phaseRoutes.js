@@ -23,6 +23,15 @@ router.get(
     "/phase-teams/:phaseId/teams/with-members",
     phaseController.getAllTeamsWithMembers
 );
+router.get("/project-teams/:projectId", phaseController.getAllTeamsOfProject);
 router.put("/add-teams/:phaseId", phaseController.addTeamsToPhase);
+
+// tools related routes
+
+router.put("/add-tools/:phaseId", phaseController.addToolsToPhase);
+router.delete("/remove-tools/:phaseId", phaseController.removeToolsFromPhase);
+router.get("/tools/:phaseId", phaseController.getToolsByPhase);
+router.get("/tools/overview/:projectId", phaseController.getNotStartedAndCompletedTools);
+router.get("/project/:projectId/tools", phaseController.getAllToolsByProject);
 
 module.exports = router;

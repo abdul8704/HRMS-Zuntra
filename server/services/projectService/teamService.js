@@ -5,19 +5,32 @@ const UserCredentials = require("../../models/userCredentials");
 const Phase = require("../../models/projectManagement/phase");
 
 const getMembersOfTeamService = async (teamId) => {
-    const teamMembers = await TeamMember.find(
-        { teamId },
-        { role: 1, userId: 1, _id: 0 } // only keep role + userId
-    ).populate({
-        path: "userId",
-        select: "username role _id", // userId fields
+    const teamLead = await Team.findById(teamId, {
+        teamDescription: 1,
+        teamLead: 1,
+        teamName: 1
+    }).populate({
+        path: "teamLead",
+        select: "_id username role",
         populate: {
-            path: "role", // role reference inside UserCredentials
-            select: "role", // 👈 adjust if it's `name` in rolesDetails schema
+            path: "role", // nested populate for role
+            select: "role",
         },
     });
 
-    return teamMembers;
+    const teamMembers = await TeamMember.find(
+        { teamId },
+        { role: 1, userId: 1, _id: 0 }
+    ).populate({
+        path: "userId",
+        select: "username role _id",
+        populate: {
+            path: "role",
+            select: "role",
+        },
+    });
+
+    return { teamMembers, teamLead };
 };
 
 const getAllTeamsService = async () => {

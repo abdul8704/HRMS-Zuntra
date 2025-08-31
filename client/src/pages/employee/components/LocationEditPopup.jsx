@@ -1,6 +1,6 @@
 // frontend/components/LocationEditPopup.jsx
-import React, { useState } from 'react';
-import { ChevronsUp, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import axios from "../../../api/axios";
 
 const LocationEditPopup = ({
@@ -12,6 +12,7 @@ const LocationEditPopup = ({
   currentEmbedUrl = '',
   currentGeoFenceRadius = ''
 }) => {
+  // ✅ Add the missing useState declarations
   const [branchName, setBranchName] = useState(currentBranchName);
   const [embedUrl, setEmbedUrl] = useState(currentEmbedUrl);
   const [geoFenceRadius, setGeoFenceRadius] = useState(currentGeoFenceRadius?.toString() || "");
@@ -36,6 +37,7 @@ const LocationEditPopup = ({
   };
 
   const handleClose = () => {
+    // Reset fields to props values
     setBranchName(currentBranchName);
     setEmbedUrl(currentEmbedUrl);
     setGeoFenceRadius(currentGeoFenceRadius);
@@ -59,7 +61,6 @@ const LocationEditPopup = ({
 
         {/* Content */}
         <div className="p-6">
-          {/* Branch Name */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">Branch Name</label>
             <input
@@ -70,7 +71,6 @@ const LocationEditPopup = ({
             />
           </div>
 
-          {/* Embed URL */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">Embed URL</label>
             <textarea
@@ -81,7 +81,6 @@ const LocationEditPopup = ({
             />
           </div>
 
-          {/* Radius */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">Geo Fence Radius</label>
             <div className="relative">

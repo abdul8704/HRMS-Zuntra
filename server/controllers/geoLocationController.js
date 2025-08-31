@@ -5,7 +5,6 @@ const GeoUtils = require("../utils/geoFencing");
 
 const getAllBranches = asyncHandler(async (req, res) => {
     const branches = await GeoService.getAllCampusLocations();
-    console.log(branches);
     res.status(200).json({ success: true, branches: branches });
 });
 
@@ -23,37 +22,53 @@ const addNewBranch = asyncHandler(async (req, res) => {
 const editCampusLocation = asyncHandler(async (req, res) => {
     const { oldCampusId, campusName, embedURL, radius } = req.body;
 
+    // Validate required fields
+    if (!oldCampusId) {
+        throw new ApiError(400, "Campus ID is required");
+    }
+
     if (!campusName && !embedURL && !radius) {
         throw new ApiError(400, "Please provide at least one field to update");
     }
 
-    const updatedCampus = await GeoService.editCampusLocation(oldCampusId, {
-        campusName,
-        embedURL,
-        radius
-    });
+    try {
+        const updatedCampus = await GeoService.editCampusLocation(oldCampusId, {
+            campusName,
+            embedURL,
+            radius
+        });
 
-    res.status(200).json({ success: true, campus: updatedCampus });
+        res.status(200).json({ 
+            success: true, 
+            message: "Campus location updated successfully",
+            campus: updatedCampus 
+        });
+    } catch (error) {
+        throw error; // Let asyncHandler handle the error
+    }
 });
 
 // controllers/geoLocationController.js
-const deleteCampusLocation = async (req, res, next) => {
-  try {
-    const { oldCampusId } = req.params; // 👈 comes from URL
-    const { newCampusId } = req.query;  // 👈 optional query param
+const deleteCampusLocation = asyncHandler(async (req, res) => {
+  const { oldCampusId, newCampusId } = req.query;   // ✅ both from query
 
-    if (!oldCampusId) {
-      return res.status(400).json({ success: false, message: "Old campus ID is required" });
-    }
-
-    // your delete logic here
-    console.log("Deleting:", oldCampusId, "Reassigning to:", newCampusId);
-
-    res.json({ success: true, message: "Branch deleted successfully" });
-  } catch (error) {
-    next(error);
+  if (!oldCampusId) {
+    throw new ApiError(400, "Old campus ID is required");
   }
-};
+
+  try {
+    await GeoService.deleteCampusLocation(oldCampusId, newCampusId);
+
+    res.status(200).json({
+      success: true,
+      message: "Branch deleted successfully",
+    });
+  } catch (error) {
+    throw error;
+  }
+});
+
+
 
 module.exports = {
     getAllBranches,
