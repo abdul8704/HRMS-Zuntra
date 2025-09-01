@@ -11,4 +11,8 @@ router.get("/assigned-to-me", taskController.getMyAssignedTasks);
 // Get all open tasks issued to teams I'm part of
 router.get("/open-for-my-teams/:phaseId", taskController.getOpenTasksForMyTeams);
 
+router.post("/accept-open-task", taskController.acceptOpenTask);
+
+router.post("/accept-assigned-task", taskController.acceptAssignedTask);
+
 module.exports = router;

@@ -1,4 +1,6 @@
-// models/Timesheet.js  (recommended)
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
+
 const timesheetSchema = new Schema(
     {
         userId: {
@@ -10,7 +12,7 @@ const timesheetSchema = new Schema(
         phaseId: { type: Schema.Types.ObjectId, ref: "Phase" },
         taskId: { type: Schema.Types.ObjectId, ref: "Task" },
         startTime: { type: Date, required: true },
-        endTime: { type: Date, required: true },
+        endTime: { type: Date },
         reviewedBy: { type: Schema.Types.ObjectId, ref: "UserCredentials" },
         type: {
             type: String,
@@ -24,7 +26,6 @@ const timesheetSchema = new Schema(
         reviewStatus: {
             type: String,
             enum: ["accepted", "rework"],
-            default: "accepted",
         },
     },
     { timestamps: true }

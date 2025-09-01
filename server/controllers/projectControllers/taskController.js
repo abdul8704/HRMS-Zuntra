@@ -94,10 +94,39 @@ const getOpenTasksForMyTeams = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, tasks });
 });
 
+const acceptOpenTask = asyncHandler(async (req, res) => {
+    const { taskId } = req.body;
+    const userId = req.user.userid; // assuming userId is available in req.user
+
+    if (!taskId || !userId) {
+        return res
+            .status(400)
+            .json({ success: false, message: "Missing taskId or userId" });
+    }
+
+    const updatedTask = await TaskService.acceptOpenTask({ taskId, userId });
+    res.status(200).json({ success: true, task: updatedTask });
+});
+
+const acceptAssignedTask = asyncHandler(async (req, res) => {
+    const { taskId } = req.body;
+    const userId = req.user.userid;
+
+    if (!taskId || !userId) {
+        return res
+            .status(400)
+            .json({ success: false, message: "Missing taskId or userId" });
+    }
+
+    const updatedTask = await TaskService.acceptAssignedTask({ taskId, userId });
+    res.status(200).json({ success: true, task: updatedTask });
+});
+
 module.exports = {
     createTask,
     editTask,
     getMyAssignedTasks,
     getOpenTasksForMyTeams,
-    // ...other controllers
+    acceptOpenTask,
+    acceptAssignedTask
 };

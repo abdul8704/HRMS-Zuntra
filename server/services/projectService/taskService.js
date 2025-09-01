@@ -1,6 +1,7 @@
 const Task = require("../../models/projectManagement/task");
 const ApiError = require("../../errors/ApiError");
 const phaseService = require("./phaseService");
+const Timesheet = require("../../models/projectManagement/timeSheet");
 
 const createTask = async (data, user) => {
     let assignment = {
@@ -76,10 +77,69 @@ const getOpenTasksForTeams = async (teamIds, phaseId) => {
     }).lean();
 };
 
+const acceptOpenTask = async ({ taskId, userId }) => {
+    const task = await Task.findById(taskId);
+    if (!task) throw new ApiError(404, "Task not found");
+
+    // Only allow accepting if assignment.mode is 'open' and status is 'open'
+    if (task.assignment.mode !== "open" || task.status !== "open") {
+        throw new ApiError(400, "Task is not open for acceptance");
+    }
+
+    // Update assignment.acceptedBy and status
+    task.assignment.acceptedBy = userId;
+    task.assignment.acceptedAt = new Date();
+    task.status = "in_progress";
+    await task.save();
+
+    // Create timesheet entry
+    await Timesheet.create({
+        userId,
+        projectId: task.projectId,
+        phaseId: task.phaseId,
+        taskId: task._id,
+        startTime: new Date(),
+        endTime: null,
+        type: "initial",
+    });
+
+    return task;
+};
+const acceptAssignedTask = async ({ taskId, userId }) => {
+    const task = await Task.findById(taskId);
+    if (!task) throw new ApiError(404, "Task not found");
+
+    // Only allow accepting if assignment.mode is 'direct' and status is 'assigned'
+    if (task.assignment.mode !== "direct" || task.status !== "assigned" || task.assignment.assignedTo.toString() !== userId.toString()) {
+        throw new ApiError(400, "Task is not for you");
+    }
+
+    // Update assignment.acceptedBy and status
+    task.assignment.acceptedBy = userId;
+    task.assignment.acceptedAt = new Date();
+    task.status = "in_progress";
+    await task.save();
+
+    // Create timesheet entry
+    await Timesheet.create({
+        userId,
+        projectId: task.projectId,
+        phaseId: task.phaseId,
+        taskId: task._id,
+        startTime: new Date(),
+        endTime: null,
+        type: "initial",
+    });
+
+    return task;
+};
+
 module.exports = {
     createTask,
     editTask,
     getTasksAssignedToUser,
     getOpenTasksForTeams,
+    acceptOpenTask,
+    acceptAssignedTask,
     // ...other services
 };
