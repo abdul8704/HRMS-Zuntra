@@ -21,7 +21,8 @@ const timesheetSchema = new Schema(
         },
         credit: {
             type: Number,
-            enum: [1, -1],
+            enum: [2, 1, 0, -1, -2], // 2 if time taken less than expected, 1 if time taken more than expected
+            // , 0 if exactly as expected, -1 rework and time taken higher than expected, -2 if rework and time taken more than deadline
         },
         reviewStatus: {
             type: String,

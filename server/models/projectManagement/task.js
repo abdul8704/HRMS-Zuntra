@@ -76,7 +76,6 @@ const taskSchema = new mongoose.Schema(
                 note: String,
             },
         ],
-        creditRecorded: { type: Boolean, default: false }, // prevents duplicate credits
     },
     { timestamps: true }
 );

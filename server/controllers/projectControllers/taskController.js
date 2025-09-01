@@ -122,11 +122,64 @@ const acceptAssignedTask = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, task: updatedTask });
 });
 
+const getMyTasks = asyncHandler(async (req, res) => {
+    const userId = req.user.userid;
+    const tasks = await TaskService.getMyTasks(userId);
+    res.status(200).json({ success: true, tasks });
+});
+
+const submitTaskForReview = asyncHandler(async (req, res) => {
+    const { taskId, note } = req.body;
+    const userId = req.user.userid;
+
+    if (!taskId) {
+        throw new ApiError(400, "Missing taskId");
+    }
+
+    const updatedTask = await TaskService.submitTaskForReview({
+        taskId,
+        userId,
+        note,
+    });
+    res.status(200).json({ success: true, task: updatedTask });
+});
+
+const tlAcceptTask = asyncHandler(async (req, res) => {
+    const { taskId, note, credit } = req.body;
+    const userId = req.user.userid;
+
+    if (!taskId) {
+        throw new ApiError(400, "Missing taskId");
+    }
+
+    const result = await TaskService.tlAcceptTask(taskId, note, credit, userId);
+    res.status(200).json({ success: true, message: result });
+});
+
+const getTasksForReview = asyncHandler(async (req, res) => {
+    const userId = req.user.userid;
+    const tasks = await TaskService.getTasksForReview(userId);
+    res.status(200).json({ success: true, tasks });
+});
+
+const tlReworkTask = asyncHandler(async (req, res) => {
+    const { taskId, note = '', assignToSameEmp = false, newDeadline, newExpectedMinutes} = req.body;
+    const userid = req.user.userid;
+
+    await TaskService.tlReworkTask(String(taskId), userid, note, assignToSameEmp, newDeadline, newExpectedMinutes);
+    res.status(201).json({ success: true, data: "succesfully sent to rework "});
+})
+
 module.exports = {
     createTask,
     editTask,
     getMyAssignedTasks,
     getOpenTasksForMyTeams,
     acceptOpenTask,
-    acceptAssignedTask
+    acceptAssignedTask,
+    submitTaskForReview,
+    getMyTasks,
+    tlAcceptTask,
+    getTasksForReview,
+    tlReworkTask,
 };
