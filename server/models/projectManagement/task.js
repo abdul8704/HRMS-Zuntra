@@ -1,49 +1,77 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose")
 
-const taskSchema = new Schema(
+const taskSchema = new mongoose.Schema(
     {
         title: { type: String, required: true },
         description: String,
-        projectId: { type: Schema.Types.ObjectId, ref: "Project", index: true },
-        phaseId: { type: Schema.Types.ObjectId, ref: "Phase", index: true },
-        teamId: { type: Schema.Types.ObjectId, ref: "Team" },
-        createdBy: { type: Schema.Types.ObjectId, ref: "UserCredentials" },
-        assignedTo: {
-            type: Schema.Types.ObjectId,
-            ref: "UserCredentials",
+        projectId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Project",
             index: true,
         },
+        phaseId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Phase",
+            index: true,
+        },
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "UserCredentials",
+        },
+
+        assignment: {
+            mode: {
+                type: String,
+                enum: ["open", "direct"],
+                required: true,
+                index: true,
+            },
+            assignedTo: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "UserCredentials",
+            }, // required when mode="direct"
+            acceptedBy: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "UserCredentials",
+                index: true,
+            },
+            acceptedAt: { type: Date },
+        },
+
         status: {
             type: String,
             enum: [
                 "open",
                 "assigned",
-                "accepted",
                 "in_progress",
                 "submitted",
-                "review",
                 "rework",
                 "accepted",
-                "closed",
             ],
             default: "open",
             index: true,
         },
-        estimatedHours: Number,
-        loggedHours: { type: Number, default: 0 }, // in hours (sum of timesheets or manual)
+        expectedMinutes: { type: Number, min: 0, required: true },
         deadline: Date,
+
         acceptedAt: Date,
         completedAt: Date,
         review: {
-            reviewer: { type: Schema.Types.ObjectId, ref: "UserCredentials" },
+            reviewer: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "UserCredentials",
+            },
             status: { type: String, enum: ["accepted", "rework"] },
             comments: String,
-            reviewedAt: Date,
+            reviewedAt: { type: Date, default: Date.now() },
         },
         history: [
             {
                 status: String,
-                by: { type: Schema.Types.ObjectId, ref: "UserCredentials" },
+                by: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "UserCredentials",
+                },
                 at: Date,
                 note: String,
             },

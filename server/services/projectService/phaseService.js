@@ -392,6 +392,16 @@ const getAllToolsByProject = async (projectId) => {
     return allProjectTools;
 };
 
+const getTeamsLedByUserInPhase = async (phaseId, userId) => {
+    const phase = await Phase.findById(phaseId).lean();
+    if (!phase) return [];
+    const teams = await Team.find({
+        _id: { $in: phase.teams },
+        teamLead: userId,
+    }).lean();
+    return teams;
+};
+
 module.exports = {
     createPhase,
     updatePhaseById,
@@ -411,4 +421,5 @@ module.exports = {
     getToolsByPhase,
     getNotStartedAndCompletedTools,
     getAllToolsByProject,
+    getTeamsLedByUserInPhase,
 };
