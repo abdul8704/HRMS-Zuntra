@@ -170,6 +170,12 @@ const tlReworkTask = asyncHandler(async (req, res) => {
     res.status(201).json({ success: true, data: "succesfully sent to rework "});
 })
 
+const deleteTask = asyncHandler(async (req, res) => {
+    const { taskId } = req.params;
+    const result = await TaskService.deleteTask(taskId, req.user.userid);
+    res.status(200).json({ success: true, message: "Task deleted successfully", data: result });
+})
+
 module.exports = {
     createTask,
     editTask,
@@ -182,4 +188,5 @@ module.exports = {
     tlAcceptTask,
     getTasksForReview,
     tlReworkTask,
+    deleteTask,
 };

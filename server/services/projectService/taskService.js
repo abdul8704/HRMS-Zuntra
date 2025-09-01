@@ -72,7 +72,7 @@ const getOpenTasksForTeams = async (teamIds, phaseId) => {
     // Return open tasks for the phase
     return Task.find({
         "assignment.mode": "open",
-        status: "open",
+        status: { $in: ["open", "rework"] },
         phaseId,
     }).lean();
 };
@@ -354,6 +354,27 @@ const tlReworkTask = async (
 };
 
 
+// ...existing code...
+
+const deleteTask = async (taskId, userId) => {
+    const task = await Task.findById(taskId);
+    if (!task) throw new ApiError(404, "Task not found");
+
+    console.log(taskId, userId, task.createdBy);
+
+    if (task.createdBy.toString() !== userId.toString()) {
+        throw new ApiError(403, "You are not authorized to delete this task");
+    }
+
+    // Remove all timesheets related to this task
+    await Timesheet.deleteMany({ taskId: task._id });
+
+    // Remove the task itself
+    await Task.deleteOne({ _id: task._id });
+
+    return { success: true };
+};
+
 module.exports = {
     createTask,
     editTask,
@@ -366,5 +387,6 @@ module.exports = {
     tlAcceptTask,
     getTasksForReview,
     tlReworkTask,
+    deleteTask,
     // ...other services
 };

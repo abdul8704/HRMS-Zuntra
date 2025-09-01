@@ -25,4 +25,6 @@ router.post("/tl/accept-task", taskController.tlAcceptTask);
 
 router.post("/tl/rework-task", taskController.tlReworkTask);
 
+router.delete("/:taskId", taskController.deleteTask);
+
 module.exports = router;
