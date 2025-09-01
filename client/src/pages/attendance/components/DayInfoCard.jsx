@@ -12,6 +12,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
   const [editingHoliday, setEditingHoliday] = useState(null);
   const [deletingEvent, setDeletingEvent] = useState(null);
   const [deletingHoliday, setDeletingHoliday] = useState(null);
+  
 
   // Format date like 24-aug-2025
   const formatQueryDate = (date) => {
@@ -45,6 +46,8 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
       }
     };
 
+    console.log("events", events);
+
     const fetchHoliday = async () => {
       setLoadingHoliday(true);
       try {
@@ -65,6 +68,8 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
     fetchEvents();
     fetchHoliday();
   }, [selectedDate]);
+
+  console.log("holiday", holiday);
 
   const canEdit =
     userRole &&
@@ -87,8 +92,8 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
     try {
       const updatedEvent = {
         title: event.title.trim(),
-        description: event.description.trim(),
-        dates: event.date,
+        description: event.description?.trim(),
+        dates: event.dates,
       };
 
       // TODO: change route if needed
@@ -136,7 +141,8 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
     try {
       const updatedHoliday = {
         name: holiday.name.trim(),
-        date: holiday.date,
+        dates: holiday.dates,
+        applicableTo: holiday.applicableTo,
       };
 
       // TODO: change route if needed
@@ -319,58 +325,104 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
       {editingEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-[90vw] max-h-[80vh] overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-4 text-gray-800">
-              Edit Event
-            </h3>
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">Edit Event</h3>
 
             <div className="space-y-4">
+              {/* Title */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Event Title *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Event Title *</label>
                 <input
                   type="text"
-                  value={editingEvent.title || ''}
-                  onChange={(e) =>
-                    setEditingEvent({ ...editingEvent, title: e.target.value })
-                  }
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                  value={editingEvent.title || ""}
+                  onChange={(e) => setEditingEvent({ ...editingEvent, title: e.target.value })}
+                  className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter event title"
-                  maxLength={100}
                 />
               </div>
 
+              {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea
-                  value={editingEvent.description || ''}
-                  onChange={(e) =>
-                    setEditingEvent({
-                      ...editingEvent,
-                      description: e.target.value,
-                    })
-                  }
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors resize-vertical"
+                  value={editingEvent.description || ""}
+                  onChange={(e) => setEditingEvent({ ...editingEvent, description: e.target.value })}
+                  className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 resize-vertical"
                   placeholder="Enter event description"
                   rows={3}
-                  maxLength={500}
                 />
               </div>
+
+              {/* Toggle Single / Range */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-gray-700">Date Type:</label>
+                <select
+                  value={editingEvent.dates?.length > 1 ? "range" : "single"}
+                  onChange={(e) => {
+                    if (e.target.value === "single") {
+                      setEditingEvent({ ...editingEvent, dates: [editingEvent.dates?.[0] || new Date().toISOString()] });
+                    } else {
+                      const today = new Date().toISOString();
+                      setEditingEvent({ ...editingEvent, dates: [today, today] });
+                    }
+                  }}
+                  className="p-2 border rounded-md"
+                >
+                  <option value="single">Single Day</option>
+                  <option value="range">Date Range</option>
+                </select>
+              </div>
+
+              {/* Date Picker(s) */}
+              {editingEvent.dates?.length === 1 ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                  <input
+                    type="date"
+                    value={editingEvent.dates[0]?.split("T")[0] || ""}
+                    onChange={(e) => setEditingEvent({ ...editingEvent, dates: [e.target.value] })}
+                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
+                    <input
+                      type="date"
+                      value={editingEvent.dates?.[0]?.split("T")[0] || ""}
+                      onChange={(e) =>
+                        setEditingEvent({ ...editingEvent, dates: [e.target.value, editingEvent.dates?.[1]] })
+                      }
+                      className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
+                    <input
+                      type="date"
+                      value={editingEvent.dates?.[1]?.split("T")[0] || ""}
+                      onChange={(e) =>
+                        setEditingEvent({ ...editingEvent, dates: [editingEvent.dates?.[0], e.target.value] })
+                      }
+                      className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
+            {/* Footer */}
             <div className="flex gap-3 mt-6 justify-end">
               <button
                 onClick={() => setEditingEvent(null)}
-                className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleSaveEvent(editingEvent)}
                 disabled={!isEventValid(editingEvent)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-300"
               >
                 Save Changes
               </button>
@@ -379,43 +431,123 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
         </div>
       )}
 
+
       {/* ------------------- Holiday Modal ------------------- */}
       {editingHoliday && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-[90vw]">
-            <h3 className="text-lg font-semibold mb-4 text-gray-800">
-              Edit Holiday
-            </h3>
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-[90vw] max-h-[80vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">Edit Holiday</h3>
 
             <div className="space-y-4">
+              {/* Holiday Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Holiday Name *
                 </label>
                 <input
                   type="text"
-                  value={editingHoliday.name || ''}
+                  value={editingHoliday.name || ""}
                   onChange={(e) =>
                     setEditingHoliday({ ...editingHoliday, name: e.target.value })
                   }
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                  className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter holiday name"
-                  maxLength={100}
                 />
+              </div>
+
+              {/* Toggle Single / Range */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-gray-700">Date Type:</label>
+                <select
+                  value={editingHoliday.dates?.length > 1 ? "range" : "single"}
+                  onChange={(e) => {
+                    if (e.target.value === "single") {
+                      setEditingHoliday({
+                        ...editingHoliday,
+                        dates: [editingHoliday.dates?.[0] || new Date().toISOString()],
+                      });
+                    } else {
+                      const today = new Date().toISOString();
+                      setEditingHoliday({ ...editingHoliday, dates: [today, today] });
+                    }
+                  }}
+                  className="p-2 border rounded-md"
+                >
+                  <option value="single">Single Day</option>
+                  <option value="range">Date Range</option>
+                </select>
+              </div>
+
+              {/* Date Picker(s) */}
+              {editingHoliday.dates?.length === 1 ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                  <input
+                    type="date"
+                    value={editingHoliday.dates[0]?.split("T")[0] || ""}
+                    onChange={(e) =>
+                      setEditingHoliday({ ...editingHoliday, dates: [e.target.value] })
+                    }
+                    className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
+                    <input
+                      type="date"
+                      value={editingHoliday.dates?.[0]?.split("T")[0] || ""}
+                      onChange={(e) =>
+                        setEditingHoliday({ ...editingHoliday, dates: [e.target.value, editingHoliday.dates?.[1]] })
+                      }
+                      className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
+                    <input
+                      type="date"
+                      value={editingHoliday.dates?.[1]?.split("T")[0] || ""}
+                      onChange={(e) =>
+                        setEditingHoliday({ ...editingHoliday, dates: [editingHoliday.dates?.[0], e.target.value] })
+                      }
+                      className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Applicable To Dropdown */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Applicable To</label>
+                <select
+                  value={editingHoliday.applicableTo || "all"}
+                  onChange={(e) =>
+                    setEditingHoliday({ ...editingHoliday, applicableTo: e.target.value })
+                  }
+                  className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="hindu">Hindu</option>
+                  <option value="muslim">Muslim</option>
+                  <option value="christian">Christian</option>
+                  <option value="all">All</option>
+                </select>
               </div>
             </div>
 
+            {/* Footer */}
             <div className="flex gap-3 mt-6 justify-end">
               <button
                 onClick={() => setEditingHoliday(null)}
-                className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleSaveHoliday(editingHoliday)}
                 disabled={!isHolidayValid(editingHoliday)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-300"
               >
                 Save Changes
               </button>
@@ -423,6 +555,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
           </div>
         </div>
       )}
+
 
       {/* ------------------- Delete Confirmation ------------------- */}
       {deletingEvent && (
