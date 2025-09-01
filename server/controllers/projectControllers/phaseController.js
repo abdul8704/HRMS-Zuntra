@@ -299,6 +299,16 @@ const getAllToolsByProject = asyncHandler(async (req, res) => {
     });
 });
 
+// Check if user is team lead of any teams in a phase
+const isTeamLeaderInPhase = asyncHandler(async (req, res) => {
+    const { phaseId, userId } = req.body;
+    if (!phaseId || !userId) {
+        throw new ApiError(400, "phaseId and userId are required");
+    }
+    const teams = await phaseService.getTeamsLedByUserInPhase(phaseId, userId);
+    res.status(200).json({ success: true, teams });
+});
+
 module.exports = {
     getAllPhases,
     getPhaseById,
@@ -317,4 +327,5 @@ module.exports = {
     getToolsByPhase,
     getNotStartedAndCompletedTools,
     getAllToolsByProject,
+    isTeamLeaderInPhase,
 };

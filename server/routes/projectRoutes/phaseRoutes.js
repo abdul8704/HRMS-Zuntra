@@ -25,6 +25,7 @@ router.get(
 );
 router.get("/project-teams/:projectId", phaseController.getAllTeamsOfProject);
 router.put("/add-teams/:phaseId", phaseController.addTeamsToPhase);
+router.post("/is-team-leader", phaseController.isTeamLeaderInPhase);
 
 // tools related routes
 

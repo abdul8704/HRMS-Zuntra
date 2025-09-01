@@ -264,6 +264,20 @@ const formatProjectResponse = (project) => {
     };
 };
 
+const getUserProjectPhaseDeadlines = asyncHandler(async (req, res) => {
+    const userId = req.user.userid;
+
+    const allProjects = req.user.allowedAccess.includes("projectManagement");
+
+    const projectPhaseDeadlines =
+        await projectService.getUserProjectPhaseDeadlines(userId, allProjects);
+
+    res.status(200).json({
+        success: true,
+        data: projectPhaseDeadlines,
+    });
+});
+
 module.exports = {
     getAllProjects,
     getAllOngoingProjects,
@@ -281,4 +295,5 @@ module.exports = {
     createProject,
     updateProject,
     deleteProject,
+    getUserProjectPhaseDeadlines,
 };

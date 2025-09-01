@@ -11,10 +11,21 @@ const timesheetSchema = new Schema(
         taskId: { type: Schema.Types.ObjectId, ref: "Task" },
         startTime: { type: Date, required: true },
         endTime: { type: Date, required: true },
-        minutes: { type: Number, required: true }, // derived for quicker aggregation
-        billable: { type: Boolean, default: true },
-        approved: { type: Boolean, default: false },
-        approvedBy: { type: Schema.Types.ObjectId, ref: "UserCredentials" },
+        reviewedBy: { type: Schema.Types.ObjectId, ref: "UserCredentials" },
+        type: {
+            type: String,
+            enum: ["initial", "rework"],
+            default: "initial",
+        },
+        credit: {
+            type: Number,
+            enum: [1, -1],
+        },
+        reviewStatus: {
+            type: String,
+            enum: ["accepted", "rework"],
+            default: "accepted",
+        },
     },
     { timestamps: true }
 );

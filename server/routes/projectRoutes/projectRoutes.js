@@ -22,4 +22,6 @@ router.post("/create", projectController.createProject);
 router.patch("/update/:projectId", projectController.updateProject);
 router.delete("/delete/:projectId", projectController.deleteProject);
 
+router.get("/deadlines", projectController.getUserProjectPhaseDeadlines);
+
 module.exports = router;
