@@ -232,6 +232,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
 
   const handleDeleteHoliday = (holidayId) => {
     setDeletingHoliday(holidayId);
+    confirmDeleteHoliday();
   };
 
   const confirmDeleteHoliday = async () => {
