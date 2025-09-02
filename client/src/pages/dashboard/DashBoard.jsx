@@ -9,7 +9,7 @@ import { WorkBreakComposition } from "./components/WorkBreakComposititon";
 import { EmployeesOnLeave } from "./components/EmployeesOnLeave";
 import { RemainderPopup } from "./components/RemainderPopup";
 import { NotificationPopup } from './components/NotificationPopup';
-import { ProjectDeadline } from "../project/components/ProjectDeadline";
+import { ProjectDeadline } from "./components/ProjectDeadline";
 import { PlusButton } from '../../components/PlusButton';
 import { useAuth } from "../../context/AuthContext";
 import api, { BASE_URL } from '../../api/axios';

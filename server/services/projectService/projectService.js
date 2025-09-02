@@ -7,7 +7,7 @@ const project = require("../../models/projectManagement/project");
 
 // Get all projects
 const getAllProjects = async () => {
-    return Project.find({}).lean();
+    return Project.find({}).lean(); 
 };
 
 // Get all ongoing projects
