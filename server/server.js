@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 const hrRoutes = require("./routes/hr");
+const adminRoutes = require("./routes/adminRoutes");
 const courseRouter = require("./routes/courseRoutes");
 const authRouter = require("./routes/authRoutes");
 const taskRouter = require("./routes/projectRoutes/taskRoutes");
@@ -45,7 +46,7 @@ app.use("/api", JWTauth, apiLogger);
 
 app.use("/api/hr", hrRoutes);
 app.use("/api/course", courseRouter);
-
+app.use("/api/admin", adminRoutes);
 app.use("/api/task", taskRouter);
 app.use("/api/project", projectRouter);
 app.use("/api/employee", employeeRouter);
