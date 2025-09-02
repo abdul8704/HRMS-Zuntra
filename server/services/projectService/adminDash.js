@@ -66,7 +66,6 @@ const getUserCreditSummary = async (userId) => {
             : null,
     });
 
-
     return {
         positiveCredits: positiveCredits.map(format),
         negativeCredits: negativeCredits.map(format),
@@ -118,8 +117,8 @@ const getUserAttendanceSummary = async (userId, startDate, endDate) => {
             }
         });
 
-        if(record.status === "present") presentDays++;
-        else if(record.status === "remote") remoteDays++;
+        if (record.status === "present") presentDays++;
+        else if (record.status === "remote") remoteDays++;
     });
 
     // Get salary info
@@ -134,12 +133,13 @@ const getUserAttendanceSummary = async (userId, startDate, endDate) => {
 
     // Example: salary per hour
     const workingDays = 22;
-    const workingHoursPerDay = 8;
-    const totalWorkingHours = workingDays * workingHoursPerDay;
+    const WORK_HOURS_PER_DAY = 8;
+    const totalWorkingHours = workingDays * WORK_HOURS_PER_DAY;
     const salaryPerHour = salary / totalWorkingHours;
     const netPayable = +(totalHours * salaryPerHour).toFixed(2);
 
-    const standardPay = (presentDays + remoteDays) * (WORK_HOURS * salaryPerHour);
+    const standardPay =
+        (presentDays + remoteDays) * (WORK_HOURS * salaryPerHour);
 
     return {
         standardPay: +standardPay.toFixed(2),
@@ -152,7 +152,62 @@ const getUserAttendanceSummary = async (userId, startDate, endDate) => {
     };
 };
 
+const getStandardPay = async (userId, startDate, endDate) => {
+    const now = new Date();
+    const start = startDate
+        ? new Date(startDate)
+        : new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = endDate ? new Date(endDate) : now;
+
+    // Get present/remote attendance records
+    const attendanceRecords = await Attendance.find({
+        userid: userId,
+        date: { $gte: start, $lte: end },
+        status: { $in: ["present", "remote"] },
+    }).lean();
+    let presentOrRemoteDays = attendanceRecords.length;
+
+    // Get all days in range
+    const workingDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+    // Subtract holidays
+    const HolidayService = require("../../services/holidayService");
+    const holidays = await HolidayService.getHolidaysInRange(
+        start,
+        end,
+        userId
+    );
+    let holidayDates = new Set();
+    holidays.forEach((h) => {
+        h.dates.forEach((d) => {
+            if (d >= start && d <= end)
+                holidayDates.add(new Date(d).toDateString());
+        });
+    });
+    const numHolidays = holidayDates.size;
+    const numWorkingDays = workingDays - numHolidays;
+
+    // Get salary info
+    const userPersonal = await UserPersonal.findById(userId).lean();
+    const salary = userPersonal?.Salary || 0;
+
+    const WORK_HOURS_PER_DAY = 8;
+    const standardPay = +(
+        presentOrRemoteDays *
+        WORK_HOURS_PER_DAY *
+        (salary / (22 * WORK_HOURS_PER_DAY))
+    ).toFixed(2);
+
+    return {
+        standardPay: +standardPay.toFixed(2),
+        workingDays: numWorkingDays,
+        holidays: numHolidays,
+        presentOrRemoteDays,
+    };
+};
+
 module.exports = {
     getUserCreditSummary,
     getUserAttendanceSummary,
+    getStandardPay,
 };
