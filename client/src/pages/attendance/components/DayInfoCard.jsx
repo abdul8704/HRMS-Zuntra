@@ -150,7 +150,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
 
       console.log("Saving Event:", updatedEvent);
 
-      const res = await api.put(`/api/events/edit`, updatedEvent);
+      const res = await api.patch(`/api/events/edit`, updatedEvent);
 
       const updatedEvents = events.map((e) =>
         e._id === event._id
@@ -173,7 +173,9 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
   const confirmDeleteEvent = async () => {
     if (deletingEvent) {
       try {
-        await api.delete(`/api/events/${deletingEvent}`);
+        await api.delete(`/api/events/delete`, {
+          params: { eventId: deletingEvent }
+        });
         setEvents((prev) => prev.filter((e) => e._id !== deletingEvent));
         setDeletingEvent(null);
       } catch (err) {
