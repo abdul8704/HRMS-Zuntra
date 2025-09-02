@@ -34,8 +34,41 @@ const getStandardPay = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, data });
 });
 
+const getPhaseToolCost = asyncHandler(async (req, res) => {
+    const { phaseId } = req.params;
+
+    if (!phaseId)
+        throw new ApiError(400, "Phase ID is required");
+
+    const data = await adminDashService.getPhaseToolCost(phaseId);
+    res.status(200).json({ success: true, data });
+});
+
+const getPhaseEmployeeCost = asyncHandler(async (req, res) => {
+    const { phaseId } = req.params;
+
+    if (!phaseId)
+        throw new ApiError(400, "Phase ID is required");
+
+    const data = await adminDashService.getPhaseTeamMemberPay(phaseId);
+    res.status(200).json({ success: true, data });
+});
+
+const getProjectCost = asyncHandler(async (req, res) => {
+    const { projectId } = req.params;
+
+    if (!projectId)
+        throw new ApiError(400, "Project ID is required");
+
+    const data = await adminDashService.getProjectPhaseCosts(projectId);
+    res.status(200).json({ success: true, data });
+});
+
 module.exports = {
     getUserCreditSummary,
     getUserAttendanceSummary,
     getStandardPay,
+    getPhaseToolCost,
+    getPhaseEmployeeCost,
+    getProjectCost,
 };

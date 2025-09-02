@@ -1,3 +1,7 @@
+const Team = require("../../models/projectManagement/team");
+const TeamMember = require("../../models/projectManagement/teamMember");
+const { getMembersOfTeamService } = require("./teamService");
+const Phase = require("../../models/projectManagement/phase");
 const Timesheet = require("../../models/projectManagement/timeSheet");
 const UserPersonal = require("../../models/userPersonal");
 const Attendance = require("../../models/attendanceManagement/attendance");
@@ -206,8 +210,120 @@ const getStandardPay = async (userId, startDate, endDate) => {
     };
 };
 
+const getPhaseToolCost = async (phaseId) => {
+    const phase = await Phase.findById(phaseId).lean();
+
+    if (!phase) throw new ApiError(400, "Phase not found");
+
+    if (!phase.startDate || !phase.endDate)
+        throw new ApiError(400, "Phase startDate or endDate missing");
+
+    // Calculate duration in months (partial months count as full)
+    const start = new Date(phase.startDate);
+    const end = new Date(phase.endDate);
+    let months =
+        (end.getFullYear() - start.getFullYear()) * 12 +
+        (end.getMonth() - start.getMonth());
+    // If end day is after start day, add 1 month
+    if (end.getDate() >= start.getDate()) months++;
+    if (months < 1) months = 1;
+
+    let totalCost = 0;
+    let breakdown = [];
+    if (Array.isArray(phase.tools)) {
+        phase.tools.forEach((toolSnap) => {
+            const cost =
+                (toolSnap.unitCost || 0) * (toolSnap.quantity || 1) * months;
+            totalCost += cost;
+            breakdown.push({
+                name: toolSnap.name,
+                quantity: toolSnap.quantity,
+                unitCost: toolSnap.unitCost,
+                months,
+                cost,
+                currency: toolSnap.currency || "",
+            });
+        });
+    }
+    return { totalCost, months, breakdown };
+};
+
+const getPhaseTeamMemberPay = async (phaseId, startDate, endDate) => {
+    const phase = await Phase.findById(phaseId)
+        .populate({
+            path: "teams",
+            select: "teamName teamLead teamDescription",
+        })
+        .lean();
+    if (!phase) throw new ApiError(404, "Phase not found");
+    const teams = phase.teams || [];
+    let result = [];
+
+    for (const team of teams) {
+        const { teamMembers, teamLead } = await getMembersOfTeamService(
+            team._id
+        );
+        let totalPay = 0;
+        // Team lead pay
+        if (teamLead) {
+            const pay = await getStandardPay(teamLead._id, startDate, endDate);
+            totalPay += pay.standardPay || 0;
+        }
+        // Team members pay
+        for (const member of teamMembers) {
+            if (member.userId) {
+                const pay = await getStandardPay(
+                    member.userId._id,
+                    startDate,
+                    endDate
+                );
+                totalPay += pay.standardPay || 0;
+            }
+        }
+        result.push({
+            teamId: team._id,
+            teamName: team.teamName,
+            pay: +totalPay.toFixed(2),
+        });
+    }
+    return result;
+};
+
+const getProjectPhaseCosts = async (projectId) => {
+    const phases = await Phase.find({ project: projectId })
+        .select("_id name startDate endDate tools teams")
+        .lean();
+    let result = [];
+    for (const phase of phases) {
+        // Tool cost
+        const toolCostResult = await getPhaseToolCost(phase._id);
+        const toolCost = toolCostResult.totalCost || 0;
+        // Employee cost
+        const empCostResult = await getPhaseTeamMemberPay(
+            phase._id,
+            phase.startDate,
+            phase.endDate
+        );
+        const employeeCost = empCostResult.reduce(
+            (sum, t) => sum + (t.pay || 0),
+            0
+        );
+        result.push({
+            phaseId: phase._id,
+            phaseName: phase.name,
+            toolCost: +toolCost.toFixed(2),
+            employeeCost: +employeeCost.toFixed(2),
+        });
+    }
+    return result;
+};
+
 module.exports = {
     getUserCreditSummary,
     getUserAttendanceSummary,
     getStandardPay,
+    getPhaseToolCost,
+    getPhaseToolCost,
+    getPhaseTeamMemberPay,
+    getProjectPhaseCosts,
 };
