@@ -13,6 +13,8 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
   const [deletingEvent, setDeletingEvent] = useState(null);
   const [deletingHoliday, setDeletingHoliday] = useState(null);
 
+  // ---------------- Helpers ----------------
+
   // Format date like 24-aug-2025
   const formatQueryDate = (date) => {
     return date
@@ -25,11 +27,11 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
       .toLowerCase();
   };
 
-  // expand range to all dates between start and end
+  // Expand range to all dates between start and end
   const expandDateRange = (startStr, endStr) => {
     const dates = [];
-    let current = new Date(startStr + 'T00:00:00.000Z');
-    const end = new Date(endStr + 'T00:00:00.000Z');
+    let current = new Date(startStr);
+    const end = new Date(endStr);
 
     while (current <= end) {
       dates.push(new Date(current).toISOString());
@@ -38,7 +40,32 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
     return dates;
   };
 
-  // Fetch events and holidays
+  // Normalize YYYY-MM-DD → ISO
+  const toISODate = (yyyyMMdd) => {
+    if (!yyyyMMdd) return null;
+    return new Date(yyyyMMdd + 'T00:00:00.000Z').toISOString();
+  };
+
+  // Strip ISO → YYYY-MM-DD (for inputs)
+  const toDateInputValue = (isoDate) => {
+    if (!isoDate) return '';
+    return isoDate.split('T')[0];
+  };
+
+  const getTomorrow = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return d.toISOString();
+  };
+
+  const getDayAfter = (fromDate) => {
+    const d = new Date(fromDate);
+    d.setDate(d.getDate() + 1);
+    return d.toISOString();
+  };
+
+  // ---------------- Fetch ----------------
+
   useEffect(() => {
     if (!selectedDate) return;
 
@@ -79,20 +106,19 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
     fetchHoliday();
   }, [selectedDate]);
 
+  // ---------------- Permissions ----------------
+
   const canEdit =
     userRole &&
     (userRole.toLowerCase() === 'hr' || userRole.toLowerCase() === 'ceo');
 
-  // check if selectedDate is in future (tomorrow or later)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
   const isFutureDate = selectedDate >= tomorrow;
 
-  const minDateForInput = tomorrow.toISOString().split('T')[0]; // Tomorrow's date in YYYY-MM-DD
-
-  // ------------------- Event Handlers -------------------
+  // ---------------- Event Handlers ----------------
 
   const handleEditEvent = (event) => {
     let dates = event.dates || [];
@@ -107,11 +133,12 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
       let expandedDates = [];
 
       if (event.dates.length === 1) {
-        expandedDates = [
-          new Date(event.dates[0] + 'T00:00:00.000Z').toISOString(),
-        ];
+        expandedDates = [toISODate(toDateInputValue(event.dates[0]))];
       } else if (event.dates.length === 2) {
-        expandedDates = expandDateRange(event.dates[0], event.dates[1]);
+        expandedDates = expandDateRange(
+          toISODate(toDateInputValue(event.dates[0])),
+          toISODate(toDateInputValue(event.dates[1]))
+        );
       }
 
       const updatedEvent = {
@@ -121,7 +148,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
         dates: expandedDates,
       };
 
-      console.log(updatedEvent);
+      console.log("Saving Event:", updatedEvent);
 
       const res = await api.put(`/api/events/edit`, updatedEvent);
 
@@ -140,6 +167,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
 
   const handleDeleteEvent = (eventId) => {
     setDeletingEvent(eventId);
+    confirmDeleteEvent();
   };
 
   const confirmDeleteEvent = async () => {
@@ -156,7 +184,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
     }
   };
 
-  // ------------------- Holiday Handlers -------------------
+  // ---------------- Holiday Handlers ----------------
 
   const handleEditHoliday = (holiday) => {
     let dates = holiday.dates || [];
@@ -171,11 +199,12 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
       let expandedDates = [];
 
       if (holiday.dates.length === 1) {
-        expandedDates = [
-          new Date(holiday.dates[0] + 'T00:00:00.000Z').toISOString(),
-        ];
+        expandedDates = [toISODate(toDateInputValue(holiday.dates[0]))];
       } else if (holiday.dates.length === 2) {
-        expandedDates = expandDateRange(holiday.dates[0], holiday.dates[1]);
+        expandedDates = expandDateRange(
+          toISODate(toDateInputValue(holiday.dates[0])),
+          toISODate(toDateInputValue(holiday.dates[1]))
+        );
       }
 
       const updatedHoliday = {
@@ -183,6 +212,8 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
         dates: expandedDates,
         applicableTo: holiday.applicableTo,
       };
+
+      console.log("Saving Holiday:", updatedHoliday);
 
       const res = await api.patch(
         `/api/holidays/update/${holiday._id}`,
@@ -215,7 +246,8 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
     }
   };
 
-  // ------------------- Validation -------------------
+  // ---------------- Validation ----------------
+
   const isEventValid = (event) => {
     return event && event.title && event.title.trim().length > 0;
   };
@@ -223,6 +255,8 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
   const isHolidayValid = (holiday) => {
     return holiday && holiday.name && holiday.name.trim().length > 0;
   };
+
+  // ---------------- Render ----------------
 
   if (!selectedDate) {
     return (
@@ -240,22 +274,9 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
 
   const isHoliday = holiday || selectedDate.getDay() === 0;
 
-  // Helper to get date strings
-  const getTomorrow = () => {
-    const d = new Date();
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split("T")[0];
-  };
-
-  const getDayAfter = (fromDate) => {
-    const d = new Date(fromDate);
-    d.setDate(d.getDate() + 1);
-    return d.toISOString().split("T")[0];
-  };
-
-
   return (
     <div className="bg-white rounded-lg shadow-sm border p-4 h-full overflow-auto">
+      {/* --- Header --- */}
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-1">
           {selectedDate.toLocaleDateString('en-US', {
@@ -269,42 +290,40 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
         </p>
       </div>
 
-      {/* Holiday */}
-      {isHoliday && (
+      {/* --- Holiday Display --- */}
+      {isHoliday && holiday && (
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
             <span className="w-3 h-3 bg-orange-500 rounded-full"></span>
             <span className="text-sm font-medium text-gray-700">Holiday</span>
           </div>
-          {holiday && (
-            <div className="group relative">
-              <div className="text-xs text-gray-600 bg-gray-50 rounded px-2 py-1 hover:bg-gray-100 transition-colors cursor-pointer flex items-center justify-between">
-                <span className="font-medium">{holiday.name}</span>
-                {canEdit && isFutureDate && (
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-                    <button
-                      className="text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded transition-colors"
-                      title="Edit Holiday"
-                      onClick={() => handleEditHoliday(holiday)}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      className="text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded transition-colors"
-                      title="Delete Holiday"
-                      onClick={() => handleDeleteHoliday(holiday._id)}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                )}
-              </div>
+          <div className="group relative">
+            <div className="text-xs text-gray-600 bg-gray-50 rounded px-2 py-1 hover:bg-gray-100 transition-colors cursor-pointer flex items-center justify-between">
+              <span className="font-medium">{holiday.name}</span>
+              {canEdit && isFutureDate && (
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                  <button
+                    className="text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded transition-colors"
+                    title="Edit Holiday"
+                    onClick={() => handleEditHoliday(holiday)}
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    className="text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded transition-colors"
+                    title="Delete Holiday"
+                    onClick={() => handleDeleteHoliday(holiday._id)}
+                  >
+                    🗑️
+                  </button>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       )}
 
-      {/* Working Day */}
+      {/* --- Working Day Display --- */}
       {!isHoliday && (
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
@@ -316,7 +335,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
         </div>
       )}
 
-      {/* Events */}
+      {/* --- Events --- */}
       <div className="mb-4">
         <h4 className="text-sm font-medium text-gray-700 mb-2">Events:</h4>
         {loadingEvents ? (
@@ -337,8 +356,6 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                       </span>
                     )}
                   </div>
-
-                  {/* Edit/Delete Icons */}
                   {canEdit && isFutureDate && (
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 ml-2">
                       <button
@@ -372,12 +389,11 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
         )}
       </div>
 
-      {/* ------------------- Event Modal ------------------- */}
+      {/* --- Event Modal --- */}
       {editingEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-w-[90vw] max-h-[80vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4 text-gray-800">Edit Event</h3>
-
             <div className="space-y-4">
               {/* Title */}
               <div>
@@ -390,7 +406,6 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                   placeholder="Enter event title"
                 />
               </div>
-
               {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -402,36 +417,18 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                   rows={3}
                 />
               </div>
-
-              {/* Toggle Single / Range */}
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-700">Date Type:</label>
-                <select
-                  value={editingEvent.dates?.length > 1 ? "range" : "single"}
-                  onChange={(e) => {
-                    if (e.target.value === "single") {
-                      setEditingEvent({ ...editingEvent, dates: [getTomorrow()] });
-                    } else {
-                      setEditingEvent({ ...editingEvent, dates: [getTomorrow(), getDayAfter(getTomorrow())] });
-                    }
-                  }}
-                  className="p-2 border rounded-md"
-                >
-                  <option value="single">Single Day</option>
-                  <option value="range">Date Range</option>
-                </select>
-              </div>
-
-              {/* Date Picker(s) */}
+              {/* Date Inputs */}
               {editingEvent.dates?.length === 1 ? (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
                   <input
                     type="date"
-                    value={editingEvent.dates[0]?.split("T")[0] || ""}
-                    onChange={(e) => setEditingEvent({ ...editingEvent, dates: [e.target.value] })}
+                    value={toDateInputValue(editingEvent.dates[0])}
+                    onChange={(e) =>
+                      setEditingEvent({ ...editingEvent, dates: [toISODate(e.target.value)] })
+                    }
                     className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                    min={getTomorrow()}
+                    min={toDateInputValue(getTomorrow())}
                   />
                 </div>
               ) : (
@@ -440,31 +437,35 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
                     <input
                       type="date"
-                      value={editingEvent.dates?.[0]?.split("T")[0] || ""}
+                      value={toDateInputValue(editingEvent.dates?.[0])}
                       onChange={(e) =>
-                        setEditingEvent({ ...editingEvent, dates: [e.target.value, editingEvent.dates?.[1]] })
+                        setEditingEvent({
+                          ...editingEvent,
+                          dates: [toISODate(e.target.value), editingEvent.dates?.[1]],
+                        })
                       }
                       className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                      min={getTomorrow()}
+                      min={toDateInputValue(getTomorrow())}
                     />
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
                     <input
                       type="date"
-                      value={editingEvent.dates?.[1]?.split("T")[0] || ""}
+                      value={toDateInputValue(editingEvent.dates?.[1])}
                       onChange={(e) =>
-                        setEditingEvent({ ...editingEvent, dates: [editingEvent.dates?.[0], e.target.value] })
+                        setEditingEvent({
+                          ...editingEvent,
+                          dates: [editingEvent.dates?.[0], toISODate(e.target.value)],
+                        })
                       }
                       className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                      min={getDayAfter(editingEvent.dates?.[0] || getTomorrow())}
+                      min={toDateInputValue(editingEvent.dates?.[0] || getTomorrow())}
                     />
                   </div>
                 </div>
               )}
             </div>
-
-            {/* Footer */}
             <div className="flex gap-3 mt-6 justify-end">
               <button
                 onClick={() => setEditingEvent(null)}
@@ -516,12 +517,17 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                     if (e.target.value === "single") {
                       setEditingHoliday({
                         ...editingHoliday,
-                        dates: [getTomorrow()],
+                        // ensure ISO in state
+                        dates: [`${getTomorrow()}T00:00:00.000Z`],
                       });
                     } else {
                       setEditingHoliday({
                         ...editingHoliday,
-                        dates: [getTomorrow(), getDayAfter(getTomorrow())],
+                        // ensure ISO in state
+                        dates: [
+                          `${getTomorrow()}T00:00:00.000Z`,
+                          `${getDayAfter(getTomorrow())}T00:00:00.000Z`,
+                        ],
                       });
                     }
                   }}
@@ -540,7 +546,11 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                     type="date"
                     value={editingHoliday.dates[0]?.split("T")[0] || ""}
                     onChange={(e) =>
-                      setEditingHoliday({ ...editingHoliday, dates: [e.target.value] })
+                      setEditingHoliday({
+                        ...editingHoliday,
+                        // convert back to ISO for state
+                        dates: [`${e.target.value}T00:00:00.000Z`],
+                      })
                     }
                     className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
                     min={getTomorrow()}
@@ -554,7 +564,11 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                       type="date"
                       value={editingHoliday.dates?.[0]?.split("T")[0] || ""}
                       onChange={(e) =>
-                        setEditingHoliday({ ...editingHoliday, dates: [e.target.value, editingHoliday.dates?.[1]] })
+                        setEditingHoliday({
+                          ...editingHoliday,
+                          // keep ISO in state
+                          dates: [`${e.target.value}T00:00:00.000Z`, editingHoliday.dates?.[1]],
+                        })
                       }
                       className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
                       min={getTomorrow()}
@@ -566,10 +580,17 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                       type="date"
                       value={editingHoliday.dates?.[1]?.split("T")[0] || ""}
                       onChange={(e) =>
-                        setEditingHoliday({ ...editingHoliday, dates: [editingHoliday.dates?.[0], e.target.value] })
+                        setEditingHoliday({
+                          ...editingHoliday,
+                          // keep ISO in state
+                          dates: [editingHoliday.dates?.[0], `${e.target.value}T00:00:00.000Z`],
+                        })
                       }
                       className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                      min={getDayAfter(editingHoliday.dates?.[0] || getTomorrow())}
+                      min={
+                        // min expects YYYY-MM-DD; derive from the current "from" ISO or tomorrow
+                        (editingHoliday.dates?.[0]?.split("T")[0]) || getTomorrow()
+                      }
                     />
                   </div>
                 </div>
