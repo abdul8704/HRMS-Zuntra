@@ -20,7 +20,7 @@ import api, { BASE_URL } from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { Loading } from "./Loading";
 
-export function SidebarDetails({ type}) {
+export function SidebarDetails({ type }) {
   const navigate = useNavigate();
   const params = useParams();
   const empId = type === "user" ? params.empId : null;
@@ -33,6 +33,25 @@ export function SidebarDetails({ type}) {
   const [data, setData] = useState(null);
 
   const handleEditProfile = () => setShowEditCard((prev) => !prev);
+
+  // Check if current user can edit this profile
+  const canEdit = () => {
+    if (!user || !data) return false;
+    
+    // CEO/HR can edit anyone's profile
+    const userRole = user.role?.role?.toLowerCase();
+    if (userRole === 'ceo' || userRole === 'hr') {
+      return true;
+    }
+    
+    // Normal employees can only edit their own profile
+    return String(user?.userid) === String(empId);
+  };
+
+  // Check if this is the user's own profile
+  const isOwnProfile = () => {
+    return String(user?.userid) === String(empId);
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -93,21 +112,18 @@ export function SidebarDetails({ type}) {
     <>
       {/* Overlay for mobile sidebar */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-[999] transition-opacity duration-300 ${
-          isMobile && isOpen ? "block" : "hidden"
-        }`}
+        className={`fixed inset-0 bg-black bg-opacity-50 z-[999] transition-opacity duration-300 ${isMobile && isOpen ? "block" : "hidden"
+          }`}
         onClick={() => setIsOpen(false)}
       ></div>
 
       {/* Sidebar */}
       <div
-        className={`${
-          isMobile
-            ? `fixed top-0 left-0 z-[1000] transform transition-transform duration-300 ${
-                isOpen ? "translate-x-0" : "-translate-x-full"
-              }`
+        className={`${isMobile
+            ? `fixed top-0 left-0 z-[1000] transform transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"
+            }`
             : "relative"
-        } bg-[#BBD3CC] shadow-2xl w-full md:w-[320px] min-h-screen flex flex-col`}
+          } bg-[#BBD3CC] shadow-2xl w-full md:w-[320px] min-h-screen flex flex-col`}
       >
         {/* Close button for mobile */}
         {isMobile && isOpen && (
@@ -165,7 +181,7 @@ export function SidebarDetails({ type}) {
 
               <div className="text-center">
                 <h2 className="text-black text-xl md:text-2xl font-semibold">
-                  {data.username} 
+                  {data.username}
                 </h2>
               </div>
 
@@ -209,8 +225,8 @@ export function SidebarDetails({ type}) {
                   <span className="text-black/80">
                     {data.shift?.shiftName
                       ? data.shift.shiftName
-                          .replace(/([A-Z])/g, " $1")
-                          .replace(/^./, (str) => str.toUpperCase())
+                        .replace(/([A-Z])/g, " $1")
+                        .replace(/^./, (str) => str.toUpperCase())
                       : "N/A"}
                   </span>
                 </div>
@@ -268,9 +284,9 @@ export function SidebarDetails({ type}) {
                 </div>
               </div>
             </div>
-                    
-            {/* Sticky Edit Button */}
-            {String(user?.userid) === String(empId) && (
+
+            {/* Sticky Edit Button - Updated Logic */}
+            {canEdit() && (
               <div className="sticky bottom-0 bg-[#BBD3CC] px-6 py-4">
                 <button
                   onClick={handleEditProfile}
@@ -285,67 +301,67 @@ export function SidebarDetails({ type}) {
         )}
 
         {type === "role" && !isLoading && data && (
-  <>
-    {/* Header - Circle Icon with role color */}
-    <div className="px-6 pb-6">
-      <div className="flex justify-center mb-6">
-        <div
-          className="w-[4.5rem] h-[4.5rem] md:w-[6rem] md:h-[6rem] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-md"
-          style={{ backgroundColor: data.color || "#ccc" }}
-        >
-          <User className="w-12 h-12 text-[#000]" />
-        </div>
-      </div>
+          <>
+            {/* Header - Circle Icon with role color */}
+            <div className="px-6 pb-6">
+              <div className="flex justify-center mb-6">
+                <div
+                  className="w-[4.5rem] h-[4.5rem] md:w-[6rem] md:h-[6rem] rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-md"
+                  style={{ backgroundColor: data.color || "#ccc" }}
+                >
+                  <User className="w-12 h-12 text-[#000]" />
+                </div>
+              </div>
 
-      {/* Role Name */}
-      <div className="text-center">
-        <h2 className="text-black text-xl md:text-2xl font-semibold">
-          {data.role}
-        </h2>
-      </div>
-    </div>
+              {/* Role Name */}
+              <div className="text-center">
+                <h2 className="text-black text-xl md:text-2xl font-semibold">
+                  {data.role}
+                </h2>
+              </div>
+            </div>
 
-    {/* Scrollable Content */}
-    <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-5 text-sm text-black opacity-70">
-      <div className="flex items-center gap-3">
-        <Users className="w-4 h-4 text-black/70 flex-shrink-0" />
-        <div>
-          <span className="font-medium">Number of Users:</span>{" "}
-          <span className="text-black/80">{data.userCount || 0}</span>
-        </div>
-      </div>
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-5 text-sm text-black opacity-70">
+              <div className="flex items-center gap-3">
+                <Users className="w-4 h-4 text-black/70 flex-shrink-0" />
+                <div>
+                  <span className="font-medium">Number of Users:</span>{" "}
+                  <span className="text-black/80">{data.userCount || 0}</span>
+                </div>
+              </div>
 
-      <div className="flex items-center gap-3">
-        <DollarSign className="w-4 h-4 text-black/70 flex-shrink-0" />
-        <div>
-          <span className="font-medium">Base Salary:</span>{" "}
-          <span className="text-black/80">
-            ₹{data.baseSalary || 0}/hr
-          </span>
-        </div>
-      </div>
+              <div className="flex items-center gap-3">
+                <DollarSign className="w-4 h-4 text-black/70 flex-shrink-0" />
+                <div>
+                  <span className="font-medium">Base Salary:</span>{" "}
+                  <span className="text-black/80">
+                    ₹{data.baseSalary || 0}/hr
+                  </span>
+                </div>
+              </div>
 
-      {/* Allowed Access Section */}
-      <div>
-        <h3 className="font-medium text-black mb-2">Access Granted</h3>
-        <div className="flex flex-wrap gap-2">
-          {data.allowedAccess?.length > 0 ? (
-            data.allowedAccess.map((access, idx) => (
-              <span
-                key={idx}
-                className="bg-white/30 px-2 py-1 rounded-full text-[0.7rem] font-medium text-black shadow-sm border border-gray-200"
-              >
-                {access}
-              </span>
-            ))
-          ) : (
-            <span className="text-black/60 text-sm">No access defined</span>
-          )}
-        </div>
-      </div>
-    </div>
-  </>
-)}
+              {/* Allowed Access Section */}
+              <div>
+                <h3 className="font-medium text-black mb-2">Access Granted</h3>
+                <div className="flex flex-wrap gap-2">
+                  {data.allowedAccess?.length > 0 ? (
+                    data.allowedAccess.map((access, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-white/30 px-2 py-1 rounded-full text-[0.7rem] font-medium text-black shadow-sm border border-gray-200"
+                      >
+                        {access}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-black/60 text-sm">No access defined</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
 
       </div>
 
@@ -364,7 +380,12 @@ export function SidebarDetails({ type}) {
       {/* Edit Profile Modal */}
       {showEditCard && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-[1100] flex items-center justify-center animate-fadeIn">
-          <EditProfileCard data={data} onClose={handleEditProfile} />
+          <EditProfileCard 
+            data={data} 
+            onClose={handleEditProfile}
+            isOwnProfile={isOwnProfile()}
+            currentUser={user}
+          />
         </div>
       )}
 
