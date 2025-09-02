@@ -12,6 +12,18 @@ const getUserCreditSummary = asyncHandler( async (req, res) => {
     res.status(200).json({success: true, summary});
 })
 
+const getUserAttendanceSummary = asyncHandler( async (req, res) => {
+    const { userid } = req.params;
+    const { startDate, endDate } = req.query;
+
+    if(!userid) 
+        throw new ApiError(400, "User ID is required");
+
+    const summary = await adminDashService.getUserAttendanceSummary(userid, startDate, endDate);
+    res.status(200).json({success: true, summary});
+});
+
 module.exports = {
     getUserCreditSummary,
+    getUserAttendanceSummary,
 };

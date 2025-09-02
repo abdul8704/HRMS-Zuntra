@@ -1,4 +1,8 @@
 const Timesheet = require("../../models/projectManagement/timeSheet");
+const UserPersonal = require("../../models/userPersonal");
+const Attendance = require("../../models/attendanceManagement/attendance");
+
+const WORK_HOURS = 8;
 
 const getUserCreditSummary = async (userId) => {
     // Find all timesheet records for the user, populate task info
@@ -62,6 +66,7 @@ const getUserCreditSummary = async (userId) => {
             : null,
     });
 
+
     return {
         positiveCredits: positiveCredits.map(format),
         negativeCredits: negativeCredits.map(format),
@@ -77,6 +82,77 @@ const getUserCreditSummary = async (userId) => {
     };
 };
 
+const getUserAttendanceSummary = async (userId, startDate, endDate) => {
+    // Default date range: start of this month to today
+    const now = new Date();
+    const start = startDate
+        ? new Date(startDate)
+        : new Date(now.getFullYear(), now.getMonth(), 1);
+    const end = endDate ? new Date(endDate) : now;
+
+    // Get attendance records in range
+    const attendanceRecords = await Attendance.find({
+        userid: userId,
+        date: { $gte: start, $lte: end },
+    }).lean();
+
+    let totalMinutes = 0;
+    let onsiteMinutes = 0;
+    let remoteMinutes = 0;
+    let extraMinutes = 0;
+
+    let presentDays = 0;
+    let remoteDays = 0;
+
+    attendanceRecords.forEach((record) => {
+        record.sessions.forEach((session) => {
+            if (session.loginTime && session.logoutTime) {
+                const minutes =
+                    (new Date(session.logoutTime) -
+                        new Date(session.loginTime)) /
+                    (1000 * 60);
+                totalMinutes += minutes;
+                if (session.mode === "onsite") onsiteMinutes += minutes;
+                else if (session.mode === "remote") remoteMinutes += minutes;
+                else if (session.mode === "extra") extraMinutes += minutes;
+            }
+        });
+
+        if(record.status === "present") presentDays++;
+        else if(record.status === "remote") remoteDays++;
+    });
+
+    // Get salary info
+    const userPersonal = await UserPersonal.findById(userId).lean();
+    const salary = userPersonal?.Salary || 0;
+
+    // Calculate net amount payable (assuming salary is monthly and 8 hours/day, 22 working days/month)
+    const totalHours = totalMinutes / 60;
+    const onsiteHours = onsiteMinutes / 60;
+    const remoteHours = remoteMinutes / 60;
+    const extraHours = extraMinutes / 60;
+
+    // Example: salary per hour
+    const workingDays = 22;
+    const workingHoursPerDay = 8;
+    const totalWorkingHours = workingDays * workingHoursPerDay;
+    const salaryPerHour = salary / totalWorkingHours;
+    const netPayable = +(totalHours * salaryPerHour).toFixed(2);
+
+    const standardPay = (presentDays + remoteDays) * (WORK_HOURS * salaryPerHour);
+
+    return {
+        standardPay: +standardPay.toFixed(2),
+        totalHours: +totalHours.toFixed(2),
+        onsiteHours: +onsiteHours.toFixed(2),
+        remoteHours: +remoteHours.toFixed(2),
+        extraHours: +extraHours.toFixed(2),
+        salary,
+        netPayable,
+    };
+};
+
 module.exports = {
     getUserCreditSummary,
+    getUserAttendanceSummary,
 };
