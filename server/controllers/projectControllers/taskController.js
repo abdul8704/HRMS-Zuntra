@@ -94,10 +94,99 @@ const getOpenTasksForMyTeams = asyncHandler(async (req, res) => {
     res.status(200).json({ success: true, tasks });
 });
 
+const acceptOpenTask = asyncHandler(async (req, res) => {
+    const { taskId } = req.body;
+    const userId = req.user.userid; // assuming userId is available in req.user
+
+    if (!taskId || !userId) {
+        return res
+            .status(400)
+            .json({ success: false, message: "Missing taskId or userId" });
+    }
+
+    const updatedTask = await TaskService.acceptOpenTask({ taskId, userId });
+    res.status(200).json({ success: true, task: updatedTask });
+});
+
+const acceptAssignedTask = asyncHandler(async (req, res) => {
+    const { taskId } = req.body;
+    const userId = req.user.userid;
+
+    if (!taskId || !userId) {
+        return res
+            .status(400)
+            .json({ success: false, message: "Missing taskId or userId" });
+    }
+
+    const updatedTask = await TaskService.acceptAssignedTask({ taskId, userId });
+    res.status(200).json({ success: true, task: updatedTask });
+});
+
+const getMyTasks = asyncHandler(async (req, res) => {
+    const userId = req.user.userid;
+    const tasks = await TaskService.getMyTasks(userId);
+    res.status(200).json({ success: true, tasks });
+});
+
+const submitTaskForReview = asyncHandler(async (req, res) => {
+    const { taskId, note } = req.body;
+    const userId = req.user.userid;
+
+    if (!taskId) {
+        throw new ApiError(400, "Missing taskId");
+    }
+
+    const updatedTask = await TaskService.submitTaskForReview({
+        taskId,
+        userId,
+        note,
+    });
+    res.status(200).json({ success: true, task: updatedTask });
+});
+
+const tlAcceptTask = asyncHandler(async (req, res) => {
+    const { taskId, note, credit } = req.body;
+    const userId = req.user.userid;
+
+    if (!taskId) {
+        throw new ApiError(400, "Missing taskId");
+    }
+
+    const result = await TaskService.tlAcceptTask(taskId, note, credit, userId);
+    res.status(200).json({ success: true, message: result });
+});
+
+const getTasksForReview = asyncHandler(async (req, res) => {
+    const userId = req.user.userid;
+    const tasks = await TaskService.getTasksForReview(userId);
+    res.status(200).json({ success: true, tasks });
+});
+
+const tlReworkTask = asyncHandler(async (req, res) => {
+    const { taskId, note = '', assignToSameEmp = false, newDeadline, newExpectedMinutes} = req.body;
+    const userid = req.user.userid;
+
+    await TaskService.tlReworkTask(String(taskId), userid, note, assignToSameEmp, newDeadline, newExpectedMinutes);
+    res.status(201).json({ success: true, data: "succesfully sent to rework "});
+})
+
+const deleteTask = asyncHandler(async (req, res) => {
+    const { taskId } = req.params;
+    const result = await TaskService.deleteTask(taskId, req.user.userid);
+    res.status(200).json({ success: true, message: "Task deleted successfully", data: result });
+})
+
 module.exports = {
     createTask,
     editTask,
     getMyAssignedTasks,
     getOpenTasksForMyTeams,
-    // ...other controllers
+    acceptOpenTask,
+    acceptAssignedTask,
+    submitTaskForReview,
+    getMyTasks,
+    tlAcceptTask,
+    getTasksForReview,
+    tlReworkTask,
+    deleteTask,
 };
