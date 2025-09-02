@@ -12,10 +12,10 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
   const [editingHoliday, setEditingHoliday] = useState(null);
   const [deletingEvent, setDeletingEvent] = useState(null);
   const [deletingHoliday, setDeletingHoliday] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null); // { type: 'event'|'holiday', id: string }
 
   // ---------------- Helpers ----------------
 
-  // Format date like 24-aug-2025
   const formatQueryDate = (date) => {
     return date
       .toLocaleDateString('en-GB', {
@@ -27,7 +27,6 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
       .toLowerCase();
   };
 
-  // Expand range to all dates between start and end
   const expandDateRange = (startStr, endStr) => {
     const dates = [];
     let current = new Date(startStr);
@@ -40,13 +39,11 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
     return dates;
   };
 
-  // Normalize YYYY-MM-DD → ISO
   const toISODate = (yyyyMMdd) => {
     if (!yyyyMMdd) return null;
     return new Date(yyyyMMdd + 'T00:00:00.000Z').toISOString();
   };
 
-  // Strip ISO → YYYY-MM-DD (for inputs)
   const toDateInputValue = (isoDate) => {
     if (!isoDate) return '';
     return isoDate.split('T')[0];
@@ -148,8 +145,6 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
         dates: expandedDates,
       };
 
-      console.log("Saving Event:", updatedEvent);
-
       const res = await api.patch(`/api/events/edit`, updatedEvent);
 
       const updatedEvents = events.map((e) =>
@@ -165,99 +160,36 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
     }
   };
 
-  const handleDeleteEvent = (eventId) => {
-    setDeletingEvent(eventId);
-    confirmDeleteEvent();
+  const handleDelete = (type, id) => {
+    setShowDeleteConfirm({ type, id });
   };
 
-  const confirmDeleteEvent = async () => {
-    if (deletingEvent) {
-      try {
-        await api.delete(`/api/events/delete`, {
-          params: { eventId: deletingEvent }
-        });
-        setEvents((prev) => prev.filter((e) => e._id !== deletingEvent));
-        setDeletingEvent(null);
-      } catch (err) {
-        console.error('Failed to delete event:', err);
-        alert('Failed to delete event. Please try again.');
-        setDeletingEvent(null);
-      }
-    }
-  };
+  const confirmDelete = async () => {
+    if (!showDeleteConfirm) return;
 
-  // ---------------- Holiday Handlers ----------------
+    const { type, id } = showDeleteConfirm;
 
-  const handleEditHoliday = (holiday) => {
-    let dates = holiday.dates || [];
-    if (dates.length > 1) {
-      dates = [dates[0], dates[dates.length - 1]];
-    }
-    setEditingHoliday({ ...holiday, dates });
-  };
-
-  const handleSaveHoliday = async (holiday) => {
     try {
-      let expandedDates = [];
-
-      if (holiday.dates.length === 1) {
-        expandedDates = [toISODate(toDateInputValue(holiday.dates[0]))];
-      } else if (holiday.dates.length === 2) {
-        expandedDates = expandDateRange(
-          toISODate(toDateInputValue(holiday.dates[0])),
-          toISODate(toDateInputValue(holiday.dates[1]))
-        );
-      }
-
-      const updatedHoliday = {
-        name: holiday.name.trim(),
-        dates: expandedDates,
-        applicableTo: holiday.applicableTo,
-      };
-
-      console.log("Saving Holiday:", updatedHoliday);
-
-      const res = await api.patch(
-        `/api/holidays/update/${holiday._id}`,
-        updatedHoliday
-      );
-
-      setHoliday(res.data.updatedHoliday || { ...holiday, ...updatedHoliday });
-      setEditingHoliday(null);
-    } catch (err) {
-      console.error('Failed to save holiday:', err);
-      alert('Failed to save holiday. Please try again.');
-    }
-  };
-
-  const handleDeleteHoliday = (holidayId) => {
-    setDeletingHoliday(holidayId);
-    confirmDeleteHoliday();
-  };
-
-  const confirmDeleteHoliday = async () => {
-    if (deletingHoliday) {
-      try {
-        await api.delete(`/api/holidays/delete/${deletingHoliday}`);
+      if (type === 'event') {
+        await api.delete(`/api/events/delete`, { params: { eventId: id } });
+        setEvents((prev) => prev.filter((e) => e._id !== id));
+      } else if (type === 'holiday') {
+        await api.delete(`/api/holidays/delete/${id}`);
         setHoliday(null);
-        setDeletingHoliday(null);
-      } catch (err) {
-        console.error('Failed to delete holiday:', err);
-        alert('Failed to delete holiday. Please try again.');
-        setDeletingHoliday(null);
       }
+      setShowDeleteConfirm(null);
+    } catch (err) {
+      console.error(`Failed to delete ${type}:`, err);
+      alert(`Failed to delete ${type}. Please try again.`);
+      setShowDeleteConfirm(null);
     }
   };
 
   // ---------------- Validation ----------------
 
-  const isEventValid = (event) => {
-    return event && event.title && event.title.trim().length > 0;
-  };
-
-  const isHolidayValid = (holiday) => {
-    return holiday && holiday.name && holiday.name.trim().length > 0;
-  };
+  const isEventValid = (event) => event && event.title && event.title.trim().length > 0;
+  const isHolidayValid = (holiday) =>
+    holiday && holiday.name && holiday.name.trim().length > 0;
 
   // ---------------- Render ----------------
 
@@ -267,9 +199,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
         <div>
           <div className="text-4xl mb-2">📅</div>
           <p className="text-gray-500">Select a date to view day information</p>
-          <p className="text-xs text-gray-400 mt-1">
-            Click on any date in the calendar
-          </p>
+          <p className="text-xs text-gray-400 mt-1">Click on any date in the calendar</p>
         </div>
       </div>
     );
@@ -315,7 +245,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                   <button
                     className="text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded transition-colors"
                     title="Delete Holiday"
-                    onClick={() => handleDeleteHoliday(holiday._id)}
+                    onClick={() => handleDelete('holiday', holiday._id)}
                   >
                     🗑️
                   </button>
@@ -331,9 +261,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-2">
             <span className="w-3 h-3 bg-blue-500 rounded-full"></span>
-            <span className="text-sm font-medium text-gray-700">
-              Working Day
-            </span>
+            <span className="text-sm font-medium text-gray-700">Working Day</span>
           </div>
         </div>
       )}
@@ -354,9 +282,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                   <div className="flex-1 min-w-0">
                     <span className="font-medium block">{event.title}</span>
                     {event.description && (
-                      <span className="text-gray-500 block mt-1">
-                        {event.description}
-                      </span>
+                      <span className="text-gray-500 block mt-1">{event.description}</span>
                     )}
                   </div>
                   {canEdit && isFutureDate && (
@@ -375,7 +301,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                         className="text-gray-500 hover:text-gray-700 p-1 rounded transition-colors"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDeleteEvent(event._id);
+                          handleDelete('event', event._id);
                         }}
                         title="Delete Event"
                       >
@@ -400,30 +326,74 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
             <div className="space-y-4">
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Event Title *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Event Title *
+                </label>
                 <input
                   type="text"
-                  value={editingEvent.title || ""}
-                  onChange={(e) => setEditingEvent({ ...editingEvent, title: e.target.value })}
+                  value={editingEvent.title || ''}
+                  onChange={(e) =>
+                    setEditingEvent({ ...editingEvent, title: e.target.value })
+                  }
                   className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter event title"
                 />
               </div>
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
                 <textarea
-                  value={editingEvent.description || ""}
-                  onChange={(e) => setEditingEvent({ ...editingEvent, description: e.target.value })}
+                  value={editingEvent.description || ''}
+                  onChange={(e) =>
+                    setEditingEvent({ ...editingEvent, description: e.target.value })
+                  }
                   className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 resize-vertical"
                   placeholder="Enter event description"
                   rows={3}
                 />
               </div>
-              {/* Date Inputs */}
+
+              {/* ------------------- Date Type Radio ------------------- */}
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-gray-700">Date Type:</span>
+                <label className="flex items-center gap-1">
+                  <input
+                    type="radio"
+                    name="eventDateType"
+                    value="single"
+                    checked={editingEvent.dates?.length === 1}
+                    onChange={() =>
+                      setEditingEvent({ ...editingEvent, dates: [getTomorrow()] })
+                    }
+                  />
+                  Single Day
+                </label>
+                <label className="flex items-center gap-1">
+                  <input
+                    type="radio"
+                    name="eventDateType"
+                    value="range"
+                    checked={editingEvent.dates?.length > 1}
+                    onChange={() =>
+                      setEditingEvent({
+                        ...editingEvent,
+                        dates: [getTomorrow(), getDayAfter(getTomorrow())],
+                      })
+                    }
+                  />
+                  Date Range
+                </label>
+              </div>
+
+              {/* Date Picker(s) */}
+
               {editingEvent.dates?.length === 1 ? (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Date
+                  </label>
                   <input
                     type="date"
                     value={toDateInputValue(editingEvent.dates[0])}
@@ -469,6 +439,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                 </div>
               )}
             </div>
+
             <div className="flex gap-3 mt-6 justify-end">
               <button
                 onClick={() => setEditingEvent(null)}
@@ -495,7 +466,6 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
             <h3 className="text-lg font-semibold mb-4 text-gray-800">Edit Holiday</h3>
 
             <div className="space-y-4">
-              {/* Holiday Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Holiday Name *
@@ -511,37 +481,38 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                 />
               </div>
 
-              {/* Toggle Single / Range */}
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-700">Date Type:</label>
-                <select
-                  value={editingHoliday.dates?.length > 1 ? "range" : "single"}
-                  onChange={(e) => {
-                    if (e.target.value === "single") {
-                      setEditingHoliday({
-                        ...editingHoliday,
-                        // ensure ISO in state
-                        dates: [`${getTomorrow()}T00:00:00.000Z`],
-                      });
-                    } else {
-                      setEditingHoliday({
-                        ...editingHoliday,
-                        // ensure ISO in state
-                        dates: [
-                          `${getTomorrow()}T00:00:00.000Z`,
-                          `${getDayAfter(getTomorrow())}T00:00:00.000Z`,
-                        ],
-                      });
+              {/* Radio Buttons for Holiday Date Type */}
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-gray-700">Date Type:</span>
+                <label className="flex items-center gap-1">
+                  <input
+                    type="radio"
+                    name="holidayDateType"
+                    value="single"
+                    checked={editingHoliday.dates?.length === 1}
+                    onChange={() =>
+                      setEditingHoliday({ ...editingHoliday, dates: [getTomorrow()] })
                     }
-                  }}
-                  className="p-2 border rounded-md"
-                >
-                  <option value="single">Single Day</option>
-                  <option value="range">Date Range</option>
-                </select>
+                  />
+                  Single Day
+                </label>
+                <label className="flex items-center gap-1">
+                  <input
+                    type="radio"
+                    name="holidayDateType"
+                    value="range"
+                    checked={editingHoliday.dates?.length > 1}
+                    onChange={() =>
+                      setEditingHoliday({
+                        ...editingHoliday,
+                        dates: [getTomorrow(), getDayAfter(getTomorrow())],
+                      })
+                    }
+                  />
+                  Date Range
+                </label>
               </div>
 
-              {/* Date Picker(s) */}
               {editingHoliday.dates?.length === 1 ? (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
@@ -551,12 +522,11 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                     onChange={(e) =>
                       setEditingHoliday({
                         ...editingHoliday,
-                        // convert back to ISO for state
                         dates: [`${e.target.value}T00:00:00.000Z`],
                       })
                     }
                     className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                    min={getTomorrow()}
+                    min={toDateInputValue(getTomorrow())}
                   />
                 </div>
               ) : (
@@ -569,12 +539,11 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                       onChange={(e) =>
                         setEditingHoliday({
                           ...editingHoliday,
-                          // keep ISO in state
                           dates: [`${e.target.value}T00:00:00.000Z`, editingHoliday.dates?.[1]],
                         })
                       }
                       className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-                      min={getTomorrow()}
+                      min={toDateInputValue(getTomorrow())}
                     />
                   </div>
                   <div className="flex-1">
@@ -585,21 +554,18 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                       onChange={(e) =>
                         setEditingHoliday({
                           ...editingHoliday,
-                          // keep ISO in state
                           dates: [editingHoliday.dates?.[0], `${e.target.value}T00:00:00.000Z`],
                         })
                       }
                       className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
                       min={
-                        // min expects YYYY-MM-DD; derive from the current "from" ISO or tomorrow
-                        (editingHoliday.dates?.[0]?.split("T")[0]) || getTomorrow()
+                        editingHoliday.dates?.[0]?.split("T")[0] || toDateInputValue(getTomorrow())
                       }
                     />
                   </div>
                 </div>
               )}
 
-              {/* Applicable To Dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Applicable To</label>
                 <select
@@ -617,7 +583,6 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
               </div>
             </div>
 
-            {/* Footer */}
             <div className="flex gap-3 mt-6 justify-end">
               <button
                 onClick={() => setEditingHoliday(null)}
@@ -631,6 +596,32 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                 className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-300"
               >
                 Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------- Delete Confirmation Modal ------------------- */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80 max-w-[90vw]">
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">Confirm Delete</h3>
+            <p className="text-sm text-gray-700 mb-6">
+              Are you sure you want to delete this {showDeleteConfirm.type}?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+              >
+                Delete
               </button>
             </div>
           </div>
