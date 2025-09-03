@@ -30,8 +30,10 @@ const getHolidaysInRange = async (startDate, endDate, userid) => {
     }
 
     const applicableValues = ["all"];
-    const { religion } = await UserPersonal.findById(userid);
+    const user = await UserPersonal.findById(userid);
 
+    const religion = user?.religion;
+    
     if (religion)
         applicableValues.push(religion.toLowerCase());
 
