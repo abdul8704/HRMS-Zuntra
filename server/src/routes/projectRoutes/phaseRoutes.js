@@ -1,38 +1,41 @@
 const express = require("express");
 const router = express.Router();
 const phaseController = require("../../controllers/projectControllers/phaseController");
+const { requirePermission } = require("../../middlewares/requirePermission");
 
 // Create/Update/Delete
-router.post("/create", phaseController.createPhase);
-router.patch("/update/:phaseId", phaseController.updatePhase);
-router.patch("/delete/:phaseId", phaseController.deletePhase);
+router.post("/create", requirePermission("projectManagement"), phaseController.createPhase);
+router.patch("/update/:phaseId", requirePermission("projectManagement"), phaseController.updatePhase);
+router.patch("/delete/:phaseId", requirePermission("projectManagement"), phaseController.deletePhase);
 
 // Reads
-router.get("/all", phaseController.getAllPhases);
-router.get("/:phaseId", phaseController.getPhaseById);
-router.get("/project/:projectId", phaseController.getPhasesByProject);
+router.get("/all", requirePermission("projectManagement"), phaseController.getAllPhases);
+router.get("/:phaseId", requirePermission("general"), phaseController.getPhaseById);
+router.get("/project/:projectId", requirePermission("general"), phaseController.getPhasesByProject);
 router.get(
     "/project/:projectId/ongoing",
+    requirePermission("general"),
     phaseController.getOngoingPhasesByProject
 );
-router.get("/status/overview", phaseController.getNotStartedAndCompletedPhases);
+router.get("/status/overview", requirePermission("general"), phaseController.getNotStartedAndCompletedPhases);
 
 // Team related endpoints (now handled by phases)
-router.get("/phase-teams/:phaseId/teams", phaseController.getPhaseTeams);
+router.get("/phase-teams/:phaseId/teams", requirePermission("general"), phaseController.getPhaseTeams);
 router.get(
     "/phase-teams/:phaseId/teams/with-members",
+    requirePermission("general"),
     phaseController.getAllTeamsWithMembers
 );
-router.get("/project-teams/:projectId", phaseController.getAllTeamsOfProject);
-router.put("/add-teams/:phaseId", phaseController.addTeamsToPhase);
-router.post("/is-team-leader", phaseController.isTeamLeaderInPhase);
+router.get("/project-teams/:projectId", requirePermission("general"), phaseController.getAllTeamsOfProject);
+router.put("/add-teams/:phaseId", requirePermission("general"), phaseController.addTeamsToPhase);
+router.post("/is-team-leader", requirePermission("general"), phaseController.isTeamLeaderInPhase);
 
 // tools related routes
 
-router.put("/add-tools/:phaseId", phaseController.addToolsToPhase);
-router.delete("/remove-tools/:phaseId", phaseController.removeToolsFromPhase);
-router.get("/tools/:phaseId", phaseController.getToolsByPhase);
-router.get("/tools/overview/:projectId", phaseController.getNotStartedAndCompletedTools);
-router.get("/project/:projectId/tools", phaseController.getAllToolsByProject);
+router.put("/add-tools/:phaseId", requirePermission("projectManagement"),phaseController.addToolsToPhase);
+router.delete("/remove-tools/:phaseId", requirePermission("projectManagement"), phaseController.removeToolsFromPhase);
+router.get("/tools/:phaseId", requirePermission("general"),phaseController.getToolsByPhase);
+router.get("/tools/overview/:projectId", requirePermission("general"), phaseController.getNotStartedAndCompletedTools);
+router.get("/project/:projectId/tools", requirePermission("general"), phaseController.getAllToolsByProject);
 
 module.exports = router;

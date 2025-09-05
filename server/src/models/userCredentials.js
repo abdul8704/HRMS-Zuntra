@@ -26,7 +26,6 @@ const userCredentialsSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: String,
-        required: true,
     },
     dateJoined: {
         type: Date,

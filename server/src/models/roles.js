@@ -8,11 +8,10 @@ const rolesDetail = new mongoose.Schema({
     onboardingCourses: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: "CourseDetails",
-        required: true,
     },
     color: {
         type: String,
-        required: true,
+        default: "#000000",
     },
     baseSalary: {
         type: Number,

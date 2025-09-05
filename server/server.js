@@ -3,6 +3,8 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const  UsersCredentials  = require("./src/models/userCredentials");
+const { createDefaultAdmin } = require("./src/configs/setUp");
 require("dotenv").config();
 
 const hrRoutes = require("./src/routes/hr");
@@ -62,7 +64,7 @@ app.use("/api/phase", phaseRoutes);
 app.use("/api/tools", toolsRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/task", taskRoutes);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "./src/uploads")));
 app.use(errorHandler);
 
 const start = async () => {
@@ -70,6 +72,13 @@ const start = async () => {
         const PORT = process.env.PORT || 5000;
         await connectDB(process.env.MONGO_URI);
         console.log(`Connected to MongoDB✅`);
+
+        const needDefaultAdmin = await UsersCredentials.countDocuments();
+
+        if(needDefaultAdmin === 0) {
+            await createDefaultAdmin();
+        }
+
         app.listen(PORT, () => {
             console.log(`Server running at ${PORT}🔥`);
         });
