@@ -128,7 +128,7 @@ const courseManagementNavItems = [
   }
 ];
 
-const projectDetailsNavItems = [
+const phaseDetailsNavItems = [
   {
     label: 'Overview',
     icon: (
@@ -172,6 +172,53 @@ const projectDetailsNavItems = [
     ),
     filter: true,
     path: 'completed',
+  }
+];
+
+const projectDetailsNavItems = [
+    {
+    label: 'Go Back',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z" /></svg>
+    ),
+    filter: true,
+    path: '',
+  },
+  {
+    label: 'Overview',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000">
+        <path d="M480-160q-48-38-104-59t-116-21q-42 0-82.5 11T100-198q-21 11-40.5-1T40-234v-482q0-11 5.5-21T62-752q46-24 96-36t102-12q58 0 113.5 15T480-740v484q51-32 107-48t113-16q36 0 70.5 6t69.5 18v-480q15 5 29.5 10.5T898-752q11 5 16.5 15t5.5 21v482q0 23-19.5 35t-40.5 1q-37-20-77.5-31T700-240q-60 0-116 21t-104 59Z" />
+      </svg>
+    ),
+    filter: false,
+    path: 'overview',
+  },
+  {
+    label: 'On Going Phase',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 40 40">
+        <path fill="#000000" d="M40 17.776H28.303l10.13-5.849-2.224-3.854-10.13 5.849 5.847-10.13-3.854-2.225-5.847 10.129V0h-4.45v11.697l-5.85-10.13-3.852 2.225 5.848 10.129-10.13-5.848-2.224 3.853 10.13 5.849H0v4.45h11.695L1.567 28.072l2.224 3.854 10.13-5.848-5.85 10.13 3.855 2.224 5.848-10.13V40h4.45V28.304l5.847 10.13 3.854-2.225-5.849-10.13 10.13 5.848 2.225-3.854-10.129-5.848h11.696v-4.45H40ZM20 26.05a6.074 6.074 0 1 1 0-12.148 6.074 6.074 0 1 1 0 12.148Z" />
+      </svg>
+    ),
+    filter: true,
+    path: 'phases/ongoing'
+  },
+  {
+    label: 'Upcoming Phase',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M680-80q-83 0-141.5-58.5T480-280q0-83 58.5-141.5T680-480q83 0 141.5 58.5T880-280q0 83-58.5 141.5T680-80Zm67-105 28-28-75-75v-112h-40v128l87 87Zm-547 65q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h167q11-35 43-57.5t70-22.5q40 0 71.5 22.5T594-840h166q33 0 56.5 23.5T840-760v250q-18-13-38-22t-42-16v-212h-80v120H280v-120h-80v560h212q7 22 16 42t22 38H200Zm280-640q17 0 28.5-11.5T520-800q0-17-11.5-28.5T480-840q-17 0-28.5 11.5T440-800q0 17 11.5 28.5T480-760Z" /></svg>
+    ),
+    filter: true,
+    path: 'upcoming'
+  },
+  {
+    label: 'Completed Phase',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="M480-80 360-642l-88 402H80v-80h128l113-520h79l122 572 78-332h80l72 280h128v80H690l-48-188-82 348h-80Z" /></svg>
+    ),
+    filter: true,
+    path: 'completed'
   }
 ];
 
@@ -354,7 +401,7 @@ const companyDocumentsNavItems = [
     path: 'upload',
   }
 ];
-//all, onging, completed,add ,routing app.jsx
+
 
 export const Navbar = ({
   type,
@@ -407,6 +454,9 @@ export const Navbar = ({
     } else if (type === 'projectDetails') {
       const projectSegment = currentPath.split('/project/1/')[1]?.split('/')[0];
       updatedNavId = navItems.find(item => item.path === projectSegment)?.path || navItems[0]?.path;
+    } else if (type === 'phaseDetails') {
+      const phaseSegment = currentPath.split('/phases/')[1]?.split('/')[0];
+      updatedNavId = navItems.find(item => item.path === phaseSegment)?.path || navItems[0]?.path;
     } else if (type === 'companyDocuments') {
       const documentsSegment = currentPath.split('/documents/')[1]?.split('/')[0];
       updatedNavId = findOr404(documentsSegment);
@@ -448,6 +498,8 @@ export const Navbar = ({
     navItems = courseManagementNavItems;
   } else if (type === 'projectDetails') {
     navItems = projectDetailsNavItems;
+  } else if (type === 'phaseDetails') {
+    navItems = phaseDetailsNavItems;
   } else if (type === 'courseManagement') {
     navItems = courseManagementNavItems;
   } else if (type === 'attendance') {
@@ -495,6 +547,8 @@ export const Navbar = ({
       finalPath = `/documents/${path}`;
     } else if (type === 'projectDetails') {
       finalPath = `/project/1/${path}`;
+    } else if (type === 'phaseDetails') {
+      finalPath = `/phases/1/${path}`;
     } else if (type === 'projectManagement') {
       finalPath = `/projects/${path}`;
     }

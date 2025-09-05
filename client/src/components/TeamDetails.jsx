@@ -45,7 +45,7 @@ const TeamDetails = () => {
     <div className="w-full h-full bg-[#ADC0DA] rounded-xl p-4 flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold text-black">Team Details</h2>
+        <h2 className="text-lg font-bold text-black">Phase Details</h2>
         <Search className="text-black w-5 h-5" />
       </div>
 

@@ -7,6 +7,7 @@ import { CourseManagement } from './pages/course/CourseManagement';
 import { CourseIntro } from './pages/course/CourseIntro';
 import { CourseLearn } from './pages/course/CourseLearn';
 import { ProjectDetails } from './pages/project/ProjectDetails';
+import { PhaseDetails } from './pages/project/PhaseDetails';
 import { EmployeeDetails } from './pages/employee/EmployeeDetails';
 import { EmployeeManagement } from './pages/employee/EmployeeManagement';
 import { ProjectManagement } from './pages/project/ProjectManagement';
@@ -49,16 +50,15 @@ function App() {
             <Route path="/courses/:navId" element={<CourseManagement />} />
             <Route path="/course/:courseId/intro" element={<CourseIntro />} />
             <Route path="/course/learn/:courseId" element={<CourseLearn />} />
+
             <Route path="/projects/:navId" element={<ProjectManagement />} />
             <Route path="/project/:projectId/:navId" element={<ProjectDetails />} />
+            <Route path="/project/:projectId/phases/:phasenavId" element={<PhaseDetails type="phaseDetails"/>} />
+
             <Route path="/attendance/:navId" element={<Attendance />} />
             <Route path="/attendance/" element={<HrPersonalAttendance />} />
             <Route path="/upskill/:navId" element={<Upskill />} />
             <Route path="/documents/:navId" element={<CompanyDocs />} />
-            <Route path="/todo" element={<ToDo />} />
-            <Route path="/progress" element={<Progress />} />
-            <Route path="/review" element={<Review />} />
-            <Route path="/completed" element={<Completed />} />
             <Route path="/ceo" element={<CeoDashboard />} />
             <Route path="/remove-emp-request" element={<RemoveEmployeePopup />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
