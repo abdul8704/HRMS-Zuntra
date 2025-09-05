@@ -406,7 +406,6 @@ export const TeamDetails = () => {
   return (
     <>
       <div style={styles.container}>
-        <Sidebar role="EMP" />
         
         <div style={styles.mainContent}>
           {/* Left Panel - Only Team Name and Description */}
