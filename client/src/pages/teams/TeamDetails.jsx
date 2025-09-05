@@ -400,7 +400,7 @@ export const TeamDetails = () => {
   };
 
   const handleBackClick = () => {
-    navigate('/teams');
+    navigate('/projects/teams');
   };
 
   return (
