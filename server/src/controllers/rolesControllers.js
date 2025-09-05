@@ -1,6 +1,12 @@
 const RoleService = require("../services/rolesService");
 const ApiError = require("../errors/ApiError");
 const asyncHandler = require("express-async-handler");
+const constants = require("../constants/appConstants");
+
+const getAllrolePermissions = async (req, res) => {
+    const permissions = constants.ROLE_PERMISSIONS;
+    res.status(200).json({ permissions });
+}
 
 const getAllroles = asyncHandler(async (req, res) => {
   const roles = await RoleService.getAllRolesData();
@@ -99,6 +105,7 @@ const deleteRole = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  getAllrolePermissions,
   getAllroles,
   getRoleDetails,
   getAllShifts,

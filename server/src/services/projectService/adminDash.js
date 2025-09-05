@@ -5,8 +5,7 @@ const Phase = require("../../models/projectManagement/phase");
 const Timesheet = require("../../models/projectManagement/timeSheet");
 const UserPersonal = require("../../models/userPersonal");
 const Attendance = require("../../models/attendanceManagement/attendance");
-
-const WORK_HOURS = 8;
+const constants = require("../../constants/appConstants");
 
 const getUserCreditSummary = async (userId) => {
     // Find all timesheet records for the user, populate task info
@@ -137,13 +136,12 @@ const getUserAttendanceSummary = async (userId, startDate, endDate) => {
 
     // Example: salary per hour
     const workingDays = 22;
-    const WORK_HOURS_PER_DAY = 8;
-    const totalWorkingHours = workingDays * WORK_HOURS_PER_DAY;
+    const totalWorkingHours = workingDays * constants.WORK_HOURS_PER_DAY;
     const salaryPerHour = salary / totalWorkingHours;
     const netPayable = +(totalHours * salaryPerHour).toFixed(2);
 
     const standardPay =
-        (presentDays + remoteDays) * (WORK_HOURS * salaryPerHour);
+        (presentDays + remoteDays) * (constants.WORK_HOURS_PER_DAY * salaryPerHour);
 
     return {
         standardPay: +standardPay.toFixed(2),
@@ -195,11 +193,10 @@ const getStandardPay = async (userId, startDate, endDate) => {
     const userPersonal = await UserPersonal.findById(userId).lean();
     const salary = userPersonal?.Salary || 0;
 
-    const WORK_HOURS_PER_DAY = 8;
     const standardPay = +(
         presentOrRemoteDays *
-        WORK_HOURS_PER_DAY *
-        (salary / (22 * WORK_HOURS_PER_DAY))
+        constants.WORK_HOURS_PER_DAY *
+        (salary / (22 * constants.WORK_HOURS_PER_DAY))
     ).toFixed(2);
 
     return {

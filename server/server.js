@@ -1,34 +1,34 @@
-const connectDB = require("./configs/db");
+const connectDB = require("./src/configs/db");
 const express = require("express");
 const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
-const hrRoutes = require("./routes/hr");
-const adminRoutes = require("./routes/adminRoutes");
-const courseRouter = require("./routes/courseRoutes");
-const authRouter = require("./routes/authRoutes");
-const taskRouter = require("./routes/projectRoutes/taskRoutes");
-const projectRouter = require("./routes/projectRoutes/projectRoutes");
-const employeeRouter = require("./routes/employeeRoutes");
-const rolesRouter = require("./routes/rolesRoutes");
-const shiftRouter = require("./routes/shiftRoutes");
-const geoLocationRouter = require("./routes/geoLocationRouter");
-const reminderRouter = require("./routes/reminderRoutes");
-const eventRoutes = require("./routes/eventRoutes");
-const holidayRoutes = require("./routes/holidayRoutes");
-const companyDocumentsRouter = require("./routes/companyDocumentsRoutes");
-const teamRoutes = require("./routes/projectRoutes/teamRoutes");
-const phaseRoutes = require("./routes/projectRoutes/phaseRoutes");
-const toolsRoutes = require("./routes/projectRoutes/toolsRoutes");
-const notificationRoutes = require("./routes/notificationRoutes");
-const taskRoutes = require("./routes/projectRoutes/taskRoutes");
+const hrRoutes = require("./src/routes/hr");
+const adminRoutes = require("./src/routes/adminRoutes");
+const courseRouter = require("./src/routes/courseRoutes");
+const authRouter = require("./src/routes/authRoutes");
+const taskRouter = require("./src/routes/projectRoutes/taskRoutes");
+const projectRouter = require("./src/routes/projectRoutes/projectRoutes");
+const employeeRouter = require("./src/routes/employeeRoutes");
+const rolesRouter = require("./src/routes/rolesRoutes");
+const shiftRouter = require("./src/routes/shiftRoutes");
+const geoLocationRouter = require("./src/routes/geoLocationRouter");
+const reminderRouter = require("./src/routes/reminderRoutes");
+const eventRoutes = require("./src/routes/eventRoutes");
+const holidayRoutes = require("./src/routes/holidayRoutes");
+const companyDocumentsRouter = require("./src/routes/companyDocumentsRoutes");
+const teamRoutes = require("./src/routes/projectRoutes/teamRoutes");
+const phaseRoutes = require("./src/routes/projectRoutes/phaseRoutes");
+const toolsRoutes = require("./src/routes/projectRoutes/toolsRoutes");
+const notificationRoutes = require("./src/routes/notificationRoutes");
+const taskRoutes = require("./src/routes/projectRoutes/taskRoutes");
 const path = require("path");
 
-const errorHandler = require("./middlewares/errorHandler");
-const JWTauth = require("./middlewares/authenticateJWT");
-const apiLogger = require("./middlewares/apiLogger");
+const errorHandler = require("./src/middlewares/errorHandler");
+const JWTauth = require("./src/middlewares/authenticateJWT");
+const apiLogger = require("./src/middlewares/apiLogger");
 
 const corsOptions = {
     origin: ["http://localhost:5173", "http://localhost:5174"],

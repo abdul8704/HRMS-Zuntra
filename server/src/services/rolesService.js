@@ -1,7 +1,7 @@
 const Role = require("../models/roles");
 const UserCredentials = require("../models/userCredentials");
 const ApiError = require("../errors/ApiError");
-// Get all roles
+
 const getAllRolesData = async () => {
     try {
         const rolesData = await Role.find({}, {
