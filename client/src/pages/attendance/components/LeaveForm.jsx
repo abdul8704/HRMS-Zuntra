@@ -83,19 +83,11 @@ export const LeaveForm = ({ handleClose }) => {
     if (handleClose) handleClose();
   };
 
-  const adjustTextareaHeight = (e) => {
-    const textarea = e.target;
-    textarea.style.height = 'auto';
-    textarea.style.overflow = 'hidden';
-    textarea.style.height = Math.max(textarea.scrollHeight, 50) + 'px';
-    setReason(textarea.value);
-  };
-
   return (
     <>
     <div className="w-full h-full flex flex-col overflow-hidden">
       <div className="flex-1 overflow-y-auto px-4 py-4">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-gray-700 max-w-2xl mx-auto">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-gray-700 max-w-2xl mx-auto h-full">
           <h1 className="text-xl font-semibold text-gray-800">Apply for Leave</h1>
 
           {/* Leave Category */}
@@ -220,16 +212,15 @@ export const LeaveForm = ({ handleClose }) => {
             </div>
           )}
 
-          {/* Reason (Auto-expanding textarea) */}
-          <div className="flex flex-col">
+          {/* Reason (Fixed height with scroll) */}
+          <div className="flex flex-col flex-1">
             <label className="text-sm font-medium mb-1 text-gray-700">Reason for Leave</label>
             <textarea
               value={reason}
-              onChange={adjustTextareaHeight}
+              onChange={(e) => setReason(e.target.value)}
               placeholder="Enter reason for leave..."
-              className="border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              style={{ minHeight: '50px', overflow: 'hidden' }}
-              rows="2"
+              className="border border-gray-300 rounded-lg px-3 py-2 bg-white text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent flex-1 overflow-y-auto"
+              style={{ minHeight: '100px' }}
               required
             />
           </div>
@@ -239,13 +230,13 @@ export const LeaveForm = ({ handleClose }) => {
             <button
               type="button"
               onClick={handleCancel}
-              className="bg-gray-500 text-white px-8 py-2 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+              className="bg-gray-300 text-gray-700 px-8 py-2 rounded-lg hover:bg-gray-400 transition-colors font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-blue-500 text-white px-8 py-2 rounded-lg hover:bg-blue-600 transition-colors font-medium"
+              className="bg-green-400 text-white px-8 py-2 rounded-lg hover:bg-green-500 transition-colors font-medium"
             >
               Apply for Leave
             </button>

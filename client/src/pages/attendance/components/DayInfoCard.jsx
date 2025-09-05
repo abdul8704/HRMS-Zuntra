@@ -1,6 +1,8 @@
 // components/DayInfoCard.jsx
 import React, { useEffect, useState } from 'react';
 import api from '../../../api/axios';
+import { Edit3, Trash2 } from "lucide-react";
+
 
 export const DayInfoCard = ({ selectedDate, userRole }) => {
   const [events, setEvents] = useState([]);
@@ -159,6 +161,43 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
       alert('Failed to save event. Please try again.');
     }
   };
+ const handleEditHoliday = (holiday) => {
+  let dates = holiday.dates || [];
+  if (dates.length > 1) {
+    dates = [dates[0], dates[dates.length - 1]];
+  }
+  setEditingHoliday({ ...holiday, dates });
+};
+
+const handleSaveHoliday = async (holiday) => {
+  try {
+    let expandedDates = [];
+
+    if (holiday.dates.length === 1) {
+      expandedDates = [toISODate(toDateInputValue(holiday.dates[0]))];
+    } else if (holiday.dates.length === 2) {
+      expandedDates = expandDateRange(
+        toISODate(toDateInputValue(holiday.dates[0])),
+        toISODate(toDateInputValue(holiday.dates[1]))
+      );
+    }
+
+    const updatedHoliday = {
+      holidayId: holiday._id,
+      name: holiday.name.trim(),
+      applicableTo: holiday.applicableTo || "all",
+      dates: expandedDates,
+    };
+
+    const res = await api.patch(`/api/holidays/edit`, updatedHoliday);
+
+    setHoliday(res.data.updatedHoliday || res.data.holiday || updatedHoliday);
+    setEditingHoliday(null);
+  } catch (err) {
+    console.error("Failed to save holiday:", err);
+    alert("Failed to save holiday. Please try again.");
+  }
+};
 
   const handleDelete = (type, id) => {
     setShowDeleteConfirm({ type, id });
@@ -233,24 +272,27 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
           <div className="group relative">
             <div className="text-xs text-gray-600 bg-gray-50 rounded px-2 py-1 hover:bg-gray-100 transition-colors cursor-pointer flex items-center justify-between">
               <span className="font-medium">{holiday.name}</span>
-              {canEdit && isFutureDate && (
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-                  <button
-                    className="text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded transition-colors"
-                    title="Edit Holiday"
-                    onClick={() => handleEditHoliday(holiday)}
-                  >
-                    ✏️
-                  </button>
-                  <button
-                    className="text-gray-500 hover:text-gray-700 p-1 hover:bg-gray-100 rounded transition-colors"
-                    title="Delete Holiday"
-                    onClick={() => handleDelete('holiday', holiday._id)}
-                  >
-                    🗑️
-                  </button>
-                </div>
-              )}
+             {canEdit && isFutureDate && (
+  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+    <button
+      className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-100 rounded-full transition-all duration-200"
+      title="Edit Holiday"
+      onClick={() => handleEditHoliday(holiday)}
+    >
+      <Edit3 size={14} />
+    </button>
+    <button
+      className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-full transition-all duration-200"
+      title="Delete Holiday"
+      onClick={() => handleDelete('holiday', holiday._id)}
+    >
+      <Trash2 size={14} />
+    </button>
+  </div>
+)}
+
+
+
             </div>
           </div>
         </div>
@@ -286,29 +328,33 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
                     )}
                   </div>
                   {canEdit && isFutureDate && (
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 ml-2">
-                      <button
-                        className="text-gray-500 hover:text-gray-700 p-1 rounded transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditEvent(event);
-                        }}
-                        title="Edit Event"
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        className="text-gray-500 hover:text-gray-700 p-1 rounded transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete('event', event._id);
-                        }}
-                        title="Delete Event"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  )}
+  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 ml-2">
+    <button
+      className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-100 rounded-full transition-all duration-200"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleEditEvent(event);
+      }}
+      title="Edit Event"
+    >
+      <Edit3 size={14} />
+    </button>
+    <button
+      className="inline-flex items-center justify-center p-2 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-full transition-all duration-200"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleDelete('event', event._id);
+      }}
+      title="Delete Event"
+    >
+      <Trash2 size={14} />
+    </button>
+  </div>
+)}
+
+
+
+
                 </div>
               </div>
             ))}
@@ -450,7 +496,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
               <button
                 onClick={() => handleSaveEvent(editingEvent)}
                 disabled={!isEventValid(editingEvent)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-300"
+                className="px-4 py-2 bg-[#BBD3CC] text-[#2d423b] rounded-md hover:[bg-[#BBD3CC] disabled:bg-gray-300"
               >
                 Save Changes
               </button>
@@ -619,7 +665,7 @@ export const DayInfoCard = ({ selectedDate, userRole }) => {
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                className="px-4 py-2 bg-[#BBD3CC] text-[#2d423b]  rounded-md hover:bg-[#A6C4BA]"
               >
                 Delete
               </button>
