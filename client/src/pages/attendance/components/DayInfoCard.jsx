@@ -639,7 +639,7 @@ const handleSaveHoliday = async (holiday) => {
               <button
                 onClick={() => handleSaveHoliday(editingHoliday)}
                 disabled={!isHolidayValid(editingHoliday)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-300"
+                className="px-4 py-2 bg-[#BBD3CC] text-[#2d423b] rounded-md hover:bg-[#A6C4BA] disabled:bg-gray-300"
               >
                 Save Changes
               </button>
