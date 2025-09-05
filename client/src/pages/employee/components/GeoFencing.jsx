@@ -3,7 +3,7 @@ import { MoreVertical } from 'lucide-react';
 import LocationDeletePopup from './LocationDeletePopup';
 import LocationEditPopup from './LocationEditPopup';
 
-export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius }) => {
+export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius, _id, onEdit, onDelete }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [showEditPopup, setShowEditPopup] = useState(false);
@@ -11,45 +11,43 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius }) => {
 
   const options = ['Edit', 'Delete'];
 
-  // Close menu on outside click
+  // Debug log
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setShowMenu(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    console.log("GeoFencing props:", { embedUrl, branchName, geoFenceRadius, _id });
+  }, [embedUrl, branchName, geoFenceRadius, _id]);
 
   const handleOptionClick = (option) => {
     setShowMenu(false);
-    
+
     if (option === 'Edit') {
+      if (!_id) {
+        alert("Error: Cannot edit location - missing ID");
+        return;
+      }
       setShowEditPopup(true);
     } else if (option === 'Delete') {
+      if (!_id) {
+        alert("Error: Cannot delete location - missing ID");
+        return;
+      }
       setShowDeletePopup(true);
     }
   };
 
-  const handleEditSave = (editedData) => {
-    // Handle saving all edited location data here
-    console.log('Saving edited location data:', editedData);
-    // editedData will contain: { branchName, embedUrl, geoFenceRadius }
-    // Add your save/update API call or state update here
+  const handleEditSave = () => {
+    // The LocationEditPopup handles the API call internally
+    // Just close the popup and optionally refresh data
     setShowEditPopup(false);
+
+    // Optionally call parent's refresh function if you have one
+    if (onEdit) onEdit();
   };
 
-  const handleEditCancel = () => {
-    setShowEditPopup(false);
-  };
-
-  const handleDeleteConfirm = () => {
-    // Handle actual delete logic here
-    console.log('Deleting location:', branchName);
+  const handleDeleteConfirm = (oldCampusId) => {
+    if (onDelete) onDelete(oldCampusId); // parent handles API
     setShowDeletePopup(false);
-    // Add your delete API call or state update here
   };
+
 
   const handleDeleteCancel = () => {
     setShowDeletePopup(false);
@@ -99,20 +97,22 @@ export const GeoFencing = ({ embedUrl, branchName, geoFenceRadius }) => {
       {/* Edit Popup */}
       <LocationEditPopup
         isOpen={showEditPopup}
-        onClose={handleEditCancel}
+        onClose={() => setShowEditPopup(false)}
         onSave={handleEditSave}
+        currentCampusId={_id}
         currentBranchName={branchName}
         currentEmbedUrl={embedUrl}
         currentGeoFenceRadius={geoFenceRadius}
       />
 
-      {/* Delete Popup */}
       <LocationDeletePopup
         isOpen={showDeletePopup}
-        onClose={handleDeleteCancel}
+        onClose={() => setShowDeletePopup(false)}
         onConfirm={handleDeleteConfirm}
+        oldCampusId={_id}
         locationName={branchName}
       />
+
     </div>
   );
 };

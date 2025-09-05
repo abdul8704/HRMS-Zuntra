@@ -3,7 +3,7 @@ const attendanceHelper = require("../utils/attendanceHelper"); // make sure path
 
 const apiLogger = async (req, res, next) => {
   const now = new Date();
-  console.log(`[${now.toISOString()}] ${req.method} ${req.originalUrl}`);
+  // console.log(`[${now.toISOString()}] ${req.method} ${req.originalUrl}`);
   if (req.user && req.user.userid) {
     try {
       const today = attendanceHelper.normalizeToUTCDate(new Date());

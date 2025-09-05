@@ -1,166 +1,299 @@
-const asyncHandler = require('express-async-handler');
-const projectService = require("../../services/projectService");
-const EmployeeService = require("../../services/employeeService");
+const asyncHandler = require("express-async-handler");
 const ApiError = require("../../errors/ApiError");
+const projectService = require("../../services/projectService/projectService");
 const dateUtils = require("../../utils/dateUtils");
-const roleService = require("../../services/rolesService")
+const { get } = require("mongoose");
 
 
-// @desc Get all ongoing projects
-// @route GET /api/project/ongoing
-const getAllOnGoingProjects = asyncHandler(async (req, res) => {
-    const projectsList = await projectService.getAllOnGoingProjects();
+// Get all projects
+const getAllProjects = asyncHandler(async (req, res) => {
+    const projects = await projectService.getAllProjects();
+    const formattedProjects = projects.map(formatProjectResponse);
+    return res
+        .status(200)
+        .json({
+            success: true,
+            data: formattedProjects,
+            deadline: calculateDeadline(projects.endDate),
+        });
+});
 
-    const formattedResult = await Promise.all(
-        projectsList.map(async (project) => {
-            const teamLeaderDetail = await EmployeeService.getDetailsOfaEmployee(project.teamLeader);
-            const roleDetail = teamLeaderDetail.role;
-            const roleColor = roleDetail?.color || "#000000";
+// Get all ongoing projects
+const getAllOngoingProjects = asyncHandler(async (req, res) => {
+    const projects = await projectService.getAllOngoingProjects();
+    const formattedProjects = projects.map(formatProjectResponse);
+    return res
+        .status(200)
+        .json({
+            success: true,
+            data: formattedProjects,
+        });
+});
 
-            const diffArray = dateUtils.dateDiff(project.endDate);
-            const totalDaysLeft = diffArray[3].replace("Total days: ", "");
+// Get all not started projects
+const getAllNotStartedProjects = asyncHandler(async (req, res) => {
+    const projects = await projectService.getAllNotStartedProjects();
+    const formattedProjects = projects.map(formatProjectResponse);
+    return res
+        .status(200)
+        .json({
+            success: true,
+            data: formattedProjects,
+        });
+});
 
-            return {
-                _id: project._id,
-                clientName: project.clientName,
-                projectTitle: project.projectTitle,
-                projectDesc: project.projectDesc,
-                teamLeader: teamLeaderDetail.username,
-                teamLeaderRole: teamLeaderDetail.role,
-                teamLeaderProfile: teamLeaderDetail.profilePicture,
-                color: roleColor,
-                teamName: project.teamName,
-                startDate: dateUtils.formatDateToDDMMYYYY(project.startDate),
-                deadline: totalDaysLeft,
-            };
-        })
-    );
+// Get all on hold projects
+const getAllOnHoldProjects = asyncHandler(async (req, res) => {
+    const projects = await projectService.getAllOnHoldProjects();
+    const formattedProjects = projects.map(formatProjectResponse);
+    return res
+        .status(200)
+        .json({
+            success: true,
+            data: formattedProjects,
+        });
+});
 
-    res.status(200).json({
+// Get all completed projects
+const getAllCompletedProjects = asyncHandler(async (req, res) => {
+    const projects = await projectService.getAllCompletedProjects();
+    const formattedProjects = projects.map(formatProjectResponse);
+    return res
+        .status(200)
+        .json({
+            success: true,
+            data: formattedProjects,
+        });
+});
+
+// Get all cancelled projects
+const getAllCancelledProjects = asyncHandler(async (req, res) => {
+    const projects = await projectService.getAllCancelledProjects();
+    const formattedProjects = projects.map(formatProjectResponse);
+    return res
+        .status(200)
+        .json({
+            success: true,
+            data: formattedProjects,
+        });
+});
+
+// Get project by ID
+const getProjectById = asyncHandler(async (req, res) => {
+    const { projectId } = req.params;
+
+    if (!projectId) {
+        throw new ApiError(400, "Please provide all the required fields");
+    }
+
+    const project = await projectService.getProjectById(projectId);
+    if (!project) {
+        throw new ApiError(404, "Project not found");
+    }
+
+    const formattedProject = formatProjectResponse(project);
+    return res.status(200).json({ success: true, data: formattedProject });
+});
+
+const getAllProjectsOfUser = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const projects = await projectService.getAllProjectsOfUserService(userId);
+    const formattedProjects = projects.map(formatProjectResponse);
+
+    return res.status(200).json({ success: true, formattedProjects });
+})
+
+const getOngoingProjectsByUser = asyncHandler( async (req, res) => {
+    const { userId } = req.params;
+
+    const projects = await projectService.getOngoingProjectsByUserService(userId);
+    const formattedProjects = projects.map(formatProjectResponse);
+
+    return res.status(200).json({ success: true, data: formattedProjects });
+})
+
+const getNotStartedProjectsByUser = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const projects = await projectService.getNotStartedProjectsByUserService(userId);
+    const formattedProjects = projects.map(formatProjectResponse);
+
+    return res.status(200).json({ success: true, data: formattedProjects });
+});
+
+const getOnHoldProjectsByUser = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const projects = await projectService.getOnHoldProjectsByUserService(userId);
+    const formattedProjects = projects.map(formatProjectResponse);
+
+    return res.status(200).json({ success: true, data: formattedProjects });
+});
+const getCompletedProjectsByUser = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const projects = await projectService.getCompletedProjectsByUserService(userId);
+    const formattedProjects = projects.map(formatProjectResponse);
+
+    return res.status(200).json({ success: true, data: formattedProjects });
+});
+
+const getCancelledProjectsByUser = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+
+    const projects = await projectService.getCancelledProjectsByUserService(userId);
+    const formattedProjects = projects.map(formatProjectResponse);
+
+    return res.status(200).json({ success: true, data: formattedProjects });
+});
+
+// Create new project
+const createProject = asyncHandler(async (req, res) => {
+    const {
+        name,
+        client,
+        description,
+        startDate,
+        endDate,
+        estimatedBudget,
+        teams,
+        createdBy,
+        status,
+    } = req.body;
+
+    if (!name || !client || !description || !startDate || !endDate) {
+        throw new ApiError(400, "Please provide all the required fields");
+    }
+
+    if (!client.name || !client.contactName || !client.contactEmail) {
+        throw new ApiError(400, "Please provide all client details");
+    }
+
+    const projectData = {
+        name,
+        client,
+        description,
+        startDate,
+        endDate,
+        estimatedBudget,
+        teams: teams || [],
+        createdBy,
+        status: status || "not_started",
+    };
+
+    const created = await projectService.createProject(projectData);
+
+    return res.status(201).json({
         success: true,
-        data: formattedResult,
+        message: "Project created successfully",
+        data: created,
+        deadline: calculateDeadline(created.endDate),
     });
 });
 
+// Update project
+const updateProject = asyncHandler(async (req, res) => {
+    const { projectId } = req.params;
+    const updateData = req.body;
 
-// @desc Get all finished projects
-// @route GET /api/project/finished
-const getAllFinishedProjects = asyncHandler(async (req, res) => {
-    const projectsList = await projectService.getAllFinishedProjects();
+    if (!projectId) {
+        throw new ApiError(400, "Please provide all the required fields");
+    }
 
-    const formattedResult = await Promise.all(
-        projectsList.map(async (project) => {
-            const teamLeaderDetail = await EmployeeService.getDetailsOfaEmployee(project.teamLeader);
-            const roleDetail = await roleService.getRoleDetailsByName(teamLeaderDetail.role);
-            const roleColor = roleDetail?.color || "#000000";
+    if (!updateData || Object.keys(updateData).length === 0) {
+        throw new ApiError(400, "Please provide some data to update");
+    }
 
-            return {
-                id: project._id,
-                clientName: project.clientName,
-                projectTitle: project.projectTitle,
-                projectDesc: project.projectDesc,
-                teamLeader: teamLeaderDetail.username,
-                teamLeaderRole: teamLeaderDetail.role,
-                teamLeaderProfile: teamLeaderDetail.profilePicture,
-                color: roleColor,
-                teamName: project.teamName,
-                startDate: dateUtils.formatDateToDDMMYYYY(project.startDate),
-                endDate: dateUtils.formatDateToDDMMYYYY(project.endDate),
-            };
-        })
+    const updated = await projectService.updateProjectById(
+        projectId,
+        updateData
     );
+    if (!updated) {
+        throw new ApiError(404, "Project not found");
+    }
 
     return res.status(200).json({
         success: true,
-        data: formattedResult,
+        message: "Project updated successfully",
+        data: updated,
+        deadline: calculateDeadline(updated.endDate),
     });
 });
 
-// @desc Get all projects based on date
-// @route GET /api/project/all/date/:date 30072025
-const getAllProjectsOnDate = asyncHandler(async (req, res) => {
-    const input = req.params.date; 
-    const day = input.substring(0, 2);
-    const month = input.substring(2, 4);
-    const year = input.substring(4, 8);
+// Delete project
+const deleteProject = asyncHandler(async (req, res) => {
+    const { projectId } = req.params;
 
-    const startOfDay = new Date(`${year}-${month}-${day}T00:00:00.000Z`);
-    const endOfDay = new Date(`${year}-${month}-${day}T23:59:59.999Z`);
-
-    const projectsList = await projectService.getAllProjectsOnDate(startOfDay, endOfDay);
-    if (!projectsList.length) {
-        throw new ApiError(404, "No Projects Available");
+    if (!projectId) {
+        throw new ApiError(400, "Please provide all the required fields");
     }
 
-    const formattedResult = projectsList.map((project) => ({
-        id: project._id,
-        projectTitle: project.projectTitle,
-        teamName: project.teamName,
-    }));
+    const deleted = await projectService.deleteProjectById(projectId);
+    if (!deleted) {
+        throw new ApiError(404, "Project not found");
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: "Project deleted successfully",
+        data: { id: deleted._id, name: deleted.name },
+    });
+});
+
+// Helper function to calculate deadline
+const calculateDeadline = (endDate) => {
+    if (!endDate) return null;
+    const now = new Date();
+    const end = new Date(endDate);
+    const diffMs = end.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMs > 0) {
+        return `${diffDays} days left`;
+    } else {
+        return `Overdue by ${Math.abs(diffDays)} days`;
+    }
+};
+
+// Helper function to format project response
+const formatProjectResponse = (project) => {
+    return {
+        ...project,
+        deadline: calculateDeadline(project.endDate),
+    };
+};
+
+const getUserProjectPhaseDeadlines = asyncHandler(async (req, res) => {
+    const userId = req.user.userid;
+
+    const allProjects = req.user.allowedAccess.includes("projectManagement");
+
+    const projectPhaseDeadlines =
+        await projectService.getUserProjectPhaseDeadlines(userId, allProjects);
 
     res.status(200).json({
         success: true,
-        data: formattedResult,
+        data: projectPhaseDeadlines,
     });
 });
 
-
-// @desc Get a project details
-// @route GET /api/project/:projectId
-const getAProject = asyncHandler(async (req, res) => {
-  const projectDetails = await projectService.getAProject(req.params.projectId);
-
-  const teamLeaderDetail = await EmployeeService.getDetailsOfaEmployee(
-      projectDetails.teamLeader
-  );
-  const roleDetail = await roleService.getRoleDetailsByName(teamLeaderDetail.role);
-  const roleColor = roleDetail?.color || "#000000";
-
-  const teamMembersDetails = await Promise.all(
-    projectDetails.teamMembers.map((memberId) =>
-      EmployeeService.getDetailsOfaEmployee(memberId)
-    )
-  );
-
-  const formattedProject = {
-    id: projectDetails._id.toString(),
-    clientName: projectDetails.clientName,
-    projectTitle: projectDetails.projectTitle,
-    projectDesc: projectDetails.projectDesc,
-    teamName: projectDetails.teamName,
-    status: projectDetails.status,
-    startDate: dateUtils.formatDateToDDMMYYYY(projectDetails.startDate),
-    endDate: dateUtils.formatDateToDDMMYYYY(projectDetails.endDate),
-    teamLeader: {
-      id: teamLeaderDetail._id.toString(),
-      username: teamLeaderDetail.username,
-      role: teamLeaderDetail.role,
-      profilePicture: teamLeaderDetail.profilePicture,
-      color: roleColor
-    },
-    teamMembers: teamMembersDetails.map((member) => ({
-      id: member._id.toString(),
-      username: member.username,
-      role: member.role,
-      profilePicture: member.profilePicture,
-    })),
-  };
-
-  return res.status(200).json({
-    success: true,
-    data: formattedProject,
-  });
-});
-
-// @desc Create new course
-// @route post /api/project/create
-const createNewProject = asyncHandler( async(req,res) => {
-    const projectDetails = await projectService.createNewProject(req.body);
-    return res.status(201).json({
-        success: true,
-        message: "Project Created Successfully!!",
-    })
-})
-
-
-module.exports = { getAllOnGoingProjects, getAllFinishedProjects, createNewProject, getAProject, getAllProjectsOnDate, };
+module.exports = {
+    getAllProjects,
+    getAllOngoingProjects,
+    getAllNotStartedProjects,
+    getAllOnHoldProjects,
+    getAllCompletedProjects,
+    getAllCancelledProjects,
+    getAllProjectsOfUser,
+    getOngoingProjectsByUser,
+    getOnHoldProjectsByUser,
+    getNotStartedProjectsByUser,
+    getCompletedProjectsByUser,
+    getCancelledProjectsByUser,
+    getProjectById,
+    createProject,
+    updateProject,
+    deleteProject,
+    getUserProjectPhaseDeadlines,
+};

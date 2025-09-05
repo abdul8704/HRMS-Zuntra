@@ -2,40 +2,39 @@ const ApiError = require("../../errors/ApiError");
 const Team = require("../../models/projectManagement/team");
 const TeamMember = require("../../models/projectManagement/teamMember");
 const UserCredentials = require("../../models/userCredentials");
+const Phase = require("../../models/projectManagement/phase");
 
 const getMembersOfTeamService = async (teamId) => {
-    const teamMembers = await TeamMember.find(
-        { teamId },
-        { role: 1, userId: 1, _id: 0 } // only keep role + userId
-    ).populate({
-        path: "userId",
-        select: "username role _id", // userId fields
+    const teamLead = await Team.findById(teamId, {
+        teamDescription: 1,
+        teamLead: 1,
+        teamName: 1
+    }).populate({
+        path: "teamLead",
+        select: "_id username role",
         populate: {
-            path: "role", // role reference inside UserCredentials
-            select: "role", // 👈 adjust if it's `name` in rolesDetails schema
+            path: "role", // nested populate for role
+            select: "role",
         },
     });
 
-    return teamMembers;
+    const teamMembers = await TeamMember.find(
+        { teamId },
+        { role: 1, userId: 1, _id: 0 }
+    ).populate({
+        path: "userId",
+        select: "username role _id",
+        populate: {
+            path: "role",
+            select: "role",
+        },
+    });
+
+    return { teamMembers, teamLead };
 };
 
 const getAllTeamsService = async () => {
     const teams = await Team.find({})
-        .select("teamName teamDescription") // only include these from Team
-        .populate({
-            path: "teamLead",
-            select: "username role _id", // username, role, userid
-            populate: {
-                path: "role", // populate role reference
-                select: "role", // 👈 make sure this matches your schema field
-            },
-        });
-
-    return teams;
-};
-
-const getTeamsOfProjectService = async (projectId) => { // TODO: do this after finishing project
-    const teams = await Team.find({ projectId })
         .select("teamName teamDescription") // only include these from Team
         .populate({
             path: "teamLead",
@@ -151,6 +150,25 @@ const getTeamsUserPartOf = async (userId) => {
     return { teams, teamLeads };
 }
 
+const getTeamIdsUserPartOf = async (userId) => {
+    const { teams, teamLeads } = await getTeamsUserPartOf(userId);
+
+    let teamId = [];
+
+    if(teams.length > 0){
+        teams.forEach((team) => {
+            teamId.push(team.teamId._id);
+        });
+    }
+
+    if (teamLeads) {
+        teamLeads.forEach((teamLead) => {
+            teamId.push(teamLead._id);
+        });
+    }
+    return teamId;
+}
+
 const updateTeamService = async (teamId, data) => {
     const team = await Team.findById(teamId);
 
@@ -185,7 +203,7 @@ const deleteTeam = async (teamId) => {
 
     if(!team)
         throw new ApiError(404, "Team not found");
-    console.log(team, teamMembers)
+    
     return team;
 }
 
@@ -193,11 +211,11 @@ module.exports = {
     createNewTeamService,
     getMembersOfTeamService,
     getAllTeamsService,
-    getTeamsOfProjectService,
     addMembersToTeamService,
     isThisUserTL,
     userTLofProj,
     getTeamsUserPartOf,
+    getTeamIdsUserPartOf,
     updateTeamService,
     deleteTeamMemberService,
     deleteTeam,

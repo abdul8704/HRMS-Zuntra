@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Sidebar } from '../../components/Sidebar'
 import { Navbar } from '../../components/Navbar'
 import { Loading } from '../utils/Loading'
-
+import { ShiftTable } from './components/ShiftTable'
 import { EmployeeCard } from './components/EmployeeCard'
 import { RoleCard } from './components/RoleCard'
 import AddRole from './components/AddRole'
@@ -15,285 +15,8 @@ import { AddLocationForm } from './components/AddLocationForm'
 import { RemoveEmployeePopup } from './components/RemoveEmployeePopup' // ADDED
 import { useAuth } from '../../context/AuthContext'
 
-import api from '../../api/axios'
+import axios from '../../api/axios'
 import { BASE_URL } from '../../api/axios'
-
-// Shift Details Component
-const ShiftDetails = () => {
-  const [shifts, setShifts] = useState([
-    {
-      id: 1,
-      shiftName: "Morning Shift",
-      startTime: "09:00",
-      endTime: "17:00",
-      noOfUsers: "12"
-    },
-    {
-      id: 2,
-      shiftName: "Night Shift",
-      startTime: "22:00",
-      endTime: "06:00",
-      noOfUsers: "8"
-    }
-  ]);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingShift, setEditingShift] = useState(null);
-  const [formData, setFormData] = useState({
-    shiftName: '',
-    startTime: '',
-    endTime: '',
-    noOfUsers: ''
-  });
-
-  const openModal = (shift = null) => {
-    if (shift) {
-      setEditingShift(shift);
-      setFormData(shift);
-    } else {
-      setEditingShift(null);
-      setFormData({
-        shiftName: '',
-        startTime: '',
-        endTime: '',
-        noOfUsers: ''
-      });
-    }
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setEditingShift(null);
-    setFormData({
-      shiftName: '',
-      startTime: '',
-      endTime: '',
-      noOfUsers: ''
-    });
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = () => {
-    if (!formData.shiftName || !formData.startTime || !formData.endTime || !formData.noOfUsers) {
-      alert('Please fill in all fields');
-      return;
-    }
-    
-    if (editingShift) {
-      // Update existing shift
-      setShifts(prev => prev.map(shift => 
-        shift.id === editingShift.id ? { ...formData, id: editingShift.id } : shift
-      ));
-    } else {
-      // Add new shift
-      const newShift = {
-        ...formData,
-        id: Date.now() // Simple ID generation
-      };
-      setShifts(prev => [...prev, newShift]);
-    }
-    
-    closeModal();
-  };
-
-  const handleDeleteShift = (shiftId) => {
-    if (window.confirm('Are you sure you want to delete this shift?')) {
-      setShifts(prev => prev.filter(shift => shift.id !== shiftId));
-    }
-  };
-
-  const PlusButton = () => {
-    return (
-      <button
-        type="button"
-        onClick={() => openModal()}
-        aria-label="Add new shift"
-        className="fixed bottom-8 right-20 w-16 h-16 bg-[#c2d9d7] rounded-full flex items-center justify-center cursor-pointer group hover:bg-[#b2ccc9] transition-colors duration-300 z-[1000]"
-      >
-        <svg
-          className="w-8 h-8 text-black transform transition-transform duration-300 ease-in-out group-hover:rotate-[180deg]"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={3}
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14" />
-        </svg>
-      </button>
-    );
-  };
-
-  return (
-    <div className="w-full bg-white relative px-4">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[600px]">
-          <thead>
-            <tr className="bg-gray-100 border-b border-gray-200">
-              <th className="text-left py-4 px-4 font-bold text-gray-900 text-sm">
-                Shift Name
-              </th>
-              <th className="text-left py-4 px-4 font-bold text-gray-900 text-sm">
-                Start Time
-              </th>
-              <th className="text-left py-4 px-4 font-bold text-gray-900 text-sm">
-                End Time
-              </th>
-              <th className="text-left py-4 px-4 font-bold text-gray-900 text-sm">
-                No. of Users
-              </th>
-              
-            </tr>
-          </thead>
-          <tbody>
-            {shifts.map((shift) => (
-              <tr key={shift.id} className="border-b border-gray-200 hover:bg-blue-50 group relative">
-                <td className="py-4 px-4 text-sm text-black">
-                  {shift.shiftName}
-                </td>
-                <td className="py-4 px-4 text-sm text-black">
-                  {shift.startTime}
-                </td>
-                <td className="py-4 px-4 text-sm text-black">
-                  {shift.endTime}
-                </td>
-                
-                <td className="py-4 px-4 text-sm text-black relative pr-20">
-  {shift.noOfUsers}
-  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2">
-    <button
-      onClick={() => openModal(shift)}
-      className="text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200"
-      title="Edit shift"
-    >
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-      </svg>
-    </button>
-    <button
-      onClick={() => handleDeleteShift(shift.id)}
-      className="text-gray-500 hover:text-gray-700 p-1 transition-colors duration-200"
-      title="Delete shift"
-    >
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-      </svg>
-    </button>
-  </div>
-</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {shifts.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No shifts available. Click the + button to add a new shift.
-        </div>
-      )}
-
-      {/* Plus Button */}
-      <PlusButton />
-
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1001]">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-            <h2 className="text-xl font-bold mb-4 text-gray-900">
-              {editingShift ? 'Edit Shift' : 'Add New Shift'}
-            </h2>
-            
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="shiftName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Shift Name
-                </label>
-                <input
-                  type="text"
-                  id="shiftName"
-                  name="shiftName"
-                  value={formData.shiftName}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter shift name"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 mb-1">
-                  Start Time
-                </label>
-                <input
-                  type="time"
-                  id="startTime"
-                  name="startTime"
-                  value={formData.startTime}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 mb-1">
-                  End Time
-                </label>
-                <input
-                  type="time"
-                  id="endTime"
-                  name="endTime"
-                  value={formData.endTime}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="noOfUsers" className="block text-sm font-medium text-gray-700 mb-1">
-                  Number of Users
-                </label>
-                <input
-                  type="number"
-                  id="noOfUsers"
-                  name="noOfUsers"
-                  value={formData.noOfUsers}
-                  onChange={handleInputChange}
-                  min="1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter number of users"
-                />
-              </div>
-
-              <div className="flex justify-end space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  {editingShift ? 'Update' : 'Add'} Shift
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
 
 export const EmployeeManagement = () => {
   const { navId } = useParams()
@@ -376,10 +99,10 @@ export const EmployeeManagement = () => {
 
       try {
         const [roles, emps, pending, brs] = await Promise.all([
-          api.get('/api/roles'),
-          api.get('/api/employee'),
-          api.get('/api/hr/pending'),
-          api.get('/api/branch')
+          axios.get('/api/roles'),
+          axios.get('/api/employee'),
+          axios.get('/api/hr/pending'),
+          axios.get('/api/branch')
         ])
 
         setRolesData(roles.data || [])
@@ -590,37 +313,61 @@ export const EmployeeManagement = () => {
   const handleConfirmRemoval = useCallback(async (data) => {
     try {
       console.log('Employee removal confirmed:', data);
-      
+
       // Uncomment and modify API call as needed:
-      // const response = await api.delete(`/api/employee/${data.employeeId}`, {
+      // const response = await axios.delete(`/api/employee/${data.employeeId}`, {
       //   data: { message: data.message }
       // })
-      
+
       // if (response.data.success) {
       //   // Remove from pending employees if it's from newusers section
       //   setPendingEmployees(prev => prev.filter(emp => emp._id !== data.employeeId))
       //   // Or remove from regular employees if it's from all section
       //   setEmployees(prev => prev.filter(emp => emp._id !== data.employeeId))
       // }
-      
+
       handleCloseRemovePopup();
     } catch (error) {
       console.error('Error removing employee:', error);
       alert('Failed to remove employee. Please try again.');
     }
   }, [handleCloseRemovePopup])
-
-  const handleAddNewBranch = useCallback(async formData => {
+  const fetchBranches = async () => {
     try {
-      const response = await api.post('/api/branch/new-branch', formData)
-      if (response.data.success) {
-        setBranches(prev => [...prev, response.data.branch])
-        setShowLocationForm(false)
-      }
-    } catch (error) {
-      console.error('Error adding new branch:', error)
+      const res = await axios.get("/api/branch");
+      setBranches(res.data.branches || []);
+    } catch (err) {
+      console.error("Failed to fetch branches:", err);
     }
-  }, [])
+  };
+
+  // add a branch
+  const handleAddBranch = async (formData) => {
+    try {
+      const res = await axios.post("/api/branch/new-branch", formData);
+      if (res.data.success) {
+        setBranches(prev => [...prev, res.data.branch]);
+        setShowLocationForm(false);
+      }
+    } catch (err) {
+      console.error("Error adding branch:", err);
+    }
+  };
+
+  // edit a branch
+  const handleEditBranch = async (oldCampusId, updates) => {
+    try {
+      const res = await axios.patch("/api/branch/edit-branch", {
+        oldCampusId,
+        ...updates
+      });
+      if (res.data.success) {
+       fetchBranches(); // Call your fetch function
+      }
+    } catch (err) {
+      console.error("Error editing branch:", err);
+    }
+  };
 
   // Clear all filters
   const handleClearFilters = useCallback(() => {
@@ -629,8 +376,8 @@ export const EmployeeManagement = () => {
       navId === 'newusers'
         ? ''
         : navId === 'locations'
-        ? 'All Locations'
-        : 'All Roles'
+          ? 'All Locations'
+          : 'All Roles'
     )
     setRoleSearchTerm('All Roles')
     setSelectedLoginStatus('All Users')
@@ -717,20 +464,20 @@ export const EmployeeManagement = () => {
               navId === 'roles' ||
               navId === 'newusers' ||
               navId === 'locations') && (
-              <input
-                type='text'
-                placeholder={
-                  navId === 'roles'
-                    ? 'Search roles'
-                    : navId === 'locations'
-                    ? 'Search locations'
-                    : 'Search by name, email, or phone'
-                }
-                className='bg-white/50 flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A6C4BA]'
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
-            )}
+                <input
+                  type='text'
+                  placeholder={
+                    navId === 'roles'
+                      ? 'Search roles'
+                      : navId === 'locations'
+                        ? 'Search locations'
+                        : 'Search by name, email, or phone'
+                  }
+                  className='bg-white/50 flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A6C4BA]'
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+              )}
 
             {/* Role Dropdown - Only for 'all' navId */}
             {navId === 'all' && (
@@ -758,9 +505,8 @@ export const EmployeeManagement = () => {
                     }}
                   >
                     <svg
-                      className={`w-4 h-4 transition-transform ${
-                        showRoleDropdown ? 'rotate-180' : ''
-                      }`}
+                      className={`w-4 h-4 transition-transform ${showRoleDropdown ? 'rotate-180' : ''
+                        }`}
                       fill='none'
                       stroke='currentColor'
                       viewBox='0 0 24 24'
@@ -784,9 +530,8 @@ export const EmployeeManagement = () => {
                       filteredRoleDropdown.map((role, idx) => (
                         <div
                           key={idx}
-                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${
-                            selectedRole === role ? 'bg-[#BBD3CC]' : ''
-                          }`}
+                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedRole === role ? 'bg-[#BBD3CC]' : ''
+                            }`}
                           onClick={() => {
                             setSelectedRole(role)
                             setRoleSearchTerm(role)
@@ -823,9 +568,8 @@ export const EmployeeManagement = () => {
                 >
                   <span>{selectedLoginStatus}</span>
                   <svg
-                    className={`w-4 h-4 transition-transform ${
-                      showLoginDropdown ? 'rotate-180' : ''
-                    }`}
+                    className={`w-4 h-4 transition-transform ${showLoginDropdown ? 'rotate-180' : ''
+                      }`}
                     fill='none'
                     stroke='currentColor'
                     viewBox='0 0 24 24'
@@ -843,9 +587,8 @@ export const EmployeeManagement = () => {
                     {['All Users', 'Present', 'Absent'].map(status => (
                       <div
                         key={status}
-                        className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${
-                          selectedLoginStatus === status ? 'bg-[#BBD3CC]' : ''
-                        }`}
+                        className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedLoginStatus === status ? 'bg-[#BBD3CC]' : ''
+                          }`}
                         onClick={() => {
                           setSelectedLoginStatus(status)
                           setShowLoginDropdown(false)
@@ -890,10 +633,10 @@ export const EmployeeManagement = () => {
               {navId === 'all'
                 ? 'employees'
                 : navId === 'newusers'
-                ? 'new users'
-                : navId === 'locations'
-                ? 'locations'
-                : 'roles'}
+                  ? 'new users'
+                  : navId === 'locations'
+                    ? 'locations'
+                    : 'roles'}
             </div>
             <div className='flex gap-2'>
               {searchTerm && (
@@ -1032,7 +775,7 @@ export const EmployeeManagement = () => {
         {/* Shifts */}
         {navId === 'shifts' && (
           <div className='flex-1 overflow-y-auto'>
-            <ShiftDetails />
+            <ShiftTable />
           </div>
         )}
 
@@ -1056,11 +799,15 @@ export const EmployeeManagement = () => {
             ) : (
               currentData.data.map((loc, index) => (
                 <GeoFencing
-                  key={index}
+                  key={loc._id}
                   embedUrl={loc.embedURL}
                   branchName={loc.campusName}
+                  _id={loc._id}
+                  geoFenceRadius={loc.radius}
+                  onRefresh={fetchBranches} // ✅ Pass refresh function instead of edit handler
                 />
               ))
+
             )}
             <button
               className='fixed bottom-8 right-20 w-14 h-14 bg-[#BBD3CC] text-[#6c6c6c] rounded-full flex items-center justify-center text-2xl font-bold cursor-pointer hover:scale-110 hover:bg-[#A6C4BA] transition-transform z-[1000]'
@@ -1126,7 +873,7 @@ export const EmployeeManagement = () => {
           <AddLocationForm
             isOpen={showLocationForm}
             onClose={() => setShowLocationForm(false)}
-            onSubmit={handleAddNewBranch}
+            onSubmit={handleAddBranch}
           />
         )}
       </div>

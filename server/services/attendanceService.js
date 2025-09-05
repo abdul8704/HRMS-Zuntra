@@ -20,10 +20,10 @@ const markAttendanceOnLogin = async (userid, mode) => {
     const shiftStartTime = shiftData.shift
         ? new Date(shiftData.shift.startTime)
         : new Date(new Date().setHours(0, 0, 0, 0));
-    const shiftEndTime = (shiftData.shift)
+    const shiftEndTime = shiftData.shift
         ? new Date(shiftData.shift.endTime)
         : new Date(new Date().setHours(23, 59, 0, 0));
-        
+
     if (isNaN(shiftStartTime.getTime()) || isNaN(shiftEndTime.getTime())) {
         throw new ApiError(400, "Unable to process shift timings");
     }
@@ -31,6 +31,71 @@ const markAttendanceOnLogin = async (userid, mode) => {
     let attendance = await Attendance.findOne({ userid, date: today });
 
     if (!attendance) {
+        // Search for user's last present day
+        let lastPresentDate = null;
+        let lastPresentAttendance = null;
+
+        // Start from yesterday and go backwards
+        for (let i = 1; i <= 30; i++) {
+            // Check up to 30 days back
+            const checkDate = new Date(today);
+            checkDate.setDate(checkDate.getDate() - i);
+            const normalizedCheckDate =
+                attendanceHelper.normalizeToUTCDate(checkDate);
+
+            const previousAttendance = await Attendance.findOne({
+                userid,
+                date: normalizedCheckDate,
+            });
+
+            if (
+                previousAttendance &&
+                previousAttendance.sessions &&
+                previousAttendance.sessions.length > 0 &&
+                (previousAttendance.status === "present" ||
+                    previousAttendance.status === "remote")
+            ) {
+                lastPresentDate = normalizedCheckDate;
+                lastPresentAttendance = previousAttendance;
+                break;
+            }
+        }
+
+        // If found last present day, check and fix logout time for the last session
+        if (
+            lastPresentAttendance &&
+            lastPresentAttendance.sessions.length > 0
+        ) {
+            const lastSession =
+                lastPresentAttendance.sessions[
+                    lastPresentAttendance.sessions.length - 1
+                ];
+
+            // If logout time doesn't exist or is before lastRequest, set lastRequest as logout time
+            if (
+                !lastSession.logoutTime ||
+                (lastSession.lastRequest &&
+                    lastSession.logoutTime < lastSession.lastRequest)
+            ) {
+                const logoutTime = lastSession.lastRequest;
+
+                if (
+                    logoutTime &&
+                    logoutTime > new Date(lastSession.loginTime)
+                ) {
+                    const sessionDurationMs =
+                        logoutTime - new Date(lastSession.loginTime);
+                    const sessionDurationMinutes =
+                        sessionDurationMs / (1000 * 60);
+
+                    lastSession.logoutTime = logoutTime;
+                    lastPresentAttendance.workingMinutes +=
+                        sessionDurationMinutes;
+                    await lastPresentAttendance.save();
+                }
+            }
+        }
+
         attendance = new Attendance({
             userid,
             date: today,
@@ -71,7 +136,10 @@ const markAttendanceOnLogin = async (userid, mode) => {
             (lastSession &&
                 !lastSession.logoutTime &&
                 lastSession.lastRequest) ||
-            (lastSession && lastSession.logoutTime && lastSession.lastRequest && lastSession.logoutTime < lastSession.lastRequest)
+            (lastSession &&
+                lastSession.logoutTime &&
+                lastSession.lastRequest &&
+                lastSession.logoutTime < lastSession.lastRequest)
         ) {
             // Use lastRequest as logoutTime
             const logoutTime = lastSession.lastRequest;
@@ -246,11 +314,7 @@ const adminProcessLeaveRequest = async (
     await leaveApplication.save();
 };
 
-const editLeaveRequest = async (
-    leaveId,
-    userid,
-    payload
-) => {
+const editLeaveRequest = async (leaveId, userid, payload) => {
     const leaveApplication = await LeaveApplication.findById(leaveId);
 
     if (String(leaveApplication.userid) !== userid) {

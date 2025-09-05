@@ -19,7 +19,6 @@ const projectSchema = new Schema({
         enum: ["not_started", "ongoing", "on_hold", "completed", "cancelled"],
         default: "not_started",
     },
-    teams: [{ type: Schema.Types.ObjectId, ref: "Team" }],
     createdBy: { type: Schema.Types.ObjectId, ref: "UserCredentials" },
 });
 

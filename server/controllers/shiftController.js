@@ -4,7 +4,6 @@ const ShiftService = require('../services/shiftService');
 
 const getAllShifts = asyncHandler(async (req, res) => {
     const shifts = await ShiftService.getAllShiftsData();
-
     return res.status(200).json(shifts);
 });
 

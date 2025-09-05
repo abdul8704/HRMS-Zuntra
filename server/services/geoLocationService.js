@@ -58,6 +58,7 @@ const addNewCampusLocation = async (
     }
 };
 
+
 const getAllCampusLocations = async () => {
     try {
         const locations = await GeoLocation.find({}, { campusName: 1, embedURL: 1, _id: 1 });
@@ -86,23 +87,27 @@ const editCampusLocation = async (campusId, updates) => {
 
 const deleteCampusLocation = async (campusId, newCampusId) => {
     const campus = await GeoLocation.findById(campusId);
-
+    console.log(campusId, newCampusId)
     if (!campus) {
         throw new ApiError(404, "Campus location not found");
     }
-    
-    const newCampus = await GeoLocation.findById(newCampusId);
-    if (!newCampus) {
-        throw new ApiError(404, "New campus location not found");
+
+    let assignValue = null;
+
+    if (newCampusId) {
+        const newCampus = await GeoLocation.findById(newCampusId);
+        if (!newCampus) {
+            throw new ApiError(404, "New campus location not found");
+        }
+        assignValue = newCampusId; // only set if exists
     }
 
-    const oldCampusUsers = await UserCreds.find({ campusId: campusId });
-    for (const user of oldCampusUsers) {
-        user.campusId = newCampusId;
-        await user.save();
-    }
+    await UserCreds.updateMany(
+        { campus: campusId },
+        { $set: { campus: assignValue } }
+    );
 
-    await campus.deleteOne();
+    await GeoLocation.findByIdAndDelete(campusId);
 };
 
 module.exports = {

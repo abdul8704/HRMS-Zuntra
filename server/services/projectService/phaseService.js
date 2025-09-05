@@ -1,17 +1,87 @@
 const Phase = require("../../models/projectManagement/phase");
+const Project = require("../../models/projectManagement/project");
+const Team = require("../../models/projectManagement/team");
+const TeamMember = require("../../models/projectManagement/teamMember");
+const Tool = require("../../models/projectManagement/tool");
+const UserCredentials = require("../../models/userCredentials");
 const ApiError = require("../../errors/ApiError");
+const teamService = require("./teamService");
+
+// Read services
+const getAllPhases = async () => {
+    return Phase.find({}).lean();
+};
+
+const getPhaseById = async (phaseId) => {
+    return Phase.findById(phaseId).lean();
+};
+
+const getPhasesByProject = async (projectId) => {
+    return Phase.find({ project: projectId }).lean();
+};
+
+const getOngoingPhasesByProject = async (projectId) => {
+    return Phase.find({ project: projectId, status: "ongoing" }).lean();
+};
+
+const getNotStartedAndCompletedPhases = async (projectId) => {
+    const [notStarted, completed] = await Promise.all([
+        Phase.find({ project: projectId, status: "not_started" }).lean(),
+        Phase.find({ project: projectId, status: "completed" }).lean(),
+    ]);
+    return { notStarted, completed };
+};
 
 // Create a new phase
 const createPhase = async (phaseData) => {
+    // Validate project exists
+    const project = await Project.findById(phaseData.project);
+    if (!project) {
+        throw new ApiError(404, "Project not found");
+    }
+
+    // Validate teams exist if provided
+    if (phaseData.teams && phaseData.teams.length > 0) {
+        const teamIds = phaseData.teams;
+        const existingTeams = await Team.find({ _id: { $in: teamIds } });
+
+        if (existingTeams.length !== teamIds.length) {
+            const existingTeamIds = existingTeams.map((team) =>
+                team._id.toString()
+            );
+            const missingTeamIds = teamIds.filter(
+                (id) => !existingTeamIds.includes(id.toString())
+            );
+            throw new ApiError(
+                404,
+                `Teams not found: ${missingTeamIds.join(", ")}`
+            );
+        }
+    }
+
     const newPhase = await Phase.create(phaseData);
 
     if (!newPhase) {
         throw new ApiError(400, "Failed to create Phase");
     }
 
+    // Check if phase endDate is greater than project endDate
+    if (phaseData.endDate) {
+        if (project.endDate) {
+            const phaseEndDate = new Date(phaseData.endDate);
+            const projectEndDate = new Date(project.endDate);
+
+            if (phaseEndDate > projectEndDate) {
+                // Update project's endDate to match phase's endDate
+                await Project.findByIdAndUpdate(project._id, {
+                    endDate: phaseData.endDate,
+                });
+            }
+        }
+    }
+
     return newPhase;
 };
-
 
 // Service to update a phase by ID
 const updatePhaseById = async (phaseId, updateData) => {
@@ -40,5 +110,316 @@ const deletePhaseById = async (phaseId) => {
     return deletedPhase;
 };
 
+// Get all teams of a project (from phases)
+const getPhaseTeams = async (phaseId) => {
+    const phases = await Phase.find({ _id: phaseId }).populate("teams").lean();
+    // Extract teams from the phases
+    const allTeams = [];
+    phases.forEach((phase) => {
+        if (phase.teams && phase.teams.length > 0) {
+            allTeams.push(...phase.teams);
+        }
+    });
+    return allTeams;
+};
 
-module.exports = { createPhase, updatePhaseById, deletePhaseById };
+const getProjectIdOfTeams = async (teamIds) => {
+    if (!Array.isArray(teamIds) || teamIds.length === 0) {
+        return [];
+    }
+
+    // Find phases that include any of the given teamIds
+    const phases = await Phase.find(
+        { teams: { $in: teamIds } },
+        { project: 1 } // only fetch project field
+    ).lean();
+
+    // Extract unique projectIds
+    const projectIds = [
+        ...new Set(phases.map((phase) => String(phase.project))),
+    ];
+
+    return projectIds;
+};
+
+// Get all teams with members for a project
+const getAllTeamsWithMembers = async (phaseId) => {
+    const phases = await Phase.find({ _id: phaseId }).populate("teams").lean();
+    const allTeams = [];
+
+    phases.forEach((phase) => {
+        if (phase.teams && phase.teams.length > 0) {
+            allTeams.push(...phase.teams);
+        }
+    });
+
+    const teamsWithMembers = await Promise.all(
+        allTeams.map(async (team) => {
+            // fetch members
+            const members = await TeamMember.find({
+                teamId: team._id,
+                active: true,
+            })
+                .populate("userId", "username")
+                .populate("role", "role")
+                .lean();
+
+            // fetch team lead
+            const teamLead = await UserCredentials.findById(team.teamLead)
+                .populate("role", "role")
+                .lean();
+
+            return {
+                id: team._id,
+                name: team.teamName,
+                description: team.teamDescription,
+                teamLead: teamLead
+                    ? {
+                          id: teamLead._id,
+                          name: teamLead.username,
+                          role: teamLead.role?.role || "No Role",
+                      }
+                    : null,
+                members: members.map((member) => ({
+                    id: member.userId._id,
+                    name: member.userId.username,
+                    profilePicture: member.userId.profilePicture,
+                    role: member.role?.role || "No Role",
+                })),
+            };
+        })
+    );
+
+    return teamsWithMembers;
+};
+
+const addTeamsToPhaseById = async (phaseId, teamIds) => {
+    const phase = await Phase.findById(phaseId).lean();
+    if (!phase) {
+        throw new ApiError(404, "Phase not found");
+    }
+
+    // Ensure ObjectId comparison works correctly
+    const existingTeamIds = phase.teams.map((t) => t.toString());
+
+    // Filter only new teams (not already present)
+    const newTeams = teamIds.filter(
+        (id) => !existingTeamIds.includes(id.toString())
+    );
+
+    if (newTeams.length === 0) {
+        return;
+    }
+
+    await Phase.findByIdAndUpdate(
+        phaseId,
+        { $addToSet: { teams: { $each: newTeams } } }, // ✅ prevents duplicates
+        { new: true }
+    ).populate("teams", "teamName teamDescription");
+
+    return;
+};
+
+const getAllTeamsOfProjectService = async (projectId) => {
+    const phases = await Phase.find({ project: projectId }).lean();
+
+    if (!phases || phases.length === 0) {
+        throw new ApiError(404, "No phases found for this project");
+    }
+
+    const teams = new Set();
+
+    phases.forEach((p) => {
+        p.teams.forEach((t) => {
+            teams.add(t.toString()); // ensure uniqueness by stringifying ObjectIds
+        });
+    });
+
+    if (teams.length == 0) return [];
+
+    let projectTeams = await Promise.all(
+        Array.from(teams).map((teamId) => {
+            return teamService.getMembersOfTeamService(teamId);
+        })
+    );
+
+    return projectTeams;
+};
+
+// Tool management services
+const addToolsToPhase = async (phaseId, toolIds) => {
+    const phase = await Phase.findById(phaseId);
+    if (!phase) {
+        throw new ApiError(404, "Phase not found");
+    }
+
+    // Validate that all tools exist in the master catalog
+    const existingTools = await Tool.find({ _id: { $in: toolIds } });
+
+    // Create tool snapshots with current pricing
+    const toolSnapshots = existingTools.map((masterTool) => {
+        return {
+            tool: masterTool._id,
+            name: masterTool.name,
+            quantity: 1, // Default quantity of 1
+            unitCost: masterTool.unitCost || 0,
+            currency: masterTool.currency || "USD",
+            totalCost: masterTool.unitCost || 0,
+        };
+    });
+
+    // Add tools to phase (avoiding duplicates)
+    const existingToolIds = phase.tools.map((t) => t.tool.toString());
+    const newTools = toolSnapshots.filter(
+        (tool) => !existingToolIds.includes(tool.tool.toString())
+    );
+
+    if (newTools.length === 0) {
+        return phase;
+    }
+
+    phase.tools.push(...newTools);
+    await phase.save();
+
+    return phase.populate("tools.tool", "name vendor description");
+};
+
+const removeToolsFromPhase = async (phaseId, toolIds) => {
+    const phase = await Phase.findById(phaseId);
+    if (!phase) {
+        throw new ApiError(404, "Phase not found");
+    }
+
+    // Remove tools by their tool IDs
+    const initialLength = phase.tools.length;
+    phase.tools = phase.tools.filter(
+        (tool) => !toolIds.includes(tool.tool.toString())
+    );
+
+    await phase.save();
+    return phase.populate("tools.tool", "name vendor description");
+};
+
+const getToolsByPhase = async (phaseId) => {
+    const phase = await Phase.findById(phaseId)
+        .populate("tools.tool", "name vendor description unitCost currency")
+        .lean();
+
+    if (!phase) {
+        throw new ApiError(404, "Phase not found");
+    }
+
+    return phase.tools || [];
+};
+
+const getNotStartedAndCompletedTools = async (projectId) => {
+    const phases = await Phase.find({ project: projectId }).lean();
+
+    if (!phases || phases.length === 0) {
+        throw new ApiError(404, "No phases found for this project");
+    }
+
+    const notStartedTools = [];
+    const completedTools = [];
+
+    phases.forEach((phase) => {
+        if (phase.tools && phase.tools.length > 0) {
+            phase.tools.forEach((tool) => {
+                const toolData = {
+                    phaseId: phase._id,
+                    phaseName: phase.name,
+                    phaseStatus: phase.status,
+                    toolId: tool.tool,
+                    toolName: tool.name,
+                    quantity: tool.quantity,
+                    unitCost: tool.unitCost,
+                    currency: tool.currency,
+                    totalCost: tool.totalCost,
+                };
+
+                if (phase.status === "not_started") {
+                    notStartedTools.push(toolData);
+                } else if (phase.status === "completed") {
+                    completedTools.push(toolData);
+                }
+            });
+        }
+    });
+
+    return {
+        notStarted: notStartedTools,
+        completed: completedTools,
+    };
+};
+
+const getAllToolsByProject = async (projectId) => {
+    const phases = await Phase.find({ project: projectId })
+        .populate("tools.tool", "name vendor description unitCost currency")
+        .lean();
+
+    if (!phases || phases.length === 0) {
+        throw new ApiError(404, "No phases found for this project");
+    }
+
+    const allProjectTools = [];
+
+    phases.forEach((phase) => {
+        if (phase.tools && phase.tools.length > 0) {
+            phase.tools.forEach((tool) => {
+                const toolData = {
+                    toolId: tool.tool._id || tool.tool,
+                    toolName: tool.name,
+                    toolVendor: tool.tool.vendor || "N/A",
+                    toolDescription: tool.tool.description || "N/A",
+                    quantity: tool.quantity,
+                    unitCost: tool.unitCost,
+                    currency: tool.currency,
+                    totalCost: tool.totalCost,
+                    // Phase information
+                    phaseId: phase._id,
+                    phaseName: phase.name,
+                    phaseDescription: phase.description,
+                    phaseStatus: phase.status,
+                    phaseStartDate: phase.startDate,
+                    phaseEndDate: phase.endDate,
+                };
+
+                allProjectTools.push(toolData);
+            });
+        }
+    });
+
+    return allProjectTools;
+};
+
+const getTeamsLedByUserInPhase = async (phaseId, userId) => {
+    const phase = await Phase.findById(phaseId).lean();
+    if (!phase) return [];
+    const teams = await Team.find({
+        _id: { $in: phase.teams },
+        teamLead: userId,
+    }).lean();
+    return teams;
+};
+
+module.exports = {
+    createPhase,
+    updatePhaseById,
+    deletePhaseById,
+    getAllPhases,
+    getPhaseById,
+    getPhasesByProject,
+    getOngoingPhasesByProject,
+    getNotStartedAndCompletedPhases,
+    getPhaseTeams,
+    getAllTeamsWithMembers,
+    addTeamsToPhaseById,
+    getProjectIdOfTeams,
+    getAllTeamsOfProjectService,
+    addToolsToPhase,
+    removeToolsFromPhase,
+    getToolsByPhase,
+    getNotStartedAndCompletedTools,
+    getAllToolsByProject,
+    getTeamsLedByUserInPhase,
+};
