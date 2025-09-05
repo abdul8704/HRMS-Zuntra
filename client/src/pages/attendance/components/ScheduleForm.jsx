@@ -252,7 +252,7 @@ export const ScheduleForm = ({ handleClose }) => {
           <button
             type="button"
             onClick={handleCancel}
-            className="bg-gray-200 text-black px-4 py-2 rounded hover:bg-red-500 hover:text-white transition-all w-full sm:w-auto text-sm"
+            className="bg-gray-200 text-[#2d423b] px-4 py-2 rounded hover:bg-grey hover:text-[#2d423b] transition-all w-full sm:w-auto text-sm"
           >
             Cancel
           </button>
@@ -261,16 +261,16 @@ export const ScheduleForm = ({ handleClose }) => {
             type="submit"
             className="px-4 py-2 rounded transition-all w-full sm:w-auto text-sm"
             style={{
-              backgroundColor: 'rgba(140, 221, 132, 0.8)',
+              backgroundColor: '#BBD3CC',
               color: 'black',
             }}
             onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#16a34a';
-              e.target.style.color = 'white';
+              e.target.style.backgroundColor = '#BBD3CC';
+              e.target.style.color = '#2d423b';
             }}
             onMouseLeave={(e) => {
-              e.target.style.backgroundColor = 'rgba(140, 221, 132, 0.8)';
-              e.target.style.color = 'black';
+              e.target.style.backgroundColor = '#A6C4BA';
+              e.target.style.color = '#2d423b';
             }}
           >
             Save

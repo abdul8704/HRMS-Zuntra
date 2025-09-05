@@ -73,7 +73,7 @@ export const TeamsDashboard = () => {
 
   return (
     <div style={containerStyle}>
-      <Sidebar role="EMP" />
+      <Sidebar role="HR" />
       
       <div style={contentStyle}>
         <h1 style={titleStyle}>Teams Dashboard</h1>
