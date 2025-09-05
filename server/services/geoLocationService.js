@@ -5,6 +5,7 @@ const UserCreds = require("../models/userCredentials");
 
 const isWithinGeofence = async (latitude, longitude, campusId) => {
     try {
+        console.log(latitude,longitude,campusId);
         const geofence = await GeoLocation.findById(campusId);
         const distance = GeoUtils.getDistanceFromLatLon(
             latitude,
