@@ -35,9 +35,9 @@ export const ProjectDetails = () => {
 
               {/* Percentage Status */}
               <div className="xl:col-start-6 xl:col-end-9 xl:row-start-1 xl:row-end-3">
-                <div className="bg-green-200 rounded-xl p-4 shadow-sm">
-                  <div className="flex items-center justify-between h-full">
-                    <div className="flex-1">
+                <div className="bg-green-200 rounded-xl p-4 shadow-sm h-full">
+                  <div className="flex items-stretch justify-between h-full">
+                    <div className="flex-1 flex flex-col justify-center">
                       <h3 className="text-lg font-semibold text-gray-800 mb-3">
                         Budget Status
                       </h3>
@@ -58,8 +58,8 @@ export const ProjectDetails = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="flex-shrink-0 ml-4">
-                      <div className="w-20 h-20">
+                    <div className="flex-1 flex items-center justify-center ml-4">
+                      <div className="w-full h-full max-w-32 max-h-32">
                         <CircularProgressbarWithChildren
                           value={70}
                           styles={buildStyles({
