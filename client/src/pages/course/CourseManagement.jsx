@@ -10,6 +10,7 @@ import { Loading } from "../utils/Loading";
 import api from "../../api/axios";
 import { AddCourseMod } from "./components/AddCourseMod";
 import {AddCourseSubModule} from "./components/AddCourseSubModule"
+import AddCourseForm from "./AddCourseWizard";
 
 
 export const CourseManagement = () => {
@@ -468,37 +469,23 @@ export const CourseManagement = () => {
           </div>
         )}
 
-        {navId === "add" && (
-          <div className="flex-1 overflow-hidden px-4">
-              {/* Course Basic Info */}
-              {/* <AddCourse
-                courseData={courseInfo}
-                onChange={setCourseInfo}
-                errors={errorFields}
-                submitted={submitted}
-              /> */}
-              <AddCourseMod />
-              <AddCourseSubModule/>
+    {navId === "add" && (
+  <div className="flex-1 overflow-hidden px-4">
+    {/* Course Basic Info Form */}
+    <AddCourseForm
+      courseData={courseInfo}
+      onChange={setCourseInfo}
+      errors={errorFields}
+      submitted={submitted}
+    />
 
-              {/* Assignment Dropdown */}
-              {/* <AssignmentModule
-                initialQuestions={modules[0].subModules[0].assignment}
-                onAssignmentChange={(assignment) => {
-                  const updatedModules = [...modules];
-                  updatedModules[0].subModules[0].assignment = assignment;
-                  setModules(updatedModules);
-                }}
-              /> */}
+    {/* Course Module Form */}
+    <AddCourseMod />
 
-              {/* Submit Button
-              <button
-                onClick={handleSubmit}
-                className="bg-gray-500 text-white mt-6 px-8 py-3 rounded hover:bg-gray-600"
-              >
-                Submit Course
-              </button> */}
-            </div>
-        )}
+    {/* Course Submodule Form */}
+    <AddCourseSubModule />
+  </div>
+)}
 
       </div>
     </div>
