@@ -402,36 +402,43 @@ const handleSaveHoliday = async (holiday) => {
               </div>
 
               {/* ------------------- Date Type Radio ------------------- */}
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-gray-700">Date Type:</span>
-                <label className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    name="eventDateType"
-                    value="single"
-                    checked={editingEvent.dates?.length === 1}
-                    onChange={() =>
-                      setEditingEvent({ ...editingEvent, dates: [getTomorrow()] })
-                    }
-                  />
-                  Single Day
-                </label>
-                <label className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    name="eventDateType"
-                    value="range"
-                    checked={editingEvent.dates?.length > 1}
-                    onChange={() =>
-                      setEditingEvent({
-                        ...editingEvent,
-                        dates: [getTomorrow(), getDayAfter(getTomorrow())],
-                      })
-                    }
-                  />
-                  Date Range
-                </label>
-              </div>
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Date Type
+  </label>
+  <div className="flex items-center gap-4">
+    {['single', 'range'].map((type) => (
+      <label
+        key={type}
+        className="flex items-center gap-2 cursor-pointer text-sm"
+      >
+        <input
+          type="radio"
+          name="eventDateType"
+          value={type}
+          checked={
+            type === 'single'
+              ? editingEvent.dates?.length === 1
+              : editingEvent.dates?.length > 1
+          }
+          onChange={() =>
+            setEditingEvent(
+              type === 'single'
+                ? { ...editingEvent, dates: [getTomorrow()] }
+                : {
+                    ...editingEvent,
+                    dates: [getTomorrow(), getDayAfter(getTomorrow())],
+                  }
+            )
+          }
+          className="accent-[#bcd4cd] h-4 w-4"
+        />
+        {type === 'single' ? 'Single Day' : 'Date Range'}
+      </label>
+    ))}
+  </div>
+</div>
+
 
               {/* Date Picker(s) */}
 
@@ -527,37 +534,44 @@ const handleSaveHoliday = async (holiday) => {
                 />
               </div>
 
-              {/* Radio Buttons for Holiday Date Type */}
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-gray-700">Date Type:</span>
-                <label className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    name="holidayDateType"
-                    value="single"
-                    checked={editingHoliday.dates?.length === 1}
-                    onChange={() =>
-                      setEditingHoliday({ ...editingHoliday, dates: [getTomorrow()] })
-                    }
-                  />
-                  Single Day
-                </label>
-                <label className="flex items-center gap-1">
-                  <input
-                    type="radio"
-                    name="holidayDateType"
-                    value="range"
-                    checked={editingHoliday.dates?.length > 1}
-                    onChange={() =>
-                      setEditingHoliday({
-                        ...editingHoliday,
-                        dates: [getTomorrow(), getDayAfter(getTomorrow())],
-                      })
-                    }
-                  />
-                  Date Range
-                </label>
-              </div>
+              {/* ------------------- Date Type Radio ------------------- */}
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Date Type
+  </label>
+  <div className="flex items-center gap-4">
+    {['single', 'range'].map((type) => (
+      <label
+        key={type}
+        className="flex items-center gap-2 cursor-pointer text-sm"
+      >
+        <input
+          type="radio"
+          name="holidayDateType"
+          value={type}
+          checked={
+            type === 'single'
+              ? editingHoliday.dates?.length === 1
+              : editingHoliday.dates?.length > 1
+          }
+          onChange={() =>
+            setEditingHoliday(
+              type === 'single'
+                ? { ...editingHoliday, dates: [getTomorrow()] }
+                : {
+                    ...editingHoliday,
+                    dates: [getTomorrow(), getDayAfter(getTomorrow())],
+                  }
+            )
+          }
+          className="accent-[#bcd4cd] h-4 w-4"
+        />
+        {type === 'single' ? 'Single Day' : 'Date Range'}
+      </label>
+    ))}
+  </div>
+</div>
+
 
               {editingHoliday.dates?.length === 1 ? (
                 <div>
@@ -665,7 +679,7 @@ const handleSaveHoliday = async (holiday) => {
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-[#BBD3CC] text-[#2d423b]  rounded-md hover:bg-[#A6C4BA]"
+                className="px-4 py-2 bg-[#e1bec5] text-[#2d423b]  rounded-md hover:bg-[#e1bec5]"
               >
                 Delete
               </button>
