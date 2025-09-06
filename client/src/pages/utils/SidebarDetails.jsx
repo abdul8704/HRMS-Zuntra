@@ -34,25 +34,6 @@ export function SidebarDetails({ type }) {
 
   const handleEditProfile = () => setShowEditCard((prev) => !prev);
 
-  // Check if current user can edit this profile
-  const canEdit = () => {
-    if (!user || !data) return false;
-    
-    // CEO/HR can edit anyone's profile
-    const userRole = user.role?.role?.toLowerCase();
-    if (userRole === 'ceo' || userRole === 'hr') {
-      return true;
-    }
-    
-    // Normal employees can only edit their own profile
-    return String(user?.userid) === String(empId);
-  };
-
-  // Check if this is the user's own profile
-  const isOwnProfile = () => {
-    return String(user?.userid) === String(empId);
-  };
-
   useEffect(() => {
     const fetchUserData = async () => {
       setIsLoading(true);
@@ -285,18 +266,18 @@ export function SidebarDetails({ type }) {
               </div>
             </div>
 
-            {/* Sticky Edit Button - Updated Logic */}
-            {canEdit() && (
-              <div className="sticky bottom-0 bg-[#BBD3CC] px-6 py-4">
-                <button
-                  onClick={handleEditProfile}
-                  className="w-full bg-white px-4 py-3 rounded-lg shadow-md hover:bg-gray-100 border border-gray-200 flex items-center justify-center gap-2 text-black opacity-70 hover:opacity-100 transition-opacity"
-                >
-                  <Edit3 className="w-4 h-4" />
-                  <span>Edit Profile</span>
-                </button>
-              </div>
-            )}
+            {/* Sticky Edit Button */}
+
+            <div className="sticky bottom-0 bg-[#BBD3CC] px-6 py-4">
+              <button
+                onClick={handleEditProfile}
+                className="w-full bg-white px-4 py-3 rounded-lg shadow-md hover:bg-gray-100 border border-gray-200 flex items-center justify-center gap-2 text-black opacity-70 hover:opacity-100 transition-opacity"
+              >
+                <Edit3 className="w-4 h-4" />
+                <span>Edit Profile</span>
+              </button>
+            </div>
+
           </>
         )}
 
@@ -380,12 +361,7 @@ export function SidebarDetails({ type }) {
       {/* Edit Profile Modal */}
       {showEditCard && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-[1100] flex items-center justify-center animate-fadeIn">
-          <EditProfileCard 
-            data={data} 
-            onClose={handleEditProfile}
-            isOwnProfile={isOwnProfile()}
-            currentUser={user}
-          />
+          <EditProfileCard data={data} onClose={handleEditProfile} />
         </div>
       )}
 
