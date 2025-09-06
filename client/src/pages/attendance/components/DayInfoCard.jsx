@@ -183,13 +183,12 @@ const handleSaveHoliday = async (holiday) => {
     }
 
     const updatedHoliday = {
-      holidayId: holiday._id,
       name: holiday.name.trim(),
-      applicableTo: holiday.applicableTo || "all",
+      applicableTo: holiday.applicableTo,
       dates: expandedDates,
     };
 
-    const res = await api.patch(`/api/holidays/edit`, updatedHoliday);
+    const res = await api.patch(`/api/holidays/update/${holiday._id}`, updatedHoliday);
 
     setHoliday(res.data.updatedHoliday || res.data.holiday || updatedHoliday);
     setEditingHoliday(null);
