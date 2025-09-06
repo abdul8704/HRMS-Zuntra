@@ -170,7 +170,7 @@ export const ShiftTable = () => {
     }
   }
 
-  const addShift = async (shiftData) => {
+  const addShift = async (updatedData) => {
     try {
       const res = await api.post('/api/shifts/new-shift', updatedData) // replace with your actual endpoint
       console.log(res);
