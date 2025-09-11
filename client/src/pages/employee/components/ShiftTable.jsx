@@ -170,7 +170,7 @@ export const ShiftTable = () => {
     }
   }
 
-  const addShift = async (shiftData) => {
+  const addShift = async (updatedData) => {
     try {
       const res = await api.post('/api/shifts/new-shift', updatedData) // replace with your actual endpoint
       console.log(res);
@@ -394,7 +394,7 @@ export const ShiftTable = () => {
                   <button
                     type='button'
                     onClick={handleSubmit}
-                    className='w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base order-1 sm:order-2'
+                    className='w-full sm:w-auto px-4 py-2 bg-[#BBD3CC] text-black rounded-md transition-colors text-sm sm:text-base order-1 sm:order-2'
                   >
                     {editingShift ? 'Update' : 'Add'} Shift
                   </button>
