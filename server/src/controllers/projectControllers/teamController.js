@@ -92,6 +92,15 @@ const checkUserTL = asyncHandler(async (req, res) => {
     });
 });
 
+const getLeaveReqOfTeamMembers = asyncHandler(async (req, res) => {
+    const { teamIds } = req.body;
+   if(!teamIds || teamIds.length === 0) return [];
+
+   const leaveReqs = await teamService.getTeamMemberLeaves(teamIds);
+
+   return res.status(200).json({ success: true, leaveReqs });
+})
+
 const checkUserTLOfProj = asyncHandler(async (req, res) => {
     const { userId, teamId } = req.body;
 
@@ -172,4 +181,5 @@ module.exports = {
     updateTeam,
     deleteTeamMember,
     deleteTeam,
+    getLeaveReqOfTeamMembers,
 };

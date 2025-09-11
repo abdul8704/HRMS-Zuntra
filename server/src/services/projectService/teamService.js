@@ -3,6 +3,7 @@ const Team = require("../../models/projectManagement/team");
 const TeamMember = require("../../models/projectManagement/teamMember");
 const UserCredentials = require("../../models/userCredentials");
 const Phase = require("../../models/projectManagement/phase");
+const attendanceService = require("../attendanceService")
 
 const getMembersOfTeamService = async (teamId) => {
     const teamLead = await Team.findById(teamId, {
@@ -102,16 +103,18 @@ const addMembersToTeamService = async (teamId, users) => {
     return;
 };
 
-const isThisUserTL = async (userId) => {
-    const proj = await Team.find({ teamLead: userId }, {
-        teamName: 1,
-        teamDescription: 1,
-        teamLead: 1,
-        _id: 1
-    });
+const isUserThisTL = async (userId) => {
+    const proj = await Team.find(
+        { teamLead: userId },
+        {
+            teamName: 1,
+            teamDescription: 1,
+            teamLead: 1,
+            _id: 1,
+        }
+    );
 
-    if(proj.length === 0)
-        return false;
+    if (proj.length === 0) return false;
 
     return proj;
 };
@@ -130,6 +133,24 @@ const userTLofProj = async (userId, teamId) => {
 
     return proj;
 
+}
+const getTeamMemberLeaves = async (teamIds) => {
+    const members = new Set();
+
+    for(const teamId of teamIds) {
+        const { teamMembers } = await getMembersOfTeamService(teamId);
+        teamMembers.forEach(member => members.add(member.userId));
+    }
+
+    let leaveRequests = [];
+    for(const userid of members){
+        const req = await attendanceService.getLeaveRequests(userid);
+        
+        if(req.length > 0)
+            leaveRequests.push(req);
+    }
+
+    return leaveRequests;
 }
 
 const getTeamsUserPartOf = async (userId) => {
@@ -212,7 +233,8 @@ module.exports = {
     getMembersOfTeamService,
     getAllTeamsService,
     addMembersToTeamService,
-    isThisUserTL,
+    isUserThisTL,
+    getTeamMemberLeaves,
     userTLofProj,
     getTeamsUserPartOf,
     getTeamIdsUserPartOf,

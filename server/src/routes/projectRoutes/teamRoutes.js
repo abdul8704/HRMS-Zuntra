@@ -7,6 +7,8 @@ router.get("/details/:teamId", TeamController.getMembersOfTeamController);
 router.post("/create", TeamController.createTeamController);
 router.get("/user-teams/:userId", TeamController.getTeamsUserIn);
 
+router.post("/team-members-leave-reqs", TeamController.getLeaveReqOfTeamMembers);
+
 router.post("/check-tl", TeamController.checkUserTL);
 router.post("/check-tl-proj", TeamController.checkUserTLOfProj);
 router.put("/add-members", TeamController.addMembersToTeamController);
