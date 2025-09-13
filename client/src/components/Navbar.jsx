@@ -202,7 +202,7 @@ const projectDetailsNavItems = [
       </svg>
     ),
     filter: true,
-    path: 'phases/ongoing'
+    path: 'phases/overview'
   },
   {
     label: 'Upcoming Phase',
