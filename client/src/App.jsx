@@ -54,7 +54,9 @@ function App() {
             <Route path="/projects/:navId" element={<ProjectManagement />} />
             <Route path="/project/:projectId/:navId" element={<ProjectDetails />} />
             <Route path="/project/:projectId/phases/:phasenavId" element={<PhaseDetails type="phaseDetails"/>} />
-
+            <Route path="/todo" element={<ToDo/>}/>
+            <Route path="/progress" element={<Progress/>}/>
+            <Route path="/review" element={<Review/>}/>
             <Route path="/attendance/:navId" element={<Attendance />} />
             <Route path="/attendance/" element={<HrPersonalAttendance />} />
             <Route path="/upskill/:navId" element={<Upskill />} />

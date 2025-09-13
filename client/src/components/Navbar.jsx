@@ -548,7 +548,7 @@ export const Navbar = ({
     } else if (type === 'projectDetails') {
       finalPath = `/project/1/${path}`;
     } else if (type === 'phaseDetails') {
-      finalPath = `/phases/1/${path}`;
+      finalPath = `/project/1/phases/${path}`;
     } else if (type === 'projectManagement') {
       finalPath = `/projects/${path}`;
     }
